@@ -10,7 +10,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Accounts"
-      d:DataContext="{d:DesignInstance local:AccountsPage,
+      d:DataContext="{d:DesignInstance local:BudgetPage,
                                  IsDesignTimeCreatable=False}"
       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
       ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
@@ -18,6 +18,54 @@
       xmlns:models="clr-namespace:MyMoney.Models">
 
     <StackPanel>
-        <ui:TextBlock FontTypography="Subtitle">Income</ui:TextBlock>
+        <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
+
+        <ui:Card Margin="0,4,0,8">
+            <ui:DataGrid AutoGenerateColumns="False" ItemsSource="{Binding ViewModel.IncomeLineItems}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Category" Width="1*" Binding="{Binding Category}"/>
+                    <DataGridTextColumn x:Name="IncomeAmountDataGridColumn" Header="Amount" Width="200" Binding="{Binding Amount}"/>
+                </DataGrid.Columns>
+            </ui:DataGrid>
+        </ui:Card>
+
+        <ui:Card Margin="0,8,0,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="{Binding ElementName=IncomeAmountDataGridColumn, Path=ActualWidth}"/>
+                </Grid.ColumnDefinitions>
+
+                <ui:TextBlock>Total</ui:TextBlock>
+                <ui:TextBlock Text="{Binding ViewModel.IncomeTotal}" Grid.Column="1"/>
+            </Grid>
+        </ui:Card>
+
+        <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
+
+        <ui:Card Margin="0,4,0,12">
+            <ui:DataGrid AutoGenerateColumns="False" ItemsSource="{Binding ViewModel.ExpenseLineItems}">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Category" Width="1*" Binding="{Binding Category}"/>
+                    <DataGridTextColumn x:Name="ExpensePercentDataGridColumn" Header="Percent" Width="200" Binding="{Binding Percent}"/>
+                    <DataGridTextColumn x:Name="ExpenseAmountDataGridColumn" Header="Amount" Width="200" Binding="{Binding Amount}"/>
+                </DataGrid.Columns>
+            </ui:DataGrid>
+        </ui:Card>
+
+        <ui:Card Margin="0,8,0,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="{Binding ElementName=ExpensePercentDataGridColumn, Path=ActualWidth}"/>
+                    <ColumnDefinition Width="{Binding ElementName=ExpenseAmountDataGridColumn, Path=ActualWidth}"/>
+                </Grid.ColumnDefinitions>
+
+                <ui:TextBlock>Total</ui:TextBlock>
+                <ui:TextBlock Text="{Binding ViewModel.ExpensePercentTotal}" Grid.Column="1"/>
+                <ui:TextBlock Text="{Binding ViewModel.ExpenseTotal}" Grid.Column="2"/>
+            </Grid>
+        </ui:Card>
+
     </StackPanel>
 </Page>
