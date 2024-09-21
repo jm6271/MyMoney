@@ -47,7 +47,6 @@
             <ui:DataGrid AutoGenerateColumns="False" ItemsSource="{Binding ViewModel.ExpenseLineItems}">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="Category" Width="1*" Binding="{Binding Category}"/>
-                    <DataGridTextColumn x:Name="ExpensePercentDataGridColumn" Header="Percent" Width="200" Binding="{Binding Percent}"/>
                     <DataGridTextColumn x:Name="ExpenseAmountDataGridColumn" Header="Amount" Width="200" Binding="{Binding Amount}"/>
                 </DataGrid.Columns>
             </ui:DataGrid>
@@ -57,12 +56,10 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="{Binding ElementName=ExpensePercentDataGridColumn, Path=ActualWidth}"/>
                     <ColumnDefinition Width="{Binding ElementName=ExpenseAmountDataGridColumn, Path=ActualWidth}"/>
                 </Grid.ColumnDefinitions>
 
                 <ui:TextBlock>Total</ui:TextBlock>
-                <ui:TextBlock Text="{Binding ViewModel.ExpensePercentTotal}" Grid.Column="1"/>
                 <ui:TextBlock Text="{Binding ViewModel.ExpenseTotal}" Grid.Column="2"/>
             </Grid>
         </ui:Card>
