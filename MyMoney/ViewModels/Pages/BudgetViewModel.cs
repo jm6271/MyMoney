@@ -1,10 +1,5 @@
 ﻿using MyMoney.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -61,6 +56,18 @@ namespace MyMoney.ViewModels.Pages
             {
                 ExpenseTotal += item.Amount;
             }
+        }
+
+        [RelayCommand]
+        private void AddIncomeItem()
+        {
+
+        }
+
+        [RelayCommand]
+        private void AddExpenseItem()
+        {
+
         }
     }
 }

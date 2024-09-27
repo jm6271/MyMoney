@@ -18,7 +18,13 @@
       xmlns:models="clr-namespace:MyMoney.Models">
 
     <StackPanel>
-        <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
+        <StackPanel Orientation="Horizontal">
+            <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
+            <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}">
+                <ui:SymbolIcon Symbol="Add24"/>
+            </ui:Button>
+        </StackPanel>
+        
 
         <ui:Card Margin="0,4,0,8">
             <ui:ListView ItemsSource="{Binding ViewModel.IncomeLineItems}">
@@ -50,7 +56,13 @@
             </Grid>
         </ui:Card>
 
-        <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
+        <StackPanel Orientation="Horizontal">
+            <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
+            <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddExpenseItemCommand}">
+                <ui:SymbolIcon Symbol="Add24"/>
+            </ui:Button>
+        </StackPanel>
+        
 
         <ui:Card Margin="0,4,0,12">
             <ui:ListView ItemsSource="{Binding ViewModel.ExpenseLineItems}">
