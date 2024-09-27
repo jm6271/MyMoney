@@ -40,6 +40,27 @@ namespace MyMoney.ViewModels.Pages
             incomeitem1.Category = "Work";
 
             IncomeLineItems.Add(incomeitem1);
+
+            UpdateListViewTotals();
+        }
+
+        public void UpdateListViewTotals()
+        {
+            // calculate the total income items
+            IncomeTotal = new(0m);
+
+            foreach (var item in IncomeLineItems)
+            {
+                IncomeTotal += item.Amount;
+            }
+
+            // Calculate the total expense items
+            ExpenseTotal = new(0m);
+
+            foreach (var item in ExpenseLineItems)
+            {
+                ExpenseTotal += item.Amount;
+            }
         }
     }
 }
