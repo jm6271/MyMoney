@@ -21,5 +21,25 @@ namespace MyMoney.ViewModels.Pages
 
         [ObservableProperty]
         private decimal _ExpensePercentTotal = 0;
+
+        public BudgetViewModel()
+        {
+            BudgetExpenseItem item1 = new();
+            item1.Category = "Gas";
+            item1.Amount = new(120m);
+
+            BudgetExpenseItem item2 = new();
+            item2.Category = "Misc.";
+            item2.Amount = new(50m);
+
+            ExpenseLineItems.Add(item1);
+            ExpenseLineItems.Add(item2);
+
+            BudgetIncomeItem incomeitem1 = new();
+            incomeitem1.Amount = new(1200m);
+            incomeitem1.Category = "Work";
+
+            IncomeLineItems.Add(incomeitem1);
+        }
     }
 }

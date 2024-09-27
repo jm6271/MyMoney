@@ -21,19 +21,28 @@
         <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
 
         <ui:Card Margin="0,4,0,8">
-            <ui:DataGrid AutoGenerateColumns="False" ItemsSource="{Binding ViewModel.IncomeLineItems}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Category" Width="1*" Binding="{Binding Category}"/>
-                    <DataGridTextColumn x:Name="IncomeAmountDataGridColumn" Header="Amount" Width="200" Binding="{Binding Amount}"/>
-                </DataGrid.Columns>
-            </ui:DataGrid>
+            <ui:ListView ItemsSource="{Binding ViewModel.IncomeLineItems}">
+                    <ui:ListView.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:BudgetIncomeItem}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="{Binding Category}" Grid.Column="0" Margin="5,5,0,5"/>
+                                <TextBlock Text="{Binding Amount}" Grid.Column="1" Margin="0,5,5,5"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
         </ui:Card>
 
         <ui:Card Margin="0,8,0,8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="{Binding ElementName=IncomeAmountDataGridColumn, Path=ActualWidth}"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <ui:TextBlock>Total</ui:TextBlock>
@@ -44,19 +53,28 @@
         <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
 
         <ui:Card Margin="0,4,0,12">
-            <ui:DataGrid AutoGenerateColumns="False" ItemsSource="{Binding ViewModel.ExpenseLineItems}">
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Category" Width="1*" Binding="{Binding Category}"/>
-                    <DataGridTextColumn x:Name="ExpenseAmountDataGridColumn" Header="Amount" Width="200" Binding="{Binding Amount}"/>
-                </DataGrid.Columns>
-            </ui:DataGrid>
+            <ui:ListView ItemsSource="{Binding ViewModel.ExpenseLineItems}">
+                <ui:ListView.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:BudgetExpenseItem}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="{Binding Category}" Grid.Column="0" Margin="5,5,0,5"/>
+                            <TextBlock Text="{Binding Amount}" Grid.Column="1" Margin="0,5,5,5"/>
+                        </Grid>
+                    </DataTemplate>
+                </ui:ListView.ItemTemplate>
+            </ui:ListView>
         </ui:Card>
 
         <ui:Card Margin="0,8,0,8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="{Binding ElementName=ExpenseAmountDataGridColumn, Path=ActualWidth}"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <ui:TextBlock>Total</ui:TextBlock>
