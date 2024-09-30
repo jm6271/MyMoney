@@ -51,8 +51,8 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <ui:TextBlock>Total</ui:TextBlock>
-                <ui:TextBlock Text="{Binding ViewModel.IncomeTotal}" Grid.Column="1"/>
+                <ui:TextBlock FontWeight="SemiBold">Total</ui:TextBlock>
+                <ui:TextBlock FontWeight="SemiBold" Text="{Binding ViewModel.IncomeTotal}" Grid.Column="1"/>
             </Grid>
         </ui:Card>
 
@@ -89,8 +89,8 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <ui:TextBlock>Total</ui:TextBlock>
-                <ui:TextBlock Text="{Binding ViewModel.ExpenseTotal}" Grid.Column="2"/>
+                <ui:TextBlock FontWeight="SemiBold">Total</ui:TextBlock>
+                <ui:TextBlock FontWeight="SemiBold" Text="{Binding ViewModel.ExpenseTotal}" Grid.Column="2"/>
             </Grid>
         </ui:Card>
 
