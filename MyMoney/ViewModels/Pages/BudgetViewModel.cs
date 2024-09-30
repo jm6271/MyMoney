@@ -66,7 +66,19 @@ namespace MyMoney.ViewModels.Pages
             BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
             BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
 
-            editorWindow.ShowDialog();
+            if(editorWindow.ShowDialog() == true)
+            {
+                // Create a new income item with the results from the dialog
+                BudgetIncomeItem item = new();
+                item.Category = editorWindowViewModel.BudgetCategory;
+                item.Amount = editorWindowViewModel.BudgetAmount;
+
+                // Add the item to the budget income items list
+                IncomeLineItems.Add(item);
+
+                // Recalculate the total of the income items
+                UpdateListViewTotals();
+            }
         }
 
         [RelayCommand]
@@ -75,7 +87,19 @@ namespace MyMoney.ViewModels.Pages
             BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
             BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
 
-            editorWindow.ShowDialog();
+            if (editorWindow.ShowDialog() == true)
+            {
+                // Create a new expense item with the results from the dialog
+                BudgetExpenseItem item = new();
+                item.Category = editorWindowViewModel.BudgetCategory;
+                item.Amount = editorWindowViewModel.BudgetAmount;
+
+                // Add the item to the budget expense items list
+                ExpenseLineItems.Add(item);
+
+                // Recalculate the total of the expense items
+                UpdateListViewTotals();
+            }
         }
     }
 }

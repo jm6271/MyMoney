@@ -24,12 +24,14 @@ namespace MyMoney.Views.Windows
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.CancelButtonClick();
+            DialogResult = false;
             Close();
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             ViewModel.OkButtonClick();
+            DialogResult = true;
             Close();
         }
     }
