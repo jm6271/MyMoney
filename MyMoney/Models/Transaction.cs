@@ -1,21 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MyMoney.Models
+﻿namespace MyMoney.Models
 {
     public class Transaction
     {
         public DateTime Date { get; set; }
 
-        public string DateFormatted 
-        { 
-            get 
+        public string DateFormatted
+        {
+            get
             {
                 return Date.ToShortDateString();
-            } 
+            }
         }
 
         public string Payee { get; set; }

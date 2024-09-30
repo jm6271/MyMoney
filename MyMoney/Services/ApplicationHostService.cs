@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using MyMoney.Views.Pages;
+﻿using Microsoft.Extensions.Hosting;
 using MyMoney.Views.Windows;
 using Wpf.Ui;
 

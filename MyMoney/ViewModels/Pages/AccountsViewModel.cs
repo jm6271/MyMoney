@@ -1,10 +1,6 @@
 ﻿using MyMoney.Models;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using System.Windows.Controls;
-using Wpf.Ui.Controls;
 using Wpf.Ui;
 
 
@@ -58,7 +54,7 @@ namespace MyMoney.ViewModels.Pages
             AddTransactionButtonClickCommand = new RelayCommand(BttnNewTransaction_Click);
         }
 
-        
+
         private void BttnNewAccount_Click()
         {
 
@@ -69,7 +65,7 @@ namespace MyMoney.ViewModels.Pages
             // Calculate the balance
             if (SelectedAccount == null) return;
             var balance = SelectedAccount.Total - NewTransactionSpend + NewTransactionReceive;
-            
+
             SelectedAccount.Total = balance;
 
             Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, new(NewTransactionSpend.Value), new(NewTransactionReceive.Value), new(balance.Value), NewTransactionMemo);
