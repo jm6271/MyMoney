@@ -72,7 +72,10 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private void AddExpenseItem()
         {
+            BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
+            BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
 
+            editorWindow.ShowDialog();
         }
     }
 }
