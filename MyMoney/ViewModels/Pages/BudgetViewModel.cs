@@ -1,4 +1,6 @@
 ﻿using MyMoney.Models;
+using MyMoney.ViewModels.Windows;
+using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
 
 namespace MyMoney.ViewModels.Pages
@@ -61,7 +63,10 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private void AddIncomeItem()
         {
+            BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
+            BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
 
+            editorWindow.ShowDialog();
         }
 
         [RelayCommand]
