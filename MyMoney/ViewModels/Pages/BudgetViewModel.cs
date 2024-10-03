@@ -14,6 +14,9 @@ namespace MyMoney.ViewModels.Pages
         private int _IncomeItemsSelectedIndex = 0;
 
         [ObservableProperty]
+        private int _ExpenseItemsSelectedIndex = 0;
+
+        [ObservableProperty]
         private Currency _IncomeTotal = new(0m);
 
         [ObservableProperty]
@@ -123,7 +126,7 @@ namespace MyMoney.ViewModels.Pages
                 // assign the selected index of the list with the new item
                 IncomeLineItems[IncomeItemsSelectedIndex] = incomeItem;
 
-                // Recalculate the total of the expense items
+                // Recalculate the total of the income items
                 UpdateListViewTotals();
             }
         }
@@ -132,6 +135,35 @@ namespace MyMoney.ViewModels.Pages
         private void DeleteIncomeItem()
         {
             IncomeLineItems.RemoveAt(IncomeItemsSelectedIndex);
+        }
+
+        [RelayCommand]
+        private void EditExpenseItem()
+        {
+            BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
+            BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
+            editorWindowViewModel.BudgetCategory = ExpenseLineItems[ExpenseItemsSelectedIndex].Category;
+            editorWindowViewModel.BudgetAmount = ExpenseLineItems[ExpenseItemsSelectedIndex].Amount;
+
+            if (editorWindow.ShowDialog() == true)
+            {
+                // modify the item at the selected index
+                BudgetExpenseItem expenseItem = new();
+                expenseItem.Category = editorWindowViewModel.BudgetCategory;
+                expenseItem.Amount = editorWindowViewModel.BudgetAmount;
+
+                // assign the selected index of the list with the new item
+                ExpenseLineItems[ExpenseItemsSelectedIndex] = expenseItem;
+
+                // Recalculate the total of the expense items
+                UpdateListViewTotals();
+            }
+        }
+
+        [RelayCommand]
+        private void DeleteExpenseItem()
+        {
+            ExpenseLineItems.RemoveAt(ExpenseItemsSelectedIndex);
         }
     }
 }

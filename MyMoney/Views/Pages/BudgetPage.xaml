@@ -72,7 +72,14 @@
         
 
         <ui:Card Margin="0,4,0,12">
-            <ui:ListView ItemsSource="{Binding ViewModel.ExpenseLineItems}">
+            <ui:ListView ItemsSource="{Binding ViewModel.ExpenseLineItems}" SelectedIndex="{Binding ViewModel.ExpenseItemsSelectedIndex}">
+                <ui:ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Edit" Command="{Binding ViewModel.EditExpenseItemCommand}"/>
+                        <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteExpenseItemCommand}"/>
+                    </ContextMenu>
+                </ui:ListView.ContextMenu>
+                
                 <ui:ListView.ItemTemplate>
                     <DataTemplate DataType="{x:Type models:BudgetExpenseItem}">
                         <Grid>
