@@ -11,6 +11,9 @@ namespace MyMoney.ViewModels.Pages
         public ObservableCollection<BudgetExpenseItem> ExpenseLineItems { get; set; } = [];
 
         [ObservableProperty]
+        private int _IncomeItemsSelectedIndex = 0;
+
+        [ObservableProperty]
         private Currency _IncomeTotal = new(0m);
 
         [ObservableProperty]
@@ -100,6 +103,35 @@ namespace MyMoney.ViewModels.Pages
                 // Recalculate the total of the expense items
                 UpdateListViewTotals();
             }
+        }
+
+        [RelayCommand]
+        private void EditIncomeItem()
+        {
+            BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
+            BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
+            editorWindowViewModel.BudgetCategory = IncomeLineItems[IncomeItemsSelectedIndex].Category;
+            editorWindowViewModel.BudgetAmount = IncomeLineItems[IncomeItemsSelectedIndex].Amount;
+
+            if (editorWindow.ShowDialog() == true)
+            {
+                // modify the item at the selected index
+                BudgetIncomeItem incomeItem = new();
+                incomeItem.Category = editorWindowViewModel.BudgetCategory;
+                incomeItem.Amount = editorWindowViewModel.BudgetAmount;
+
+                // assign the selected index of the list with the new item
+                IncomeLineItems[IncomeItemsSelectedIndex] = incomeItem;
+
+                // Recalculate the total of the expense items
+                UpdateListViewTotals();
+            }
+        }
+
+        [RelayCommand]
+        private void DeleteIncomeItem()
+        {
+            IncomeLineItems.RemoveAt(IncomeItemsSelectedIndex);
         }
     }
 }

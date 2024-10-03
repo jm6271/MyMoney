@@ -27,8 +27,15 @@
         
 
         <ui:Card Margin="0,4,0,8">
-            <ui:ListView ItemsSource="{Binding ViewModel.IncomeLineItems}">
-                    <ui:ListView.ItemTemplate>
+            <ui:ListView ItemsSource="{Binding ViewModel.IncomeLineItems}" SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}">
+                <ui:ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Edit" Command="{Binding ViewModel.EditIncomeItemCommand}"/>
+                        <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
+                    </ContextMenu>
+                </ui:ListView.ContextMenu>
+                
+                <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:BudgetIncomeItem}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
