@@ -3,10 +3,10 @@
     public partial class BudgetExpenseItem : ObservableObject
     {
         [ObservableProperty]
-        private string _Category = "";
+        private int _Id = 0;
 
         [ObservableProperty]
-        private decimal _Percent = 0m;
+        private string _Category = "";
 
         [ObservableProperty]
         private Currency _Amount = new(0m);
