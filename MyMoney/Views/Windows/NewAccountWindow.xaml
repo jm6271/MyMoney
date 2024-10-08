@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MyMoney.Views.Windows"
         mc:Ignorable="d"
-        Title="New Account" Height="450" Width="800"
+        Title="New Account" Height="392" Width="297"
                 d:DataContext="{d:DesignInstance local:NewAccountWindow,
             IsDesignTimeCreatable=True}"
         ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
@@ -17,6 +17,30 @@
         WindowCornerPreference="Round"
         WindowStartupLocation="CenterScreen" ShowInTaskbar="False" ResizeMode="NoResize" SizeToContent="Height" Topmost="True">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <ui:Card Grid.Row="0" VerticalAlignment="Stretch">
+            <StackPanel>
+                <ui:TextBlock FontTypography="Subtitle" Text="New Account" Margin="0,32,0,24"/>
+
+                <Label Margin="0,0,0,4">Account name</Label>
+                <ui:TextBox Margin="0,4,0,8" Text="{Binding ViewModel.AccountName}"/>
+                <Label Margin="0,8,0,4">Starting balance</Label>
+                <ui:TextBox Margin="0,4,0,8" Text="{Binding ViewModel.StartingBalance}"/>
+            </StackPanel>
+        </ui:Card>
+
+        <Grid Grid.Row="1" Margin="16,24,16,24">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <ui:Button Margin="0,0,4,0" HorizontalAlignment="Stretch" Appearance="Primary">Add</ui:Button>
+            <ui:Button Margin="4,0,0,0" HorizontalAlignment="Stretch" Grid.Column="1">Cancel</ui:Button>
+        </Grid>
     </Grid>
 </ui:FluentWindow>
