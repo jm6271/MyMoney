@@ -2,6 +2,7 @@
 using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
+using System.Security.Principal;
 using System.Windows.Input;
 using Wpf.Ui;
 
@@ -66,6 +67,15 @@ namespace MyMoney.ViewModels.Pages
             if (newAccountDialog.ShowDialog() == true)
             {
                 // add the new account
+                Account newAccount = new();
+                newAccount.AccountName = newAccountDialogViewModel.AccountName;
+                newAccount.Total = newAccountDialogViewModel.StartingBalance;
+
+                // add a beginning balance transaction to the account
+                newAccount.Transactions.Add(new(DateTime.Today, "Begining Balance", "", new(0.00m), new(0.0m), newAccountDialogViewModel.StartingBalance, ""));
+
+                // Add to the accounts list (shows up in the accounts list view on the accounts page)
+                Accounts.Add(newAccount);
             }
         }
 
