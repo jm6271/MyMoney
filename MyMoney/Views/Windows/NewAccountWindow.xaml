@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MyMoney.Views.Windows"
         mc:Ignorable="d"
-        Title="New Account" Height="392" Width="297"
+        Title="New Account" Height="364" Width="260"
                 d:DataContext="{d:DesignInstance local:NewAccountWindow,
             IsDesignTimeCreatable=True}"
         ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
