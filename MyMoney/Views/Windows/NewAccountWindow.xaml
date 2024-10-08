@@ -29,7 +29,7 @@
                 <Label Margin="0,0,0,4">Account name</Label>
                 <ui:TextBox Margin="0,4,0,8" Text="{Binding ViewModel.AccountName}"/>
                 <Label Margin="0,8,0,4">Starting balance</Label>
-                <ui:TextBox Margin="0,4,0,8" Text="{Binding ViewModel.StartingBalance}"/>
+                <ui:TextBox Margin="0,4,0,8" Text="{Binding ViewModel.StartingBalance.Value}"/>
             </StackPanel>
         </ui:Card>
 
@@ -39,8 +39,8 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <ui:Button Margin="0,0,4,0" HorizontalAlignment="Stretch" Appearance="Primary">Add</ui:Button>
-            <ui:Button Margin="4,0,0,0" HorizontalAlignment="Stretch" Grid.Column="1">Cancel</ui:Button>
+            <ui:Button Margin="0,0,4,0" HorizontalAlignment="Stretch" Appearance="Primary" Click="AddButton_Click">Add</ui:Button>
+            <ui:Button Margin="4,0,0,0" HorizontalAlignment="Stretch" Grid.Column="1" Click="CancelButton_Click">Cancel</ui:Button>
         </Grid>
     </Grid>
 </ui:FluentWindow>

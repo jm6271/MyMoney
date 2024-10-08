@@ -1,4 +1,6 @@
 ﻿using MyMoney.Models;
+using MyMoney.ViewModels.Windows;
+using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using Wpf.Ui;
@@ -57,7 +59,14 @@ namespace MyMoney.ViewModels.Pages
 
         private void BttnNewAccount_Click()
         {
+            // Show the new account dialog
+            NewAccountWindowViewModel newAccountDialogViewModel = new();
+            NewAccountWindow newAccountDialog = new(newAccountDialogViewModel);
 
+            if (newAccountDialog.ShowDialog() == true)
+            {
+                // add the new account
+            }
         }
 
         private void BttnNewTransaction_Click()
