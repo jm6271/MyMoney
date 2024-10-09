@@ -15,7 +15,7 @@
         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
         WindowBackdropType="Mica"
         WindowCornerPreference="Round"
-        WindowStartupLocation="CenterScreen" ShowInTaskbar="False" ResizeMode="NoResize" SizeToContent="Height" Topmost="True">
+        WindowStartupLocation="CenterScreen" ShowInTaskbar="False" ResizeMode="NoResize" SizeToContent="Height" Topmost="True" Loaded="FluentWindow_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -27,7 +27,7 @@
                 <ui:TextBlock FontTypography="Subtitle" Text="New Account" Margin="0,32,0,24"/>
 
                 <Label Margin="0,0,0,4">Account name</Label>
-                <ui:TextBox Margin="0,4,0,8" Text="{Binding ViewModel.AccountName}"/>
+                <ui:TextBox x:Name="TxtAccountName" Margin="0,4,0,8" Text="{Binding ViewModel.AccountName}"/>
                 <Label Margin="0,8,0,4">Starting balance</Label>
                 <ui:TextBox Margin="0,4,0,8" Text="{Binding ViewModel.StartingBalance.Value}"/>
             </StackPanel>
