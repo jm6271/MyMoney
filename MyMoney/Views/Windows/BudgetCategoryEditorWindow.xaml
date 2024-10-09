@@ -16,7 +16,7 @@
         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
         WindowBackdropType="Mica"
         WindowCornerPreference="Round"
-        WindowStartupLocation="CenterScreen" ShowInTaskbar="False" ResizeMode="NoResize" SizeToContent="Height" Topmost="True"
+        WindowStartupLocation="CenterScreen" ShowInTaskbar="False" ResizeMode="NoResize" SizeToContent="Height" Topmost="True" Loaded="FluentWindow_Loaded"
         >
 
     <Grid>
@@ -30,7 +30,7 @@
                 <ui:TextBlock FontTypography="Subtitle" Text="{Binding ViewModel.WindowTitle}" Margin="0,32,0,24"/>
 
                 <Label Margin="0,0,0,4">Category</Label>
-                <ui:TextBox Margin="0,4,0,8" Text="{Binding ViewModel.BudgetCategory}"/>
+                <ui:TextBox x:Name="TxtCategory" Margin="0,4,0,8" Text="{Binding ViewModel.BudgetCategory}"/>
                 <Label Margin="0,8,0,4">Amount</Label>
                 <ui:TextBox Margin="0,4,0,8" Text="{Binding ViewModel.BudgetAmount.Value}"/>
             </StackPanel>

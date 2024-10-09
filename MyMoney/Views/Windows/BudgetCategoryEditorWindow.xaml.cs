@@ -34,5 +34,10 @@ namespace MyMoney.Views.Windows
             DialogResult = true;
             Close();
         }
+
+        private void FluentWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            TxtCategory.Focus();
+        }
     }
 }
