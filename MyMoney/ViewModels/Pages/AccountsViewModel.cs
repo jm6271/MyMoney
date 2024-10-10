@@ -1,4 +1,5 @@
-﻿using MyMoney.Models;
+﻿using LiteDB;
+using MyMoney.Models;
 using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
@@ -45,13 +46,24 @@ namespace MyMoney.ViewModels.Pages
         {
             _contentDialogService = contentDialogService;
 
-            Models.Account account = new()
+            // load accounts and their transactions from the database
+            using (var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
             {
-                AccountName = "Savings",
-                Total = new(500)
-            };
-            account.Transactions.Add(new(DateTime.Today, "Begining Balance", "", new(0.00m), new(0.0m), new(500m), ""));
-            Accounts.Add(account);
+                // load the accounts list
+                var AccountsList = db.GetCollection<Account>("Accounts");
+
+                // iterate over the accounts in the database and add them to the Accounts collection
+                for (int i = 1; i <= AccountsList.Count(); i++)
+                {
+                    var account = AccountsList.FindById(i);
+
+                    // Set the memo and category to an empty string on the first transaction (beginning balance)
+                    account.Transactions[0].Memo = "";
+                    account.Transactions[0].Category = "";
+
+                    Accounts.Add(account);
+                }
+            }
 
             AddNewAccountButtonClickCommand = new RelayCommand(BttnNewAccount_Click);
             AddTransactionButtonClickCommand = new RelayCommand(BttnNewTransaction_Click);
@@ -72,10 +84,12 @@ namespace MyMoney.ViewModels.Pages
                 newAccount.Total = newAccountDialogViewModel.StartingBalance;
 
                 // add a beginning balance transaction to the account
-                newAccount.Transactions.Add(new(DateTime.Today, "Begining Balance", "", new(0.00m), new(0.0m), newAccountDialogViewModel.StartingBalance, ""));
+                newAccount.Transactions.Add(new(DateTime.Today, "Begining Balance", string.Empty, new(0.00m), new(0.0m), newAccountDialogViewModel.StartingBalance, string.Empty));
 
                 // Add to the accounts list (shows up in the accounts list view on the accounts page)
                 Accounts.Add(newAccount);
+
+                SaveAccountsToDatabase();
             }
         }
 
@@ -95,6 +109,8 @@ namespace MyMoney.ViewModels.Pages
             NewTransactionSpend = new(0m);
             NewTransactionReceive = new(0m);
             NewTransactionMemo = "";
+
+            SaveAccountsToDatabase();
         }
 
         partial void OnSelectedAccountChanged(Account? value)
@@ -107,5 +123,22 @@ namespace MyMoney.ViewModels.Pages
 
         [ObservableProperty]
         private bool _IsInputEnabled = false;
+
+        private void SaveAccountsToDatabase()
+        {
+            using (var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
+            {
+                var AccountsList = db.GetCollection<Account>("Accounts");
+
+                // clear the collection
+                AccountsList.DeleteAll();
+
+                // add the new items to the database
+                foreach (var item in Accounts)
+                {
+                    AccountsList.Insert(item);
+                }
+            }
+        }
     }
 }
