@@ -5,6 +5,9 @@ namespace MyMoney.Models
     public partial class Account : ObservableObject
     {
         [ObservableProperty]
+        private int _Id = 0;
+
+        [ObservableProperty]
         private ObservableCollection<Transaction> _Transactions = [];
 
         [ObservableProperty]
