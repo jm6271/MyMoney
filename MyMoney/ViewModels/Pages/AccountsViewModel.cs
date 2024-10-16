@@ -113,12 +113,41 @@ namespace MyMoney.ViewModels.Pages
             }
             else // editing the selected transaction
             {
+                int editTransactionIndex = SelectedTransactionIndex;
+
                 if (SelectedAccount == null || SelectedTransaction == null) return;
 
-                Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, new(NewTransactionSpend.Value), new(NewTransactionReceive.Value), new(SelectedTransaction.Balance.Value), NewTransactionMemo);
+                // recalculate the balance by getting the balance for the previous transaction
+                if (editTransactionIndex == 0) // first transaction, this shows the begining balance of the account and should not be edited
+                    return;
+
+                decimal previousBalance = SelectedAccountTransactions[editTransactionIndex - 1].Balance.Value;
+                decimal newBalance = previousBalance - NewTransactionSpend.Value + NewTransactionReceive.Value;
+                
+                // Create the transaction object
+                Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, new(NewTransactionSpend.Value), new(NewTransactionReceive.Value), new(newBalance), NewTransactionMemo);
 
                 // replace the old transaction with the new one
-                SelectedAccountTransactions[SelectedTransactionIndex] = newTransaction;
+                SelectedAccountTransactions[editTransactionIndex] = newTransaction;
+
+                // Now we have to recalculate the balances for all the transactions after this
+
+                if (SelectedAccountTransactions.Count == editTransactionIndex + 1) // last transaction, no recalculations
+                {
+                    SelectedAccount.Total = new(newBalance);
+                    return;
+                }
+
+                for (int i = editTransactionIndex + 1; i < SelectedAccountTransactions.Count; i++)
+                {
+                    var spend = SelectedAccountTransactions[i].Spend;
+                    var receive = SelectedAccountTransactions[i].Receive;
+
+                    SelectedAccountTransactions[i].Balance = SelectedAccountTransactions[i - 1].Balance - spend + receive;
+                }
+
+                // update the account total
+                SelectedAccount.Total = SelectedAccount.Transactions[SelectedAccount.Transactions.Count - 1].Balance;
             }
 
             NewTransactionDate = DateTime.Today;

@@ -1,8 +1,9 @@
 ﻿namespace MyMoney.Models
 {
-    public class Transaction
+    public partial class Transaction : ObservableObject
     {
-        public DateTime Date { get; set; }
+        [ObservableProperty]
+        private DateTime _Date;
 
         public string DateFormatted
         {
@@ -12,17 +13,23 @@
             }
         }
 
-        public string Payee { get; set; }
+        [ObservableProperty]
+        private string _Payee;
 
-        public string Category { get; set; }
+        [ObservableProperty]
+        private string _Category;
 
-        public Currency Spend { get; set; }
+        [ObservableProperty]
+        private Currency _Spend;
 
-        public Currency Receive { get; set; }
+        [ObservableProperty]
+        private Currency _Receive;
 
-        public Currency Balance { get; set; }
+        [ObservableProperty]
+        private Currency _Balance;
 
-        public string Memo { get; set; }
+        [ObservableProperty]
+        private string _Memo;
 
         public Transaction()
         {
