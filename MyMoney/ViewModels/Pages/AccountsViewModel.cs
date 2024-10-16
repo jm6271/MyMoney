@@ -39,6 +39,15 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private Account? _SelectedAccount;
 
+        [ObservableProperty]
+        private Transaction? _SelectedTransaction;
+
+        [ObservableProperty]
+        private int _SelectedTransactionIndex = -1;
+
+        [ObservableProperty]
+        private string _AddTransactionButtonText = "Add Transaction";
+
         public AccountsViewModel()
         {
 
@@ -91,14 +100,56 @@ namespace MyMoney.ViewModels.Pages
 
         private void BttnNewTransaction_Click()
         {
-            // Calculate the balance
-            if (SelectedAccount == null) return;
-            var balance = SelectedAccount.Total - NewTransactionSpend + NewTransactionReceive;
+            if (AddTransactionButtonText == "Add Transaction")
+            {
+                // Calculate the balance
+                if (SelectedAccount == null) return;
+                var balance = SelectedAccount.Total - NewTransactionSpend + NewTransactionReceive;
 
-            SelectedAccount.Total = balance;
+                SelectedAccount.Total = balance;
 
-            Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, new(NewTransactionSpend.Value), new(NewTransactionReceive.Value), new(balance.Value), NewTransactionMemo);
-            SelectedAccountTransactions.Add(newTransaction);
+                Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, new(NewTransactionSpend.Value), new(NewTransactionReceive.Value), new(balance.Value), NewTransactionMemo);
+                SelectedAccountTransactions.Add(newTransaction);
+            }
+            else // editing the selected transaction
+            {
+                int editTransactionIndex = SelectedTransactionIndex;
+
+                if (SelectedAccount == null || SelectedTransaction == null) return;
+
+                // recalculate the balance by getting the balance for the previous transaction
+                if (editTransactionIndex == 0) // first transaction, this shows the begining balance of the account and should not be edited
+                    return;
+
+                decimal previousBalance = SelectedAccountTransactions[editTransactionIndex - 1].Balance.Value;
+                decimal newBalance = previousBalance - NewTransactionSpend.Value + NewTransactionReceive.Value;
+                
+                // Create the transaction object
+                Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, new(NewTransactionSpend.Value), new(NewTransactionReceive.Value), new(newBalance), NewTransactionMemo);
+
+                // replace the old transaction with the new one
+                SelectedAccountTransactions[editTransactionIndex] = newTransaction;
+
+                // Now we have to recalculate the balances for all the transactions after this
+
+                if (SelectedAccountTransactions.Count == editTransactionIndex + 1) // last transaction, no recalculations
+                {
+                    SelectedAccount.Total = new(newBalance);
+                    return;
+                }
+
+                for (int i = editTransactionIndex + 1; i < SelectedAccountTransactions.Count; i++)
+                {
+                    var spend = SelectedAccountTransactions[i].Spend;
+                    var receive = SelectedAccountTransactions[i].Receive;
+
+                    SelectedAccountTransactions[i].Balance = SelectedAccountTransactions[i - 1].Balance - spend + receive;
+                }
+
+                // update the account total
+                SelectedAccount.Total = SelectedAccount.Transactions[SelectedAccount.Transactions.Count - 1].Balance;
+            }
+
             NewTransactionDate = DateTime.Today;
             NewTransactionPayee = "";
             NewTransactionCategory = "";
@@ -115,6 +166,33 @@ namespace MyMoney.ViewModels.Pages
 
             if (SelectedAccount != null) IsInputEnabled = true;
             else IsInputEnabled = false;
+        }
+
+        partial void OnSelectedTransactionChanged(Transaction? value)
+        {
+            // load the details about the transaction into the fields
+            if (SelectedTransaction == null)
+            {
+                AddTransactionButtonText = "Add Transaction";
+                NewTransactionCategory = "";
+                NewTransactionDate = DateTime.Today;
+                NewTransactionMemo = "";
+                NewTransactionPayee = "";
+                NewTransactionReceive = new(0m);
+                NewTransactionSpend = new(0m);
+
+                return;
+            }
+
+            NewTransactionDate = SelectedTransaction.Date;
+            NewTransactionCategory = SelectedTransaction.Category;
+            NewTransactionMemo = SelectedTransaction.Memo;
+            NewTransactionPayee = SelectedTransaction.Payee;
+            NewTransactionReceive = SelectedTransaction.Receive;
+            NewTransactionSpend = SelectedTransaction.Spend;
+
+            // change button text to "Edit Transaction"
+            AddTransactionButtonText = "Edit Transaction";
         }
 
         [ObservableProperty]
