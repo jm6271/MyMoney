@@ -41,7 +41,7 @@
 
         <StackPanel Grid.Column="1" Margin="8,0,0,0">
             <ui:Card>
-                <ui:ListView ItemsSource="{Binding ViewModel.SelectedAccountTransactions}">
+                <ui:ListView ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" SelectedItem="{Binding ViewModel.SelectedTransaction, Mode=TwoWay}" SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}">
                     <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:Transaction}">
                             <Grid>
@@ -132,7 +132,7 @@
                 <ui:TextBox x:Name="txtSpend" Grid.Row="1" Grid.Column="3" Margin="4,0,4,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionSpend.Value}"/>
                 <ui:TextBox Grid.Row="1" Grid.Column="4" Margin="4,0,0,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionReceive.Value}"/>
 
-                <ui:Button Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="4,0,0,0" VerticalAlignment="Stretch" IsEnabled="{Binding ViewModel.IsInputEnabled}" Command="{Binding ViewModel.AddTransactionButtonClickCommand}">Add Transaction</ui:Button>
+                <ui:Button Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="4,0,0,0" VerticalAlignment="Stretch" IsEnabled="{Binding ViewModel.IsInputEnabled}" Command="{Binding ViewModel.AddTransactionButtonClickCommand}" Content="{Binding ViewModel.AddTransactionButtonText}"/>
             </Grid>
             
         </StackPanel>
