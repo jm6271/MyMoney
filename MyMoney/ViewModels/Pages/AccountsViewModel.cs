@@ -39,12 +39,8 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private Account? _SelectedAccount;
 
-        [ObservableProperty]
-        private IContentDialogService _contentDialogService;
-
-        public AccountsViewModel(IContentDialogService contentDialogService)
+        public AccountsViewModel()
         {
-            _contentDialogService = contentDialogService;
 
             // load accounts and their transactions from the database
             using (var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
