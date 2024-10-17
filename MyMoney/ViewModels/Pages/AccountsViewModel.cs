@@ -223,6 +223,9 @@ namespace MyMoney.ViewModels.Pages
 
             // Delete the selected transaction
             SelectedAccountTransactions.RemoveAt(SelectedTransactionIndex);
+
+            // Apply changes to database
+            SaveAccountsToDatabase();
         }
     }
 }
