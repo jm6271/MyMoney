@@ -214,5 +214,15 @@ namespace MyMoney.ViewModels.Pages
                 }
             }
         }
+
+        [RelayCommand]
+        private void DeleteTransaction()
+        {
+            // Do not delete the first transaction (opening balance)
+            if (SelectedTransactionIndex <= 0) return;
+
+            // Delete the selected transaction
+            SelectedAccountTransactions.RemoveAt(SelectedTransactionIndex);
+        }
     }
 }
