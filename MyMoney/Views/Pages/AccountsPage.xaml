@@ -42,6 +42,17 @@
         <StackPanel Grid.Column="1" Margin="8,0,0,0">
             <ui:Card>
                 <ui:ListView ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" SelectedItem="{Binding ViewModel.SelectedTransaction, Mode=TwoWay}" SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}">
+                    <ui:ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
+                        </ContextMenu>
+                    </ui:ListView.ContextMenu>
+
+                    <ui:ListView.InputBindings>
+                        <KeyBinding 
+                            Key="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
+                    </ui:ListView.InputBindings>
+                    
                     <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:Transaction}">
                             <Grid>

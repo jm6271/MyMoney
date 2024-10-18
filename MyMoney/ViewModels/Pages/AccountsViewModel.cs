@@ -214,5 +214,32 @@ namespace MyMoney.ViewModels.Pages
                 }
             }
         }
+
+        [RelayCommand]
+        private async Task DeleteTransaction()
+        {
+            // Do not delete the first transaction (opening balance)
+            if (SelectedTransactionIndex <= 0) return;
+
+            // show a message box
+            var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+            {
+                Title = "Delete Transaction?",
+                Content = "Are you sure you want to delete the selected transaction?",
+                IsPrimaryButtonEnabled = true,
+                PrimaryButtonText = "Yes",
+                CloseButtonText = "No"
+            };
+
+            var result = await uiMessageBox.ShowDialogAsync();
+
+            if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
+
+            // Delete the selected transaction
+            SelectedAccountTransactions.RemoveAt(SelectedTransactionIndex);
+
+            // Apply changes to database
+            SaveAccountsToDatabase();
+        }
     }
 }
