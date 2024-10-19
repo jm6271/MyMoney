@@ -15,6 +15,8 @@ namespace MyMoney.ViewModels.Pages
         public ObservableCollection<Account> Accounts { get; set; } = [];
         public ObservableCollection<Transaction> SelectedAccountTransactions => SelectedAccount?.Transactions ?? new ObservableCollection<Transaction>();
 
+        public ObservableCollection<string> CategoryNames { get; set; } = [];
+
         public ICommand AddNewAccountButtonClickCommand { get; private set; }
         public ICommand AddTransactionButtonClickCommand { get; private set; }
 
@@ -67,6 +69,22 @@ namespace MyMoney.ViewModels.Pages
                     account.Transactions[0].Category = "";
 
                     Accounts.Add(account);
+                }
+
+                // load the category names from the database
+                var incomeCollection = db.GetCollection<BudgetIncomeItem>("BudgetIncomeItems");
+                var expenseCollection = db.GetCollection<BudgetExpenseItem>("BudgetExpenseItems");
+
+                // load the income items collection
+                for (int i = 1; i <= incomeCollection.Count(); i++)
+                {
+                    CategoryNames.Add(incomeCollection.FindById(i).Category);
+                }
+
+                // Load the expense items collection
+                for (int i = 1; i <= expenseCollection.Count(); i++)
+                {
+                    CategoryNames.Add(expenseCollection.FindById(i).Category);
                 }
             }
 

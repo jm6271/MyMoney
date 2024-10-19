@@ -138,7 +138,7 @@
                 <Label Grid.Row="0" Grid.Column="3" Margin="4,0,0,0">Spend</Label>
                 <Label Grid.Row="0" Grid.Column="4" Margin="4,0,0,0">Receive</Label>
 
-                <ui:TextBox Grid.Row="3" Grid.Column="1" Margin="4,0,4,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionCategory}"/>
+                <ComboBox Grid.Row="3" Grid.Column="1" Margin="4,0,4,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionCategory}" ItemsSource="{Binding ViewModel.CategoryNames}"/>
                 <ui:TextBox Grid.Row="3" Grid.Column="2" Margin="4,0,4,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionMemo}"/>
                 <ui:TextBox x:Name="txtSpend" Grid.Row="1" Grid.Column="3" Margin="4,0,4,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionSpend.Value}"/>
                 <ui:TextBox Grid.Row="1" Grid.Column="4" Margin="4,0,0,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionReceive.Value}"/>
