@@ -165,6 +165,7 @@ namespace MyMoney.ViewModels.Pages
         private void DeleteIncomeItem()
         {
             IncomeLineItems.RemoveAt(IncomeItemsSelectedIndex);
+            UpdateListViewTotals();
         }
 
         [RelayCommand]
@@ -194,6 +195,7 @@ namespace MyMoney.ViewModels.Pages
         private void DeleteExpenseItem()
         {
             ExpenseLineItems.RemoveAt(ExpenseItemsSelectedIndex);
+            UpdateListViewTotals();
         }
     }
 }
