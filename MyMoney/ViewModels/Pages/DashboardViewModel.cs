@@ -6,7 +6,7 @@ namespace MyMoney.ViewModels.Pages
 {
     public partial class DashboardViewModel : ObservableObject
     {
-        public ObservableCollection<Account> Accounts { get; set; } = [];
+        public ObservableCollection<AccountDashboardDisplayItem> Accounts { get; set; } = [];
 
         public DashboardViewModel() 
         {
@@ -20,7 +20,9 @@ namespace MyMoney.ViewModels.Pages
                 {
                     var account = AccountsList.FindById(i);
 
-                    Accounts.Add(account);
+                    // Convert to an AccountDashboardDisplayItem and add to accounts list
+
+                    Accounts.Add(new(account));
                 }
             }
         }
