@@ -45,8 +45,35 @@
                 <ui:Card>
                     <StackPanel>
                         <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Income</ui:TextBlock>
-                        <ui:ListView>
-                            
+                        <ui:ListView ItemsSource="{Binding ViewModel.BudgetReportIncomeItems}">
+                            <ListView.Resources>
+                                <Style TargetType="{x:Type GridViewColumnHeader}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                </Style>
+                            </ListView.Resources>
+                            <ui:ListView.View>
+                                <ui:GridView>
+                                    <GridViewColumn Header="Category" Width="120" DisplayMemberBinding="{Binding Category}" />
+                                    <GridViewColumn Header="Budgeted" Width="100" DisplayMemberBinding="{Binding Budgeted}" />
+                                    <GridViewColumn Header="Actual" Width="100" DisplayMemberBinding="{Binding Actual}"/>
+                                </ui:GridView>
+                            </ui:ListView.View>
+                        </ui:ListView>
+
+                        <ui:TextBlock FontWeight="SemiBold" Margin="0,12,0,8">Expenses</ui:TextBlock>
+                        <ui:ListView ItemsSource="{Binding ViewModel.BudgetReportExpenseItems}">
+                            <ListView.Resources>
+                                <Style TargetType="{x:Type GridViewColumnHeader}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                </Style>
+                            </ListView.Resources>
+                            <ui:ListView.View>
+                                <ui:GridView>
+                                    <GridViewColumn Header="Category" Width="120" DisplayMemberBinding="{Binding Category}" />
+                                    <GridViewColumn Header="Budgeted" Width="100" DisplayMemberBinding="{Binding Budgeted}" />
+                                    <GridViewColumn Header="Actual" Width="100" DisplayMemberBinding="{Binding Actual}"/>
+                                </ui:GridView>
+                            </ui:ListView.View>
                         </ui:ListView>
                     </StackPanel>
                 </ui:Card>
@@ -57,7 +84,7 @@
                 <ui:Card>
                     <ui:ListView ItemsSource="{Binding ViewModel.Accounts}">
                         <ui:ListView.ItemTemplate>
-                            <DataTemplate DataType="{x:Type models:Account}">
+                            <DataTemplate DataType="{x:Type models:AccountDashboardDisplayItem}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition/>

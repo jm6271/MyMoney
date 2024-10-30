@@ -7,6 +7,8 @@ namespace MyMoney.ViewModels.Pages
     public partial class DashboardViewModel : ObservableObject
     {
         public ObservableCollection<AccountDashboardDisplayItem> Accounts { get; set; } = [];
+        public ObservableCollection<BudgetReportItem> BudgetReportIncomeItems { get; set; } = [];
+        public ObservableCollection<BudgetReportItem> BudgetReportExpenseItems { get; set; } = [];
 
         public DashboardViewModel() 
         {
