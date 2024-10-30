@@ -92,6 +92,11 @@ namespace MyMoney.ViewModels.Pages
 
                     itm.Actual = new(Actual);
 
+                    if (Expense)
+                        itm.Remaining = itm.Budgeted - itm.Actual;
+                    else
+                        itm.Remaining = new(InvertSign((itm.Budgeted - itm.Actual).Value));
+
                     result.Add(itm);
                 }
             }
@@ -103,6 +108,15 @@ namespace MyMoney.ViewModels.Pages
         {
             DateTime currentDate = DateTime.Now;
             return date.Year == currentDate.Year && date.Month == currentDate.Month;
+        }
+
+        private decimal InvertSign(decimal amount)
+        {
+            if (amount < 0)
+                return Math.Abs(amount);
+            var temp = amount;
+            amount -= temp * 2;
+            return amount;
         }
 
 

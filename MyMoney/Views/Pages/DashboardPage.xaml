@@ -36,13 +36,13 @@
 
         <Grid Margin="0,24,0,0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="2*"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0" Margin="0,0,8,0">
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,12">Budget Report</ui:TextBlock>
-                <ui:Card>
+                <ui:Card Margin="0,0,0,24">
                     <StackPanel>
                         <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Income</ui:TextBlock>
                         <ui:ListView ItemsSource="{Binding ViewModel.BudgetReportIncomeItems}">
@@ -53,9 +53,10 @@
                             </ListView.Resources>
                             <ui:ListView.View>
                                 <ui:GridView>
-                                    <GridViewColumn Header="Category" Width="120" DisplayMemberBinding="{Binding Category}" />
+                                    <GridViewColumn Header="Category" Width="200" DisplayMemberBinding="{Binding Category}" />
                                     <GridViewColumn Header="Budgeted" Width="100" DisplayMemberBinding="{Binding Budgeted}" />
                                     <GridViewColumn Header="Actual" Width="100" DisplayMemberBinding="{Binding Actual}"/>
+                                    <GridViewColumn Header="Difference" Width="100" DisplayMemberBinding="{Binding Remaining}"/>
                                 </ui:GridView>
                             </ui:ListView.View>
                         </ui:ListView>
@@ -69,9 +70,10 @@
                             </ListView.Resources>
                             <ui:ListView.View>
                                 <ui:GridView>
-                                    <GridViewColumn Header="Category" Width="120" DisplayMemberBinding="{Binding Category}" />
+                                    <GridViewColumn Header="Category" Width="200" DisplayMemberBinding="{Binding Category}" />
                                     <GridViewColumn Header="Budgeted" Width="100" DisplayMemberBinding="{Binding Budgeted}" />
                                     <GridViewColumn Header="Actual" Width="100" DisplayMemberBinding="{Binding Actual}"/>
+                                    <GridViewColumn Header="Difference" Width="100" DisplayMemberBinding="{Binding Remaining}"/>
                                 </ui:GridView>
                             </ui:ListView.View>
                         </ui:ListView>
