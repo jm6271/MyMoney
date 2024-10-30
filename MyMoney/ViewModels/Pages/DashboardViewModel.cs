@@ -12,21 +12,97 @@ namespace MyMoney.ViewModels.Pages
 
         public DashboardViewModel() 
         {
+        }
+
+        private void CalculateBudgetReport()
+        {
+            // clear the current report
+            BudgetReportIncomeItems.Clear();
+            BudgetReportExpenseItems.Clear();
+
+            var incomeItems = CalculateReportItems("BudgetIncomeItems", false);
+            var expenseItems = CalculateReportItems("BudgetExpenseItems", true);
+
+            foreach (var item in incomeItems)
+            {
+                BudgetReportIncomeItems.Add(item);
+            }
+
+            foreach (var item in expenseItems)
+            {
+                BudgetReportExpenseItems.Add(item);
+            }
+        }
+
+        private List<BudgetReportItem> CalculateReportItems(string itemsCollectionName = "BudgetIncomeItems", bool Expense = false)
+        {
+            List<BudgetReportItem> result = new();
+
             using (var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
             {
-                // load the accounts list
-                var AccountsList = db.GetCollection<Account>("Accounts");
+                var BudgetItemsList = db.GetCollection<BudgetIncomeItem>(itemsCollectionName);
 
-                // iterate over the accounts in the database and add them to the Accounts collection
-                for (int i = 1; i <= AccountsList.Count(); i++)
+
+                // load the items collection
+                for (int i = 1; i <= BudgetItemsList.Count(); i++)
                 {
-                    var account = AccountsList.FindById(i);
+                    var BudgetItem = BudgetItemsList.FindById(i);
 
-                    // Convert to an AccountDashboardDisplayItem and add to accounts list
+                    BudgetReportItem itm = new();
+                    itm.Category = BudgetItem.Category;
+                    itm.Budgeted = BudgetItem.Amount;
 
-                    Accounts.Add(new(account));
+                    // calculate how much was actually spen out of this category
+
+                    // Load the accounts and search the transactions since the beginning of the month
+                    var AccountsList = db.GetCollection<Account>("Accounts");
+                    List<Account> accounts = new();
+
+                    // iterate over the accounts in the database and add them to the Accounts collection
+                    for (int j = 1; j <= AccountsList.Count(); j++)
+                    {
+                        var account = AccountsList.FindById(j);
+
+                        accounts.Add(account);
+                    }
+
+                    // search through each account for transactions in this category that happened this month
+
+                    // Total for this category so far
+                    decimal Actual = 0m;
+
+                    foreach (var account in accounts)
+                    {
+                        foreach (var transaction in account.Transactions)
+                        {
+                            if (transaction.Category == itm.Category && IsDateInCurrentMonth(transaction.Date))
+                            {
+                                if (Expense)
+                                {
+                                    Actual += transaction.Spend.Value;
+                                }
+                                else
+                                {
+                                    Actual += transaction.Receive.Value;
+                                }
+                                
+                            }
+                        }
+                    }
+
+                    itm.Actual = new(Actual);
+
+                    result.Add(itm);
                 }
             }
+
+            return result;
+        }
+
+        private bool IsDateInCurrentMonth(DateTime date)
+        {
+            DateTime currentDate = DateTime.Now;
+            return date.Year == currentDate.Year && date.Month == currentDate.Month;
         }
 
 
@@ -50,6 +126,8 @@ namespace MyMoney.ViewModels.Pages
                     Accounts.Add(new(account));
                 }
             }
+
+            CalculateBudgetReport();
         }
     }
 }
