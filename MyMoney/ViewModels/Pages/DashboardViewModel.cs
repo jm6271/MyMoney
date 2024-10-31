@@ -32,6 +32,32 @@ namespace MyMoney.ViewModels.Pages
             {
                 BudgetReportExpenseItems.Add(item);
             }
+
+            // Add an item to the income list showing the total income
+            BudgetReportItem incomeTotal = new();
+
+            foreach (var item in BudgetReportIncomeItems)
+            {
+                incomeTotal.Actual += item.Actual;
+                incomeTotal.Budgeted += item.Budgeted;
+                incomeTotal.Remaining += item.Remaining;
+            }
+
+            incomeTotal.Category = "Total";
+            BudgetReportIncomeItems.Add(incomeTotal);
+
+            // Add an item to the expense list showing the total expenses
+            BudgetReportItem expenseTotal = new();
+
+            foreach (var item in BudgetReportExpenseItems)
+            {
+                expenseTotal.Actual += item.Actual;
+                expenseTotal.Budgeted += item.Budgeted;
+                expenseTotal.Remaining += item.Remaining;
+            }
+
+            expenseTotal.Category = "Total";
+            BudgetReportExpenseItems.Add(expenseTotal);
         }
 
         private List<BudgetReportItem> CalculateReportItems(string itemsCollectionName = "BudgetIncomeItems", bool Expense = false)
