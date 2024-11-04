@@ -14,7 +14,8 @@
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    xmlns:models="clr-namespace:MyMoney.Models" Loaded="Page_Loaded">
 
     <StackPanel>
         <Border Height="200" CornerRadius="8">
@@ -32,6 +33,75 @@
                 <ui:Image Grid.Column="1" Source="pack://application:,,,/Assets/MyMoney-Banner.png"/>
             </Grid>
         </Border>
+
+        <Grid Margin="0,24,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,12">Budget Report</ui:TextBlock>
+                <ui:Card Margin="0,0,0,24">
+                    <StackPanel>
+                        <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Income</ui:TextBlock>
+                        <ui:ListView ItemsSource="{Binding ViewModel.BudgetReportIncomeItems}">
+                            <ListView.Resources>
+                                <Style TargetType="{x:Type GridViewColumnHeader}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                </Style>
+                            </ListView.Resources>
+                            <ui:ListView.View>
+                                <ui:GridView>
+                                    <GridViewColumn Header="Category" Width="200" DisplayMemberBinding="{Binding Category}" />
+                                    <GridViewColumn Header="Budgeted" Width="100" DisplayMemberBinding="{Binding Budgeted}" />
+                                    <GridViewColumn Header="Actual" Width="100" DisplayMemberBinding="{Binding Actual}"/>
+                                    <GridViewColumn Header="Difference" Width="100" DisplayMemberBinding="{Binding Remaining}"/>
+                                </ui:GridView>
+                            </ui:ListView.View>
+                        </ui:ListView>
+
+                        <ui:TextBlock FontWeight="SemiBold" Margin="0,12,0,8">Expenses</ui:TextBlock>
+                        <ui:ListView ItemsSource="{Binding ViewModel.BudgetReportExpenseItems}">
+                            <ListView.Resources>
+                                <Style TargetType="{x:Type GridViewColumnHeader}">
+                                    <Setter Property="HorizontalContentAlignment" Value="Left" />
+                                </Style>
+                            </ListView.Resources>
+                            <ui:ListView.View>
+                                <ui:GridView>
+                                    <GridViewColumn Header="Category" Width="200" DisplayMemberBinding="{Binding Category}" />
+                                    <GridViewColumn Header="Budgeted" Width="100" DisplayMemberBinding="{Binding Budgeted}" />
+                                    <GridViewColumn Header="Actual" Width="100" DisplayMemberBinding="{Binding Actual}"/>
+                                    <GridViewColumn Header="Difference" Width="100" DisplayMemberBinding="{Binding Remaining}"/>
+                                </ui:GridView>
+                            </ui:ListView.View>
+                        </ui:ListView>
+                    </StackPanel>
+                </ui:Card>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Margin="11,0,0,0">
+                <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,12">Accounts</ui:TextBlock>
+                <ui:Card>
+                    <ui:ListView ItemsSource="{Binding ViewModel.Accounts}">
+                        <ui:ListView.ItemTemplate>
+                            <DataTemplate DataType="{x:Type models:AccountDashboardDisplayItem}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Text="{Binding AccountName}" Margin="5,5,0,5" Grid.Column="0"/>
+                                    <TextBlock Text="{Binding Total}" Margin="0,5,5,5" Grid.Column="1"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ui:ListView.ItemTemplate>
+                    </ui:ListView>
+                </ui:Card>
+            </StackPanel>
+        </Grid>
     </StackPanel>
     
 </Page>

@@ -41,7 +41,10 @@
         // Overload ToString() to return a formatted string
         public override string ToString()
         {
-            return $"${Value:F2}";
+            if (Value >= 0)
+                return $"${Value:F2}";
+            else
+                return $"(${Math.Abs(Value):F2})";
         }
     }
 }
