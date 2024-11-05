@@ -24,7 +24,7 @@ namespace MyMoney.ViewModels.Pages
         private void InitializeViewModel()
         {
             CurrentTheme = ApplicationThemeManager.GetAppTheme();
-            AppVersion = $"UiDesktopApp1 - {GetAssemblyVersion()}";
+            AppVersion = $"MyMoney - {GetAssemblyVersion()}";
 
             _isInitialized = true;
         }
