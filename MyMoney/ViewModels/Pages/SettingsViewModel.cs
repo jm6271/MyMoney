@@ -1,4 +1,6 @@
-﻿using Wpf.Ui.Appearance;
+﻿using LiteDB;
+using MyMoney.Models;
+using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.ViewModels.Pages
@@ -57,6 +59,45 @@ namespace MyMoney.ViewModels.Pages
                     CurrentTheme = ApplicationTheme.Dark;
 
                     break;
+            }
+
+            SaveTheme();
+        }
+
+        private void SaveTheme()
+        {
+            using (var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
+            {
+                var SettingsCollection = db.GetCollection<SettingsModel>("AppSettings");
+                bool ThemeSaved = false;
+
+                for (int i = 1; i <= SettingsCollection.Count(); i++)
+                {
+                    SettingsModel setting = SettingsCollection.FindById(i);
+                    if (setting.SettingsKey == "AppTheme")
+                    {
+                        if (CurrentTheme == ApplicationTheme.Light)
+                            setting.SettingsValue = "Light";
+                        else if (CurrentTheme == ApplicationTheme.Dark)
+                            setting.SettingsValue = "Dark";
+                        ThemeSaved = true;
+                        break;
+                    }
+                }
+
+                if (!ThemeSaved)
+                {
+                    // Theme did not exist in the database before, we'll have to create it
+                    SettingsModel theme = new();
+                    theme.SettingsKey = "AppTheme";
+
+                    if (CurrentTheme == ApplicationTheme.Light)
+                        theme.SettingsValue = "Light";
+                    else if (CurrentTheme == ApplicationTheme.Dark)
+                        theme.SettingsValue = "Dark";
+
+                    SettingsCollection.Insert(theme);
+                }
             }
         }
     }

@@ -1,4 +1,6 @@
-﻿using MyMoney.ViewModels.Windows;
+﻿using LiteDB;
+using MyMoney.Models;
+using MyMoney.ViewModels.Windows;
 using Wpf.Ui;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -27,6 +29,26 @@ namespace MyMoney.Views.Windows
             navigationService.SetNavigationControl(RootNavigation);
 
             contentDialogService.SetDialogHost(RootContentDialog);
+
+            // Load the theme from settings
+            using (var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
+            {
+                var SettingsCollection = db.GetCollection<SettingsModel>("AppSettings");
+
+                for (int i = 1; i <= SettingsCollection.Count(); i++)
+                {
+                    SettingsModel setting = SettingsCollection.FindById(i);
+
+                    if (setting.SettingsKey == "AppTheme")
+                    {
+                        if (setting.SettingsValue == "Light")
+                            ApplicationThemeManager.Apply(ApplicationTheme.Light);
+                        else if (setting.SettingsValue == "Dark")
+                            ApplicationThemeManager.Apply(ApplicationTheme.Dark);
+                        break;
+                    }
+                }
+            }
         }
 
         #region INavigationWindow methods
