@@ -45,9 +45,14 @@
         </StackPanel>
 
 
-        <StackPanel Grid.Column="1" Margin="8,0,0,0">
-            <ui:Card>
-                <ui:ListView ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" SelectedItem="{Binding ViewModel.SelectedTransaction, Mode=TwoWay}" SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}">
+        <Grid Grid.Column="1" Margin="8,0,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <ui:Card Grid.Row="0" VerticalAlignment="Stretch">
+                <ui:ListView x:Name="TransactionsList" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" SelectedItem="{Binding ViewModel.SelectedTransaction, Mode=TwoWay}" SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}">
                     <ui:ListView.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
@@ -58,7 +63,7 @@
                         <KeyBinding 
                             Key="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
                     </ui:ListView.InputBindings>
-                    
+
                     <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:Transaction}">
                             <Grid>
@@ -113,45 +118,49 @@
                 </ui:ListView>
             </ui:Card>
 
-            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Label Width="250">Ending Balance:</Label>
-                <Label Content="{Binding ViewModel.SelectedAccount.Total}" Margin="0,0,24,0"/>
-            </WrapPanel>
 
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+            <StackPanel Grid.Row="1" Margin="0,0,0,24">
+                <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Width="250">Ending Balance:</Label>
+                    <Label Content="{Binding ViewModel.SelectedAccount.Total}" Margin="0,0,24,0"/>
+                </WrapPanel>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="125"/>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="100"/>
-                </Grid.ColumnDefinitions>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                <Label Grid.Row="0" Grid.Column="0">Date</Label>
-                <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="4,0,0,0">Payee</Label>
-                <DatePicker Grid.Row="1" Grid.Column="0" IsTodayHighlighted="True" Margin="0,0,4,0" SelectedDateFormat="Short" IsEnabled="{Binding ViewModel.IsInputEnabled}" SelectedDate="{Binding ViewModel.NewTransactionDate}"/>
-                <ui:TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="4,0,4,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionPayee}"/>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="125"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="100"/>
+                        <ColumnDefinition Width="100"/>
+                    </Grid.ColumnDefinitions>
 
-                <Label Grid.Row="2" Grid.Column="1" Margin="4,0,0,0">Category</Label>
-                <Label Grid.Row="2" Grid.Column="2" Margin="4,0,0,0">Memo</Label>
-                <Label Grid.Row="0" Grid.Column="3" Margin="4,0,0,0">Spend</Label>
-                <Label Grid.Row="0" Grid.Column="4" Margin="4,0,0,0">Receive</Label>
+                    <Label Grid.Row="0" Grid.Column="0">Date</Label>
+                    <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="4,0,0,0">Payee</Label>
+                    <DatePicker Grid.Row="1" Grid.Column="0" IsTodayHighlighted="True" Margin="0,0,4,0" SelectedDateFormat="Short" IsEnabled="{Binding ViewModel.IsInputEnabled}" SelectedDate="{Binding ViewModel.NewTransactionDate}"/>
+                    <ui:TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Margin="4,0,4,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionPayee}"/>
 
-                <ComboBox Grid.Row="3" Grid.Column="1" Margin="4,0,4,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionCategory}" ItemsSource="{Binding ViewModel.CategoryNames}"/>
-                <ui:TextBox Grid.Row="3" Grid.Column="2" Margin="4,0,4,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionMemo}"/>
-                <ui:TextBox x:Name="txtSpend" Grid.Row="1" Grid.Column="3" Margin="4,0,4,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionSpend.Value}"/>
-                <ui:TextBox Grid.Row="1" Grid.Column="4" Margin="4,0,0,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionReceive.Value}"/>
+                    <Label Grid.Row="2" Grid.Column="1" Margin="4,0,0,0">Category</Label>
+                    <Label Grid.Row="2" Grid.Column="2" Margin="4,0,0,0">Memo</Label>
+                    <Label Grid.Row="0" Grid.Column="3" Margin="4,0,0,0">Spend</Label>
+                    <Label Grid.Row="0" Grid.Column="4" Margin="4,0,0,0">Receive</Label>
 
-                <ui:Button Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="4,0,0,0" VerticalAlignment="Stretch" IsEnabled="{Binding ViewModel.IsInputEnabled}" Command="{Binding ViewModel.AddTransactionButtonClickCommand}" Content="{Binding ViewModel.AddTransactionButtonText}"/>
-            </Grid>
-            
-        </StackPanel>
+                    <ComboBox Grid.Row="3" Grid.Column="1" Margin="4,0,4,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionCategory}" ItemsSource="{Binding ViewModel.CategoryNames}"/>
+                    <ui:TextBox Grid.Row="3" Grid.Column="2" Margin="4,0,4,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionMemo}"/>
+                    <ui:TextBox x:Name="txtSpend" Grid.Row="1" Grid.Column="3" Margin="4,0,4,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionSpend.Value}"/>
+                    <ui:TextBox Grid.Row="1" Grid.Column="4" Margin="4,0,0,0" IsEnabled="{Binding ViewModel.IsInputEnabled}" Text="{Binding ViewModel.NewTransactionReceive.Value}"/>
+
+                    <ui:Button Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="4,0,0,0" VerticalAlignment="Stretch" IsEnabled="{Binding ViewModel.IsInputEnabled}" Click="AddTransaction_Click" Content="{Binding ViewModel.AddTransactionButtonText}"/>
+                </Grid>
+            </StackPanel>
+
+
+        </Grid>
     </Grid>
 </Page>
