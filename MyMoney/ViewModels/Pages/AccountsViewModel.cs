@@ -42,6 +42,9 @@ namespace MyMoney.ViewModels.Pages
         private Account? _SelectedAccount;
 
         [ObservableProperty]
+        private int _SelectedAccountIndex = 0;
+
+        [ObservableProperty]
         private Transaction? _SelectedTransaction;
 
         [ObservableProperty]
@@ -283,6 +286,34 @@ namespace MyMoney.ViewModels.Pages
                     CategoryNames.Add(expenseCollection.FindById(i).Category);
                 }
             }
+        }
+
+        [RelayCommand]
+        private async Task DeleteAccount()
+        {
+            if (SelectedAccountIndex < 0) return;
+
+            // Show message box asking user if they really want to delete the account
+            // show a message box
+            var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+            {
+                Title = "Delete Account?",
+                Content = "Are you sure you want to delete the selected Account?\nTHIS CANNOT BE UNDONE!",
+                IsPrimaryButtonEnabled = false,
+                IsSecondaryButtonEnabled = true,
+                SecondaryButtonText = "Yes",
+                CloseButtonText = "No",
+                CloseButtonAppearance = Wpf.Ui.Controls.ControlAppearance.Primary
+            };
+
+            var result = await uiMessageBox.ShowDialogAsync();
+
+            if (result != Wpf.Ui.Controls.MessageBoxResult.Secondary) return; // User clicked no
+
+            Accounts.RemoveAt(SelectedAccountIndex);
+
+            // save changes to database
+            SaveAccountsToDatabase();
         }
     }
 }
