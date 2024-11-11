@@ -26,12 +26,18 @@
 
         <StackPanel>
             <ui:Card Grid.Column="0" VerticalAlignment="Top" Margin="0,0,8,8">
-                <ui:ListView ItemsSource="{Binding ViewModel.Accounts}" SelectedItem="{Binding ViewModel.SelectedAccount, Mode=TwoWay}">
+                <ui:ListView ItemsSource="{Binding ViewModel.Accounts}" SelectedItem="{Binding ViewModel.SelectedAccount, Mode=TwoWay}" SelectedIndex="{Binding ViewModel.SelectedAccountIndex}">
                     <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:Account}">
                             <TextBlock Text="{Binding AccountName}" Margin="0,5,0,5"/>
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
+
+                    <ui:ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteAccountCommand}"/>
+                        </ContextMenu>
+                    </ui:ListView.ContextMenu>
                 </ui:ListView>
             </ui:Card>
 

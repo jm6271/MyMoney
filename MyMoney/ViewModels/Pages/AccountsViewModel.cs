@@ -42,6 +42,9 @@ namespace MyMoney.ViewModels.Pages
         private Account? _SelectedAccount;
 
         [ObservableProperty]
+        private int _SelectedAccountIndex = 0;
+
+        [ObservableProperty]
         private Transaction? _SelectedTransaction;
 
         [ObservableProperty]
@@ -283,6 +286,17 @@ namespace MyMoney.ViewModels.Pages
                     CategoryNames.Add(expenseCollection.FindById(i).Category);
                 }
             }
+        }
+
+        [RelayCommand]
+        private void DeleteAccount()
+        {
+            if (SelectedAccountIndex < 0) return;
+
+            Accounts.RemoveAt(SelectedAccountIndex);
+
+            // save changes to database
+            SaveAccountsToDatabase();
         }
     }
 }
