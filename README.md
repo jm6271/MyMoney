@@ -26,3 +26,14 @@ Contributions are welcome! Feel free to open issues or submit pull requests to i
 
 ## License
 This project is licensed under the MIT License. See the LICENSE.txt file for more details.
+
+## Screenshots
+
+### Home Page
+![Home page](Screenshots/home_page.jpg)
+
+### Accounts Page
+![Accounts page](Screenshots/accounts_page.jpg)
+
+### Budget Page
+![Budget page](Screenshots/budget_page.jpg)
