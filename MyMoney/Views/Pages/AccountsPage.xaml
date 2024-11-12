@@ -124,16 +124,6 @@
                     <Label Width="250">Ending Balance:</Label>
                     <Label Content="{Binding ViewModel.SelectedAccount.Total}" Margin="0,0,24,0"/>
                 </WrapPanel>
-
-<<<<<<< HEAD
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="135"/>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="2*"/>
-                    <ColumnDefinition Width="100"/>
-                    <ColumnDefinition Width="100"/>
-                </Grid.ColumnDefinitions>
-=======
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -141,10 +131,9 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
->>>>>>> f0dbcbc8f134f07628b07bc8bc55ebd5f64cc87e
 
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="125"/>
+                        <ColumnDefinition Width="135"/>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="100"/>
