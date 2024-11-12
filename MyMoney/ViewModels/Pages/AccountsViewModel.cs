@@ -73,28 +73,37 @@ namespace MyMoney.ViewModels.Pages
 
                     Accounts.Add(account);
                 }
-
-                // load the category names from the database
-                var incomeCollection = db.GetCollection<BudgetIncomeItem>("BudgetIncomeItems");
-                var expenseCollection = db.GetCollection<BudgetExpenseItem>("BudgetExpenseItems");
-
-                // load the income items collection
-                for (int i = 1; i <= incomeCollection.Count(); i++)
-                {
-                    CategoryNames.Add(incomeCollection.FindById(i).Category);
-                }
-
-                // Load the expense items collection
-                for (int i = 1; i <= expenseCollection.Count(); i++)
-                {
-                    CategoryNames.Add(expenseCollection.FindById(i).Category);
-                }
             }
 
             AddNewAccountButtonClickCommand = new RelayCommand(BttnNewAccount_Click);
             AddTransactionButtonClickCommand = new RelayCommand(BttnNewTransaction_Click);
+
+            LoadCategoryNames();
         }
 
+        private void LoadCategoryNames()
+        {
+            CategoryNames.Clear();
+
+            using var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath());
+
+            // load the category names from the database
+            var incomeCollection = db.GetCollection<BudgetIncomeItem>("BudgetIncomeItems");
+            var expenseCollection = db.GetCollection<BudgetExpenseItem>("BudgetExpenseItems");
+
+            // load the income items collection
+            for (int i = 1; i <= incomeCollection.Count(); i++)
+            {
+                CategoryNames.Add(incomeCollection.FindById(i).Category);
+            }
+
+            // Load the expense items collection
+            for (int i = 1; i <= expenseCollection.Count(); i++)
+            {
+                CategoryNames.Add(expenseCollection.FindById(i).Category);
+            }
+
+        }
 
         private void BttnNewAccount_Click()
         {
@@ -144,7 +153,7 @@ namespace MyMoney.ViewModels.Pages
 
                 decimal previousBalance = SelectedAccountTransactions[editTransactionIndex - 1].Balance.Value;
                 decimal newBalance = previousBalance - NewTransactionSpend.Value + NewTransactionReceive.Value;
-                
+
                 // Create the transaction object
                 Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, new(NewTransactionSpend.Value), new(NewTransactionReceive.Value), new(newBalance), NewTransactionMemo);
 
@@ -266,26 +275,7 @@ namespace MyMoney.ViewModels.Pages
         public void OnPageNavigatedTo()
         {
             // Reload the categories from the database
-            CategoryNames.Clear();
-
-            using (var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
-            {
-                // load the category names from the database
-                var incomeCollection = db.GetCollection<BudgetIncomeItem>("BudgetIncomeItems");
-                var expenseCollection = db.GetCollection<BudgetExpenseItem>("BudgetExpenseItems");
-
-                // load the income items collection
-                for (int i = 1; i <= incomeCollection.Count(); i++)
-                {
-                    CategoryNames.Add(incomeCollection.FindById(i).Category);
-                }
-
-                // Load the expense items collection
-                for (int i = 1; i <= expenseCollection.Count(); i++)
-                {
-                    CategoryNames.Add(expenseCollection.FindById(i).Category);
-                }
-            }
+            LoadCategoryNames();
         }
 
         [RelayCommand]
