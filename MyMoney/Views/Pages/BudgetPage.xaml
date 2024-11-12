@@ -34,7 +34,12 @@
                         <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
                     </ContextMenu>
                 </ui:ListView.ContextMenu>
-                
+
+                <ui:ListView.InputBindings>
+                    <KeyBinding 
+                            Key="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
+                </ui:ListView.InputBindings>
+
                 <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:BudgetIncomeItem}">
                             <Grid>
@@ -79,7 +84,11 @@
                         <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteExpenseItemCommand}"/>
                     </ContextMenu>
                 </ui:ListView.ContextMenu>
-                
+
+                <ui:ListView.InputBindings>
+                    <KeyBinding Key="Delete" Command="{Binding ViewModel.DeleteExpenseItemCommand}"/>
+                </ui:ListView.InputBindings>
+
                 <ui:ListView.ItemTemplate>
                     <DataTemplate DataType="{x:Type models:BudgetExpenseItem}">
                         <Grid>
