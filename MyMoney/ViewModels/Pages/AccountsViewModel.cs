@@ -302,6 +302,12 @@ namespace MyMoney.ViewModels.Pages
 
             Accounts.RemoveAt(SelectedAccountIndex);
 
+            // Reset the IDs on the remaining accounts so they're in consecutive order
+            for (int i = 0; i < Accounts.Count; i++)
+            {
+                Accounts[i].Id = i + 1; // ID starts with 1, and loop counter with 0
+            }
+
             // save changes to database
             SaveAccountsToDatabase();
         }
