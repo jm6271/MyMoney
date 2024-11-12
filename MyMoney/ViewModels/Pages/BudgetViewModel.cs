@@ -192,8 +192,23 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private void DeleteExpenseItem()
+        private async Task DeleteExpenseItem()
         {
+            // Show message box asking user if they really want to delete the category
+            var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+            {
+                Title = "Delete Category?",
+                Content = "Are you sure you want to delete the selected Category?",
+                IsPrimaryButtonEnabled = false,
+                IsSecondaryButtonEnabled = true,
+                SecondaryButtonText = "Yes",
+                CloseButtonText = "No",
+                CloseButtonAppearance = Wpf.Ui.Controls.ControlAppearance.Primary
+            };
+
+            var result = await uiMessageBox.ShowDialogAsync();
+
+            if (result != Wpf.Ui.Controls.MessageBoxResult.Secondary) return; // User clicked no
             ExpenseLineItems.RemoveAt(ExpenseItemsSelectedIndex);
             UpdateListViewTotals();
         }
