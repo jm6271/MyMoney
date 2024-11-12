@@ -162,9 +162,31 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private void DeleteIncomeItem()
+        private async Task DeleteIncomeItem()
         {
+            // Show message box asking user if they really want to delete the category
+            var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+            {
+                Title = "Delete Category?",
+                Content = "Are you sure you want to delete the selected Category?",
+                IsPrimaryButtonEnabled = false,
+                IsSecondaryButtonEnabled = true,
+                SecondaryButtonText = "Yes",
+                CloseButtonText = "No",
+                CloseButtonAppearance = Wpf.Ui.Controls.ControlAppearance.Primary
+            };
+
+            var result = await uiMessageBox.ShowDialogAsync();
+
+            if (result != Wpf.Ui.Controls.MessageBoxResult.Secondary) return; // User clicked no
             IncomeLineItems.RemoveAt(IncomeItemsSelectedIndex);
+
+            // replace the id property of the remaining elements so the IDs are in a concecutive order (We have all kinds of problems when we don't do this)
+            for (int i = 0; i < IncomeLineItems.Count; i++)
+            {
+                IncomeLineItems[i].Id = i + 1;
+            }
+
             UpdateListViewTotals();
         }
 
@@ -210,6 +232,13 @@ namespace MyMoney.ViewModels.Pages
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Secondary) return; // User clicked no
             ExpenseLineItems.RemoveAt(ExpenseItemsSelectedIndex);
+
+            // replace the id property of the remaining elements so the IDs are in a concecutive order (We have all kinds of problems when we don't do this)
+            for (int i = 0; i < ExpenseLineItems.Count; i++)
+            {
+                ExpenseLineItems[i].Id = i + 1;
+            }
+
             UpdateListViewTotals();
         }
     }
