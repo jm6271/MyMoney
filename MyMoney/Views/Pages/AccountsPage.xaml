@@ -38,6 +38,11 @@
                             <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteAccountCommand}"/>
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
+
+                    <ui:ListView.InputBindings>
+                        <KeyBinding 
+                            Key="Delete" Command="{Binding ViewModel.DeleteAccountCommand}"/>
+                    </ui:ListView.InputBindings>
                 </ui:ListView>
             </ui:Card>
 
