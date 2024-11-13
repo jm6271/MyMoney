@@ -123,20 +123,21 @@
                 </ui:ListView>
             </ui:Card>
             
-            <ui:Card Margin="0,16,0,24">
-                <DockPanel>
-                    <Label DockPanel.Dock="Left">Ending Balance:</Label>
-                    <Label DockPanel.Dock="Right" Content="{Binding ViewModel.SelectedAccount.Total}" Margin="0,0,8,0" HorizontalAlignment="Right"/>
-                </DockPanel>
-            </ui:Card>
-
+            <StackPanel Grid.Row="1" Margin="0,0,0,24">
+                <ui:Card Margin="0,16,0,24">
+                    <DockPanel>
+                        <Label DockPanel.Dock="Left">Ending Balance:</Label>
+                        <Label DockPanel.Dock="Right" Content="{Binding ViewModel.SelectedAccount.Total}" Margin="0,0,8,0" HorizontalAlignment="Right"/>
+                    </DockPanel>
+                </ui:Card>
+                
                 <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="135"/>
@@ -163,9 +164,9 @@
 
                     <ui:Button Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="4,0,0,0" VerticalAlignment="Stretch" IsEnabled="{Binding ViewModel.IsInputEnabled}" Click="AddTransaction_Click" Content="{Binding ViewModel.AddTransactionButtonText}"/>
                 </Grid>
+                
+                
             </StackPanel>
-
-
         </Grid>
     </Grid>
 </Page>
