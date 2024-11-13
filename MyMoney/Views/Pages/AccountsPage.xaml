@@ -63,7 +63,7 @@
                         <KeyBinding 
                             Key="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
                     </ui:ListView.InputBindings>
-                    
+
                     <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:Transaction}">
                             <Grid>
@@ -117,13 +117,15 @@
                     </ui:ListView.ItemTemplate>
                 </ui:ListView>
             </ui:Card>
+            
+            <ui:Card Margin="0,16,0,24">
+                <DockPanel>
+                    <Label DockPanel.Dock="Left">Ending Balance:</Label>
+                    <Label DockPanel.Dock="Right" Content="{Binding ViewModel.SelectedAccount.Total}" Margin="0,0,8,0" HorizontalAlignment="Right"/>
+                </DockPanel>
+            </ui:Card>
 
-            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Label Width="250">Ending Balance:</Label>
-                <Label Content="{Binding ViewModel.SelectedAccount.Total}" Margin="0,0,24,0"/>
-            </WrapPanel>
-
-            <Grid>
+                <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
