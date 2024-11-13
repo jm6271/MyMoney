@@ -122,20 +122,21 @@
                     </ui:ListView.ItemTemplate>
                 </ui:ListView>
             </ui:Card>
+            
+            <ui:Card Margin="0,16,0,24">
+                <DockPanel>
+                    <Label DockPanel.Dock="Left">Ending Balance:</Label>
+                    <Label DockPanel.Dock="Right" Content="{Binding ViewModel.SelectedAccount.Total}" Margin="0,0,8,0" HorizontalAlignment="Right"/>
+                </DockPanel>
+            </ui:Card>
 
-
-            <StackPanel Grid.Row="1" Margin="0,0,0,24">
-                <WrapPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Label Width="250">Ending Balance:</Label>
-                    <Label Content="{Binding ViewModel.SelectedAccount.Total}" Margin="0,0,24,0"/>
-                </WrapPanel>
                 <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="135"/>
