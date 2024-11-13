@@ -56,8 +56,8 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <ui:Card Grid.Row="0" VerticalAlignment="Stretch">
-                <ui:ListView x:Name="TransactionsList" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" SelectedItem="{Binding ViewModel.SelectedTransaction, Mode=TwoWay}" SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}">
+            <ui:Card x:Name="TransactionsCard" Grid.Row="0" VerticalAlignment="Stretch">
+                <ui:ListView x:Name="TransactionsList" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" SelectedItem="{Binding ViewModel.SelectedTransaction, Mode=TwoWay}" SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}" MaxHeight="{Binding ViewModel.TransactionsMaxHeight}" VerticalAlignment="Top">
                     <ui:ListView.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>

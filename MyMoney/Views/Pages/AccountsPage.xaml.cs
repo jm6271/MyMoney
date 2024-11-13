@@ -22,6 +22,8 @@ namespace MyMoney.Views.Pages
         {
             ViewModel.OnPageNavigatedTo();
 
+            UpdateListViewMaxHeight();
+
             ScrollTransactionsToBottom();
         }
 
@@ -37,6 +39,12 @@ namespace MyMoney.Views.Pages
             TransactionsList.SelectedIndex = TransactionsList.Items.Count - 1;
             TransactionsList.ScrollIntoView(TransactionsList.SelectedItem);
             TransactionsList.SelectedIndex = -1;
+        }
+
+        private void UpdateListViewMaxHeight()
+        {
+            double cardHeight = TransactionsCard.ActualHeight;
+            ViewModel.TransactionsMaxHeight = cardHeight - 36;
         }
     }
 }
