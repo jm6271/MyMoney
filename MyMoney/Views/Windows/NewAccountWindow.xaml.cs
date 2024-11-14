@@ -33,5 +33,15 @@ namespace MyMoney.Views.Windows
         {
             TxtAccountName.Focus();
         }
+
+        private void TxtAccountName_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TxtAccountName.SelectAll();
+        }
+
+        private void txtStartingBalance_GotFocus(object sender, RoutedEventArgs e)
+        {
+            txtStartingBalance.SelectAll();
+        }
     }
 }
