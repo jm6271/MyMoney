@@ -39,8 +39,8 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <ui:Button Margin="0,0,4,0" HorizontalAlignment="Stretch" Appearance="Primary" Click="AddButton_Click">Add</ui:Button>
-            <ui:Button Margin="4,0,0,0" HorizontalAlignment="Stretch" Grid.Column="1" Click="CancelButton_Click">Cancel</ui:Button>
+            <ui:Button Margin="0,0,4,0" HorizontalAlignment="Stretch" Appearance="Primary" Click="AddButton_Click" IsDefault="True">Add</ui:Button>
+            <ui:Button Margin="4,0,0,0" HorizontalAlignment="Stretch" Grid.Column="1" Click="CancelButton_Click" IsCancel="True">Cancel</ui:Button>
         </Grid>
     </Grid>
 </ui:FluentWindow>

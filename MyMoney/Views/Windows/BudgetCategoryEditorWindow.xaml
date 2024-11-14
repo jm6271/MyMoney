@@ -18,7 +18,7 @@
         WindowCornerPreference="Round"
         WindowStartupLocation="CenterScreen" ShowInTaskbar="False" ResizeMode="NoResize" SizeToContent="Height" Topmost="True" Loaded="FluentWindow_Loaded"
         >
-
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -42,8 +42,8 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             
-            <ui:Button Margin="0,0,4,0" HorizontalAlignment="Stretch" Appearance="Primary" Click="OkButton_Click">OK</ui:Button>
-            <ui:Button Margin="4,0,0,0" HorizontalAlignment="Stretch" Grid.Column="1" Click="CancelButton_Click">Cancel</ui:Button>
+            <ui:Button Margin="0,0,4,0" HorizontalAlignment="Stretch" Appearance="Primary" Click="OkButton_Click" IsDefault="True">OK</ui:Button>
+            <ui:Button Margin="4,0,0,0" HorizontalAlignment="Stretch" Grid.Column="1" Click="CancelButton_Click" IsCancel="True">Cancel</ui:Button>
         </Grid>
     </Grid>
 
