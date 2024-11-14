@@ -18,7 +18,7 @@
         WindowCornerPreference="Round"
         WindowStartupLocation="CenterScreen" ShowInTaskbar="False" ResizeMode="NoResize" SizeToContent="Height" Topmost="True" Loaded="FluentWindow_Loaded"
         >
-
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -30,9 +30,9 @@
                 <ui:TextBlock FontTypography="Subtitle" Text="{Binding ViewModel.WindowTitle}" Margin="0,32,0,24"/>
 
                 <Label Margin="0,0,0,4">Category</Label>
-                <ui:TextBox x:Name="TxtCategory" Margin="0,4,0,8" Text="{Binding ViewModel.BudgetCategory}"/>
+                <ui:TextBox x:Name="TxtCategory" Margin="0,4,0,8" Text="{Binding ViewModel.BudgetCategory}" GotKeyboardFocus="TxtCategory_GotFocus"/>
                 <Label Margin="0,8,0,4">Amount</Label>
-                <ui:TextBox Margin="0,4,0,8" Text="{Binding ViewModel.BudgetAmount.Value}"/>
+                <ui:NumberBox x:Name="txtAmount" Margin="0,4,0,8" Value="{Binding ViewModel.BudgetAmount.Value}" GotKeyboardFocus="txtAmount_GotFocus" MaxDecimalPlaces="2"/>
             </StackPanel>
         </ui:Card>
 
@@ -42,8 +42,8 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             
-            <ui:Button Margin="0,0,4,0" HorizontalAlignment="Stretch" Appearance="Primary" Click="OkButton_Click">OK</ui:Button>
-            <ui:Button Margin="4,0,0,0" HorizontalAlignment="Stretch" Grid.Column="1" Click="CancelButton_Click">Cancel</ui:Button>
+            <ui:Button Margin="0,0,4,0" HorizontalAlignment="Stretch" Appearance="Primary" Click="OkButton_Click" IsDefault="True">OK</ui:Button>
+            <ui:Button Margin="4,0,0,0" HorizontalAlignment="Stretch" Grid.Column="1" Click="CancelButton_Click" IsCancel="True">Cancel</ui:Button>
         </Grid>
     </Grid>
 

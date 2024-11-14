@@ -27,9 +27,9 @@
                 <ui:TextBlock FontTypography="Subtitle" Text="New Account" Margin="0,32,0,24"/>
 
                 <Label Margin="0,0,0,4">Account name</Label>
-                <ui:TextBox x:Name="TxtAccountName" Margin="0,4,0,8" Text="{Binding ViewModel.AccountName}"/>
+                <ui:TextBox x:Name="TxtAccountName" Margin="0,4,0,8" Text="{Binding ViewModel.AccountName}" GotKeyboardFocus="TxtAccountName_GotFocus"/>
                 <Label Margin="0,8,0,4">Starting balance</Label>
-                <ui:TextBox Margin="0,4,0,8" Text="{Binding ViewModel.StartingBalance.Value}"/>
+                <ui:NumberBox x:Name="txtStartingBalance" Margin="0,4,0,8" Text="{Binding ViewModel.StartingBalance.Value}" GotKeyboardFocus="txtStartingBalance_GotFocus"/>
             </StackPanel>
         </ui:Card>
 
@@ -39,8 +39,8 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <ui:Button Margin="0,0,4,0" HorizontalAlignment="Stretch" Appearance="Primary" Click="AddButton_Click">Add</ui:Button>
-            <ui:Button Margin="4,0,0,0" HorizontalAlignment="Stretch" Grid.Column="1" Click="CancelButton_Click">Cancel</ui:Button>
+            <ui:Button Margin="0,0,4,0" HorizontalAlignment="Stretch" Appearance="Primary" Click="AddButton_Click" IsDefault="True">Add</ui:Button>
+            <ui:Button Margin="4,0,0,0" HorizontalAlignment="Stretch" Grid.Column="1" Click="CancelButton_Click" IsCancel="True">Cancel</ui:Button>
         </Grid>
     </Grid>
 </ui:FluentWindow>

@@ -39,5 +39,15 @@ namespace MyMoney.Views.Windows
         {
             TxtCategory.Focus();
         }
+
+        private void TxtCategory_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TxtCategory.SelectAll();
+        }
+
+        private void txtAmount_GotFocus(object sender, RoutedEventArgs e)
+        {
+            txtAmount.SelectAll();
+        }
     }
 }
