@@ -17,7 +17,7 @@
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       xmlns:models="clr-namespace:MyMoney.Models">
 
-    <StackPanel>
+    <StackPanel Margin="0,0,0,24">
         <StackPanel Orientation="Horizontal">
             <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
             <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}">
