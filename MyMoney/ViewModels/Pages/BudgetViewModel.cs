@@ -107,7 +107,7 @@ namespace MyMoney.ViewModels.Pages
                 // Create a new income item with the results from the dialog
                 BudgetIncomeItem item = new();
                 item.Category = editorWindowViewModel.BudgetCategory;
-                item.Amount = editorWindowViewModel.BudgetAmount;
+                item.Amount = new(editorWindowViewModel.BudgetAmount);
 
                 // Add the item to the budget income items list
                 IncomeLineItems.Add(item);
@@ -128,7 +128,7 @@ namespace MyMoney.ViewModels.Pages
                 // Create a new expense item with the results from the dialog
                 BudgetExpenseItem item = new();
                 item.Category = editorWindowViewModel.BudgetCategory;
-                item.Amount = editorWindowViewModel.BudgetAmount;
+                item.Amount = new(editorWindowViewModel.BudgetAmount);
 
                 // Add the item to the budget expense items list
                 ExpenseLineItems.Add(item);
@@ -144,14 +144,14 @@ namespace MyMoney.ViewModels.Pages
             BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
             BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
             editorWindowViewModel.BudgetCategory = IncomeLineItems[IncomeItemsSelectedIndex].Category;
-            editorWindowViewModel.BudgetAmount = IncomeLineItems[IncomeItemsSelectedIndex].Amount;
+            editorWindowViewModel.BudgetAmount = IncomeLineItems[IncomeItemsSelectedIndex].Amount.Value;
 
             if (editorWindow.ShowDialog() == true)
             {
                 // modify the item at the selected index
                 BudgetIncomeItem incomeItem = new();
                 incomeItem.Category = editorWindowViewModel.BudgetCategory;
-                incomeItem.Amount = editorWindowViewModel.BudgetAmount;
+                incomeItem.Amount = new(editorWindowViewModel.BudgetAmount);
 
                 // assign the selected index of the list with the new item
                 IncomeLineItems[IncomeItemsSelectedIndex] = incomeItem;
@@ -196,14 +196,14 @@ namespace MyMoney.ViewModels.Pages
             BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
             BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
             editorWindowViewModel.BudgetCategory = ExpenseLineItems[ExpenseItemsSelectedIndex].Category;
-            editorWindowViewModel.BudgetAmount = ExpenseLineItems[ExpenseItemsSelectedIndex].Amount;
+            editorWindowViewModel.BudgetAmount = ExpenseLineItems[ExpenseItemsSelectedIndex].Amount.Value;
 
             if (editorWindow.ShowDialog() == true)
             {
                 // modify the item at the selected index
                 BudgetExpenseItem expenseItem = new();
                 expenseItem.Category = editorWindowViewModel.BudgetCategory;
-                expenseItem.Amount = editorWindowViewModel.BudgetAmount;
+                expenseItem.Amount = new(editorWindowViewModel.BudgetAmount);
 
                 // assign the selected index of the list with the new item
                 ExpenseLineItems[ExpenseItemsSelectedIndex] = expenseItem;

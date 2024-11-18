@@ -11,7 +11,7 @@ namespace MyMoney.ViewModels.Windows
         private string _BudgetCategory = "";
 
         [ObservableProperty]
-        private Currency _BudgetAmount = new(0m);
+        private decimal _BudgetAmount = 0m;
 
         public void CancelButtonClick()
         {
