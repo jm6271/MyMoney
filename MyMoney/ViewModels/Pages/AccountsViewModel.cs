@@ -168,19 +168,20 @@ namespace MyMoney.ViewModels.Pages
                 if (SelectedAccountTransactions.Count == editTransactionIndex + 1) // last transaction, no recalculations
                 {
                     SelectedAccount.Total = new(newBalance);
-                    return;
                 }
-
-                for (int i = editTransactionIndex + 1; i < SelectedAccountTransactions.Count; i++)
+                else
                 {
-                    var spend = SelectedAccountTransactions[i].Spend;
-                    var receive = SelectedAccountTransactions[i].Receive;
+                    for (int i = editTransactionIndex + 1; i < SelectedAccountTransactions.Count; i++)
+                    {
+                        var spend = SelectedAccountTransactions[i].Spend;
+                        var receive = SelectedAccountTransactions[i].Receive;
 
-                    SelectedAccountTransactions[i].Balance = SelectedAccountTransactions[i - 1].Balance - spend + receive;
+                        SelectedAccountTransactions[i].Balance = SelectedAccountTransactions[i - 1].Balance - spend + receive;
+                    }
+
+                    // update the account total
+                    SelectedAccount.Total = SelectedAccount.Transactions[SelectedAccount.Transactions.Count - 1].Balance;
                 }
-
-                // update the account total
-                SelectedAccount.Total = SelectedAccount.Transactions[SelectedAccount.Transactions.Count - 1].Balance;
             }
 
             NewTransactionDate = DateTime.Today;

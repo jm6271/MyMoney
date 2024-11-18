@@ -49,5 +49,14 @@ namespace MyMoney.Views.Windows
         {
             txtAmount.SelectAll();
         }
+
+        private void txtAmount_ValueChanged(object sender, RoutedEventArgs e)
+        {
+            if (txtAmount.Value == null) ViewModel.BudgetAmount = 0;
+            else
+            {
+                ViewModel.BudgetAmount = (decimal)txtAmount.Value;
+            }
+        }
     }
 }

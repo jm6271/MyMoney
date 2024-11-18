@@ -46,7 +46,8 @@
                 </ui:ListView>
             </ui:Card>
 
-            <ui:Button HorizontalAlignment="Stretch" Margin="0,8,8,8" Command="{Binding ViewModel.AddNewAccountButtonClickCommand}">Add Account</ui:Button>
+            <ui:Button HorizontalAlignment="Stretch" Margin="0,8,8,4" Command="{Binding ViewModel.AddNewAccountButtonClickCommand}">Add Account</ui:Button>
+            <ui:Button HorizontalAlignment="Stretch" Margin="0,4,8,8" Command="{Binding ViewModel.TransferBetweenAccountsCommand}">Transfer</ui:Button>
         </StackPanel>
 
 
