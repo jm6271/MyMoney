@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MyMoney.Views.Windows"
         mc:Ignorable="d"
-        Title="Transfer Money" Height="390" Width="260"
+        Title="Transfer Money" Height="460" Width="260"
                 d:DataContext="{d:DesignInstance local:TransferWindow,
             IsDesignTimeCreatable=True}"
         ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
@@ -33,8 +33,11 @@
                 <ui:TextBlock Margin="0,0,0,4">Transfer from</ui:TextBlock>
                 <ComboBox ItemsSource="{Binding ViewModel.Accounts}" SelectedItem="{Binding ViewModel.TransferFrom}"/>
 
-                <ui:TextBlock Margin="0,8,0,3">Transfer to</ui:TextBlock>
+                <ui:TextBlock Margin="0,8,0,4">Transfer to</ui:TextBlock>
                 <ComboBox ItemsSource="{Binding ViewModel.Accounts}" SelectedItem="{Binding ViewModel.TransferTo}"/>
+
+                <ui:TextBlock Margin="0,8,0,4">Transfer amount</ui:TextBlock>
+                <ui:NumberBox x:Name="txtAmount" Value="{Binding ViewModel.Amount}" ValueChanged="txtAmount_ValueChanged"/>
             </StackPanel>
         </ui:Card>
 

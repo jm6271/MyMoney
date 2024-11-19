@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyMoney.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -21,5 +22,8 @@ namespace MyMoney.ViewModels.Windows
 
         [ObservableProperty]
         private string _TransferTo = "";
+
+        [ObservableProperty]
+        private Currency _Amount = new(0m);
     }
 }

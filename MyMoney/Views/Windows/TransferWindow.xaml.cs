@@ -36,5 +36,14 @@ namespace MyMoney.Views.Windows
             DialogResult = true;
             Close();
         }
+
+        private void txtAmount_ValueChanged(object sender, RoutedEventArgs e)
+        {
+            if (txtAmount.Value == null) ViewModel.Amount = new(0);
+            else
+            {
+                ViewModel.Amount = new((decimal)txtAmount.Value);
+            }
+        }
     }
 }
