@@ -218,12 +218,14 @@ namespace MyMoney.ViewModels.Pages
                 FROM.Date = DateTime.Today;
                 FROM.Payee = "Transfer TO " + viewModel.TransferTo;
                 FROM.Spend = viewModel.Amount;
+                FROM.Memo = "Transfer";
 
                 // Create TO transaction
                 Transaction TO = new();
                 TO.Date = DateTime.Today;
                 TO.Payee = "Transfer FROM " + viewModel.TransferFrom;
                 TO.Receive = viewModel.Amount;
+                TO.Memo = "Transfer";
 
                 // Add the transactions to their accounts
                 for (int i = 0; i < Accounts.Count; i++)
@@ -231,14 +233,20 @@ namespace MyMoney.ViewModels.Pages
                     if (Accounts[i].AccountName == viewModel.TransferFrom)
                     {
                         // Calculate the balance
-                        FROM.Balance = Accounts[i].Transactions[Accounts[i].Transactions.Count - 1].Balance - FROM.Spend;
+                        FROM.Balance = Accounts[i].Transactions[^1].Balance - FROM.Spend;
                         Accounts[i].Transactions.Add(FROM);
+                        
+                        // Update ending balance
+                        Accounts[i].Total = FROM.Balance;
                     }
                     else if (Accounts[i].AccountName == viewModel.TransferTo)
                     {
                         // Calculate the balance
-                        TO.Balance = Accounts[i].Transactions[Accounts[i].Transactions.Count - 1].Balance + TO.Receive;
+                        TO.Balance = Accounts[i].Transactions[^1].Balance + TO.Receive;
                         Accounts[i].Transactions.Add(TO);
+
+                        // Update ending balance
+                        Accounts[i].Total = TO.Balance;
                     }
                 }
 
