@@ -194,6 +194,26 @@ namespace MyMoney.ViewModels.Pages
             SaveAccountsToDatabase();
         }
 
+        [RelayCommand]
+        private void TransferBetweenAccounts()
+        {
+            ObservableCollection<string> AccountNames = [];
+
+            foreach (var account in Accounts)
+            {
+                AccountNames.Add(account.AccountName);
+            }
+
+            TransferWindowViewModel viewModel = new(AccountNames);
+
+            TransferWindow transferWindow = new(viewModel);
+
+            if (transferWindow.ShowDialog() == true)
+            {
+                // Transfer the money
+            }
+        }
+
         partial void OnSelectedAccountChanged(Account? value)
         {
             OnPropertyChanged(nameof(SelectedAccountTransactions));
