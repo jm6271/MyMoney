@@ -211,6 +211,39 @@ namespace MyMoney.ViewModels.Pages
             if (transferWindow.ShowDialog() == true)
             {
                 // Transfer the money
+                // create a new transaction in each of the accounts
+
+                // create FROM transaction
+                Transaction FROM = new();
+                FROM.Date = DateTime.Today;
+                FROM.Payee = "Transfer TO " + viewModel.TransferTo;
+                FROM.Spend = viewModel.Amount;
+
+                // Create TO transaction
+                Transaction TO = new();
+                TO.Date = DateTime.Today;
+                TO.Payee = "Transfer FROM " + viewModel.TransferFrom;
+                TO.Receive = viewModel.Amount;
+
+                // Add the transactions to their accounts
+                for (int i = 0; i < Accounts.Count; i++)
+                {
+                    if (Accounts[i].AccountName == viewModel.TransferFrom)
+                    {
+                        // Calculate the balance
+                        FROM.Balance = Accounts[i].Transactions[Accounts[i].Transactions.Count - 1].Balance - FROM.Spend;
+                        Accounts[i].Transactions.Add(FROM);
+                    }
+                    else if (Accounts[i].AccountName == viewModel.TransferTo)
+                    {
+                        // Calculate the balance
+                        TO.Balance = Accounts[i].Transactions[Accounts[i].Transactions.Count - 1].Balance + TO.Receive;
+                        Accounts[i].Transactions.Add(TO);
+                    }
+                }
+
+                // save the accounts to the database
+                SaveAccountsToDatabase();
             }
         }
 
