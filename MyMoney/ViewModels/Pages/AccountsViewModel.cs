@@ -194,6 +194,67 @@ namespace MyMoney.ViewModels.Pages
             SaveAccountsToDatabase();
         }
 
+        [RelayCommand]
+        private void TransferBetweenAccounts()
+        {
+            ObservableCollection<string> AccountNames = [];
+
+            foreach (var account in Accounts)
+            {
+                AccountNames.Add(account.AccountName);
+            }
+
+            TransferWindowViewModel viewModel = new(AccountNames);
+
+            TransferWindow transferWindow = new(viewModel);
+
+            if (transferWindow.ShowDialog() == true)
+            {
+                // Transfer the money
+                // create a new transaction in each of the accounts
+
+                // create FROM transaction
+                Transaction FROM = new();
+                FROM.Date = DateTime.Today;
+                FROM.Payee = "Transfer TO " + viewModel.TransferTo;
+                FROM.Spend = viewModel.Amount;
+                FROM.Memo = "Transfer";
+
+                // Create TO transaction
+                Transaction TO = new();
+                TO.Date = DateTime.Today;
+                TO.Payee = "Transfer FROM " + viewModel.TransferFrom;
+                TO.Receive = viewModel.Amount;
+                TO.Memo = "Transfer";
+
+                // Add the transactions to their accounts
+                for (int i = 0; i < Accounts.Count; i++)
+                {
+                    if (Accounts[i].AccountName == viewModel.TransferFrom)
+                    {
+                        // Calculate the balance
+                        FROM.Balance = Accounts[i].Transactions[^1].Balance - FROM.Spend;
+                        Accounts[i].Transactions.Add(FROM);
+                        
+                        // Update ending balance
+                        Accounts[i].Total = FROM.Balance;
+                    }
+                    else if (Accounts[i].AccountName == viewModel.TransferTo)
+                    {
+                        // Calculate the balance
+                        TO.Balance = Accounts[i].Transactions[^1].Balance + TO.Receive;
+                        Accounts[i].Transactions.Add(TO);
+
+                        // Update ending balance
+                        Accounts[i].Total = TO.Balance;
+                    }
+                }
+
+                // save the accounts to the database
+                SaveAccountsToDatabase();
+            }
+        }
+
         partial void OnSelectedAccountChanged(Account? value)
         {
             OnPropertyChanged(nameof(SelectedAccountTransactions));
