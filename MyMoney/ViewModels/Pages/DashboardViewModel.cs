@@ -183,6 +183,16 @@ namespace MyMoney.ViewModels.Pages
 
                     Accounts.Add(new(account));
                 }
+
+                // add an item displaying the total as the last item in the list
+                AccountDashboardDisplayItem totalItem = new();
+                totalItem.AccountName = "Total";
+                foreach (var account in Accounts)
+                {
+                    totalItem.Total += account.Total;
+                }
+
+                Accounts.Add(totalItem);
             }
 
             CalculateBudgetReport();
