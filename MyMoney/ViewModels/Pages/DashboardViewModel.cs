@@ -10,6 +10,22 @@ namespace MyMoney.ViewModels.Pages
         public ObservableCollection<BudgetReportItem> BudgetReportIncomeItems { get; set; } = [];
         public ObservableCollection<BudgetReportItem> BudgetReportExpenseItems { get; set; } = [];
 
+        // Automatically generates the Income property with change notifications
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(BarValues))]
+        private decimal _income;
+
+        // Automatically generates the Expenses property with change notifications
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(BarValues))]
+        private decimal _expenses;
+
+        // Computed property for bar values
+        public double[] BarValues => [(double)Income, (double)Expenses];
+
+        // Labels for the bars
+        public ScottPlot.Tick[] BarLabels = { new(0, "Income"), new(1, "Expenses") };
+
         public DashboardViewModel() 
         {
         }
@@ -45,6 +61,7 @@ namespace MyMoney.ViewModels.Pages
 
             incomeTotal.Category = "Total";
             BudgetReportIncomeItems.Add(incomeTotal);
+            Income = incomeTotal.Actual.Value;
 
             // Add an item to the expense list showing the total expenses
             BudgetReportItem expenseTotal = new();
@@ -58,6 +75,7 @@ namespace MyMoney.ViewModels.Pages
 
             expenseTotal.Category = "Total";
             BudgetReportExpenseItems.Add(expenseTotal);
+            Expenses = expenseTotal.Actual.Value;
         }
 
         private List<BudgetReportItem> CalculateReportItems(string itemsCollectionName = "BudgetIncomeItems", bool Expense = false)

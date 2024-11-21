@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:MyMoney.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:scottplot="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
     Title="DashboardPage"
     d:DataContext="{d:DesignInstance local:DashboardPage,
                                      IsDesignTimeCreatable=False}"
@@ -83,7 +84,7 @@
 
             <StackPanel Grid.Column="1" Margin="11,0,0,0">
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,12">Accounts</ui:TextBlock>
-                <ui:Card>
+                <ui:Card Margin="0,0,0,24">
                     <ui:ListView ItemsSource="{Binding ViewModel.Accounts}">
                         <ui:ListView.ItemTemplate>
                             <DataTemplate DataType="{x:Type models:AccountDashboardDisplayItem}">
@@ -100,6 +101,10 @@
                         </ui:ListView.ItemTemplate>
                     </ui:ListView>
                 </ui:Card>
+                <ui:Card>
+                    <scottplot:WpfPlot x:Name="IncomeExpenseChart" Height="250"></scottplot:WpfPlot>
+                </ui:Card>
+                
             </StackPanel>
         </Grid>
     </StackPanel>
