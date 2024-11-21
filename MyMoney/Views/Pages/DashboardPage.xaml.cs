@@ -31,6 +31,7 @@ namespace MyMoney.Views.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             ViewModel.OnPageNavigatedTo();
+            UpdateChart();
         }
 
         private void InitializeChart()
