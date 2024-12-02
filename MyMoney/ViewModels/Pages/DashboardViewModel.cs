@@ -26,6 +26,19 @@ namespace MyMoney.ViewModels.Pages
         // Labels for the bars
         public ScottPlot.Tick[] BarLabels = { new(0, "Income"), new(1, "Expenses") };
 
+        // Widths for budget report gridview columns
+        [ObservableProperty]
+        private int _CategoryColumnWidth = 200;
+
+        [ObservableProperty]
+        private int _BudgetedColumnWidth = 100;
+
+        [ObservableProperty]
+        private int _ActualColumnWidth = 100;
+
+        [ObservableProperty]
+        private int _DifferenceColumnWidth = 100;
+
         public DashboardViewModel() 
         {
         }

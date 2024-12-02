@@ -54,10 +54,10 @@
                             </ListView.Resources>
                             <ui:ListView.View>
                                 <ui:GridView>
-                                    <GridViewColumn Header="Category" Width="200" DisplayMemberBinding="{Binding Category}" />
-                                    <GridViewColumn Header="Budgeted" Width="100" DisplayMemberBinding="{Binding Budgeted}" />
-                                    <GridViewColumn Header="Actual" Width="100" DisplayMemberBinding="{Binding Actual}"/>
-                                    <GridViewColumn Header="Difference" Width="100" DisplayMemberBinding="{Binding Remaining}"/>
+                                    <GridViewColumn Header="Category" Width="{Binding ViewModel.CategoryColumnWidth, Mode=TwoWay}" DisplayMemberBinding="{Binding Category}" />
+                                    <GridViewColumn Header="Budgeted" Width="{Binding ViewModel.BudgetedColumnWidth, Mode=TwoWay}" DisplayMemberBinding="{Binding Budgeted}" />
+                                    <GridViewColumn Header="Actual" Width="{Binding ViewModel.ActualColumnWidth, Mode=TwoWay}" DisplayMemberBinding="{Binding Actual}"/>
+                                    <GridViewColumn Header="Difference" Width="{Binding ViewModel.DifferenceColumnWidth, Mode=TwoWay}" DisplayMemberBinding="{Binding Remaining}"/>
                                 </ui:GridView>
                             </ui:ListView.View>
                         </ui:ListView>
@@ -71,10 +71,10 @@
                             </ListView.Resources>
                             <ui:ListView.View>
                                 <ui:GridView>
-                                    <GridViewColumn Header="Category" Width="200" DisplayMemberBinding="{Binding Category}" />
-                                    <GridViewColumn Header="Budgeted" Width="100" DisplayMemberBinding="{Binding Budgeted}" />
-                                    <GridViewColumn Header="Actual" Width="100" DisplayMemberBinding="{Binding Actual}"/>
-                                    <GridViewColumn Header="Difference" Width="100" DisplayMemberBinding="{Binding Remaining}"/>
+                                    <GridViewColumn Header="Category" Width="{Binding ViewModel.CategoryColumnWidth, Mode=TwoWay}" DisplayMemberBinding="{Binding Category}" />
+                                    <GridViewColumn Header="Budgeted" Width="{Binding ViewModel.BudgetedColumnWidth, Mode=TwoWay}" DisplayMemberBinding="{Binding Budgeted}" />
+                                    <GridViewColumn Header="Actual" Width="{Binding ViewModel.ActualColumnWidth, Mode=TwoWay}" DisplayMemberBinding="{Binding Actual}"/>
+                                    <GridViewColumn Header="Difference" Width="{Binding ViewModel.DifferenceColumnWidth, Mode=TwoWay}" DisplayMemberBinding="{Binding Remaining}"/>
                                 </ui:GridView>
                             </ui:ListView.View>
                         </ui:ListView>
