@@ -1,6 +1,7 @@
 ﻿using LiteDB;
 using MyMoney.Models;
 using System.Collections.ObjectModel;
+using System.Windows.Media;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -38,6 +39,17 @@ namespace MyMoney.ViewModels.Pages
 
         [ObservableProperty]
         private int _DifferenceColumnWidth = 100;
+
+
+        // Values for the budget report totals
+        [ObservableProperty]
+        private Currency _BudgetedTotal = new();
+
+        [ObservableProperty]
+        private Currency _ActualTotal = new();
+
+        [ObservableProperty]
+        private Currency _DifferenceTotal = new();
 
         public DashboardViewModel() 
         {
@@ -89,6 +101,11 @@ namespace MyMoney.ViewModels.Pages
             expenseTotal.Category = "Total";
             BudgetReportExpenseItems.Add(expenseTotal);
             Expenses = expenseTotal.Actual.Value;
+
+            // Calulate budget report overall total
+            BudgetedTotal = incomeTotal.Budgeted - expenseTotal.Budgeted;
+            ActualTotal = incomeTotal.Actual - expenseTotal.Actual;
+            DifferenceTotal = ActualTotal - BudgetedTotal;
         }
 
         private List<BudgetReportItem> CalculateReportItems(string itemsCollectionName = "BudgetIncomeItems", bool Expense = false)

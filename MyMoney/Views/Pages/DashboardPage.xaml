@@ -10,7 +10,7 @@
     Title="DashboardPage"
     d:DataContext="{d:DesignInstance local:DashboardPage,
                                      IsDesignTimeCreatable=False}"
-    d:DesignHeight="450"
+    d:DesignHeight="600"
     d:DesignWidth="800"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
@@ -78,6 +78,23 @@
                                 </ui:GridView>
                             </ui:ListView.View>
                         </ui:ListView>
+
+                        <!-- Budget report totals -->
+                        <Border Margin="0,12,0,0" BorderThickness="1" BorderBrush="#828790">
+                            <Grid Margin="12,8,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="{Binding ViewModel.CategoryColumnWidth}"/>
+                                    <ColumnDefinition Width="{Binding ViewModel.BudgetedColumnWidth}"/>
+                                    <ColumnDefinition Width="{Binding ViewModel.ActualColumnWidth}"/>
+                                    <ColumnDefinition Width="{Binding ViewModel.DifferenceColumnWidth}"/>
+                                </Grid.ColumnDefinitions>
+
+                                <ui:TextBlock Grid.Column="0" FontTypography="BodyStrong" FontWeight="Bold">Totals</ui:TextBlock>
+                                <ui:TextBlock Grid.Column="1" FontTypography="BodyStrong" Text="{Binding ViewModel.BudgetedTotal}"/>
+                                <ui:TextBlock Grid.Column="2" FontTypography="BodyStrong" Text="{Binding ViewModel.ActualTotal}"/>
+                                <ui:TextBlock Grid.Column="3" FontTypography="BodyStrong" Text="{Binding ViewModel.DifferenceTotal}"/>
+                            </Grid>
+                        </Border>
                     </StackPanel>
                 </ui:Card>
             </StackPanel>
