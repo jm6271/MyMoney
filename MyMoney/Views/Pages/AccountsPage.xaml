@@ -87,37 +87,37 @@
                                     <RowDefinition/>
                                 </Grid.RowDefinitions>
 
-                                <Border BorderBrush="Black" BorderThickness="1" Grid.Row="0" Grid.Column="0">
+                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="0" Grid.Column="0">
                                     <Label Content="{Binding DateFormatted}" Margin="4,0,4,0"/>
                                 </Border>
 
-                                <Border BorderBrush="Black" BorderThickness="1" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2">
+                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2">
                                     <Label Content="{Binding Payee}" Margin="4,0,4,0"/>
                                 </Border>
 
-                                <Border BorderBrush="Black" BorderThickness="1" Grid.Row="0" Grid.Column="3">
+                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="0" Grid.Column="3">
                                     <Label Content="{Binding Spend}" Margin="4,0,4,0" HorizontalAlignment="Right"/>
                                 </Border>
 
-                                <Border BorderBrush="Black" BorderThickness="1" Grid.Row="0" Grid.Column="4">
+                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="0" Grid.Column="4">
                                     <Label Content="{Binding Receive}" Margin="4,0,4,0" HorizontalAlignment="Right"/>
                                 </Border>
 
-                                <Border BorderBrush="Black" BorderThickness="1" Grid.Row="0" Grid.Column="5">
+                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="0" Grid.Column="5">
                                     <Label Content="{Binding Balance}" HorizontalAlignment="Right" Margin="4,0,4,0"/>
                                 </Border>
 
-                                <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.Column="0"/>
+                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="1" Grid.Column="0"/>
 
-                                <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.Column="1">
+                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="1" Grid.Column="1">
                                     <Label Content="{Binding Category}" Margin="4,0,4,0"/>
                                 </Border>
 
-                                <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.Column="2">
+                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="1" Grid.Column="2">
                                     <Label Content="{Binding Memo}" Margin="4,0,4,0"/>
                                 </Border>
 
-                                <Border BorderBrush="Black" BorderThickness="1" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3"/>
+                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3"/>
                             </Grid>
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
