@@ -295,19 +295,7 @@ namespace MyMoney.ViewModels.Pages
 
         private void SaveAccountsToDatabase()
         {
-            using (var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
-            {
-                var AccountsList = db.GetCollection<Account>("Accounts");
-
-                // clear the collection
-                AccountsList.DeleteAll();
-
-                // add the new items to the database
-                foreach (var item in Accounts)
-                {
-                    AccountsList.Insert(item);
-                }
-            }
+            Core.Database.DatabaseWriter.WriteCollection("Accounts", [.. Accounts]);
         }
 
         [RelayCommand]

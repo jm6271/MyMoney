@@ -3,6 +3,7 @@ using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
 using MyMoney.Core.Models;
+using MyMoney.Core.Database;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -52,26 +53,8 @@ namespace MyMoney.ViewModels.Pages
 
         private void WriteToDatabase()
         {
-            using(var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
-            {
-                var incomeCollection = db.GetCollection<BudgetIncomeItem>("BudgetIncomeItems");
-                var expenseCollection = db.GetCollection<BudgetExpenseItem>("BudgetExpenseItems");
-
-                // clear the collections
-                incomeCollection.DeleteAll();
-                expenseCollection.DeleteAll();
-
-                // add the new items to the database
-                foreach (var item in IncomeLineItems)
-                {
-                    incomeCollection.Insert(item);
-                }
-
-                foreach (var item in ExpenseLineItems)
-                {
-                    expenseCollection.Insert(item);
-                }
-            }
+            DatabaseWriter.WriteCollection("BudgetIncomeItems", [.. IncomeLineItems]);
+            DatabaseWriter.WriteCollection("BudgetExpenseItems", [.. ExpenseLineItems]);
         }
 
         public void UpdateListViewTotals()
