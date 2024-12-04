@@ -15,7 +15,7 @@
       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
       ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      xmlns:models="clr-namespace:MyMoney.Models">
+      xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core">
 
     <StackPanel Margin="0,0,0,24">
         <StackPanel Orientation="Horizontal">

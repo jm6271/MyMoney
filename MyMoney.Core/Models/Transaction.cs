@@ -1,4 +1,6 @@
-﻿namespace MyMoney.Models
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+namespace MyMoney.Core.Models
 {
     public partial class Transaction : ObservableObject
     {

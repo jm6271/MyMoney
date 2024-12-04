@@ -1,8 +1,8 @@
-﻿using LiteDB;
-using MyMoney.Models;
-using MyMoney.ViewModels.Windows;
+﻿using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
+using MyMoney.Core.Models;
+using MyMoney.Core.Database;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -29,22 +29,18 @@ namespace MyMoney.ViewModels.Pages
         public BudgetViewModel()
         {
             // Read the budget items from the database and populate the list views
-            using(var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
+
+            var incomeCollection = DatabaseReader.GetCollection<BudgetIncomeItem>("BudgetIncomeItems");
+            var expenseCollection = DatabaseReader.GetCollection<BudgetExpenseItem>("BudgetExpenseItems");
+
+            foreach (var item in incomeCollection)
             {
-                var incomeCollection = db.GetCollection<BudgetIncomeItem>("BudgetIncomeItems");
-                var expenseCollection = db.GetCollection<BudgetExpenseItem>("BudgetExpenseItems");
+                IncomeLineItems.Add(item);
+            }
 
-                // load the income items collection
-                for (int i = 1; i <= incomeCollection.Count(); i++)
-                {
-                    IncomeLineItems.Add(incomeCollection.FindById(i));
-                }
-
-                // Load the expense items collection
-                for (int i = 1; i <= expenseCollection.Count(); i++)
-                {
-                    ExpenseLineItems.Add(expenseCollection.FindById(i));
-                }
+            foreach (var item in expenseCollection)
+            {
+                ExpenseLineItems.Add(item);
             }
 
             UpdateListViewTotals();
@@ -52,26 +48,8 @@ namespace MyMoney.ViewModels.Pages
 
         private void WriteToDatabase()
         {
-            using(var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
-            {
-                var incomeCollection = db.GetCollection<BudgetIncomeItem>("BudgetIncomeItems");
-                var expenseCollection = db.GetCollection<BudgetExpenseItem>("BudgetExpenseItems");
-
-                // clear the collections
-                incomeCollection.DeleteAll();
-                expenseCollection.DeleteAll();
-
-                // add the new items to the database
-                foreach (var item in IncomeLineItems)
-                {
-                    incomeCollection.Insert(item);
-                }
-
-                foreach (var item in ExpenseLineItems)
-                {
-                    expenseCollection.Insert(item);
-                }
-            }
+            DatabaseWriter.WriteCollection("BudgetIncomeItems", [.. IncomeLineItems]);
+            DatabaseWriter.WriteCollection("BudgetExpenseItems", [.. ExpenseLineItems]);
         }
 
         public void UpdateListViewTotals()

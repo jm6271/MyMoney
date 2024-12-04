@@ -28,6 +28,9 @@
     <None Remove="Assets\pexels-johannes-plenio-1103970.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MyMoney.Core\MyMoney.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="Assets\MyMoney-icon-256.png" />
     <Resource Include="Assets\MyMoney-icon-1024.png" />
     <Resource Include="Assets\MyMoney-Banner.png" />

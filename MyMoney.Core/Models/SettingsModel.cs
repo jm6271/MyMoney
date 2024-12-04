@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace MyMoney.Models
+namespace MyMoney.Core.Models
 {
     public partial class SettingsModel : ObservableObject
     {
