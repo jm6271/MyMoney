@@ -10,7 +10,7 @@ namespace MyMoney.Core.Database
     /// <summary>
     /// Read from the applications LiteDB database
     /// </summary>
-    internal static class DatabaseReader
+    public static class DatabaseReader
     {
         /// <summary>
         /// Read a collection from the database

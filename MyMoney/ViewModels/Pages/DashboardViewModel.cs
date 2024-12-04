@@ -1,7 +1,7 @@
-﻿using LiteDB;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
+using MyMoney.Core.Database;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -113,31 +113,22 @@ namespace MyMoney.ViewModels.Pages
             // Reload information from the database
             Accounts.Clear();
 
-            using (var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
+            var lst = DatabaseReader.GetCollection<Account>("Accounts");
+
+            foreach (var item in lst)
             {
-                // load the accounts list
-                var AccountsList = db.GetCollection<Account>("Accounts");
-
-                // iterate over the accounts in the database and add them to the Accounts collection
-                for (int i = 1; i <= AccountsList.Count(); i++)
-                {
-                    var account = AccountsList.FindById(i);
-
-                    // Convert to an AccountDashboardDisplayItem and add to accounts list
-
-                    Accounts.Add(new(account));
-                }
-
-                // add an item displaying the total as the last item in the list
-                AccountDashboardDisplayItem totalItem = new();
-                totalItem.AccountName = "Total";
-                foreach (var account in Accounts)
-                {
-                    totalItem.Total += account.Total;
-                }
-
-                Accounts.Add(totalItem);
+                Accounts.Add(new(item));
             }
+
+            // add an item displaying the total as the last item in the list
+            AccountDashboardDisplayItem totalItem = new();
+            totalItem.AccountName = "Total";
+            foreach (var account in Accounts)
+            {
+                totalItem.Total += account.Total;
+            }
+
+            Accounts.Add(totalItem);
 
             CalculateBudgetReport();
         }
