@@ -1,5 +1,4 @@
-﻿using LiteDB;
-using MyMoney.ViewModels.Windows;
+﻿using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
 using MyMoney.Core.Models;
@@ -30,22 +29,18 @@ namespace MyMoney.ViewModels.Pages
         public BudgetViewModel()
         {
             // Read the budget items from the database and populate the list views
-            using(var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
+
+            var incomeCollection = DatabaseReader.GetCollection<BudgetIncomeItem>("BudgetIncomeItems");
+            var expenseCollection = DatabaseReader.GetCollection<BudgetExpenseItem>("BudgetExpenseItems");
+
+            foreach (var item in incomeCollection)
             {
-                var incomeCollection = db.GetCollection<BudgetIncomeItem>("BudgetIncomeItems");
-                var expenseCollection = db.GetCollection<BudgetExpenseItem>("BudgetExpenseItems");
+                IncomeLineItems.Add(item);
+            }
 
-                // load the income items collection
-                for (int i = 1; i <= incomeCollection.Count(); i++)
-                {
-                    IncomeLineItems.Add(incomeCollection.FindById(i));
-                }
-
-                // Load the expense items collection
-                for (int i = 1; i <= expenseCollection.Count(); i++)
-                {
-                    ExpenseLineItems.Add(expenseCollection.FindById(i));
-                }
+            foreach (var item in expenseCollection)
+            {
+                ExpenseLineItems.Add(item);
             }
 
             UpdateListViewTotals();

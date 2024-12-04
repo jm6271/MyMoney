@@ -1,10 +1,7 @@
-﻿using LiteDB;
-using MyMoney.ViewModels.Windows;
+﻿using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
-using System.Security.Principal;
 using System.Windows.Input;
-using Wpf.Ui;
 using MyMoney.Core.Models;
 
 
@@ -58,24 +55,11 @@ namespace MyMoney.ViewModels.Pages
 
         public AccountsViewModel()
         {
+            var a = Core.Database.DatabaseReader.GetCollection<Account>("Accounts");
 
-            // load accounts and their transactions from the database
-            using (var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
+            foreach (var account in a)
             {
-                // load the accounts list
-                var AccountsList = db.GetCollection<Account>("Accounts");
-
-                // iterate over the accounts in the database and add them to the Accounts collection
-                for (int i = 1; i <= AccountsList.Count(); i++)
-                {
-                    var account = AccountsList.FindById(i);
-
-                    // Set the memo and category to an empty string on the first transaction (beginning balance)
-                    account.Transactions[0].Memo = "";
-                    account.Transactions[0].Category = "";
-
-                    Accounts.Add(account);
-                }
+                Accounts.Add(account);
             }
 
             AddNewAccountButtonClickCommand = new RelayCommand(BttnNewAccount_Click);
@@ -88,22 +72,17 @@ namespace MyMoney.ViewModels.Pages
         {
             CategoryNames.Clear();
 
-            using var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath());
+            var incomeLst = Core.Database.DatabaseReader.GetCollection<BudgetIncomeItem>("BudgetIncomeItems");
+            var expenseLst = Core.Database.DatabaseReader.GetCollection<BudgetExpenseItem>("BudgetExpenseItems");
 
-            // load the category names from the database
-            var incomeCollection = db.GetCollection<BudgetIncomeItem>("BudgetIncomeItems");
-            var expenseCollection = db.GetCollection<BudgetExpenseItem>("BudgetExpenseItems");
-
-            // load the income items collection
-            for (int i = 1; i <= incomeCollection.Count(); i++)
+            foreach(var item in incomeLst)
             {
-                CategoryNames.Add(incomeCollection.FindById(i).Category);
+                CategoryNames.Add(item.Category);
             }
 
-            // Load the expense items collection
-            for (int i = 1; i <= expenseCollection.Count(); i++)
+            foreach (var item in expenseLst)
             {
-                CategoryNames.Add(expenseCollection.FindById(i).Category);
+                CategoryNames.Add(item.Category);
             }
 
         }
