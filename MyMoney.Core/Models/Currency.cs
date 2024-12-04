@@ -1,4 +1,4 @@
-﻿namespace MyMoney.Models
+﻿namespace MyMoney.Core.Models
 {
     public class Currency
     {

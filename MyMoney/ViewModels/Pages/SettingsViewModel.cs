@@ -1,5 +1,5 @@
 ﻿using LiteDB;
-using MyMoney.Models;
+using MyMoney.Core.Models;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 

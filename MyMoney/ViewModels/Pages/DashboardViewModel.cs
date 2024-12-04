@@ -1,7 +1,6 @@
 ﻿using LiteDB;
-using MyMoney.Models;
 using System.Collections.ObjectModel;
-using System.Windows.Media;
+using MyMoney.Core.Models;
 
 namespace MyMoney.ViewModels.Pages
 {

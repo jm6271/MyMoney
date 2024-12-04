@@ -1,11 +1,11 @@
 ﻿using LiteDB;
-using MyMoney.Models;
 using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
 using System.Security.Principal;
 using System.Windows.Input;
 using Wpf.Ui;
+using MyMoney.Core.Models;
 
 
 namespace MyMoney.ViewModels.Pages

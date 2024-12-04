@@ -1,4 +1,4 @@
-﻿using MyMoney.Models;
+﻿using MyMoney.Core.Models;
 using MyMoney.ViewModels.Pages;
 
 namespace MyMoney.Tests

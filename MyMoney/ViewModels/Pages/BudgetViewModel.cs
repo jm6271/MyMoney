@@ -1,8 +1,8 @@
 ﻿using LiteDB;
-using MyMoney.Models;
 using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
+using MyMoney.Core.Models;
 
 namespace MyMoney.ViewModels.Pages
 {

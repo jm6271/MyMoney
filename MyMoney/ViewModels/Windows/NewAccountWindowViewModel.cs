@@ -1,4 +1,4 @@
-﻿using MyMoney.Models;
+﻿using MyMoney.Core.Models;
 
 namespace MyMoney.ViewModels.Windows
 {

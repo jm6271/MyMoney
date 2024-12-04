@@ -1,6 +1,8 @@
-﻿namespace MyMoney.Models
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+
+namespace MyMoney.Core.Models
 {
-    public partial class BudgetIncomeItem : ObservableObject
+    public partial class BudgetExpenseItem : ObservableObject
     {
         [ObservableProperty]
         private int _Id = 0;
@@ -10,6 +12,5 @@
 
         [ObservableProperty]
         private Currency _Amount = new(0m);
-
     }
 }

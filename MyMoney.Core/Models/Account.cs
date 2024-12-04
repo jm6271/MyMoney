@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace MyMoney.Models
+namespace MyMoney.Core.Models
 {
     public partial class Account : ObservableObject
     {
