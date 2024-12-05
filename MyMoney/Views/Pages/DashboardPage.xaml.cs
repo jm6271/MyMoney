@@ -68,6 +68,16 @@ namespace MyMoney.Views.Pages
                 IncomeExpenseChart.Plot.Axes.Left.TickLabelStyle.ForeColor = Color.FromHex("#cdcdcd");
                 IncomeExpenseChart.Plot.Axes.Bottom.TickLabelStyle.ForeColor = Color.FromHex("#cdcdcd");
             }
+            else
+            {
+                // Change to light mode
+                IncomeExpenseChart.Plot.FigureBackground.Color = Color.FromHex("#fefefe");
+                IncomeExpenseChart.Plot.DataBackground.Color = Color.FromHex("#fafafa");
+                IncomeExpenseChart.Plot.Axes.Color(Color.FromHex("#333333"));
+                IncomeExpenseChart.Plot.Grid.MajorLineColor = Color.FromHex("#404040");
+                IncomeExpenseChart.Plot.Axes.Left.TickLabelStyle.ForeColor = Color.FromHex("#333333");
+                IncomeExpenseChart.Plot.Axes.Bottom.TickLabelStyle.ForeColor = Color.FromHex("#333333");
+            }
 
             IncomeExpenseChart.Refresh();
         }

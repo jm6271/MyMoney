@@ -66,39 +66,16 @@ namespace MyMoney.ViewModels.Pages
 
         private void SaveTheme()
         {
-            using (var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
-            {
-                var SettingsCollection = db.GetCollection<SettingsModel>("AppSettings");
-                bool ThemeSaved = false;
+            var SettingsDict = Core.Database.DatabaseReader.GetSettingsDictionary("ApplicationSettings");
 
-                for (int i = 1; i <= SettingsCollection.Count(); i++)
-                {
-                    SettingsModel setting = SettingsCollection.FindById(i);
-                    if (setting.SettingsKey == "AppTheme")
-                    {
-                        if (CurrentTheme == ApplicationTheme.Light)
-                            setting.SettingsValue = "Light";
-                        else if (CurrentTheme == ApplicationTheme.Dark)
-                            setting.SettingsValue = "Dark";
-                        ThemeSaved = true;
-                        break;
-                    }
-                }
+            // Assign the theme
+            if (CurrentTheme == ApplicationTheme.Light)
+                SettingsDict["AppTheme"] = "Light";
+            else
+                SettingsDict["AppTheme"] = "Dark";
 
-                if (!ThemeSaved)
-                {
-                    // Theme did not exist in the database before, we'll have to create it
-                    SettingsModel theme = new();
-                    theme.SettingsKey = "AppTheme";
-
-                    if (CurrentTheme == ApplicationTheme.Light)
-                        theme.SettingsValue = "Light";
-                    else if (CurrentTheme == ApplicationTheme.Dark)
-                        theme.SettingsValue = "Dark";
-
-                    SettingsCollection.Insert(theme);
-                }
-            }
+            // Write to database
+            Core.Database.DatabaseWriter.WriteSettingsDictionary("ApplicationSettings", SettingsDict);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using LiteDB;
+using System.Collections.Concurrent;
 
 namespace MyMoney.Core.Database
 {
@@ -18,6 +19,24 @@ namespace MyMoney.Core.Database
             {
                 dbCollection.Insert(item);
             }
+        }
+
+        public static void WriteSettingsDictionary(string CollectionName, Dictionary<string, string> Collection)
+        {
+            // Open or create a database file
+            using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
+
+            // Get a list version
+            var dictList = Collection.ToList();
+
+            // Clear the old collection
+            if (db.CollectionExists(CollectionName))
+                db.DropCollection(CollectionName);
+
+            var dbCollection = db.GetCollection<KeyValuePair<string, string>>(CollectionName);
+
+            dbCollection.Insert(dictList);
+            dbCollection.EnsureIndex(x => x.Key);
         }
     }
 }

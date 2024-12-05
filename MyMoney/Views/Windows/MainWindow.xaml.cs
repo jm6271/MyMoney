@@ -31,22 +31,16 @@ namespace MyMoney.Views.Windows
             contentDialogService.SetDialogHost(RootContentDialog);
 
             // Load the theme from settings
-            using (var db = new LiteDatabase(Helpers.DataFileLocationGetter.GetDataFilePath()))
+            var SettingsDict = Core.Database.DatabaseReader.GetSettingsDictionary("ApplicationSettings");
+
+            if (SettingsDict != null && SettingsDict.Count > 0)
             {
-                var SettingsCollection = db.GetCollection<SettingsModel>("AppSettings");
-
-                for (int i = 1; i <= SettingsCollection.Count(); i++)
+                if (SettingsDict.ContainsKey("AppTheme"))
                 {
-                    SettingsModel setting = SettingsCollection.FindById(i);
-
-                    if (setting.SettingsKey == "AppTheme")
-                    {
-                        if (setting.SettingsValue == "Light")
-                            ApplicationThemeManager.Apply(ApplicationTheme.Light);
-                        else if (setting.SettingsValue == "Dark")
-                            ApplicationThemeManager.Apply(ApplicationTheme.Dark);
-                        break;
-                    }
+                    if (SettingsDict["AppTheme"] == "Light")
+                        ApplicationThemeManager.Apply(ApplicationTheme.Light);
+                    else
+                        ApplicationThemeManager.Apply(ApplicationTheme.Dark);
                 }
             }
         }
