@@ -34,5 +34,22 @@ namespace MyMoney.Core.Database
 
             return result;
         }
+
+        public static Dictionary<string, string> GetSettingsDictionary(string CollectionName)
+        {
+            Dictionary<string, string> Dict = [];
+
+            using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
+
+            var dbCollection = db.GetCollection<KeyValuePair<string, string>>(CollectionName);
+            var settingsList = dbCollection.FindAll().ToList();
+
+            foreach (var item in settingsList)
+            {
+                Dict.TryAdd(item.Key, item.Value);
+            }
+
+            return Dict;
+        }
     }
 }
