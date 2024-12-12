@@ -2,6 +2,7 @@
 using ScottPlot;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
+using Wpf.Ui.Extensions;
 
 namespace MyMoney.Views.Pages
 {
@@ -37,7 +38,7 @@ namespace MyMoney.Views.Pages
         private void InitializeChart()
         {
             IncomeExpenseChart.Plot.Clear();
-            IncomeExpenseChart.Plot.Add.Bars(ViewModel.BarValues);
+            var bars = IncomeExpenseChart.Plot.Add.Bars(ViewModel.BarValues);
             IncomeExpenseChart.Plot.Axes.Bottom.TickGenerator = new ScottPlot.TickGenerators.NumericManual(ViewModel.BarLabels);
             IncomeExpenseChart.Plot.Axes.Bottom.MajorTickStyle.Length = 0;
             IncomeExpenseChart.Plot.YLabel("Dollar Amount");
@@ -47,16 +48,25 @@ namespace MyMoney.Views.Pages
             IncomeExpenseChart.Plot.Axes.Left.Label.FontSize = 32;
             IncomeExpenseChart.Plot.Axes.Left.TickLabelStyle.FontSize = 24;
             IncomeExpenseChart.Plot.Axes.Bottom.TickLabelStyle.FontSize = 24;
+
+            // Set the bar color to the windows accent color
+            var accentColor = ApplicationAccentColorManager.GetColorizationColor();
+            bars.Color = new(accentColor.R, accentColor.G, accentColor.B, accentColor.A);
+
             IncomeExpenseChart.Refresh();
         }
 
         private void UpdateChart()
         {
             IncomeExpenseChart.Plot.Clear();
-            IncomeExpenseChart.Plot.Add.Bars(ViewModel.BarValues);
+            var bars = IncomeExpenseChart.Plot.Add.Bars(ViewModel.BarValues);
             IncomeExpenseChart.Plot.Axes.Bottom.TickGenerator = new ScottPlot.TickGenerators.NumericManual(ViewModel.BarLabels);
             IncomeExpenseChart.Plot.Axes.Bottom.MajorTickStyle.Length = 0;
             IncomeExpenseChart.Plot.Axes.Margins(bottom: 0);
+
+            // Set the bar color to the windows accent color
+            var accentColor = ApplicationAccentColorManager.GetColorizationColor();
+            bars.Color = new(accentColor.R, accentColor.G, accentColor.B, accentColor.A);
 
             // If we're in dark mode, change the colors of the chart
             if (ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Dark)
