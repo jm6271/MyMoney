@@ -55,6 +55,8 @@ namespace MyMoney
                 services.AddSingleton<AccountsViewModel>();
                 services.AddSingleton<BudgetPage>();
                 services.AddSingleton<BudgetViewModel>();
+                services.AddSingleton<ReportsPage>();
+                services.AddSingleton<ReportsViewModel>();
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsViewModel>();
 
