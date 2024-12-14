@@ -42,9 +42,9 @@
         public override string ToString()
         {
             if (Value >= 0)
-                return $"${Value:F2}";
+                return $"${Value:N2}";
             else
-                return $"(${Math.Abs(Value):F2})";
+                return $"(${Math.Abs(Value):N2})";
         }
     }
 }
