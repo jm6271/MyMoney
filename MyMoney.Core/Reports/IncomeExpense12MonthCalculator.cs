@@ -24,6 +24,7 @@ namespace MyMoney.Core.Reports
             {
                 result.Add((double)income[i]);
                 result.Add((double)expenses[i]);
+                result.Add(double.NaN); // blank value between each month
             }
 
             return result;
@@ -49,6 +50,30 @@ namespace MyMoney.Core.Reports
             } 
             
             return monthNames; 
+        }
+
+        /// <summary>
+        /// Get the position for each label on the chart
+        /// </summary>
+        /// <returns>A list of positions</returns>
+        public static List<double> GetLabelPosistions()
+        {
+            List<double> positions = [
+                0.5,
+                3.5,
+                6.5,
+                9.5,
+                12.5,
+                15.5,
+                18.5,
+                21.5,
+                24.5,
+                27.5,
+                30.5,
+                33.5,
+                36.5
+                ];
+            return positions;
         }
 
         private static List<decimal> GetPast12MonthsIncome()

@@ -1,8 +1,6 @@
 ﻿using MyMoney.ViewModels.Pages;
-using ScottPlot;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
-using Wpf.Ui.Extensions;
 
 namespace MyMoney.Views.Pages
 {
@@ -16,80 +14,11 @@ namespace MyMoney.Views.Pages
             DataContext = this;
 
             InitializeComponent();
-
-            ViewModel.PropertyChanged += ViewModel_PropertyChanged;
-            InitializeChart();
-        }
-
-        private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(ViewModel.BarValues))
-            {
-                UpdateChart();
-            }
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             ViewModel.OnPageNavigatedTo();
-            UpdateChart();
-        }
-
-        private void InitializeChart()
-        {
-            IncomeExpenseChart.Plot.Clear();
-            var bars = IncomeExpenseChart.Plot.Add.Bars(ViewModel.BarValues);
-            IncomeExpenseChart.Plot.Axes.Bottom.TickGenerator = new ScottPlot.TickGenerators.NumericManual(ViewModel.BarLabels);
-            IncomeExpenseChart.Plot.Axes.Bottom.MajorTickStyle.Length = 0;
-            IncomeExpenseChart.Plot.YLabel("Dollar Amount");
-            IncomeExpenseChart.Plot.Title("Income vs Expenses");
-            IncomeExpenseChart.Plot.Axes.Margins(bottom: 0);
-            IncomeExpenseChart.Plot.Axes.Title.Label.FontSize = 48;
-            IncomeExpenseChart.Plot.Axes.Left.Label.FontSize = 32;
-            IncomeExpenseChart.Plot.Axes.Left.TickLabelStyle.FontSize = 24;
-            IncomeExpenseChart.Plot.Axes.Bottom.TickLabelStyle.FontSize = 24;
-
-            // Set the bar color to the windows accent color
-            var accentColor = ApplicationAccentColorManager.GetColorizationColor();
-            bars.Color = new(accentColor.R, accentColor.G, accentColor.B, accentColor.A);
-
-            IncomeExpenseChart.Refresh();
-        }
-
-        private void UpdateChart()
-        {
-            IncomeExpenseChart.Plot.Clear();
-            var bars = IncomeExpenseChart.Plot.Add.Bars(ViewModel.BarValues);
-            IncomeExpenseChart.Plot.Axes.Bottom.TickGenerator = new ScottPlot.TickGenerators.NumericManual(ViewModel.BarLabels);
-            IncomeExpenseChart.Plot.Axes.Bottom.MajorTickStyle.Length = 0;
-            IncomeExpenseChart.Plot.Axes.Margins(bottom: 0);
-
-            // Set the bar color to the windows accent color
-            var accentColor = ApplicationAccentColorManager.GetColorizationColor();
-            bars.Color = new(accentColor.R, accentColor.G, accentColor.B, accentColor.A);
-
-            // If we're in dark mode, change the colors of the chart
-            if (ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Dark)
-            {
-                IncomeExpenseChart.Plot.FigureBackground.Color = Color.FromHex("#323232");
-                IncomeExpenseChart.Plot.DataBackground.Color = Color.FromHex("#272727");
-                IncomeExpenseChart.Plot.Axes.Color(Color.FromHex("#d7d7d7"));
-                IncomeExpenseChart.Plot.Grid.MajorLineColor = Color.FromHex("#404040");
-                IncomeExpenseChart.Plot.Axes.Left.TickLabelStyle.ForeColor = Color.FromHex("#cdcdcd");
-                IncomeExpenseChart.Plot.Axes.Bottom.TickLabelStyle.ForeColor = Color.FromHex("#cdcdcd");
-            }
-            else
-            {
-                // Change to light mode
-                IncomeExpenseChart.Plot.FigureBackground.Color = Color.FromHex("#fefefe");
-                IncomeExpenseChart.Plot.DataBackground.Color = Color.FromHex("#fafafa");
-                IncomeExpenseChart.Plot.Axes.Color(Color.FromHex("#333333"));
-                IncomeExpenseChart.Plot.Grid.MajorLineColor = Color.FromHex("#404040");
-                IncomeExpenseChart.Plot.Axes.Left.TickLabelStyle.ForeColor = Color.FromHex("#333333");
-                IncomeExpenseChart.Plot.Axes.Bottom.TickLabelStyle.ForeColor = Color.FromHex("#333333");
-            }
-
-            IncomeExpenseChart.Refresh();
         }
     }
 }
