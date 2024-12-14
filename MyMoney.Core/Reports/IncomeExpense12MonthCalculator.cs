@@ -10,33 +10,12 @@ namespace MyMoney.Core.Reports
     public class IncomeExpense12MonthCalculator
     {
         /// <summary>
-        /// Get a list of income and expenses for the last 12 months
-        /// </summary>
-        /// <returns>A list that has values alternating between income and expenses</returns>
-        public static List<double> GetIncomeAndExpenses()
-        {
-            List<double> result = [];
-
-            var income = GetPast12MonthsIncome();
-            var expenses = GetPast12MonthsExpenses();
-
-            for (int i = 0; i < income.Count; i++)
-            {
-                result.Add((double)income[i]);
-                result.Add((double)expenses[i]);
-                result.Add(double.NaN); // blank value between each month
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Get the names of all the months from 11 months ago to the current month
         /// </summary>
         /// <returns>A list of month names</returns>
         public static List<string> GetMonthNames() 
         { 
-            List<string> monthNames = new List<string>(); 
+            List<string> monthNames = []; 
             DateTime currentDate = DateTime.Now; 
             
             for (int i = 11; i >= 0; i--) 
@@ -44,63 +23,36 @@ namespace MyMoney.Core.Reports
                 DateTime targetDate = currentDate.AddMonths(-i); 
                 string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(targetDate.Month); 
                 monthNames.Add(monthName);
-
-                // Insert an empty string every other one because each month has two bars
-                monthNames.Add("");
             } 
             
             return monthNames; 
         }
 
-        /// <summary>
-        /// Get the position for each label on the chart
-        /// </summary>
-        /// <returns>A list of positions</returns>
-        public static List<double> GetLabelPosistions()
+        public static List<double> GetPast12MonthsIncome()
         {
-            List<double> positions = [
-                0.5,
-                3.5,
-                6.5,
-                9.5,
-                12.5,
-                15.5,
-                18.5,
-                21.5,
-                24.5,
-                27.5,
-                30.5,
-                33.5,
-                36.5
-                ];
-            return positions;
-        }
-
-        private static List<decimal> GetPast12MonthsIncome()
-        {
-            List<decimal> income = [];
+            List<double> income = [];
 
             for (int i = 11; i >= 0; i--)
             {
                 var transactions = GetMonthOfTransactions(i);
 
                 var total = GetIncome(transactions);
-                income.Add(total);
+                income.Add((double)total);
             }
 
             return income;
         }
 
-        private static List<decimal> GetPast12MonthsExpenses()
+        public static List<double> GetPast12MonthsExpenses()
         {
-            List<decimal> expenses = [];
+            List<double> expenses = [];
 
             for (int i = 11; i >= 0; i--)
             {
                 var transactions = GetMonthOfTransactions(i);
 
                 var total = GetExpenses(transactions);
-                expenses.Add(total);
+                expenses.Add((double)total);
             }
 
             return expenses;

@@ -167,7 +167,6 @@ namespace MyMoney.ViewModels.Pages
             }
 
             XAxes[0].LabelsPaint = new SolidColorPaint(ChartTextColor);
-            XAxes[0].TicksPaint = new SolidColorPaint(ChartTextColor);
             YAxes[0].LabelsPaint = new SolidColorPaint(ChartTextColor);
             YAxes[0].NamePaint = new SolidColorPaint(ChartTextColor);
             ChartTitle.Paint = new SolidColorPaint(ChartTextColor);
