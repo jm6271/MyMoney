@@ -29,6 +29,12 @@ namespace MyMoney.ViewModels.Windows
                 Icon = new SymbolIcon { Symbol = SymbolRegular.MoneyCalculator24 },
                 TargetPageType = typeof(Views.Pages.BudgetPage)
             },
+            new NavigationViewItem()
+            {
+                Content = "Reports",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.ChartMultiple24 },
+                TargetPageType= typeof(Views.Pages.ReportsPage)
+            },
         };
 
         [ObservableProperty]
