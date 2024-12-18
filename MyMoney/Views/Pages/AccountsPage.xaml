@@ -58,7 +58,7 @@
             </Grid.RowDefinitions>
 
             <ui:Card x:Name="TransactionsCard" Grid.Row="0" VerticalAlignment="Stretch">
-                <ui:ListView x:Name="TransactionsList" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" SelectedItem="{Binding ViewModel.SelectedTransaction, Mode=TwoWay}" SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}" MaxHeight="{Binding ViewModel.TransactionsMaxHeight}" VerticalAlignment="Top">
+                <ui:ListView x:Name="TransactionsList" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" SelectedItem="{Binding ViewModel.SelectedTransaction, Mode=TwoWay}" SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}" MaxHeight="{Binding ViewModel.TransactionsMaxHeight}" VerticalAlignment="Top" SizeChanged="TransactionsList_SizeChanged" AlternationCount="2">
                     <ui:ListView.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
@@ -70,68 +70,22 @@
                             Key="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
                     </ui:ListView.InputBindings>
 
-                    <ui:ListView.ItemTemplate>
-                        <DataTemplate DataType="{x:Type models:Transaction}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="125"/>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="2*"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="100"/>
-                                    <ColumnDefinition Width="100"/>
-                                </Grid.ColumnDefinitions>
-
-                                <Grid.RowDefinitions>
-                                    <RowDefinition/>
-                                    <RowDefinition/>
-                                </Grid.RowDefinitions>
-
-                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="0" Grid.Column="0">
-                                    <Label Content="{Binding DateFormatted}" Margin="4,0,4,0"/>
-                                </Border>
-
-                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2">
-                                    <Label Content="{Binding Payee}" Margin="4,0,4,0"/>
-                                </Border>
-
-                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="0" Grid.Column="3">
-                                    <Label Content="{Binding Spend}" Margin="4,0,4,0" HorizontalAlignment="Right"/>
-                                </Border>
-
-                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="0" Grid.Column="4">
-                                    <Label Content="{Binding Receive}" Margin="4,0,4,0" HorizontalAlignment="Right"/>
-                                </Border>
-
-                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="0" Grid.Column="5">
-                                    <Label Content="{Binding Balance}" HorizontalAlignment="Right" Margin="4,0,4,0"/>
-                                </Border>
-
-                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="1" Grid.Column="0"/>
-
-                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="1" Grid.Column="1">
-                                    <Label Content="{Binding Category}" Margin="4,0,4,0"/>
-                                </Border>
-
-                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="1" Grid.Column="2">
-                                    <Label Content="{Binding Memo}" Margin="4,0,4,0"/>
-                                </Border>
-
-                                <Border BorderBrush="#828790" BorderThickness="1" Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="3"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ui:ListView.ItemTemplate>
+                    <ui:ListView.View>
+                        <ui:GridView>
+                            <ui:GridViewColumn Header="Date" Width="125" DisplayMemberBinding="{Binding DateFormatted}"/>
+                            <ui:GridViewColumn Header="Payee" Width="200" DisplayMemberBinding="{Binding Payee}"/>
+                            <ui:GridViewColumn Header="Category" Width="125" DisplayMemberBinding="{Binding Category}"/>
+                            <ui:GridViewColumn Header="Memo" Width="200" DisplayMemberBinding="{Binding Memo}"/>
+                            <ui:GridViewColumn Header="Spend" Width="100" DisplayMemberBinding="{Binding Spend}"/>
+                            <ui:GridViewColumn Header="Receive" Width="100" DisplayMemberBinding="{Binding Receive}"/>
+                            <ui:GridViewColumn Header="Balance" Width="100" DisplayMemberBinding="{Binding Balance}"/>
+                        </ui:GridView>
+                    </ui:ListView.View>
                 </ui:ListView>
             </ui:Card>
-            
-            <StackPanel Grid.Row="1" Margin="0,0,0,24">
-                <ui:Card Margin="0,16,0,24">
-                    <DockPanel>
-                        <Label DockPanel.Dock="Left">Ending Balance:</Label>
-                        <Label DockPanel.Dock="Right" Content="{Binding ViewModel.SelectedAccount.Total}" Margin="0,0,8,0" HorizontalAlignment="Right"/>
-                    </DockPanel>
-                </ui:Card>
-                
+
+            <StackPanel Grid.Row="1" Margin="0,24,0,24">
+
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
