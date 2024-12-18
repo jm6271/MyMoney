@@ -110,8 +110,23 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        private void BttnNewTransaction_Click()
+        private async void BttnNewTransaction_Click()
         {
+            // Make sure that the required fields are filled out
+            if (NewTransactionCategory == "")
+            {
+                // Show message box
+                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Missing Category",
+                    Content = "Category field cannot be empty",
+                    CloseButtonText = "OK"
+                };
+
+                await uiMessageBox.ShowDialogAsync();
+                return;
+            }
+
             if (AddTransactionButtonText == "Add Transaction")
             {
                 // Calculate the balance
