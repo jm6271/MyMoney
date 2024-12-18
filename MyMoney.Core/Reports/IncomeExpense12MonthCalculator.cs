@@ -64,6 +64,10 @@ namespace MyMoney.Core.Reports
 
             foreach (Transaction transaction in transactions)
             {
+                // Only list items with a category (this prevents beginning balances and transfers from showing up in the chart)
+                if (string.IsNullOrWhiteSpace(transaction.Category))
+                    continue;
+
                 income += transaction.Receive.Value;
             }
 
@@ -76,6 +80,9 @@ namespace MyMoney.Core.Reports
 
             foreach (Transaction transaction in transactions)
             {
+                // Only list items with a category (this prevents beginning balances and transfers from showing up in the chart)
+                if (string.IsNullOrWhiteSpace(transaction.Category))
+                    continue;
                 expenses += transaction.Spend.Value;
             }
 
