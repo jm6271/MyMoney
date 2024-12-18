@@ -1,5 +1,6 @@
 ﻿using MyMoney.ViewModels.Pages;
 using System.Windows.Controls;
+using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.Pages
 {
@@ -45,6 +46,26 @@ namespace MyMoney.Views.Pages
         {
             double cardHeight = TransactionsCard.ActualHeight;
             ViewModel.TransactionsMaxHeight = cardHeight - 36;
+        }
+
+        private void TransactionsList_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // Update the memo gridview column width
+            if (TransactionsList.View is Wpf.Ui.Controls.GridView gridView) 
+            { 
+                double totalWidth = TransactionsList.ActualWidth;
+                double fixedWidth = 0;
+
+                foreach (var column in gridView.Columns)
+                {
+                    fixedWidth += column.Width;
+                }
+
+                fixedWidth -= gridView.Columns[3].Width;
+
+                double lastColumnWidth = totalWidth - fixedWidth - SystemParameters.VerticalScrollBarWidth - 5; 
+                gridView.Columns[3].Width = lastColumnWidth > 0 ? lastColumnWidth : 0; 
+            }
         }
     }
 }
