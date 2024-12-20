@@ -33,15 +33,23 @@ namespace MyMoney.Views.Windows
             // Load the theme from settings
             var SettingsDict = Core.Database.DatabaseReader.GetSettingsDictionary("ApplicationSettings");
 
-            if (SettingsDict != null && SettingsDict.Count > 0)
+            if (SettingsDict != null && SettingsDict.Count > 0 && SettingsDict.ContainsKey("AppTheme"))
             {
-                if (SettingsDict.ContainsKey("AppTheme"))
+                if (SettingsDict["AppTheme"] == "Light")
                 {
-                    if (SettingsDict["AppTheme"] == "Light")
-                        ApplicationThemeManager.Apply(ApplicationTheme.Light);
-                    else
-                        ApplicationThemeManager.Apply(ApplicationTheme.Dark);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light);
+
+#pragma warning disable WPF0001
+                    Application.Current.ThemeMode = ThemeMode.Light;
                 }
+                else
+                {
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark);
+
+                    Application.Current.ThemeMode = ThemeMode.Dark;
+#pragma warning restore WPF0001
+                }
+                    
             }
         }
 

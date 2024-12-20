@@ -17,6 +17,19 @@
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core" Loaded="Page_Loaded"
       >
+    <Page.Resources>
+        <Style x:Key="AlternatingListViewStyle" TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
+            <Style.Triggers>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                    <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}"></Setter>
+                </Trigger>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="{DynamicResource ControlFillColorTransparentBrush}"></Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -26,7 +39,8 @@
 
         <StackPanel>
             <ui:Card Grid.Column="0" VerticalAlignment="Top" Margin="0,0,8,8">
-                <ui:ListView ItemsSource="{Binding ViewModel.Accounts}" SelectedItem="{Binding ViewModel.SelectedAccount, Mode=TwoWay}" SelectedIndex="{Binding ViewModel.SelectedAccountIndex}">
+                <ui:ListView ItemsSource="{Binding ViewModel.Accounts}" SelectedItem="{Binding ViewModel.SelectedAccount, Mode=TwoWay}" 
+                             SelectedIndex="{Binding ViewModel.SelectedAccountIndex}">
                     <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:Account}">
                             <TextBlock Text="{Binding AccountName}" Margin="0,5,0,5"/>
@@ -57,32 +71,34 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <ui:Card x:Name="TransactionsCard" Grid.Row="0" VerticalAlignment="Stretch">
-                <ui:ListView x:Name="TransactionsList" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" SelectedItem="{Binding ViewModel.SelectedTransaction, Mode=TwoWay}" SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}" MaxHeight="{Binding ViewModel.TransactionsMaxHeight}" VerticalAlignment="Top" SizeChanged="TransactionsList_SizeChanged" AlternationCount="2">
-                    <ui:ListView.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
-                        </ContextMenu>
-                    </ui:ListView.ContextMenu>
+            <ui:ListView x:Name="TransactionsList" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" 
+                             SelectedItem="{Binding ViewModel.SelectedTransaction, Mode=TwoWay}" 
+                             SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}" 
+                             SizeChanged="TransactionsList_SizeChanged" AlternationCount="2" 
+                             ItemContainerStyle="{StaticResource AlternatingListViewStyle}">
+                <ui:ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
+                    </ContextMenu>
+                </ui:ListView.ContextMenu>
 
-                    <ui:ListView.InputBindings>
-                        <KeyBinding 
+                <ui:ListView.InputBindings>
+                    <KeyBinding 
                             Key="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
-                    </ui:ListView.InputBindings>
+                </ui:ListView.InputBindings>
 
-                    <ui:ListView.View>
-                        <ui:GridView>
-                            <ui:GridViewColumn Header="Date" Width="125" DisplayMemberBinding="{Binding DateFormatted}"/>
-                            <ui:GridViewColumn Header="Payee" Width="200" DisplayMemberBinding="{Binding Payee}"/>
-                            <ui:GridViewColumn Header="Category" Width="125" DisplayMemberBinding="{Binding Category}"/>
-                            <ui:GridViewColumn Header="Memo" Width="200" DisplayMemberBinding="{Binding Memo}"/>
-                            <ui:GridViewColumn Header="Spend" Width="100" DisplayMemberBinding="{Binding Spend}"/>
-                            <ui:GridViewColumn Header="Receive" Width="100" DisplayMemberBinding="{Binding Receive}"/>
-                            <ui:GridViewColumn Header="Balance" Width="100" DisplayMemberBinding="{Binding Balance}"/>
-                        </ui:GridView>
-                    </ui:ListView.View>
-                </ui:ListView>
-            </ui:Card>
+                <ui:ListView.View>
+                    <ui:GridView>
+                        <ui:GridViewColumn Header="Date" Width="125" DisplayMemberBinding="{Binding DateFormatted}"/>
+                        <ui:GridViewColumn Header="Payee" Width="200" DisplayMemberBinding="{Binding Payee}"/>
+                        <ui:GridViewColumn Header="Category" Width="125" DisplayMemberBinding="{Binding Category}"/>
+                        <ui:GridViewColumn Header="Memo" Width="200" DisplayMemberBinding="{Binding Memo}"/>
+                        <ui:GridViewColumn Header="Spend" Width="100" DisplayMemberBinding="{Binding Spend}"/>
+                        <ui:GridViewColumn Header="Receive" Width="100" DisplayMemberBinding="{Binding Receive}"/>
+                        <ui:GridViewColumn Header="Balance" Width="100" DisplayMemberBinding="{Binding Balance}"/>
+                    </ui:GridView>
+                </ui:ListView.View>
+            </ui:ListView>
 
             <StackPanel Grid.Row="1" Margin="0,24,0,24">
 
@@ -119,8 +135,8 @@
 
                     <ui:Button Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="4,0,0,0" VerticalAlignment="Stretch" IsEnabled="{Binding ViewModel.IsInputEnabled}" Click="AddTransaction_Click" Content="{Binding ViewModel.AddTransactionButtonText}" Appearance="Primary"/>
                 </Grid>
-                
-                
+
+
             </StackPanel>
         </Grid>
     </Grid>

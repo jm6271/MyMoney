@@ -44,8 +44,8 @@ namespace MyMoney.Views.Pages
 
         private void UpdateListViewMaxHeight()
         {
-            double cardHeight = TransactionsCard.ActualHeight;
-            ViewModel.TransactionsMaxHeight = cardHeight - 36;
+            //double cardHeight = TransactionsCard.ActualHeight;
+            //ViewModel.TransactionsMaxHeight = cardHeight - 36;
         }
 
         private void TransactionsList_SizeChanged(object sender, SizeChangedEventArgs e)

@@ -31,7 +31,7 @@ namespace MyMoney.ViewModels.Pages
             _isInitialized = true;
         }
 
-        private string GetAssemblyVersion()
+        private static string GetAssemblyVersion()
         {
             return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString()
                 ?? String.Empty;
@@ -49,6 +49,12 @@ namespace MyMoney.ViewModels.Pages
                     ApplicationThemeManager.Apply(ApplicationTheme.Light);
                     CurrentTheme = ApplicationTheme.Light;
 
+
+#pragma warning disable WPF0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+                    Application.Current.ThemeMode = ThemeMode.Light;
+#pragma warning restore WPF0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+                    
+                    
                     break;
 
                 default:
@@ -57,6 +63,10 @@ namespace MyMoney.ViewModels.Pages
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark);
                     CurrentTheme = ApplicationTheme.Dark;
+
+#pragma warning disable WPF0001
+                    Application.Current.ThemeMode = ThemeMode.Dark;
+#pragma warning restore WPF0001
 
                     break;
             }
