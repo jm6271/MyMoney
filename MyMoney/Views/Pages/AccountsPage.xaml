@@ -75,7 +75,8 @@
                              SelectedItem="{Binding ViewModel.SelectedTransaction, Mode=TwoWay}" 
                              SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}" 
                              SizeChanged="TransactionsList_SizeChanged" AlternationCount="2" 
-                             ItemContainerStyle="{StaticResource AlternatingListViewStyle}">
+                             ItemContainerStyle="{StaticResource AlternatingListViewStyle}"
+                             BorderThickness="0">
                 <ui:ListView.ContextMenu>
                     <ContextMenu>
                         <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
