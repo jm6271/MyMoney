@@ -21,18 +21,8 @@
     <StackPanel>
         <Border Height="200" CornerRadius="8">
             <Border.Background>
-                <ImageBrush ImageSource="pack://application:,,,/Assets/pexels-johannes-plenio-1103970.jpg"/>
+                <ImageBrush ImageSource="pack://application:,,,/Assets/MyMoney-Banner.png"/>
             </Border.Background>
-
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-
-                <ui:Image Grid.Column="0" Source="pack://application:,,,/Assets/MyMoney-icon-1024.png"/>
-                <ui:Image Grid.Column="1" Source="pack://application:,,,/Assets/MyMoney-Banner.png"/>
-            </Grid>
         </Border>
 
         <Grid Margin="0,24,0,0">
