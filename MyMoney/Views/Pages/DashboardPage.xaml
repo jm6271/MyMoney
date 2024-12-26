@@ -79,9 +79,7 @@
                                     <ColumnDefinition Width="{Binding ViewModel.DifferenceColumnWidth}"/>
                                 </Grid.ColumnDefinitions>
 
-                                <ui:TextBlock Grid.Column="0" FontTypography="BodyStrong" FontWeight="Bold">Totals</ui:TextBlock>
-                                <ui:TextBlock Grid.Column="1" FontTypography="BodyStrong" Text="{Binding ViewModel.BudgetedTotal}"/>
-                                <ui:TextBlock Grid.Column="2" FontTypography="BodyStrong" Text="{Binding ViewModel.ActualTotal}"/>
+                                <ui:TextBlock Grid.Column="0" FontTypography="BodyStrong" FontWeight="Bold">Remaining</ui:TextBlock>
                                 <ui:TextBlock Grid.Column="3" FontTypography="BodyStrong" Text="{Binding ViewModel.DifferenceTotal}"/>
                             </Grid>
                         </Border>
