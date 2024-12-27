@@ -7,6 +7,7 @@
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:local="clr-namespace:MyMoney.Views.Pages" 
       xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
+      xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Accounts"
@@ -17,30 +18,36 @@
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core">
 
-    <StackPanel Margin="0,0,0,24">
-        <StackPanel Orientation="Horizontal">
-            <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
-            <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}">
-                <ui:SymbolIcon Symbol="Add24"/>
-            </ui:Button>
-        </StackPanel>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
         
+        <StackPanel Margin="0,0,24,24">
+            <StackPanel Orientation="Horizontal">
+                <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
+                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}">
+                    <ui:SymbolIcon Symbol="Add24"/>
+                </ui:Button>
+            </StackPanel>
 
-        <ui:Card Margin="0,4,0,8">
-            <ui:ListView ItemsSource="{Binding ViewModel.IncomeLineItems}" SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}">
-                <ui:ListView.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Edit" Command="{Binding ViewModel.EditIncomeItemCommand}"/>
-                        <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
-                    </ContextMenu>
-                </ui:ListView.ContextMenu>
 
-                <ui:ListView.InputBindings>
-                    <KeyBinding 
+            <ui:Card Margin="0,4,0,8">
+                <ui:ListView ItemsSource="{Binding ViewModel.IncomeLineItems}" SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}">
+                    <ui:ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditIncomeItemCommand}"/>
+                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
+                        </ContextMenu>
+                    </ui:ListView.ContextMenu>
+
+                    <ui:ListView.InputBindings>
+                        <KeyBinding 
                             Key="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
-                </ui:ListView.InputBindings>
+                    </ui:ListView.InputBindings>
 
-                <ui:ListView.ItemTemplate>
+                    <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:BudgetIncomeItem}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -54,68 +61,74 @@
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
                 </ui:ListView>
-        </ui:Card>
+            </ui:Card>
 
-        <ui:Card Margin="0,8,0,8">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+            <ui:Card Margin="0,8,0,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                <ui:TextBlock FontWeight="SemiBold">Total</ui:TextBlock>
-                <ui:TextBlock FontWeight="SemiBold" Text="{Binding ViewModel.IncomeTotal}" Grid.Column="1"/>
-            </Grid>
-        </ui:Card>
+                    <ui:TextBlock FontWeight="SemiBold">Total</ui:TextBlock>
+                    <ui:TextBlock FontWeight="SemiBold" Text="{Binding ViewModel.IncomeTotal}" Grid.Column="1"/>
+                </Grid>
+            </ui:Card>
 
-        <StackPanel Orientation="Horizontal">
-            <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
-            <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddExpenseItemCommand}">
-                <ui:SymbolIcon Symbol="Add24"/>
-            </ui:Button>
+            <StackPanel Orientation="Horizontal">
+                <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
+                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddExpenseItemCommand}">
+                    <ui:SymbolIcon Symbol="Add24"/>
+                </ui:Button>
+            </StackPanel>
+
+
+            <ui:Card Margin="0,4,0,12">
+                <ui:ListView ItemsSource="{Binding ViewModel.ExpenseLineItems}" SelectedIndex="{Binding ViewModel.ExpenseItemsSelectedIndex}">
+                    <ui:ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditExpenseItemCommand}"/>
+                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteExpenseItemCommand}"/>
+                        </ContextMenu>
+                    </ui:ListView.ContextMenu>
+
+                    <ui:ListView.InputBindings>
+                        <KeyBinding Key="Delete" Command="{Binding ViewModel.DeleteExpenseItemCommand}"/>
+                    </ui:ListView.InputBindings>
+
+                    <ui:ListView.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:BudgetExpenseItem}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="{Binding Category}" Grid.Column="0" Margin="5,5,0,5"/>
+                                <TextBlock Text="{Binding Amount}" Grid.Column="1" Margin="0,5,5,5"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
+            </ui:Card>
+
+            <ui:Card Margin="0,8,0,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <ui:TextBlock FontWeight="SemiBold">Total</ui:TextBlock>
+                    <ui:TextBlock FontWeight="SemiBold" Text="{Binding ViewModel.ExpenseTotal}" Grid.Column="2"/>
+                </Grid>
+            </ui:Card>
+
         </StackPanel>
-        
 
-        <ui:Card Margin="0,4,0,12">
-            <ui:ListView ItemsSource="{Binding ViewModel.ExpenseLineItems}" SelectedIndex="{Binding ViewModel.ExpenseItemsSelectedIndex}">
-                <ui:ListView.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Edit" Command="{Binding ViewModel.EditExpenseItemCommand}"/>
-                        <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteExpenseItemCommand}"/>
-                    </ContextMenu>
-                </ui:ListView.ContextMenu>
-
-                <ui:ListView.InputBindings>
-                    <KeyBinding Key="Delete" Command="{Binding ViewModel.DeleteExpenseItemCommand}"/>
-                </ui:ListView.InputBindings>
-
-                <ui:ListView.ItemTemplate>
-                    <DataTemplate DataType="{x:Type models:BudgetExpenseItem}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <TextBlock Text="{Binding Category}" Grid.Column="0" Margin="5,5,0,5"/>
-                            <TextBlock Text="{Binding Amount}" Grid.Column="1" Margin="0,5,5,5"/>
-                        </Grid>
-                    </DataTemplate>
-                </ui:ListView.ItemTemplate>
-            </ui:ListView>
-        </ui:Card>
-
-        <ui:Card Margin="0,8,0,8">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <ui:TextBlock FontWeight="SemiBold">Total</ui:TextBlock>
-                <ui:TextBlock FontWeight="SemiBold" Text="{Binding ViewModel.ExpenseTotal}" Grid.Column="2"/>
-            </Grid>
-        </ui:Card>
-
-    </StackPanel>
+        <StackPanel Grid.Column="1">
+            <lvc:PieChart Height="200" Series="{Binding ViewModel.IncomePercentagesSeries}" Margin="0,0,0,24"/>
+            <lvc:PieChart Height="200" Series="{Binding ViewModel.ExpensePercentagesSeries}" Margin="0,24,0,24"/>
+        </StackPanel>
+    </Grid>
 </Page>

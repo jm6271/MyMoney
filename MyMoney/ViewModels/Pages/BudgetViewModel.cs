@@ -3,6 +3,8 @@ using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
 using MyMoney.Core.Models;
 using MyMoney.Core.Database;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -10,6 +12,9 @@ namespace MyMoney.ViewModels.Pages
     {
         public ObservableCollection<BudgetIncomeItem> IncomeLineItems { get; set; } = [];
         public ObservableCollection<BudgetExpenseItem> ExpenseLineItems { get; set; } = [];
+
+        public ISeries[] IncomePercentagesSeries { get; set; } = [];
+        public ISeries[] ExpensePercentagesSeries { get; set; } = [];
 
         [ObservableProperty]
         private int _IncomeItemsSelectedIndex = 0;
@@ -72,6 +77,36 @@ namespace MyMoney.ViewModels.Pages
 
             // write the items to the database
             WriteToDatabase();
+
+            // Update the charts
+            UpdateCharts();
+        }
+
+        private void UpdateCharts()
+        {
+            List<double> incomeTotals = [];
+            foreach (var item in IncomeLineItems)
+            {
+                incomeTotals.Add((double)item.Amount.Value);
+            }
+
+            IncomePercentagesSeries = new ISeries[incomeTotals.Count];
+            for (int i = 0; i <  incomeTotals.Count; i++)
+            {
+                IncomePercentagesSeries[i] = new PieSeries<double> { Values = [incomeTotals[i]] };
+            }
+
+            List<double> expenseTotals = [];
+            foreach (var item in ExpenseLineItems)
+            {
+                expenseTotals.Add((double)item.Amount.Value);
+            }
+
+            ExpensePercentagesSeries = new ISeries[expenseTotals.Count];
+            for (int i = 0; i < expenseTotals.Count; i++)
+            {
+                ExpensePercentagesSeries[i] = new PieSeries<double> { Values = [expenseTotals[i]] };
+            }
         }
 
         [RelayCommand]
