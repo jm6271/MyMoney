@@ -39,14 +39,6 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private int _DifferenceColumnWidth = 100;
 
-
-        // Values for the budget report totals
-        [ObservableProperty]
-        private Currency _BudgetedTotal = new();
-
-        [ObservableProperty]
-        private Currency _ActualTotal = new();
-
         [ObservableProperty]
         private Currency _DifferenceTotal = new();
 
@@ -142,8 +134,8 @@ namespace MyMoney.ViewModels.Pages
             Expenses = (double)expenseTotal.Actual.Value;
 
             // Calulate budget report overall total
-            BudgetedTotal = incomeTotal.Budgeted - expenseTotal.Budgeted;
-            ActualTotal = incomeTotal.Actual - expenseTotal.Actual;
+            Currency BudgetedTotal = incomeTotal.Budgeted - expenseTotal.Budgeted;
+            Currency ActualTotal = incomeTotal.Actual - expenseTotal.Actual;
             DifferenceTotal = ActualTotal - BudgetedTotal;
 
 
