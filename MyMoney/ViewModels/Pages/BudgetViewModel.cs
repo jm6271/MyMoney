@@ -113,28 +113,32 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateCharts()
         {
-            List<double> incomeTotals = [];
+            Dictionary<string, double> incomeTotals = [];
             foreach (var item in IncomeLineItems)
             {
-                incomeTotals.Add((double)item.Amount.Value);
+                incomeTotals.Add(item.Category, (double)item.Amount.Value);
             }
 
             IncomePercentagesSeries = new ISeries[incomeTotals.Count];
-            for (int i = 0; i <  incomeTotals.Count; i++)
+            int i = 0;
+            foreach (var item in incomeTotals)
             {
-                IncomePercentagesSeries[i] = new PieSeries<double> { Values = [incomeTotals[i]] };
+                IncomePercentagesSeries[i] = new PieSeries<double> { Values = [item.Value], Name = item.Key };
+                i++;
             }
 
-            List<double> expenseTotals = [];
+            Dictionary<string, double> expenseTotals = [];
             foreach (var item in ExpenseLineItems)
             {
-                expenseTotals.Add((double)item.Amount.Value);
+                expenseTotals.Add(item.Category, (double)item.Amount.Value);
             }
 
             ExpensePercentagesSeries = new ISeries[expenseTotals.Count];
-            for (int i = 0; i < expenseTotals.Count; i++)
+            i = 0;
+            foreach (var item in expenseTotals)
             {
-                ExpensePercentagesSeries[i] = new PieSeries<double> { Values = [expenseTotals[i]] };
+                ExpensePercentagesSeries[i] = new PieSeries<double> { Values = [item.Value], Name = item.Key };
+                i++;
             }
 
             // Update theme
