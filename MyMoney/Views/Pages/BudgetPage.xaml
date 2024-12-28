@@ -26,6 +26,19 @@
         </Grid.ColumnDefinitions>
         
         <StackPanel Margin="0,0,24,24">
+
+            <ui:Card Margin="0,0,0,24">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <ui:TextBlock FontTypography="Title" Text="{Binding ViewModel.BudgetTitle}"/>
+                    <ui:Button Grid.Column="1" Content="New Budget" Appearance="Primary" Margin="12,0,0,0"/>
+                </Grid>
+            </ui:Card>
+            
             <StackPanel Orientation="Horizontal">
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
                 <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}">

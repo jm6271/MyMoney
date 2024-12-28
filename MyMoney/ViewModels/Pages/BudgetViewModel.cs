@@ -55,6 +55,9 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private decimal _ExpensePercentTotal = 0;
 
+        [ObservableProperty]
+        private string _BudgetTitle = "Budget";
+
         public BudgetViewModel()
         {
             // Read the budget items from the database and populate the list views
