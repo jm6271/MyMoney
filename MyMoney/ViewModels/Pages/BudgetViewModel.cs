@@ -5,6 +5,10 @@ using MyMoney.Core.Models;
 using MyMoney.Core.Database;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.VisualElements;
+using SkiaSharp;
+using LiveChartsCore.SkiaSharpView.Painting;
+using Wpf.Ui.Appearance;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -15,6 +19,26 @@ namespace MyMoney.ViewModels.Pages
 
         public ISeries[] IncomePercentagesSeries { get; set; } = [];
         public ISeries[] ExpensePercentagesSeries { get; set; } = [];
+
+        [ObservableProperty]
+        private LabelVisual _IncomePercentages_Title = new LabelVisual
+        {
+            Text = "Income",
+            TextSize = 25,
+            Padding = new LiveChartsCore.Drawing.Padding(15)
+        };
+
+        [ObservableProperty]
+        private LabelVisual _ExpensePercentages_Title = new LabelVisual
+        {
+            Text = "Expenses",
+            TextSize = 25,
+            Padding = new LiveChartsCore.Drawing.Padding(15)
+        };
+
+        // Colors for chart text (changes in light and dark modes)
+        [ObservableProperty]
+        private SKColor _ChartTextColor = new(0x33, 0x33, 0x33);
 
         [ObservableProperty]
         private int _IncomeItemsSelectedIndex = 0;
@@ -49,6 +73,11 @@ namespace MyMoney.ViewModels.Pages
             }
 
             UpdateListViewTotals();
+        }
+
+        public void OnPageNavigatedTo()
+        {
+            UpdateCharts();
         }
 
         private void WriteToDatabase()
@@ -107,6 +136,24 @@ namespace MyMoney.ViewModels.Pages
             {
                 ExpensePercentagesSeries[i] = new PieSeries<double> { Values = [expenseTotals[i]] };
             }
+
+            // Update theme
+            UpdateChartTheme();
+        }
+
+        private void UpdateChartTheme()
+        {
+            if (ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light)
+            {
+                ChartTextColor = new SKColor(0x33, 0x33, 0x33);
+            }
+            else
+            {
+                ChartTextColor = new SKColor(0xff, 0xff, 0xff);
+            }
+
+            IncomePercentages_Title.Paint = new SolidColorPaint(ChartTextColor);
+            ExpensePercentages_Title.Paint = new SolidColorPaint(ChartTextColor);
         }
 
         [RelayCommand]

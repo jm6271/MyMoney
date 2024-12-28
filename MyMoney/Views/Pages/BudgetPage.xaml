@@ -16,7 +16,8 @@
       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
       ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core">
+      xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
+      Loaded="Page_Loaded">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -126,9 +127,16 @@
 
         </StackPanel>
 
-        <StackPanel Grid.Column="1">
-            <lvc:PieChart Height="200" Series="{Binding ViewModel.IncomePercentagesSeries}" Margin="0,0,0,24"/>
-            <lvc:PieChart Height="200" Series="{Binding ViewModel.ExpensePercentagesSeries}" Margin="0,24,0,24"/>
-        </StackPanel>
+        <Grid Grid.Column="1" Margin="0,0,0,24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="1*"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+            
+            <lvc:PieChart Series="{Binding ViewModel.IncomePercentagesSeries}" Margin="0,0,0,12"
+                          Title="{Binding ViewModel.IncomePercentages_Title}"/>
+            <lvc:PieChart Grid.Row="1" Series="{Binding ViewModel.ExpensePercentagesSeries}" Margin="0,12,0,0"
+                          Title="{Binding ViewModel.ExpensePercentages_Title}"/>
+        </Grid>
     </Grid>
 </Page>
