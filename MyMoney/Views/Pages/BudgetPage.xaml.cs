@@ -17,5 +17,10 @@ namespace MyMoney.Views.Pages
 
             InitializeComponent();
         }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            ViewModel.OnPageNavigatedTo();
+        }
     }
 }

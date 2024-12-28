@@ -3,6 +3,12 @@ using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
 using MyMoney.Core.Models;
 using MyMoney.Core.Database;
+using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.VisualElements;
+using SkiaSharp;
+using LiveChartsCore.SkiaSharpView.Painting;
+using Wpf.Ui.Appearance;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -10,6 +16,29 @@ namespace MyMoney.ViewModels.Pages
     {
         public ObservableCollection<BudgetIncomeItem> IncomeLineItems { get; set; } = [];
         public ObservableCollection<BudgetExpenseItem> ExpenseLineItems { get; set; } = [];
+
+        public ISeries[] IncomePercentagesSeries { get; set; } = [];
+        public ISeries[] ExpensePercentagesSeries { get; set; } = [];
+
+        [ObservableProperty]
+        private LabelVisual _IncomePercentages_Title = new LabelVisual
+        {
+            Text = "Income",
+            TextSize = 25,
+            Padding = new LiveChartsCore.Drawing.Padding(15)
+        };
+
+        [ObservableProperty]
+        private LabelVisual _ExpensePercentages_Title = new LabelVisual
+        {
+            Text = "Expenses",
+            TextSize = 25,
+            Padding = new LiveChartsCore.Drawing.Padding(15)
+        };
+
+        // Colors for chart text (changes in light and dark modes)
+        [ObservableProperty]
+        private SKColor _ChartTextColor = new(0x33, 0x33, 0x33);
 
         [ObservableProperty]
         private int _IncomeItemsSelectedIndex = 0;
@@ -46,6 +75,11 @@ namespace MyMoney.ViewModels.Pages
             UpdateListViewTotals();
         }
 
+        public void OnPageNavigatedTo()
+        {
+            UpdateCharts();
+        }
+
         private void WriteToDatabase()
         {
             DatabaseWriter.WriteCollection("BudgetIncomeItems", [.. IncomeLineItems]);
@@ -72,6 +106,58 @@ namespace MyMoney.ViewModels.Pages
 
             // write the items to the database
             WriteToDatabase();
+
+            // Update the charts
+            UpdateCharts();
+        }
+
+        private void UpdateCharts()
+        {
+            Dictionary<string, double> incomeTotals = [];
+            foreach (var item in IncomeLineItems)
+            {
+                incomeTotals.Add(item.Category, (double)item.Amount.Value);
+            }
+
+            IncomePercentagesSeries = new ISeries[incomeTotals.Count];
+            int i = 0;
+            foreach (var item in incomeTotals)
+            {
+                IncomePercentagesSeries[i] = new PieSeries<double> { Values = [item.Value], Name = item.Key };
+                i++;
+            }
+
+            Dictionary<string, double> expenseTotals = [];
+            foreach (var item in ExpenseLineItems)
+            {
+                expenseTotals.Add(item.Category, (double)item.Amount.Value);
+            }
+
+            ExpensePercentagesSeries = new ISeries[expenseTotals.Count];
+            i = 0;
+            foreach (var item in expenseTotals)
+            {
+                ExpensePercentagesSeries[i] = new PieSeries<double> { Values = [item.Value], Name = item.Key };
+                i++;
+            }
+
+            // Update theme
+            UpdateChartTheme();
+        }
+
+        private void UpdateChartTheme()
+        {
+            if (ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light)
+            {
+                ChartTextColor = new SKColor(0x33, 0x33, 0x33);
+            }
+            else
+            {
+                ChartTextColor = new SKColor(0xff, 0xff, 0xff);
+            }
+
+            IncomePercentages_Title.Paint = new SolidColorPaint(ChartTextColor);
+            ExpensePercentages_Title.Paint = new SolidColorPaint(ChartTextColor);
         }
 
         [RelayCommand]
