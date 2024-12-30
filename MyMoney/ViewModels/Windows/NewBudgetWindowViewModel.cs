@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace MyMoney.ViewModels.Windows
 {
-    class NewBudgetWindowViewModel
+    public class NewBudgetWindowViewModel : ObservableObject
     {
+
     }
 }
