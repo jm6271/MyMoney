@@ -308,5 +308,20 @@ namespace MyMoney.ViewModels.Pages
 
             UpdateListViewTotals();
         }
+
+        [RelayCommand]
+        private void CreateNewBudget()
+        {
+            // Show the new budget dialog
+            NewBudgetWindowViewModel viewModel = new();
+            NewBudgetDialog dlg = new(viewModel);
+
+            dlg.Owner = Application.Current.MainWindow;
+
+            if (dlg.ShowDialog() == true) 
+            { 
+
+            }
+        }
     }
 }

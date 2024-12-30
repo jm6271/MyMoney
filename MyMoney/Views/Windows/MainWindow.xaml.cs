@@ -40,14 +40,14 @@ namespace MyMoney.Views.Windows
                     ApplicationThemeManager.Apply(ApplicationTheme.Light);
 
                     // Set the color dynamic resources
-                    Application.Current.Resources["LayerFillColorDefaultBrush"] = Application.Current.Resources["LayerFillColorDefaultColorLight"];
+                    Application.Current.Resources["LayerFillColorDefaultColor"] = Application.Current.Resources["LayerFillColorDefaultColorLight"];
                 }
                 else
                 {
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark);
 
                     // set the color dynamic resources
-                    Application.Current.Resources["LayerFillColorDefaultBrush"] = Application.Current.Resources["LayerFillColorDefaultColorDark"];
+                    Application.Current.Resources["LayerFillColorDefaultColor"] = Application.Current.Resources["LayerFillColorDefaultColorDark"];
                 }
                     
             }

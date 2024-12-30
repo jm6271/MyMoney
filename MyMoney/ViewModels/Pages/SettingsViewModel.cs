@@ -46,7 +46,7 @@ namespace MyMoney.ViewModels.Pages
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light);
                     CurrentTheme = ApplicationTheme.Light;
-                    Application.Current.Resources["LayerFillColorDefaultBrush"] =
+                    Application.Current.Resources["LayerFillColorDefaultColor"] =
                         Application.Current.Resources["LayerFillColorDefaultColorLight"];
                     break;
 
@@ -56,7 +56,7 @@ namespace MyMoney.ViewModels.Pages
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark);
                     CurrentTheme = ApplicationTheme.Dark;
-                    Application.Current.Resources["LayerFillColorDefaultBrush"] =
+                    Application.Current.Resources["LayerFillColorDefaultColor"] =
                         Application.Current.Resources["LayerFillColorDefaultColorDark"];
                     break;
             }

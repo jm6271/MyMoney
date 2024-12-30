@@ -21,13 +21,27 @@ namespace MyMoney.Views.Windows
     /// </summary>
     public partial class NewBudgetDialog : FluentWindow
     {
-        NewBudgetWindowViewModel ViewModel { get; set; }
+        public NewBudgetWindowViewModel ViewModel { get; set; }
 
         public NewBudgetDialog(NewBudgetWindowViewModel viewModel)
         {
             ViewModel = viewModel;
 
             InitializeComponent();
+
+            DataContext = this;
+        }
+
+        private void OKButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+            Close();
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            DialogResult = false;
+            Close();
         }
     }
 }

@@ -6,7 +6,7 @@
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:local="clr-namespace:MyMoney.Views.Windows"
         mc:Ignorable="d"
-        Title="NewBudgetDialog" Height="450" Width="400"
+        Title="New Budget" Height="340" Width="400"
         d:DataContext="{d:DesignInstance local:NewBudgetDialog,
             IsDesignTimeCreatable=True}"
         ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
@@ -15,11 +15,17 @@
         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
         WindowBackdropType="Mica"
         WindowCornerPreference="Round"
-        WindowStartupLocation="CenterScreen" ShowInTaskbar="False" ResizeMode="NoResize" SizeToContent="Height" Topmost="True" >
+        WindowStartupLocation="CenterScreen" ShowInTaskbar="False" ResizeMode="NoResize" SizeToContent="Height" >
     <StackPanel>
         <Border Background="{DynamicResource LayerFillColorDefaultBrush}">
             <StackPanel Margin="24,32,24,22">
-                
+                <ui:TextBlock FontTypography="Title" Margin="0,0,0,24">New Budget</ui:TextBlock>
+
+                <ui:TextBlock Margin="0,0,0,12">Budget for:</ui:TextBlock>
+                <ComboBox ItemsSource="{Binding ViewModel.AvailableBudgetDates}" Margin="0,0,0,16"
+                          SelectedIndex="{Binding ViewModel.SelectedDateIndex}" SelectedItem="{Binding ViewModel.SelectedDate}"/>
+
+                <CheckBox IsChecked="{Binding ViewModel.UseLastMonthsBudget}">Start with previous month's budget</CheckBox>
             </StackPanel>
         </Border>
         <Grid Margin="24,24,24,24">
@@ -28,8 +34,10 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <ui:Button Margin="0,0,4,0" HorizontalAlignment="Stretch" Appearance="Primary" IsDefault="True">OK</ui:Button>
-            <ui:Button Margin="4,0,0,0" HorizontalAlignment="Stretch" Grid.Column="1" IsCancel="True">Cancel</ui:Button>
+            <ui:Button Margin="0,0,4,0" HorizontalAlignment="Stretch" Appearance="Primary" IsDefault="True"
+                       Click="OKButton_Click">Create</ui:Button>
+            <ui:Button Margin="4,0,0,0" HorizontalAlignment="Stretch" Grid.Column="1" IsCancel="True"
+                       Click="CancelButton_Click">Cancel</ui:Button>
         </Grid>
     </StackPanel>
 </ui:FluentWindow>

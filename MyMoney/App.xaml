@@ -15,7 +15,8 @@
 
             <Color x:Key="LayerFillColorDefaultColorLight">#FEFEFE</Color>
             <Color x:Key="LayerFillColorDefaultColorDark">#2C2C2C</Color>
-            <SolidColorBrush x:Key="LayerFillColorDefaultBrush" Color="{DynamicResource LayerFillColorDefaultColorLight}"/>
+            <Color x:Key="LayerFillColorDefaultColor"/>
+            <SolidColorBrush x:Key="LayerFillColorDefaultBrush" Color="{DynamicResource LayerFillColorDefaultColor}"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
