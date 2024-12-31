@@ -10,6 +10,9 @@ namespace MyMoney.Core.Models
 {
     public partial class Budget : ObservableObject
     {
+        [ObservableProperty]
+        private int _Id = 0;
+
         public ObservableCollection<BudgetIncomeItem> BudgetIncomeItems { get; set; } = [];
 
         public ObservableCollection<BudgetExpenseItem> BudgetExpenseItems { get; set; } = [];
