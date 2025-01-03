@@ -78,7 +78,7 @@
             
             <StackPanel Orientation="Horizontal">
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
-                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}">
+                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                     <ui:SymbolIcon Symbol="Add24"/>
                 </ui:Button>
             </StackPanel>
@@ -87,7 +87,7 @@
             <ui:Card Margin="0,4,0,8">
                 <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetIncomeItems}" SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}">
                     <ui:ListView.ContextMenu>
-                        <ContextMenu>
+                        <ContextMenu IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                             <MenuItem Header="Edit" Command="{Binding ViewModel.EditIncomeItemCommand}"/>
                             <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
                         </ContextMenu>
@@ -128,7 +128,7 @@
 
             <StackPanel Orientation="Horizontal">
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
-                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddExpenseItemCommand}">
+                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddExpenseItemCommand}" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                     <ui:SymbolIcon Symbol="Add24"/>
                 </ui:Button>
             </StackPanel>
@@ -137,7 +137,7 @@
             <ui:Card Margin="0,4,0,12">
                 <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}" SelectedIndex="{Binding ViewModel.ExpenseItemsSelectedIndex}">
                     <ui:ListView.ContextMenu>
-                        <ContextMenu>
+                        <ContextMenu IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                             <MenuItem Header="Edit" Command="{Binding ViewModel.EditExpenseItemCommand}"/>
                             <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteExpenseItemCommand}"/>
                         </ContextMenu>

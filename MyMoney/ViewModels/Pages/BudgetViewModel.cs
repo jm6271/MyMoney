@@ -73,6 +73,9 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private decimal _ExpensePercentTotal = 0;
 
+        [ObservableProperty]
+        private bool _IsEditingEnabled = true;
+
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
@@ -284,6 +287,7 @@ namespace MyMoney.ViewModels.Pages
         private void AddIncomeItem()
         {
             if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
 
             BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
             BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
@@ -307,6 +311,7 @@ namespace MyMoney.ViewModels.Pages
         private void AddExpenseItem()
         {
             if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
 
             BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
             BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
@@ -330,6 +335,7 @@ namespace MyMoney.ViewModels.Pages
         private void EditIncomeItem()
         {
             if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
 
             BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
             BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
@@ -355,6 +361,7 @@ namespace MyMoney.ViewModels.Pages
         private async Task DeleteIncomeItem()
         {
             if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
 
             // Show message box asking user if they really want to delete the category
             var uiMessageBox = new Wpf.Ui.Controls.MessageBox
@@ -386,6 +393,7 @@ namespace MyMoney.ViewModels.Pages
         private void EditExpenseItem()
         {
             if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
 
             BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
             BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
@@ -411,6 +419,7 @@ namespace MyMoney.ViewModels.Pages
         private async Task DeleteExpenseItem()
         {
             if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
 
             // Show message box asking user if they really want to delete the category
             var uiMessageBox = new Wpf.Ui.Controls.MessageBox
@@ -489,6 +498,11 @@ namespace MyMoney.ViewModels.Pages
         {
             // Load into current budget
             CurrentBudget = Budgets[index];
+
+            if (CurrentBudget.BudgetDate <= DateTime.Now.AddMonths(-1))
+                IsEditingEnabled = false;
+            else
+                IsEditingEnabled = true;
         }
 
         private int FindBudgetIndex(string BudgetName)
