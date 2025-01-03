@@ -30,7 +30,7 @@
             <StackPanel>
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,24">Budgets</ui:TextBlock>
                 <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Current Budget</ui:TextBlock>
-                <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudgets}" Margin="0,0,0,20">
+                <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudgets}" SelectedIndex="{Binding ViewModel.CurrentBudgetsSelectedIndex}" Margin="0,0,0,20">
                     <ui:ListView.ItemTemplate>
                         <DataTemplate>
                             <ui:TextBlock Text="{Binding BudgetTitle}" Margin="0,2,0,2"/>
@@ -38,7 +38,7 @@
                     </ui:ListView.ItemTemplate>
                 </ui:ListView>
                 <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Future Budgets</ui:TextBlock>
-                <ui:ListView ItemsSource="{Binding ViewModel.FutureBudgets}" Margin="0,0,0,20">
+                <ui:ListView ItemsSource="{Binding ViewModel.FutureBudgets}" SelectedIndex="{Binding ViewModel.FutureBudgetsSelectedIndex}" Margin="0,0,0,20">
                     <ui:ListView.ItemTemplate>
                         <DataTemplate>
                             <ui:TextBlock Text="{Binding BudgetTitle}" Margin="0,2,0,2"/>
@@ -46,7 +46,7 @@
                     </ui:ListView.ItemTemplate>
                 </ui:ListView>
                 <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Older Budgets</ui:TextBlock>
-                <ui:ListView ItemsSource="{Binding ViewModel.OldBudgets}">
+                <ui:ListView ItemsSource="{Binding ViewModel.OldBudgets}" SelectedIndex="{Binding ViewModel.OldBudgetsSelectedIndex}">
                     <ui:ListView.ItemTemplate>
                         <DataTemplate>
                             <ui:TextBlock Text="{Binding BudgetTitle}" Margin="0,2,0,2"/>

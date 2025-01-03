@@ -10,6 +10,7 @@ using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Painting;
 using Wpf.Ui.Appearance;
 using System.Globalization;
+using System.ComponentModel;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -21,6 +22,15 @@ namespace MyMoney.ViewModels.Pages
         public ObservableCollection<Budget> OldBudgets { get; set; } = [];
         public ObservableCollection<Budget> CurrentBudgets { get; set; } = [];
         public ObservableCollection<Budget> FutureBudgets { get; set; } = [];
+
+        [ObservableProperty]
+        private int _OldBudgetsSelectedIndex = -1;
+
+        [ObservableProperty]
+        private int _CurrentBudgetsSelectedIndex = -1;
+
+        [ObservableProperty]
+        private int _FutureBudgetsSelectedIndex = -1;
 
         [ObservableProperty]
         private Budget? _CurrentBudget = null;
@@ -62,6 +72,27 @@ namespace MyMoney.ViewModels.Pages
 
         [ObservableProperty]
         private decimal _ExpensePercentTotal = 0;
+
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            if (e.PropertyName == nameof(OldBudgetsSelectedIndex) && OldBudgetsSelectedIndex != -1)
+            {
+                CurrentBudgetsSelectedIndex = -1;
+                FutureBudgetsSelectedIndex = -1;
+            }
+            else if (e.PropertyName == nameof(CurrentBudgetsSelectedIndex) && CurrentBudgetsSelectedIndex != -1)
+            {
+                OldBudgetsSelectedIndex = -1;
+                FutureBudgetsSelectedIndex = -1;
+            }
+            else if (e.PropertyName == nameof(FutureBudgetsSelectedIndex) && FutureBudgetsSelectedIndex != -1)
+            {
+                OldBudgetsSelectedIndex = -1;
+                CurrentBudgetsSelectedIndex = -1;
+            }
+        }
 
         public BudgetViewModel()
         {
