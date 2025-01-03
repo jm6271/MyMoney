@@ -106,6 +106,7 @@ namespace MyMoney.ViewModels.Pages
 
             DatabaseWriter.WriteCollection("BudgetIncomeItems", [.. CurrentBudget.BudgetIncomeItems]);
             DatabaseWriter.WriteCollection("BudgetExpenseItems", [.. CurrentBudget.BudgetExpenseItems]);
+            DatabaseWriter.WriteCollection("Budgets", Budgets.ToList());
         }
 
         public void UpdateListViewTotals()
