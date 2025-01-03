@@ -21,23 +21,73 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
+
+        <ui:Card Grid.Column="0" VerticalAlignment="Top">
+            <StackPanel>
+                <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,24">Budgets</ui:TextBlock>
+                <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Current Budget</ui:TextBlock>
+                <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudgets}" SelectedIndex="{Binding ViewModel.CurrentBudgetsSelectedIndex}" Margin="0,0,0,20">
+                    <ui:ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="0,2,0,2"/>
+                        </DataTemplate>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
+                <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Future Budgets</ui:TextBlock>
+                <ui:ListView ItemsSource="{Binding ViewModel.FutureBudgets}" SelectedIndex="{Binding ViewModel.FutureBudgetsSelectedIndex}" Margin="0,0,0,20">
+                    <ui:ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="0,2,0,2"/>
+                        </DataTemplate>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
+                <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Older Budgets</ui:TextBlock>
+                <ui:ListView ItemsSource="{Binding ViewModel.OldBudgets}" SelectedIndex="{Binding ViewModel.OldBudgetsSelectedIndex}">
+                    <ui:ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="0,2,0,2"/>
+                        </DataTemplate>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
+            </StackPanel>
+
+        </ui:Card>
         
-        <StackPanel Margin="0,0,24,24">
+        <StackPanel Grid.Column="1" Margin="24,0,24,24">
+
+            <ui:Card Margin="0,0,0,24">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <ui:TextBlock FontTypography="Title" Text="{Binding ViewModel.CurrentBudget.BudgetTitle}"/>
+                    <ui:Button Command="{Binding ViewModel.CreateNewBudgetCommand}" Grid.Column="1" Appearance="Primary" Margin="12,0,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="FormNew20" Margin="0,0,4,0"/>
+                            <ui:TextBlock Margin="4,0,0,0">New Budget</ui:TextBlock>
+                        </StackPanel>
+                    </ui:Button>
+                </Grid>
+            </ui:Card>
+            
             <StackPanel Orientation="Horizontal">
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
-                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}">
+                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                     <ui:SymbolIcon Symbol="Add24"/>
                 </ui:Button>
             </StackPanel>
 
 
             <ui:Card Margin="0,4,0,8">
-                <ui:ListView ItemsSource="{Binding ViewModel.IncomeLineItems}" SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}">
+                <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetIncomeItems}" SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}">
                     <ui:ListView.ContextMenu>
-                        <ContextMenu>
+                        <ContextMenu IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                             <MenuItem Header="Edit" Command="{Binding ViewModel.EditIncomeItemCommand}"/>
                             <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
                         </ContextMenu>
@@ -78,16 +128,16 @@
 
             <StackPanel Orientation="Horizontal">
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
-                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddExpenseItemCommand}">
+                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddExpenseItemCommand}" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                     <ui:SymbolIcon Symbol="Add24"/>
                 </ui:Button>
             </StackPanel>
 
 
             <ui:Card Margin="0,4,0,12">
-                <ui:ListView ItemsSource="{Binding ViewModel.ExpenseLineItems}" SelectedIndex="{Binding ViewModel.ExpenseItemsSelectedIndex}">
+                <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}" SelectedIndex="{Binding ViewModel.ExpenseItemsSelectedIndex}">
                     <ui:ListView.ContextMenu>
-                        <ContextMenu>
+                        <ContextMenu IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                             <MenuItem Header="Edit" Command="{Binding ViewModel.EditExpenseItemCommand}"/>
                             <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteExpenseItemCommand}"/>
                         </ContextMenu>
@@ -127,7 +177,7 @@
 
         </StackPanel>
 
-        <Grid Grid.Column="1" Margin="0,0,0,24">
+        <Grid Grid.Column="2" Margin="0,0,0,24">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
