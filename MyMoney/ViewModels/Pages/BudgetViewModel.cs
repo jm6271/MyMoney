@@ -81,16 +81,37 @@ namespace MyMoney.ViewModels.Pages
             {
                 CurrentBudgetsSelectedIndex = -1;
                 FutureBudgetsSelectedIndex = -1;
+
+                // Find this budget in the budgets collection and load it
+                var index = FindBudgetIndex(OldBudgets[OldBudgetsSelectedIndex].BudgetTitle);
+                if (index != -1)
+                {
+                    LoadBudget(index);
+                }
             }
             else if (e.PropertyName == nameof(CurrentBudgetsSelectedIndex) && CurrentBudgetsSelectedIndex != -1)
             {
                 OldBudgetsSelectedIndex = -1;
                 FutureBudgetsSelectedIndex = -1;
+
+                // Find this budget in the budgets collection and load it
+                var index = FindBudgetIndex(CurrentBudgets[CurrentBudgetsSelectedIndex].BudgetTitle);
+                if (index != -1)
+                {
+                    LoadBudget(index);
+                }
             }
             else if (e.PropertyName == nameof(FutureBudgetsSelectedIndex) && FutureBudgetsSelectedIndex != -1)
             {
                 OldBudgetsSelectedIndex = -1;
                 CurrentBudgetsSelectedIndex = -1;
+
+                // Find this budget in the budgets collection and load it
+                var index = FindBudgetIndex(FutureBudgets[FutureBudgetsSelectedIndex].BudgetTitle);
+                if (index != -1)
+                {
+                    LoadBudget(index);
+                }
             }
         }
 
@@ -462,6 +483,25 @@ namespace MyMoney.ViewModels.Pages
                     }
                 }
             }
+        }
+
+        private void LoadBudget(int index)
+        {
+            // Load into current budget
+            CurrentBudget = Budgets[index];
+        }
+
+        private int FindBudgetIndex(string BudgetName)
+        {
+            for (int i = 0; i < Budgets.Count; i++)
+            {
+                if (Budgets[i].BudgetTitle == BudgetName)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
     }
 }
