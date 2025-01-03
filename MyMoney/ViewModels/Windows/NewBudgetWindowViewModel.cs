@@ -21,8 +21,8 @@ namespace MyMoney.ViewModels.Windows
         {
             // Load the available month names
             DateTime dt = DateTime.Now;
-            AvailableBudgetDates.Add(dt.ToString("MMMM yyyy", CultureInfo.InvariantCulture));
-            AvailableBudgetDates.Add(dt.AddMonths(1).ToString("MMMM yyyy", CultureInfo.InvariantCulture));
+            AvailableBudgetDates.Add(dt.ToString("MMMM, yyyy", CultureInfo.InvariantCulture));
+            AvailableBudgetDates.Add(dt.AddMonths(1).ToString("MMMM, yyyy", CultureInfo.InvariantCulture));
             SelectedDateIndex = 1;
         }
     }

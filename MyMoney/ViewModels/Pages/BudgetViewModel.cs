@@ -75,7 +75,7 @@ namespace MyMoney.ViewModels.Pages
 
             // look for current month
             DateTime dt = DateTime.Now;
-            string key = dt.ToString("MMMM yyyy", CultureInfo.InvariantCulture);
+            string key = dt.ToString("MMMM, yyyy", CultureInfo.InvariantCulture);
 
             foreach (var budget in Budgets)
             {
@@ -362,8 +362,39 @@ namespace MyMoney.ViewModels.Pages
             dlg.Owner = Application.Current.MainWindow;
 
             if (dlg.ShowDialog() == true) 
-            { 
+            {
+                // Add a budget
+                Budget newBudget = new();
 
+                string budgetTitle = viewModel.SelectedDate;
+                newBudget.BudgetTitle = budgetTitle;
+
+                // Copy over categories if box is checked
+                if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
+                {
+                    foreach (var item in CurrentBudget.BudgetIncomeItems)
+                    {
+                        newBudget.BudgetIncomeItems.Add(item);
+                    }
+
+                    foreach (var item in CurrentBudget.BudgetExpenseItems)
+                    {
+                        newBudget.BudgetExpenseItems.Add(item);
+                    }
+                }
+
+                // Add to list of budgets
+                Budgets.Add(newBudget);
+                
+                // Set as current budget
+                foreach (var item in Budgets)
+                {
+                    if (item.BudgetTitle == budgetTitle)
+                    {
+                        CurrentBudget = item;
+                        break;
+                    }
+                }
             }
         }
     }
