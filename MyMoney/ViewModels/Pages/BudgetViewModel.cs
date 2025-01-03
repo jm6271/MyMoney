@@ -17,6 +17,11 @@ namespace MyMoney.ViewModels.Pages
     {
         public ObservableCollection<Budget> Budgets { get; set; } = [];
 
+        // Collections for different groups of budgets
+        public ObservableCollection<Budget> OldBudgets { get; set; } = [];
+        public ObservableCollection<Budget> CurrentBudgets { get; set; } = [];
+        public ObservableCollection<Budget> FutureBudgets { get; set; } = [];
+
         [ObservableProperty]
         private Budget? _CurrentBudget = null;
 
@@ -98,6 +103,34 @@ namespace MyMoney.ViewModels.Pages
         public void OnPageNavigatedTo()
         {
             UpdateCharts();
+            UpdateBudgetLists();
+        }
+
+        private void UpdateBudgetLists()
+        {
+            CurrentBudgets.Clear();
+            OldBudgets.Clear();
+            FutureBudgets.Clear();
+
+            foreach (var budget in Budgets)
+            {
+                if (budget.BudgetDate.Month == DateTime.Now.Month && budget.BudgetDate.Year == DateTime.Now.Year)
+                {
+                    CurrentBudgets.Add(budget);
+                }
+                else if (budget.BudgetDate > DateTime.Now)
+                {
+                    FutureBudgets.Add(budget);
+                }
+                else
+                {
+                    // Don't add a budget from more than 1 year ago
+                    if (budget.BudgetDate < DateTime.Now.AddYears(-1))
+                        continue;
+
+                    OldBudgets.Add(budget);
+                }
+            }
         }
 
         private void WriteToDatabase()
@@ -369,6 +402,7 @@ namespace MyMoney.ViewModels.Pages
 
                 string budgetTitle = viewModel.SelectedDate;
                 newBudget.BudgetTitle = budgetTitle;
+                newBudget.BudgetDate = Convert.ToDateTime(budgetTitle);
 
                 // Copy over categories if box is checked
                 if (viewModel.UseLastMonthsBudget && CurrentBudget != null)

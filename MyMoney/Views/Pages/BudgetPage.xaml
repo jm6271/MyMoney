@@ -21,11 +21,43 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
+
+        <ui:Card Grid.Column="0" VerticalAlignment="Top">
+            <StackPanel>
+                <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,24">Budgets</ui:TextBlock>
+                <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Current Budget</ui:TextBlock>
+                <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudgets}" Margin="0,0,0,20">
+                    <ui:ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="0,2,0,2"/>
+                        </DataTemplate>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
+                <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Future Budgets</ui:TextBlock>
+                <ui:ListView ItemsSource="{Binding ViewModel.FutureBudgets}" Margin="0,0,0,20">
+                    <ui:ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="0,2,0,2"/>
+                        </DataTemplate>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
+                <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Older Budgets</ui:TextBlock>
+                <ui:ListView ItemsSource="{Binding ViewModel.OldBudgets}">
+                    <ui:ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="0,2,0,2"/>
+                        </DataTemplate>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
+            </StackPanel>
+
+        </ui:Card>
         
-        <StackPanel Margin="0,0,24,24">
+        <StackPanel Grid.Column="1" Margin="24,0,24,24">
 
             <ui:Card Margin="0,0,0,24">
                 <Grid>
@@ -145,7 +177,7 @@
 
         </StackPanel>
 
-        <Grid Grid.Column="1" Margin="0,0,0,24">
+        <Grid Grid.Column="2" Margin="0,0,0,24">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>

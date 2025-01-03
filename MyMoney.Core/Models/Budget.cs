@@ -19,5 +19,8 @@ namespace MyMoney.Core.Models
 
         [ObservableProperty]
         private string _BudgetTitle = string.Empty;
+
+        [ObservableProperty]
+        private DateTime _BudgetDate = DateTime.Now;
     }
 }
