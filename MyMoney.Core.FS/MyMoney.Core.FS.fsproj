@@ -9,6 +9,9 @@
 	<Compile Include="Models\Currency.fs" />
     <Compile Include="Models\Transaction.fs" />
 	<Compile Include="Models\Account.fs" />
+	<Compile Include="Models\BudgetReportItem.fs" />
+	<Compile Include="Models\AccountDashboardDisplayItem.fs" />
+	<Compile Include="Models\BudgetItem.fs" />
   </ItemGroup>
 
 </Project>
