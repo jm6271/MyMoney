@@ -12,6 +12,7 @@
 	<Compile Include="Models\BudgetReportItem.fs" />
 	<Compile Include="Models\AccountDashboardDisplayItem.fs" />
 	<Compile Include="Models\BudgetItem.fs" />
+	<Compile Include="Models\Budget.fs" />
   </ItemGroup>
 
 </Project>
