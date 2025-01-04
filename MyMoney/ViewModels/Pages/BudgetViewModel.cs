@@ -9,16 +9,37 @@ using LiveChartsCore.SkiaSharpView.VisualElements;
 using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Painting;
 using Wpf.Ui.Appearance;
+using System.Globalization;
+using System.ComponentModel;
 
 namespace MyMoney.ViewModels.Pages
 {
     public partial class BudgetViewModel : ObservableObject
     {
-        public ObservableCollection<BudgetItem> IncomeLineItems { get; set; } = [];
-        public ObservableCollection<BudgetItem> ExpenseLineItems { get; set; } = [];
+        public ObservableCollection<Budget> Budgets { get; set; } = [];
 
-        public ISeries[] IncomePercentagesSeries { get; set; } = [];
-        public ISeries[] ExpensePercentagesSeries { get; set; } = [];
+        // Collections for different groups of budgets
+        public ObservableCollection<Budget> OldBudgets { get; set; } = [];
+        public ObservableCollection<Budget> CurrentBudgets { get; set; } = [];
+        public ObservableCollection<Budget> FutureBudgets { get; set; } = [];
+
+        [ObservableProperty]
+        private int _OldBudgetsSelectedIndex = -1;
+
+        [ObservableProperty]
+        private int _CurrentBudgetsSelectedIndex = -1;
+
+        [ObservableProperty]
+        private int _FutureBudgetsSelectedIndex = -1;
+
+        [ObservableProperty]
+        private Budget? _CurrentBudget = null;
+
+        [ObservableProperty]
+        private ISeries[] _IncomePercentagesSeries  = [];
+
+        [ObservableProperty]
+        private ISeries[] _ExpensePercentagesSeries  = [];
 
         [ObservableProperty]
         private LabelVisual _IncomePercentages_Title = new LabelVisual
@@ -55,21 +76,82 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private decimal _ExpensePercentTotal = 0;
 
+        [ObservableProperty]
+        private bool _IsEditingEnabled = true;
+
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            if (e.PropertyName == nameof(OldBudgetsSelectedIndex) && OldBudgetsSelectedIndex != -1)
+            {
+                CurrentBudgetsSelectedIndex = -1;
+                FutureBudgetsSelectedIndex = -1;
+
+                // Find this budget in the budgets collection and load it
+                var index = FindBudgetIndex(OldBudgets[OldBudgetsSelectedIndex].BudgetTitle);
+                if (index != -1)
+                {
+                    LoadBudget(index);
+                }
+            }
+            else if (e.PropertyName == nameof(CurrentBudgetsSelectedIndex) && CurrentBudgetsSelectedIndex != -1)
+            {
+                OldBudgetsSelectedIndex = -1;
+                FutureBudgetsSelectedIndex = -1;
+
+                // Find this budget in the budgets collection and load it
+                var index = FindBudgetIndex(CurrentBudgets[CurrentBudgetsSelectedIndex].BudgetTitle);
+                if (index != -1)
+                {
+                    LoadBudget(index);
+                }
+            }
+            else if (e.PropertyName == nameof(FutureBudgetsSelectedIndex) && FutureBudgetsSelectedIndex != -1)
+            {
+                OldBudgetsSelectedIndex = -1;
+                CurrentBudgetsSelectedIndex = -1;
+
+                // Find this budget in the budgets collection and load it
+                var index = FindBudgetIndex(FutureBudgets[FutureBudgetsSelectedIndex].BudgetTitle);
+                if (index != -1)
+                {
+                    LoadBudget(index);
+                }
+            }
+        }
+
         public BudgetViewModel()
         {
-            // Read the budget items from the database and populate the list views
+            var budgetCollection = DatabaseReader.GetCollection<Budget>("Budgets");
 
-            var incomeCollection = DatabaseReader.GetCollection<BudgetItem>("BudgetIncomeItems");
-            var expenseCollection = DatabaseReader.GetCollection<BudgetItem>("BudgetExpenseItems");
-
-            foreach (var item in incomeCollection)
+            foreach (var budget in budgetCollection)
             {
-                IncomeLineItems.Add(item);
+                if (budget != null)
+                {
+                    Budgets.Add(budget);
+                }
             }
 
-            foreach (var item in expenseCollection)
+            // figure out which budget is there for the current month and display it
+            // Budgets are stored with a key that is the month name, followed by the year
+
+            // look for current month
+            DateTime dt = DateTime.Now;
+            string key = dt.ToString("MMMM, yyyy", CultureInfo.InvariantCulture);
+
+            foreach (var budget in Budgets)
             {
-                ExpenseLineItems.Add(item);
+                if (budget.BudgetTitle == key)
+                {
+                    CurrentBudget = budget;
+                }
+            }
+
+            if (CurrentBudget == null)
+            {
+                // No budget for the current month
+                return;
             }
 
             UpdateListViewTotals();
@@ -78,20 +160,64 @@ namespace MyMoney.ViewModels.Pages
         public void OnPageNavigatedTo()
         {
             UpdateCharts();
+            UpdateBudgetLists();
+
+            // Select the current budget
+            if (CurrentBudgets.Count == 1)
+            {
+                CurrentBudgetsSelectedIndex = 0;
+            }
+        }
+
+        private void UpdateBudgetLists()
+        {
+            CurrentBudgets.Clear();
+            OldBudgets.Clear();
+            FutureBudgets.Clear();
+
+            foreach (var budget in Budgets)
+            {
+                if (budget.BudgetDate.Month == DateTime.Now.Month && budget.BudgetDate.Year == DateTime.Now.Year)
+                {
+                    CurrentBudgets.Add(budget);
+                }
+                else if (budget.BudgetDate > DateTime.Now)
+                {
+                    FutureBudgets.Add(budget);
+                }
+                else
+                {
+                    // Don't add a budget from more than 1 year ago
+                    if (budget.BudgetDate < DateTime.Now.AddYears(-1))
+                        continue;
+
+                    OldBudgets.Add(budget);
+                }
+            }
         }
 
         private void WriteToDatabase()
         {
-            DatabaseWriter.WriteCollection("BudgetIncomeItems", [.. IncomeLineItems]);
-            DatabaseWriter.WriteCollection("BudgetExpenseItems", [.. ExpenseLineItems]);
+            if (CurrentBudget == null) return;
+
+            DatabaseWriter.WriteCollection("Budgets", Budgets.ToList());
         }
 
         public void UpdateListViewTotals()
         {
+            if (CurrentBudget == null)
+            {
+                // set to zero
+                IncomeTotal = new(0m);
+                ExpenseTotal = new(0m);
+
+                return;
+            }
+
             // calculate the total income items
             IncomeTotal = new(0m);
 
-            foreach (var item in IncomeLineItems)
+            foreach (var item in CurrentBudget.BudgetIncomeItems)
             {
                 IncomeTotal += item.Amount;
             }
@@ -99,7 +225,7 @@ namespace MyMoney.ViewModels.Pages
             // Calculate the total expense items
             ExpenseTotal = new(0m);
 
-            foreach (var item in ExpenseLineItems)
+            foreach (var item in CurrentBudget.BudgetExpenseItems)
             {
                 ExpenseTotal += item.Amount;
             }
@@ -113,8 +239,11 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateCharts()
         {
+            if (CurrentBudget == null)
+                return;
+
             Dictionary<string, double> incomeTotals = [];
-            foreach (var item in IncomeLineItems)
+            foreach (var item in CurrentBudget.BudgetIncomeItems)
             {
                 incomeTotals.Add(item.Category, (double)item.Amount.Value);
             }
@@ -128,7 +257,7 @@ namespace MyMoney.ViewModels.Pages
             }
 
             Dictionary<string, double> expenseTotals = [];
-            foreach (var item in ExpenseLineItems)
+            foreach (var item in CurrentBudget.BudgetExpenseItems)
             {
                 expenseTotals.Add(item.Category, (double)item.Amount.Value);
             }
@@ -163,6 +292,9 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private void AddIncomeItem()
         {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
             BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
             BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
 
@@ -174,7 +306,7 @@ namespace MyMoney.ViewModels.Pages
                 item.Amount = new(editorWindowViewModel.BudgetAmount);
 
                 // Add the item to the budget income items list
-                IncomeLineItems.Add(item);
+                CurrentBudget.BudgetIncomeItems.Add(item);
 
                 // Recalculate the total of the income items
                 UpdateListViewTotals();
@@ -184,6 +316,9 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private void AddExpenseItem()
         {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
             BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
             BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
 
@@ -195,7 +330,7 @@ namespace MyMoney.ViewModels.Pages
                 item.Amount = new(editorWindowViewModel.BudgetAmount);
 
                 // Add the item to the budget expense items list
-                ExpenseLineItems.Add(item);
+                CurrentBudget.BudgetExpenseItems.Add(item);
 
                 // Recalculate the total of the expense items
                 UpdateListViewTotals();
@@ -205,10 +340,13 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private void EditIncomeItem()
         {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
             BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
             BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
-            editorWindowViewModel.BudgetCategory = IncomeLineItems[IncomeItemsSelectedIndex].Category;
-            editorWindowViewModel.BudgetAmount = IncomeLineItems[IncomeItemsSelectedIndex].Amount.Value;
+            editorWindowViewModel.BudgetCategory = CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex].Category;
+            editorWindowViewModel.BudgetAmount = CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex].Amount.Value;
 
             if (editorWindow.ShowDialog() == true)
             {
@@ -218,7 +356,7 @@ namespace MyMoney.ViewModels.Pages
                 incomeItem.Amount = new(editorWindowViewModel.BudgetAmount);
 
                 // assign the selected index of the list with the new item
-                IncomeLineItems[IncomeItemsSelectedIndex] = incomeItem;
+                CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex] = incomeItem;
 
                 // Recalculate the total of the income items
                 UpdateListViewTotals();
@@ -228,6 +366,9 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private async Task DeleteIncomeItem()
         {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
             // Show message box asking user if they really want to delete the category
             var uiMessageBox = new Wpf.Ui.Controls.MessageBox
             {
@@ -243,12 +384,12 @@ namespace MyMoney.ViewModels.Pages
             var result = await uiMessageBox.ShowDialogAsync();
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Secondary) return; // User clicked no
-            IncomeLineItems.RemoveAt(IncomeItemsSelectedIndex);
+            CurrentBudget.BudgetIncomeItems.RemoveAt(IncomeItemsSelectedIndex);
 
             // replace the id property of the remaining elements so the IDs are in a concecutive order (We have all kinds of problems when we don't do this)
-            for (int i = 0; i < IncomeLineItems.Count; i++)
+            for (int i = 0; i < CurrentBudget.BudgetIncomeItems.Count; i++)
             {
-                IncomeLineItems[i].Id = i + 1;
+                CurrentBudget.BudgetIncomeItems[i].Id = i + 1;
             }
 
             UpdateListViewTotals();
@@ -257,10 +398,13 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private void EditExpenseItem()
         {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
             BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
             BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
-            editorWindowViewModel.BudgetCategory = ExpenseLineItems[ExpenseItemsSelectedIndex].Category;
-            editorWindowViewModel.BudgetAmount = ExpenseLineItems[ExpenseItemsSelectedIndex].Amount.Value;
+            editorWindowViewModel.BudgetCategory = CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex].Category;
+            editorWindowViewModel.BudgetAmount = CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex].Amount.Value;
 
             if (editorWindow.ShowDialog() == true)
             {
@@ -270,7 +414,7 @@ namespace MyMoney.ViewModels.Pages
                 expenseItem.Amount = new(editorWindowViewModel.BudgetAmount);
 
                 // assign the selected index of the list with the new item
-                ExpenseLineItems[ExpenseItemsSelectedIndex] = expenseItem;
+                CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex] = expenseItem;
 
                 // Recalculate the total of the expense items
                 UpdateListViewTotals();
@@ -280,6 +424,9 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private async Task DeleteExpenseItem()
         {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
             // Show message box asking user if they really want to delete the category
             var uiMessageBox = new Wpf.Ui.Controls.MessageBox
             {
@@ -295,15 +442,88 @@ namespace MyMoney.ViewModels.Pages
             var result = await uiMessageBox.ShowDialogAsync();
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Secondary) return; // User clicked no
-            ExpenseLineItems.RemoveAt(ExpenseItemsSelectedIndex);
+            CurrentBudget.BudgetExpenseItems.RemoveAt(ExpenseItemsSelectedIndex);
 
             // replace the id property of the remaining elements so the IDs are in a concecutive order (We have all kinds of problems when we don't do this)
-            for (int i = 0; i < ExpenseLineItems.Count; i++)
+            for (int i = 0; i < CurrentBudget.BudgetExpenseItems.Count; i++)
             {
-                ExpenseLineItems[i].Id = i + 1;
+                CurrentBudget.BudgetExpenseItems[i].Id = i + 1;
             }
 
             UpdateListViewTotals();
+        }
+
+        [RelayCommand]
+        private void CreateNewBudget()
+        {
+            // Show the new budget dialog
+            NewBudgetWindowViewModel viewModel = new();
+            NewBudgetDialog dlg = new(viewModel);
+
+            dlg.Owner = Application.Current.MainWindow;
+
+            if (dlg.ShowDialog() == true) 
+            {
+                // Add a budget
+                Budget newBudget = new();
+
+                string budgetTitle = viewModel.SelectedDate;
+                newBudget.BudgetTitle = budgetTitle;
+                newBudget.BudgetDate = Convert.ToDateTime(budgetTitle);
+
+                // Copy over categories if box is checked
+                if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
+                {
+                    foreach (var item in CurrentBudget.BudgetIncomeItems)
+                    {
+                        newBudget.BudgetIncomeItems.Add(item);
+                    }
+
+                    foreach (var item in CurrentBudget.BudgetExpenseItems)
+                    {
+                        newBudget.BudgetExpenseItems.Add(item);
+                    }
+                }
+
+                // Add to list of budgets
+                Budgets.Add(newBudget);
+                
+                // Set as current budget
+                foreach (var item in Budgets)
+                {
+                    if (item.BudgetTitle == budgetTitle)
+                    {
+                        CurrentBudget = item;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void LoadBudget(int index)
+        {
+            // Load into current budget
+            CurrentBudget = Budgets[index];
+
+            if (CurrentBudget.BudgetDate <= DateTime.Now.AddMonths(-1))
+                IsEditingEnabled = false;
+            else
+                IsEditingEnabled = true;
+
+            UpdateCharts();
+        }
+
+        private int FindBudgetIndex(string BudgetName)
+        {
+            for (int i = 0; i < Budgets.Count; i++)
+            {
+                if (Budgets[i].BudgetTitle == BudgetName)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
     }
 }

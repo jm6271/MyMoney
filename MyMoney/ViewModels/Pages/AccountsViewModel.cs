@@ -72,8 +72,12 @@ namespace MyMoney.ViewModels.Pages
         {
             CategoryNames.Clear();
 
-            var incomeLst = Core.Database.DatabaseReader.GetCollection<BudgetItem>("BudgetIncomeItems");
-            var expenseLst = Core.Database.DatabaseReader.GetCollection<BudgetItem>("BudgetExpenseItems");
+            Core.Database.BudgetCollection budgetCollection = new();
+            if (!budgetCollection.DoesCurrentBudgetExist())
+                return;
+
+            var incomeLst = budgetCollection.GetCurrentBudget().BudgetIncomeItems;
+            var expenseLst = budgetCollection.GetCurrentBudget().BudgetExpenseItems;
 
             foreach(var item in incomeLst)
             {

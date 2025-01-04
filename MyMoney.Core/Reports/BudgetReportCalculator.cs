@@ -1,4 +1,5 @@
-﻿using MyMoney.Core.FS.Models;
+﻿using MyMoney.Core.Database;
+using MyMoney.Core.FS.Models;
 
 namespace MyMoney.Core.Reports
 {
@@ -7,7 +8,13 @@ namespace MyMoney.Core.Reports
         public static List<BudgetReportItem> CalculateIncomeReportItems()
         {
             // read income items collection from the database
-            var incomeItems = Database.DatabaseReader.GetCollection<BudgetItem>("BudgetIncomeItems");
+            BudgetCollection budgetCollection = new();
+            if (!budgetCollection.DoesCurrentBudgetExist())
+            {
+                return [];
+            }
+
+            var incomeItems = budgetCollection.GetCurrentBudget().BudgetIncomeItems;
 
             // Create a list of budget report items
             List<BudgetReportItem> budgetReportItems = [];
@@ -33,8 +40,13 @@ namespace MyMoney.Core.Reports
 
         public static List<BudgetReportItem> CalculateExpenseReportItems()
         {
-            // read expense items collection from the database
-            var expenseItems = Database.DatabaseReader.GetCollection<BudgetItem>("BudgetExpenseItems");
+            BudgetCollection budgetCollection = new();
+            if (!budgetCollection.DoesCurrentBudgetExist())
+            {
+                return [];
+            }
+
+            var expenseItems = budgetCollection.GetCurrentBudget().BudgetExpenseItems;
 
             // Create a list of budget report items
             List<BudgetReportItem> budgetReportItems = [];
