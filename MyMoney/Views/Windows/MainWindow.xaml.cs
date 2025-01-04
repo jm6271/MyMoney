@@ -1,6 +1,4 @@
-﻿using LiteDB;
-using MyMoney.Core.Models;
-using MyMoney.ViewModels.Windows;
+﻿using MyMoney.ViewModels.Windows;
 using Wpf.Ui;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;

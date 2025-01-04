@@ -1,6 +1,4 @@
-﻿using MyMoney.Core.Models;
-
-namespace MyMoney.ViewModels.Windows
+﻿namespace MyMoney.ViewModels.Windows
 {
     public partial class BudgetCategoryEditorWindowViewModel : ObservableObject
     {

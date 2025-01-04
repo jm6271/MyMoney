@@ -1,4 +1,4 @@
-﻿using MyMoney.Core.Models;
+﻿using MyMoney.Core.FS.Models;
 using MyMoney.ViewModels.Pages;
 
 namespace MyMoney.Tests
@@ -16,23 +16,23 @@ namespace MyMoney.Tests
             viewModel.IncomeLineItems.Clear();
 
             // add some income line items
-            BudgetIncomeItem incomeItem1 = new();
+            BudgetItem incomeItem1 = new();
             incomeItem1.Category = "Work";
             incomeItem1.Amount = new(1000m);
             viewModel.IncomeLineItems.Add(incomeItem1);
 
-            BudgetIncomeItem incomeItem2 = new();
+            BudgetItem incomeItem2 = new();
             incomeItem2.Category = "Side Jobs";
             incomeItem2.Amount = new(250m);
             viewModel.IncomeLineItems.Add(incomeItem2);
 
             // Add some expense line items
-            BudgetExpenseItem expenseItem1 = new();
+            BudgetItem expenseItem1 = new();
             expenseItem1.Category = "Gas";
             expenseItem1.Amount = new(120m);
             viewModel.ExpenseLineItems.Add(expenseItem1);
 
-            BudgetExpenseItem expenseItem2 = new();
+            BudgetItem expenseItem2 = new();
             expenseItem2.Category = "Misc.";
             expenseItem2.Amount = new(150m);
             viewModel.ExpenseLineItems.Add(expenseItem2);
