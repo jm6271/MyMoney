@@ -3,7 +3,10 @@
 open System
 
 type Currency(value:decimal) =
-    member this.Value = value
+    let mutable _Value = value
+    member this.Value
+        with get () = _Value
+        and set (v) = _Value <- v
 
     // Overloaded ToString() method
     // Returns a formatted string

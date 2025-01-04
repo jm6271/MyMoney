@@ -1,4 +1,4 @@
-﻿using MyMoney.Core.Models;
+﻿using MyMoney.Core.FS.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
