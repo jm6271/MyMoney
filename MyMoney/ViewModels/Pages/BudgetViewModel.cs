@@ -162,6 +162,12 @@ namespace MyMoney.ViewModels.Pages
         {
             UpdateCharts();
             UpdateBudgetLists();
+
+            // Select the current budget
+            if (CurrentBudgets.Count == 1)
+            {
+                CurrentBudgetsSelectedIndex = 0;
+            }
         }
 
         private void UpdateBudgetLists()
