@@ -1,7 +1,7 @@
 ﻿using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
-using MyMoney.Core.Models;
+using MyMoney.Core.FS.Models;
 using MyMoney.Core.Database;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
@@ -14,8 +14,8 @@ namespace MyMoney.ViewModels.Pages
 {
     public partial class BudgetViewModel : ObservableObject
     {
-        public ObservableCollection<BudgetIncomeItem> IncomeLineItems { get; set; } = [];
-        public ObservableCollection<BudgetExpenseItem> ExpenseLineItems { get; set; } = [];
+        public ObservableCollection<BudgetItem> IncomeLineItems { get; set; } = [];
+        public ObservableCollection<BudgetItem> ExpenseLineItems { get; set; } = [];
 
         public ISeries[] IncomePercentagesSeries { get; set; } = [];
         public ISeries[] ExpensePercentagesSeries { get; set; } = [];
@@ -59,8 +59,8 @@ namespace MyMoney.ViewModels.Pages
         {
             // Read the budget items from the database and populate the list views
 
-            var incomeCollection = DatabaseReader.GetCollection<BudgetIncomeItem>("BudgetIncomeItems");
-            var expenseCollection = DatabaseReader.GetCollection<BudgetExpenseItem>("BudgetExpenseItems");
+            var incomeCollection = DatabaseReader.GetCollection<BudgetItem>("BudgetIncomeItems");
+            var expenseCollection = DatabaseReader.GetCollection<BudgetItem>("BudgetExpenseItems");
 
             foreach (var item in incomeCollection)
             {
@@ -169,7 +169,7 @@ namespace MyMoney.ViewModels.Pages
             if(editorWindow.ShowDialog() == true)
             {
                 // Create a new income item with the results from the dialog
-                BudgetIncomeItem item = new();
+                BudgetItem item = new();
                 item.Category = editorWindowViewModel.BudgetCategory;
                 item.Amount = new(editorWindowViewModel.BudgetAmount);
 
@@ -190,7 +190,7 @@ namespace MyMoney.ViewModels.Pages
             if (editorWindow.ShowDialog() == true)
             {
                 // Create a new expense item with the results from the dialog
-                BudgetExpenseItem item = new();
+                BudgetItem item = new();
                 item.Category = editorWindowViewModel.BudgetCategory;
                 item.Amount = new(editorWindowViewModel.BudgetAmount);
 
@@ -213,7 +213,7 @@ namespace MyMoney.ViewModels.Pages
             if (editorWindow.ShowDialog() == true)
             {
                 // modify the item at the selected index
-                BudgetIncomeItem incomeItem = new();
+                BudgetItem incomeItem = new();
                 incomeItem.Category = editorWindowViewModel.BudgetCategory;
                 incomeItem.Amount = new(editorWindowViewModel.BudgetAmount);
 
@@ -265,7 +265,7 @@ namespace MyMoney.ViewModels.Pages
             if (editorWindow.ShowDialog() == true)
             {
                 // modify the item at the selected index
-                BudgetExpenseItem expenseItem = new();
+                BudgetItem expenseItem = new();
                 expenseItem.Category = editorWindowViewModel.BudgetCategory;
                 expenseItem.Amount = new(editorWindowViewModel.BudgetAmount);
 

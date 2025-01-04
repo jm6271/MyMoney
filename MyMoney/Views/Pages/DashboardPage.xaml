@@ -16,7 +16,7 @@
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d"
-    xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core" Loaded="Page_Loaded">
+    xmlns:models="clr-namespace:MyMoney.Core.FS.Models;assembly=MyMoney.Core.FS" Loaded="Page_Loaded">
 
     <StackPanel>
         <Border Height="200" CornerRadius="8">

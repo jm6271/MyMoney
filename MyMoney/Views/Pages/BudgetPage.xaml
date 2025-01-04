@@ -16,7 +16,7 @@
       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
       ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
+      xmlns:models="clr-namespace:MyMoney.Core.FS.Models;assembly=MyMoney.Core.FS"
       Loaded="Page_Loaded">
 
     <Grid>
@@ -49,7 +49,7 @@
                     </ui:ListView.InputBindings>
 
                     <ui:ListView.ItemTemplate>
-                        <DataTemplate DataType="{x:Type models:BudgetIncomeItem}">
+                        <DataTemplate DataType="{x:Type models:BudgetItem}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
@@ -98,7 +98,7 @@
                     </ui:ListView.InputBindings>
 
                     <ui:ListView.ItemTemplate>
-                        <DataTemplate DataType="{x:Type models:BudgetExpenseItem}">
+                        <DataTemplate DataType="{x:Type models:BudgetItem}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition/>
