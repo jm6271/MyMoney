@@ -35,8 +35,11 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private Budget? _CurrentBudget = null;
 
-        public ISeries[] IncomePercentagesSeries { get; set; } = [];
-        public ISeries[] ExpensePercentagesSeries { get; set; } = [];
+        [ObservableProperty]
+        private ISeries[] _IncomePercentagesSeries  = [];
+
+        [ObservableProperty]
+        private ISeries[] _ExpensePercentagesSeries  = [];
 
         [ObservableProperty]
         private LabelVisual _IncomePercentages_Title = new LabelVisual
