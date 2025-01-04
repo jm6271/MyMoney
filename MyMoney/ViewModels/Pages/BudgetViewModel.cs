@@ -150,8 +150,7 @@ namespace MyMoney.ViewModels.Pages
 
             if (CurrentBudget == null)
             {
-                // No budget for the current month, we need to prompt the user to create one
-                // TODO: Prompt user to create a budget
+                // No budget for the current month
                 return;
             }
 
