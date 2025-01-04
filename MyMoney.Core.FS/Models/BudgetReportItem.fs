@@ -25,4 +25,4 @@ type BudgetReportItem () =
     
     member this.Remaining
         with get () = _Remaining
-        
+        and set (value) = _Remaining <- value

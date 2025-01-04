@@ -12,10 +12,16 @@ type AccountDashboardDisplayItem() =
         with get () = _Total
         and set (value) = _Total <- value
 
-    member this.FromAccount(account: Account):unit =
-        _AccountName <- account.AccountName
-        _Total <- account.Total
+    static member FromAccount(account: Account):AccountDashboardDisplayItem =
+        let displayItem = AccountDashboardDisplayItem()
+        displayItem.AccountName <- account.AccountName
+        displayItem.Total <- account.Total
 
-    member this.FromInitializers(accountName: string, total: Currency):unit =
-        _AccountName <- accountName
-        _Total <- total
+        displayItem
+
+    member this.FromInitializers(accountName: string, total: Currency):AccountDashboardDisplayItem =
+        let displayItem = AccountDashboardDisplayItem()
+        displayItem.AccountName <- accountName
+        displayItem.Total <- total
+
+        displayItem

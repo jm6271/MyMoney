@@ -9,7 +9,7 @@ type Currency(value:decimal) =
     // Returns a formatted string
     override this.ToString (): string = 
         if this.Value >= 0m then // normal number
-            $"{this.Value:N2}"
+            $"${this.Value:N2}"
         else // negative number, print in parenthesis
             $"(${Math.Abs(this.Value):N2})"
 
