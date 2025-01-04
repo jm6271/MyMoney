@@ -1,7 +1,7 @@
 ﻿using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
-using MyMoney.Core.Models;
+using MyMoney.Core.FS.Models;
 using MyMoney.Core.Database;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
@@ -295,7 +295,7 @@ namespace MyMoney.ViewModels.Pages
             if(editorWindow.ShowDialog() == true)
             {
                 // Create a new income item with the results from the dialog
-                BudgetIncomeItem item = new();
+                BudgetItem item = new();
                 item.Category = editorWindowViewModel.BudgetCategory;
                 item.Amount = new(editorWindowViewModel.BudgetAmount);
 
@@ -319,7 +319,7 @@ namespace MyMoney.ViewModels.Pages
             if (editorWindow.ShowDialog() == true)
             {
                 // Create a new expense item with the results from the dialog
-                BudgetExpenseItem item = new();
+                BudgetItem item = new();
                 item.Category = editorWindowViewModel.BudgetCategory;
                 item.Amount = new(editorWindowViewModel.BudgetAmount);
 
@@ -345,7 +345,7 @@ namespace MyMoney.ViewModels.Pages
             if (editorWindow.ShowDialog() == true)
             {
                 // modify the item at the selected index
-                BudgetIncomeItem incomeItem = new();
+                BudgetItem incomeItem = new();
                 incomeItem.Category = editorWindowViewModel.BudgetCategory;
                 incomeItem.Amount = new(editorWindowViewModel.BudgetAmount);
 
@@ -403,7 +403,7 @@ namespace MyMoney.ViewModels.Pages
             if (editorWindow.ShowDialog() == true)
             {
                 // modify the item at the selected index
-                BudgetExpenseItem expenseItem = new();
+                BudgetItem expenseItem = new();
                 expenseItem.Category = editorWindowViewModel.BudgetCategory;
                 expenseItem.Amount = new(editorWindowViewModel.BudgetAmount);
 
