@@ -504,6 +504,8 @@ namespace MyMoney.ViewModels.Pages
                 IsEditingEnabled = false;
             else
                 IsEditingEnabled = true;
+
+            UpdateCharts();
         }
 
         private int FindBudgetIndex(string BudgetName)
