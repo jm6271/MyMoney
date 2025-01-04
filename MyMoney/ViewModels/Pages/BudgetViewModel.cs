@@ -192,8 +192,6 @@ namespace MyMoney.ViewModels.Pages
         {
             if (CurrentBudget == null) return;
 
-            DatabaseWriter.WriteCollection("BudgetIncomeItems", [.. CurrentBudget.BudgetIncomeItems]);
-            DatabaseWriter.WriteCollection("BudgetExpenseItems", [.. CurrentBudget.BudgetExpenseItems]);
             DatabaseWriter.WriteCollection("Budgets", Budgets.ToList());
         }
 
