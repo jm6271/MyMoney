@@ -11,15 +11,17 @@ MyMoney is a personal accounting software designed to help you manage your finan
 - **Account Management**: Add, edit, and remove accounts.
 - **Transaction Tracking**: Record and categorize income and expenses.
 - **Balance Calculation**: Automatically calculates and displays account balances.
+- **Budgeting**: Create monthly budgets and view reports on your spending.
 - **LiteDB Database**: All user data is stored securely in a local LiteDB database.
 - **MVVM Pattern**: Built using the MVVM pattern for a clean, maintainable, and testable architecture.
 - **WPF UI**: A modern user interface built with WPF, leveraging the WPF-UI package for enhanced visuals.
   
 ## Usage
 - Create a new account by selecting Add Account.
-- Setup a budget on the budget page by adding income and expense categories.
+- Setup a budget on the budget page by clicking ```New Budget``` and adding income and expense categories.
 - Add transactions to your account, specifying the amount, date, and category.
-- Review the balance and transaction history in the main dashboard.
+- Review the balance and budget report in the main dashboard.
+- Look at reports and charts on the Reports page.
 
 ## Contributing
 Contributions are welcome! Feel free to open issues or submit pull requests to improve MyMoney.
@@ -37,3 +39,6 @@ This project is licensed under the MIT License. See the LICENSE.txt file for mor
 
 ### Budget Page
 ![Budget page](Screenshots/budget_page.jpg)
+
+### Reports Page
+![Reports page](Screenshots/reports_page.jpg)
