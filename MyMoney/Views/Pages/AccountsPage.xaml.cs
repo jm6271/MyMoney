@@ -63,7 +63,7 @@ namespace MyMoney.Views.Pages
 
                 fixedWidth -= gridView.Columns[3].Width;
 
-                double lastColumnWidth = totalWidth - fixedWidth - SystemParameters.VerticalScrollBarWidth - 5; 
+                double lastColumnWidth = totalWidth - fixedWidth - SystemParameters.VerticalScrollBarWidth - 10; 
                 gridView.Columns[3].Width = lastColumnWidth > 0 ? lastColumnWidth : 0; 
             }
         }
