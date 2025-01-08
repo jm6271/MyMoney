@@ -1,4 +1,4 @@
-﻿namespace MyMoney.Tests
+﻿namespace MyMoney.Tests.ModelTests
 {
     [TestClass]
     public class CurrencyTests
@@ -6,7 +6,7 @@
         [TestMethod]
         public void TestCurrencyToString()
         {
-            MyMoney.Core.FS.Models.Currency currency = new(25.99m);
+            Core.FS.Models.Currency currency = new(25.99m);
 
             Assert.AreEqual("$25.99", currency.ToString());
 
