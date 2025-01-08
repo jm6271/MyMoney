@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 
 namespace MyMoney.Core.Database
 {
-    internal static class DataFileLocationGetter
+    public static class DataFileLocationGetter
     {
         public static string GetDataFilePath()
         {
-#if DEBUG
+#if TESTING
+            return "MyMoney-LiteDB-Database-TESTING.db";
+#elif DEBUG
             return "MyMoney-LiteDB-Database-DEBUG.db";
 #else
             // make sure all the directories are already created
