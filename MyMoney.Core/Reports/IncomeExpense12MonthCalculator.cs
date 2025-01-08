@@ -1,5 +1,5 @@
 ﻿using MyMoney.Core.Database;
-using MyMoney.Core.Models;
+using MyMoney.Core.FS.Models;
 using System.Globalization;
 
 namespace MyMoney.Core.Reports

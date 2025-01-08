@@ -16,7 +16,7 @@
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d"
-    xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core" Loaded="Page_Loaded">
+    xmlns:models="clr-namespace:MyMoney.Core.FS.Models;assembly=MyMoney.Core.FS" Loaded="Page_Loaded">
 
     <StackPanel>
         <Border Height="200" CornerRadius="8">
@@ -79,9 +79,7 @@
                                     <ColumnDefinition Width="{Binding ViewModel.DifferenceColumnWidth}"/>
                                 </Grid.ColumnDefinitions>
 
-                                <ui:TextBlock Grid.Column="0" FontTypography="BodyStrong" FontWeight="Bold">Totals</ui:TextBlock>
-                                <ui:TextBlock Grid.Column="1" FontTypography="BodyStrong" Text="{Binding ViewModel.BudgetedTotal}"/>
-                                <ui:TextBlock Grid.Column="2" FontTypography="BodyStrong" Text="{Binding ViewModel.ActualTotal}"/>
+                                <ui:TextBlock Grid.Column="0" FontTypography="BodyStrong" FontWeight="Bold">Remaining</ui:TextBlock>
                                 <ui:TextBlock Grid.Column="3" FontTypography="BodyStrong" Text="{Binding ViewModel.DifferenceTotal}"/>
                             </Grid>
                         </Border>

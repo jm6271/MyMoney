@@ -2,7 +2,7 @@
 using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
-using MyMoney.Core.Models;
+using MyMoney.Core.FS.Models;
 
 
 namespace MyMoney.ViewModels.Pages
@@ -72,8 +72,12 @@ namespace MyMoney.ViewModels.Pages
         {
             CategoryNames.Clear();
 
-            var incomeLst = Core.Database.DatabaseReader.GetCollection<BudgetIncomeItem>("BudgetIncomeItems");
-            var expenseLst = Core.Database.DatabaseReader.GetCollection<BudgetExpenseItem>("BudgetExpenseItems");
+            Core.Database.BudgetCollection budgetCollection = new();
+            if (!budgetCollection.DoesCurrentBudgetExist())
+                return;
+
+            var incomeLst = budgetCollection.GetCurrentBudget().BudgetIncomeItems;
+            var expenseLst = budgetCollection.GetCurrentBudget().BudgetExpenseItems;
 
             foreach(var item in incomeLst)
             {
@@ -208,18 +212,10 @@ namespace MyMoney.ViewModels.Pages
                 // create a new transaction in each of the accounts
 
                 // create FROM transaction
-                Transaction FROM = new();
-                FROM.Date = DateTime.Today;
-                FROM.Payee = "Transfer TO " + viewModel.TransferTo;
-                FROM.Spend = viewModel.Amount;
-                FROM.Memo = "Transfer";
+                Transaction FROM = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, "", viewModel.Amount, new(0m), new(0m), "Transfer");
 
                 // Create TO transaction
-                Transaction TO = new();
-                TO.Date = DateTime.Today;
-                TO.Payee = "Transfer FROM " + viewModel.TransferFrom;
-                TO.Receive = viewModel.Amount;
-                TO.Memo = "Transfer";
+                Transaction TO = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, "", new(0m), viewModel.Amount, new(0m), "Transfer");
 
                 // Add the transactions to their accounts
                 for (int i = 0; i < Accounts.Count; i++)

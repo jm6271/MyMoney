@@ -1,6 +1,4 @@
-﻿using LiteDB;
-using MyMoney.Core.Models;
-using Wpf.Ui.Appearance;
+﻿using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.ViewModels.Pages
@@ -48,7 +46,8 @@ namespace MyMoney.ViewModels.Pages
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light);
                     CurrentTheme = ApplicationTheme.Light;
-
+                    Application.Current.Resources["LayerFillColorDefaultColor"] =
+                        Application.Current.Resources["LayerFillColorDefaultColorLight"];
                     break;
 
                 default:
@@ -57,7 +56,8 @@ namespace MyMoney.ViewModels.Pages
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark);
                     CurrentTheme = ApplicationTheme.Dark;
-
+                    Application.Current.Resources["LayerFillColorDefaultColor"] =
+                        Application.Current.Resources["LayerFillColorDefaultColorDark"];
                     break;
             }
 

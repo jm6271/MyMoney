@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using MyMoney.Core.Models;
+using MyMoney.Core.FS.Models;
 using MyMoney.Core.Reports;
 using MyMoney.Core.Database;
 using LiveChartsCore;
@@ -39,16 +39,8 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private int _DifferenceColumnWidth = 100;
 
-
-        // Values for the budget report totals
         [ObservableProperty]
-        private Currency _BudgetedTotal = new();
-
-        [ObservableProperty]
-        private Currency _ActualTotal = new();
-
-        [ObservableProperty]
-        private Currency _DifferenceTotal = new();
+        private Currency _DifferenceTotal = new(0m);
 
         // Axis for the chart
         [ObservableProperty]
@@ -142,8 +134,8 @@ namespace MyMoney.ViewModels.Pages
             Expenses = (double)expenseTotal.Actual.Value;
 
             // Calulate budget report overall total
-            BudgetedTotal = incomeTotal.Budgeted - expenseTotal.Budgeted;
-            ActualTotal = incomeTotal.Actual - expenseTotal.Actual;
+            Currency BudgetedTotal = incomeTotal.Budgeted - expenseTotal.Budgeted;
+            Currency ActualTotal = incomeTotal.Actual - expenseTotal.Actual;
             DifferenceTotal = ActualTotal - BudgetedTotal;
 
 
@@ -193,7 +185,8 @@ namespace MyMoney.ViewModels.Pages
 
             foreach (var item in lst)
             {
-                Accounts.Add(new(item));
+                var accountDisplayItem = AccountDashboardDisplayItem.FromAccount(item);
+                Accounts.Add(accountDisplayItem);
             }
 
             // add an item displaying the total as the last item in the list
