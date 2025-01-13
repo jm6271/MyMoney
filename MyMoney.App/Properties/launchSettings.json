@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "MyMoney.App (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "MyMoney.App (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
