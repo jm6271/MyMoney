@@ -16,6 +16,9 @@ using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.VisualElements;
+using Microsoft.UI.Xaml.Controls;
+using MyMoney.App.Views.ContentDialogs;
+using MyMoney.App.ViewModels.ContentDialogs;
 
 namespace MyMoney.App.ViewModels
 {
@@ -458,51 +461,54 @@ namespace MyMoney.App.ViewModels
             //UpdateListViewTotals();
         }
 
-        [RelayCommand]
-        private void CreateNewBudget()
+        public async Task CreateNewBudget(XamlRoot xamlRoot)
         {
-            //// Show the new budget dialog
-            //NewBudgetWindowViewModel viewModel = new();
-            //NewBudgetDialog dlg = new(viewModel);
+            // Show the new budget dialog
+            NewBudgetDialog dialog = new();
+            dialog.XamlRoot = xamlRoot;
+            dialog.Style = Application.Current.Resources["DefaultContentDialogStyle"] as Style;
+            dialog.Title = "New Budget";
+            dialog.PrimaryButtonText = "New";
+            dialog.CloseButtonText = "Cancel";
+            dialog.DefaultButton = ContentDialogButton.Primary;
+            var result = await dialog.ShowAsync();
 
-            //dlg.Owner = Application.Current.MainWindow;
+            if (result == ContentDialogResult.Primary)
+            {
+                // Add a budget
+                Budget newBudget = new();
+          
+                string budgetTitle = dialog.CmbBudgetDates.Text;
+                newBudget.BudgetTitle = budgetTitle;
+                newBudget.BudgetDate = Convert.ToDateTime(budgetTitle);
 
-            //if (dlg.ShowDialog() == true)
-            //{
-            //    // Add a budget
-            //    Budget newBudget = new();
+                // Copy over categories if box is checked
+                if (dialog.ChkUseLastMonthBudget.IsChecked == true && CurrentBudget != null)
+                {
+                    foreach (var item in CurrentBudget.BudgetIncomeItems)
+                    {
+                        newBudget.BudgetIncomeItems.Add(item);
+                    }
 
-            //    string budgetTitle = viewModel.SelectedDate;
-            //    newBudget.BudgetTitle = budgetTitle;
-            //    newBudget.BudgetDate = Convert.ToDateTime(budgetTitle);
+                    foreach (var item in CurrentBudget.BudgetExpenseItems)
+                    {
+                        newBudget.BudgetExpenseItems.Add(item);
+                    }
+                }
 
-            //    // Copy over categories if box is checked
-            //    if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
-            //    {
-            //        foreach (var item in CurrentBudget.BudgetIncomeItems)
-            //        {
-            //            newBudget.BudgetIncomeItems.Add(item);
-            //        }
+                // Add to list of budgets
+                Budgets.Add(newBudget);
 
-            //        foreach (var item in CurrentBudget.BudgetExpenseItems)
-            //        {
-            //            newBudget.BudgetExpenseItems.Add(item);
-            //        }
-            //    }
-
-            //    // Add to list of budgets
-            //    Budgets.Add(newBudget);
-
-            //    // Set as current budget
-            //    foreach (var item in Budgets)
-            //    {
-            //        if (item.BudgetTitle == budgetTitle)
-            //        {
-            //            CurrentBudget = item;
-            //            break;
-            //        }
-            //    }
-            //}
+                // Set as current budget
+                foreach (var item in Budgets)
+                {
+                    if (item.BudgetTitle == budgetTitle)
+                    {
+                        CurrentBudget = item;
+                        break;
+                    }
+                }
+            }
         }
 
         private void LoadBudget(int index)

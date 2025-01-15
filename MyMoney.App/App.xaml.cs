@@ -18,6 +18,7 @@ using Windows.Foundation.Collections;
 using Microsoft.Extensions.DependencyInjection;
 using MyMoney.App.ViewModels;
 using MyMoney.App.Views;
+using MyMoney.App.ViewModels.ContentDialogs;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -47,6 +48,7 @@ namespace MyMoney.App
             services.AddSingleton<HomeViewModel>();
             services.AddSingleton<AccountsViewModel>();
             services.AddSingleton<BudgetViewModel>();
+            services.AddSingleton<NewBudgetDialogViewModel>();
             ServiceProvider = services.BuildServiceProvider();
         }
 

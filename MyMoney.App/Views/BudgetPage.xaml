@@ -64,7 +64,7 @@
                     </Grid.ColumnDefinitions>
 
                     <TextBlock Style="{StaticResource TitleTextBlockStyle}" Text="{Binding CurrentBudget.BudgetTitle}"/>
-                    <Button Command="{Binding CreateNewBudgetCommand}" Grid.Column="1" Style="{ThemeResource AccentButtonStyle}" Margin="12,0,0,0">
+                    <Button Click="NewBudget_Clicked" Grid.Column="1" Style="{ThemeResource AccentButtonStyle}" Margin="12,0,0,0">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <FontIcon Glyph="&#xECC8;" Margin="0,0,4,0" VerticalAlignment="Center" />
                             <TextBlock Margin="4,0,0,0" VerticalAlignment="Center">New Budget</TextBlock>

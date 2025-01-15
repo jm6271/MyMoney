@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="MyMoney.App.Views.ContentDialogs.NewBudgetDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MyMoney.App.Views.ContentDialogs"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:contentdialogs="using:MyMoney.App.ViewModels.ContentDialogs" 
+    d:DataContext="{d:DesignInstance Type=contentdialogs:NewBudgetDialogViewModel}"
+    mc:Ignorable="d">
+
+    <StackPanel>
+
+        <TextBlock Margin="0,0,0,12">Budget for:</TextBlock>
+        <ComboBox x:Name="cmbBudgetDates" ItemsSource="{Binding AvailableBudgetDates}" Margin="0,0,0,16"
+            SelectedIndex="{Binding SelectedDateIndex}" SelectedItem="{Binding SelectedDate}" HorizontalAlignment="Stretch"/>
+
+        <CheckBox x:Name="chkUseLastMonthBudget" IsChecked="{Binding UseLastMonthsBudget}">Start with previous month's budget</CheckBox>
+    </StackPanel>
+</ContentDialog>
