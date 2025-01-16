@@ -41,3 +41,16 @@ type Transaction (date:DateTime, payee:string, category:string, spend:Currency, 
 
     member this.DateFormatted
         with get() = _Date.ToShortDateString()
+
+    member this.MonthAbbreviated
+        with get() = _Date.ToString("MMM")
+
+    member this.AmountFormatted
+        with get() = 
+            if (_Spend.Value > 0m)
+                then "-" + _Spend.ToString()
+            elif(_Receive.Value > 0m)
+                then "+" + _Receive.ToString()
+            else
+                "$0.00"
+
