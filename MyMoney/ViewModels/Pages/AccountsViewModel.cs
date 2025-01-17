@@ -91,6 +91,19 @@ namespace MyMoney.ViewModels.Pages
 
         }
 
+        private void SortTransactions()
+        {
+            var sorted = SelectedAccountTransactions.OrderByDescending(p => p.Date).ToList();
+            if (sorted != null)
+            {
+                SelectedAccountTransactions.Clear();
+                foreach (var transaction in sorted)
+                {
+                    SelectedAccountTransactions.Add(transaction);
+                }
+            }
+        }
+
         private void BttnNewAccount_Click()
         {
             // Show the new account dialog
@@ -189,6 +202,8 @@ namespace MyMoney.ViewModels.Pages
             NewTransactionReceive = new(0m);
             NewTransactionMemo = "";
 
+            SortTransactions();
+
             SaveAccountsToDatabase();
         }
 
@@ -240,6 +255,8 @@ namespace MyMoney.ViewModels.Pages
                     }
                 }
 
+                SortTransactions();
+
                 // save the accounts to the database
                 SaveAccountsToDatabase();
             }
@@ -251,6 +268,8 @@ namespace MyMoney.ViewModels.Pages
 
             if (SelectedAccount != null) IsInputEnabled = true;
             else IsInputEnabled = false;
+
+            SortTransactions();
         }
 
         partial void OnSelectedTransactionChanged(Transaction? value)
