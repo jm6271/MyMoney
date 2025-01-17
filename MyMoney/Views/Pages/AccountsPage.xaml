@@ -25,7 +25,7 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel>
-            <ComboBox ItemsSource="{Binding ViewModel.Accounts}" SelectedIndex="{Binding ViewModel.SelectedAccountIndex}"
+            <ComboBox x:Name="cmbAccounts" ItemsSource="{Binding ViewModel.Accounts}" SelectedIndex="{Binding ViewModel.SelectedAccountIndex}"
                       SelectedItem="{Binding ViewModel.SelectedAccount}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>

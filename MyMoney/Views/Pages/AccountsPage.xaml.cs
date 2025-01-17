@@ -17,6 +17,11 @@ namespace MyMoney.Views.Pages
             DataContext = this;
 
             InitializeComponent();
+
+            if (cmbAccounts.Items.Count > 0)
+            {
+                cmbAccounts.SelectedIndex = 0;
+            }
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
