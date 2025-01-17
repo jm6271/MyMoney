@@ -50,9 +50,6 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private string _AddTransactionButtonText = "Add Transaction";
 
-        [ObservableProperty]
-        private double _TransactionsMaxHeight;
-
         public AccountsViewModel()
         {
             var a = Core.Database.DatabaseReader.GetCollection<Account>("Accounts");

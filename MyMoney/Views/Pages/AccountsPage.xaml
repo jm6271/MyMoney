@@ -24,7 +24,11 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <StackPanel>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
             <ComboBox x:Name="cmbAccounts" ItemsSource="{Binding ViewModel.Accounts}" SelectedIndex="{Binding ViewModel.SelectedAccountIndex}"
                       SelectedItem="{Binding ViewModel.SelectedAccount}">
                 <ComboBox.ItemTemplate>
@@ -34,8 +38,8 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
 
-            <ui:Card Margin="0,16,0,0">
-                 <ui:ListView BorderThickness="1" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" 
+            <ui:Card x:Name="TransactionsCard" Grid.Row="1" Margin="0,16,0,24" VerticalAlignment="Stretch">
+                <ui:ListView x:Name="TransactionsList" BorderThickness="1" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" 
                               SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}"
                               SelectedItem="{Binding ViewModel.SelectedTransaction}">
                     <ui:ListView.ItemTemplate>
@@ -61,10 +65,8 @@
                             </Grid>
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
-                </ui:ListView>                
+                </ui:ListView>
             </ui:Card>
-               
-
-        </StackPanel>
+        </Grid>
     </Grid>
 </Page>

@@ -27,6 +27,8 @@ namespace MyMoney.Views.Pages
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             ViewModel.OnPageNavigatedTo();
+
+            TransactionsList.MaxHeight = Application.Current.MainWindow.ActualHeight - 300;
         }
     }
 }
