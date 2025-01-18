@@ -8,6 +8,7 @@
       xmlns:local="clr-namespace:MyMoney.Views.Pages" 
       xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
       xmlns:models="clr-namespace:MyMoney.Core.FS.Models;assembly=MyMoney.Core.FS" xmlns:Controls="clr-namespace:MyMoney.Views.Controls" x:Class="MyMoney.Views.Pages.AccountsPage"
+      xmlns:helpers="clr-namespace:MyMoney.Helpers"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Accounts"
@@ -17,6 +18,9 @@
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       Loaded="Page_Loaded"
       >
+    <Page.Resources>
+        <helpers:StartsWithPlusConverter x:Key="StartsWithPlusConverter"/>
+    </Page.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -30,7 +34,7 @@
             </Grid.RowDefinitions>
 
 
-            <ui:Card x:Name="TransactionsCard" Grid.Row="1" Margin="0,0,0,0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
+            <ui:Card x:Name="TransactionsCard" Grid.Row="1" Margin="0,0,0,24" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -67,7 +71,18 @@
                                     <ui:TextBlock Grid.Row="0" Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Text="{Binding Payee}"/>
                                     <ui:TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Category}"/>
 
-                                    <ui:TextBlock Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" FontSize="24" Text="{Binding AmountFormatted}" HorizontalAlignment="Right" Margin="0,0,16,0"/>
+                                    <ui:TextBlock Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" FontSize="24" FontWeight="SemiBold"
+                                                  Text="{Binding AmountFormatted}" HorizontalAlignment="Right" Margin="0,0,16,0">
+                                        <ui:TextBlock.Style>
+                                            <Style TargetType="ui:TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding AmountFormatted, Converter={StaticResource StartsWithPlusConverter} }" Value="True">
+                                                        <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ui:TextBlock.Style>
+                                    </ui:TextBlock>
                                 </Grid>
                             </DataTemplate>
                         </ui:ListView.ItemTemplate>
