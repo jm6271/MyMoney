@@ -38,7 +38,7 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
 
-            <ui:Card x:Name="TransactionsCard" Grid.Row="1" Margin="0,16,0,24" VerticalAlignment="Stretch">
+            <ui:Card x:Name="TransactionsCard" Grid.Row="1" Margin="0,16,0,24" VerticalAlignment="Top">
                 <ui:ListView x:Name="TransactionsList" BorderThickness="1" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" 
                               SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}"
                               SelectedItem="{Binding ViewModel.SelectedTransaction}">

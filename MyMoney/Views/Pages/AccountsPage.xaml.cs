@@ -18,17 +18,29 @@ namespace MyMoney.Views.Pages
 
             InitializeComponent();
 
+            Application.Current.MainWindow.SizeChanged += MainWindow_SizeChanged;
+
             if (cmbAccounts.Items.Count > 0)
             {
                 cmbAccounts.SelectedIndex = 0;
             }
         }
 
+        private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateTransactionsMaxHeight();
+        }
+
+        private void UpdateTransactionsMaxHeight()
+        {
+            TransactionsList.MaxHeight = Application.Current.MainWindow.ActualHeight - 270;
+        }
+
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             ViewModel.OnPageNavigatedTo();
 
-            TransactionsList.MaxHeight = Application.Current.MainWindow.ActualHeight - 300;
+            UpdateTransactionsMaxHeight();
         }
     }
 }
