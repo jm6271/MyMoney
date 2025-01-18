@@ -1,4 +1,4 @@
-﻿<Page x:Class="MyMoney.Views.Pages.AccountsPage"
+﻿<Page
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -7,15 +7,15 @@
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:local="clr-namespace:MyMoney.Views.Pages" 
       xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
+      xmlns:models="clr-namespace:MyMoney.Core.FS.Models;assembly=MyMoney.Core.FS" xmlns:Controls="clr-namespace:MyMoney.Views.Controls" x:Class="MyMoney.Views.Pages.AccountsPage"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Accounts"
-      d:DataContext="{d:DesignInstance local:AccountsPage,
-                                 IsDesignTimeCreatable=False}"
+      d:DataContext="{d:DesignInstance {x:Type local:AccountsPage}, IsDesignTimeCreatable=False}"
       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
       ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      xmlns:models="clr-namespace:MyMoney.Core.FS.Models;assembly=MyMoney.Core.FS" Loaded="Page_Loaded"
+      Loaded="Page_Loaded"
       >
 
     <Grid>
@@ -43,7 +43,7 @@
                               SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}"
                               SelectedItem="{Binding ViewModel.SelectedTransaction}">
                     <ui:ListView.ItemTemplate>
-                        <DataTemplate>
+                        <DataTemplate DataType="{x:Type models:Transaction}">
                             <Grid Margin="0,2,0,2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
@@ -55,13 +55,12 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
 
-                                <ui:TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Text="{Binding Date.Day}" FontSize="18" FontWeight="SemiBold"/>
-                                <ui:TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" Text="{Binding MonthAbbreviated}"/>
+                                <Controls:MonthDayControl Grid.RowSpan="2" Day="{Binding Path=Date.Day}" Month="{Binding Path=MonthAbbreviated}" HorizontalAlignment="Left" Margin="16,0,0,0"/>
 
                                 <ui:TextBlock Grid.Row="0" Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Text="{Binding Payee}"/>
                                 <ui:TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Category}"/>
 
-                                <ui:TextBlock Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" FontSize="24" Text="{Binding AmountFormatted}" HorizontalAlignment="Right"/>
+                                <ui:TextBlock Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" FontSize="24" Text="{Binding AmountFormatted}" HorizontalAlignment="Right" Margin="0,0,16,0"/>
                             </Grid>
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
