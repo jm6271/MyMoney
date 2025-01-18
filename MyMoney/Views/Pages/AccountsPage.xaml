@@ -26,45 +26,54 @@
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <ComboBox x:Name="cmbAccounts" ItemsSource="{Binding ViewModel.Accounts}" SelectedIndex="{Binding ViewModel.SelectedAccountIndex}"
-                      SelectedItem="{Binding ViewModel.SelectedAccount}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding AccountName}"/>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
 
-            <ui:Card x:Name="TransactionsCard" Grid.Row="1" Margin="0,16,0,24" VerticalAlignment="Top">
-                <ui:ListView x:Name="TransactionsList" BorderThickness="1" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" 
-                              SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}"
-                              SelectedItem="{Binding ViewModel.SelectedTransaction}">
-                    <ui:ListView.ItemTemplate>
-                        <DataTemplate DataType="{x:Type models:Transaction}">
-                            <Grid Margin="0,2,0,2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="5*"/>
-                                    <ColumnDefinition Width="1*"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
 
-                                <Controls:MonthDayControl Grid.RowSpan="2" Day="{Binding Path=Date.Day}" Month="{Binding Path=MonthAbbreviated}" HorizontalAlignment="Left" Margin="16,0,0,0"/>
+            <ui:Card x:Name="TransactionsCard" Grid.Row="1" Margin="0,0,0,0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-                                <ui:TextBlock Grid.Row="0" Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Text="{Binding Payee}"/>
-                                <ui:TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Category}"/>
+                    <ComboBox Grid.Row="0" x:Name="cmbAccounts" ItemsSource="{Binding ViewModel.Accounts}" SelectedIndex="{Binding ViewModel.SelectedAccountIndex}"
+                      SelectedItem="{Binding ViewModel.SelectedAccount}" Margin="0,0,0,8">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding AccountName}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
 
-                                <ui:TextBlock Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" FontSize="24" Text="{Binding AmountFormatted}" HorizontalAlignment="Right" Margin="0,0,16,0"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ui:ListView.ItemTemplate>
-                </ui:ListView>
+                    <ui:ListView Grid.Row="1" x:Name="TransactionsList" BorderThickness="1" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" 
+                                  SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}"
+                                  SelectedItem="{Binding ViewModel.SelectedTransaction}">
+                        <ui:ListView.ItemTemplate>
+                            <DataTemplate DataType="{x:Type models:Transaction}">
+                                <Grid Margin="0,2,0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="1*"/>
+                                        <ColumnDefinition Width="5*"/>
+                                        <ColumnDefinition Width="1*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Controls:MonthDayControl Grid.RowSpan="2" Day="{Binding Path=Date.Day}" Month="{Binding Path=MonthAbbreviated}" HorizontalAlignment="Left" Margin="16,0,0,0"/>
+
+                                    <ui:TextBlock Grid.Row="0" Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Text="{Binding Payee}"/>
+                                    <ui:TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Category}"/>
+
+                                    <ui:TextBlock Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" FontSize="24" Text="{Binding AmountFormatted}" HorizontalAlignment="Right" Margin="0,0,16,0"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ui:ListView.ItemTemplate>
+                    </ui:ListView>                    
+                </Grid>
+
             </ui:Card>
         </Grid>
     </Grid>
