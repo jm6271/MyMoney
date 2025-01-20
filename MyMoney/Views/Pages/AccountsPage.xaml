@@ -10,7 +10,7 @@
       xmlns:models="clr-namespace:MyMoney.Core.FS.Models;assembly=MyMoney.Core.FS" xmlns:Controls="clr-namespace:MyMoney.Views.Controls" x:Class="MyMoney.Views.Pages.AccountsPage"
       xmlns:helpers="clr-namespace:MyMoney.Helpers"
       mc:Ignorable="d" 
-      d:DesignHeight="500" d:DesignWidth="800"
+      d:DesignHeight="800" d:DesignWidth="1200"
       Title="Accounts"
       d:DataContext="{d:DesignInstance {x:Type local:AccountsPage}, IsDesignTimeCreatable=False}"
       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
@@ -93,6 +93,10 @@
         </Grid>
 
         <Grid Grid.Column="1" Margin="24,0,0,24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
             <ui:Card VerticalAlignment="Top">
                 <StackPanel Margin="8,0,8,0">
                     <ui:TextBlock FontTypography="Subtitle" Margin="0,16,0,24">New Transaction</ui:TextBlock>
@@ -135,6 +139,49 @@
 
                     
                 </StackPanel>
+            </ui:Card>
+
+            <ui:Card Grid.Row="1" VerticalAlignment="Top" Margin="0,24,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,8">Accounts</ui:TextBlock>
+                    
+                    <StackPanel Grid.Column="0" Grid.Row="1">
+                        <ui:ListView MaxHeight="200" ItemsSource="{Binding ViewModel.Accounts}">
+                            <ui:ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="1*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <ui:TextBlock Text="{Binding AccountName}" Margin="4"/>
+                                        <ui:TextBlock Grid.Column="1" Text="{Binding Total}" Margin="4"/>
+                                    </Grid>
+                                    
+                                </DataTemplate>
+                            </ui:ListView.ItemTemplate>
+
+                            <ui:ListView.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Delete Account"/>
+                                </ContextMenu>
+                            </ui:ListView.ContextMenu>
+                        </ui:ListView>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Column="1" Grid.Row="1" Margin="16,0,0,0">
+                        <ui:Button HorizontalAlignment="Stretch" Margin="0,0,0,8">New Account</ui:Button>
+                        <ui:Button HorizontalAlignment="Stretch">Transfer</ui:Button>
+                    </StackPanel>
+                </Grid>
             </ui:Card>
         </Grid>
     </Grid>
