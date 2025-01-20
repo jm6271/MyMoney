@@ -10,7 +10,7 @@
       xmlns:models="clr-namespace:MyMoney.Core.FS.Models;assembly=MyMoney.Core.FS" xmlns:Controls="clr-namespace:MyMoney.Views.Controls" x:Class="MyMoney.Views.Pages.AccountsPage"
       xmlns:helpers="clr-namespace:MyMoney.Helpers"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="500" d:DesignWidth="800"
       Title="Accounts"
       d:DataContext="{d:DesignInstance {x:Type local:AccountsPage}, IsDesignTimeCreatable=False}"
       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
@@ -89,6 +89,52 @@
                     </ui:ListView>                    
                 </Grid>
 
+            </ui:Card>
+        </Grid>
+
+        <Grid Grid.Column="1" Margin="24,0,0,24">
+            <ui:Card VerticalAlignment="Top">
+                <StackPanel Margin="8,0,8,0">
+                    <ui:TextBlock FontTypography="Subtitle" Margin="0,16,0,24">New Transaction</ui:TextBlock>
+                    <ui:TextBlock Margin="0,0,0,4">Transaction type</ui:TextBlock>
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <RadioButton Grid.Column="1">Income</RadioButton>
+                        <RadioButton Grid.Column="0">Expense</RadioButton>
+                    </Grid>
+                    <ui:TextBlock Margin="0,0,0,4">Amount</ui:TextBlock>
+                    <ui:NumberBox MaxDecimalPlaces="2" Margin="0,0,0,16"/>
+                    <Grid Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="135"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <ui:TextBlock Margin="0,0,0,4">Date</ui:TextBlock>
+                        <DatePicker Grid.Row="1" Margin="0,0,4,0" SelectedDateFormat="Short" IsTodayHighlighted="True"/>
+                        <ui:TextBlock Grid.Column="1" Grid.Row="0" Margin="4,0,0,4">Payee</ui:TextBlock>
+                        <TextBox Grid.Row="1" Grid.Column="1" Margin="4,0,0,0"/>
+                    </Grid>
+                    <ui:TextBlock Margin="0,0,0,4">Memo</ui:TextBlock>
+                    <ui:TextBox Margin="0,0,0,24"/>
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                        </Grid.ColumnDefinitions>
+                        <ui:Button Grid.Column="0" Appearance="Primary" HorizontalAlignment="Stretch" Margin="0,0,4,0">Add</ui:Button>
+                        <ui:Button Grid.Column="1" HorizontalAlignment="Stretch" Margin="4,0,0,0">Clear</ui:Button>
+                    </Grid>
+
+                    
+                </StackPanel>
             </ui:Card>
         </Grid>
     </Grid>
