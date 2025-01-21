@@ -1,13 +1,14 @@
 ﻿using MyMoney.Core.Database;
 using MyMoney.Core.FS.Models;
 using System.Globalization;
+using System.Linq;
 
 namespace MyMoney.Core.Reports
 {
     /// <summary>
     /// Calculates values for a 12 month income vs. expense bar chart
     /// </summary>
-    public class IncomeExpense12MonthCalculator
+    public static class IncomeExpense12MonthCalculator
     {
         /// <summary>
         /// Get the names of all the months from 11 months ago to the current month
@@ -68,8 +69,8 @@ namespace MyMoney.Core.Reports
                 if (string.IsNullOrWhiteSpace(transaction.Category))
                     continue;
 
-                // TODO: Only use the income amounts
-                income += transaction.Amount.Value;
+                if (transaction.Amount.Value > 0)
+                    income += transaction.Amount.Value;
             }
 
             return income;
@@ -81,23 +82,23 @@ namespace MyMoney.Core.Reports
 
             foreach (Transaction transaction in transactions)
             {
-                // Only list items with a category (this prevents beginning balances and transfers from showing up in the chart)
+                // Only list items with a category (this prevents transfers from showing up in the chart)
                 if (string.IsNullOrWhiteSpace(transaction.Category))
                     continue;
-                // TODO: Only use the expense amounts
-                expenses += transaction.Amount.Value;
+                
+                if (transaction.Amount.Value < 0)
+                    expenses += transaction.Amount.Value;
             }
 
-            return expenses;
+            return Math.Abs(expenses);
         }
 
         private static List<Transaction> GetMonthOfTransactions(int monthsAgo)
         {
-            List<Transaction> result = [];
             var startDate = GetMonthStartDate(monthsAgo);
             var endDate = GetMonthEndDate(monthsAgo);
 
-            result = ReadTransactionsWithingDateRange(startDate, endDate);
+            var result = ReadTransactionsWithingDateRange(startDate, endDate);
 
             return result;
         }
@@ -114,7 +115,9 @@ namespace MyMoney.Core.Reports
                 monthNumber = 12 + monthNumber - monthsAgo;
                 yearNumber--;
             }
-            DateTime dt = new(yearNumber, monthNumber, DateTime.DaysInMonth(yearNumber, monthNumber));
+
+            int day = DateTime.DaysInMonth(yearNumber, monthNumber);
+            DateTime dt = new(yearNumber, monthNumber, day);
             return dt;
         }
 
@@ -151,15 +154,9 @@ namespace MyMoney.Core.Reports
 
             // go through the transactions and get the ones in the specified date range
             List<Transaction> transactions = [];
-
-            foreach (var transaction in allTransactions)
-            {
-                if (IsDateBetween(transaction.Date, startDate, endDate))
-                {
-                    transactions.Add(transaction);
-                }
-            }
-
+            transactions.AddRange(from transaction in allTransactions
+                                  where IsDateBetween(transaction.Date, startDate, endDate)
+                                  select transaction);
             return transactions;
         }
 
