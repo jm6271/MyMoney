@@ -85,7 +85,8 @@ namespace MyMoney.Core.Reports
                 {
                     if (transaction.Category == CategoryName && IsDateInCurrentMonth(transaction.Date))
                     {
-                        Actual += transaction.Receive.Value;
+                        // TODO: Only use income transactions
+                        Actual += transaction.Amount.Value;
                     }
                 }
             }
@@ -109,7 +110,8 @@ namespace MyMoney.Core.Reports
                 {
                     if (transaction.Category == CategoryName && IsDateInCurrentMonth(transaction.Date))
                     {
-                        Actual += transaction.Spend.Value;
+                        // TODO: Only use expense transactions
+                        Actual += transaction.Amount.Value;
                     }
                 }
             }

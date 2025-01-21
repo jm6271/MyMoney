@@ -68,7 +68,8 @@ namespace MyMoney.Core.Reports
                 if (string.IsNullOrWhiteSpace(transaction.Category))
                     continue;
 
-                income += transaction.Receive.Value;
+                // TODO: Only use the income amounts
+                income += transaction.Amount.Value;
             }
 
             return income;
@@ -83,7 +84,8 @@ namespace MyMoney.Core.Reports
                 // Only list items with a category (this prevents beginning balances and transfers from showing up in the chart)
                 if (string.IsNullOrWhiteSpace(transaction.Category))
                     continue;
-                expenses += transaction.Spend.Value;
+                // TODO: Only use the expense amounts
+                expenses += transaction.Amount.Value;
             }
 
             return expenses;
