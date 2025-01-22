@@ -3,6 +3,11 @@ using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using MyMoney.Core.FS.Models;
+using Wpf.Ui;
+using Wpf.Ui.Controls;
+using Wpf.Ui.Extensions;
+using MyMoney.Views.ContentDialogs;
+using MyMoney.ViewModels.ContentDialogs;
 
 
 namespace MyMoney.ViewModels.Pages
@@ -47,8 +52,12 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private string _AddTransactionButtonText = "Add Transaction";
 
-        public AccountsViewModel()
+        private readonly IContentDialogService _contentDialogService;
+
+        public AccountsViewModel(IContentDialogService contentDialogService)
         {
+            _contentDialogService = contentDialogService;
+
             var a = Core.Database.DatabaseReader.GetCollection<Account>("Accounts");
 
             foreach (var account in a)
@@ -288,6 +297,32 @@ namespace MyMoney.ViewModels.Pages
             }
 
             // save changes to database
+            SaveAccountsToDatabase();
+        }
+
+        [RelayCommand]
+        private async Task RenameAccount(object content)
+        {
+            var dialogHost = _contentDialogService.GetDialogHost();
+            if (dialogHost == null) return;
+
+            RenameAccountViewModel renameViewModel = new()
+            {
+                NewName = Accounts[SelectedAccountIndex].AccountName
+            };
+
+            var renameContentDialog = new RenameAccountDialog(dialogHost, renameViewModel)
+            {
+                PrimaryButtonText = "Rename",
+                CloseButtonText = "Cancel",
+            };
+            var result = await renameContentDialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                Accounts[SelectedAccountIndex].AccountName = renameViewModel.NewName;
+            }
+
             SaveAccountsToDatabase();
         }
     }
