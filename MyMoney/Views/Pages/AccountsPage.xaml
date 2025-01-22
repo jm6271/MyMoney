@@ -171,15 +171,15 @@
 
                             <ui:ListView.ContextMenu>
                                 <ContextMenu>
-                                    <MenuItem Header="Delete Account"/>
+                                    <MenuItem Header="Delete Account" Command="{Binding ViewModel.DeleteAccountCommand}"/>
                                 </ContextMenu>
                             </ui:ListView.ContextMenu>
                         </ui:ListView>
                     </StackPanel>
                     
                     <StackPanel Grid.Column="1" Grid.Row="1" Margin="16,0,0,0">
-                        <ui:Button HorizontalAlignment="Stretch" Margin="0,0,0,8">New Account</ui:Button>
-                        <ui:Button HorizontalAlignment="Stretch">Transfer</ui:Button>
+                        <ui:Button HorizontalAlignment="Stretch" Margin="0,0,0,8" Command="{Binding ViewModel.AddNewAccountButtonClickCommand}">New Account</ui:Button>
+                        <ui:Button HorizontalAlignment="Stretch" Command="{Binding ViewModel.TransferBetweenAccountsCommand}">Transfer</ui:Button>
                     </StackPanel>
                 </Grid>
             </ui:Card>
