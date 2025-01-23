@@ -149,6 +149,19 @@ namespace MyMoney.ViewModels.Pages
                 await uiMessageBox.ShowDialogAsync();
                 return;
             }
+            if (NewTransactionAmount.Value <= 0m)
+            {
+                // Show message box
+                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Invalid Amount",
+                    Content = "Amount must be a number more than $0.00",
+                    CloseButtonText = "OK"
+                };
+
+                await uiMessageBox.ShowDialogAsync();
+                return;
+            }
 
             var amount = NewTransactionAmount;
             if (NewTransactionIsExpense) amount = new(-amount.Value);
