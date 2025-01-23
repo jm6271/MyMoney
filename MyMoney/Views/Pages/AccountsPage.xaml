@@ -21,6 +21,7 @@
     <Page.Resources>
         <ResourceDictionary>
             <helpers:StartsWithPlusConverter x:Key="StartsWithPlusConverter"/>
+            <helpers:CurrencyConverter x:Key="CurrencyConverter"/>
 
             <StackPanel x:Key="RenameDialogContent">
                 <TextBlock Margin="0,0,0,8">Rename account to</TextBlock>
@@ -117,7 +118,7 @@
                         <RadioButton Grid.Column="0" IsChecked="{Binding ViewModel.NewTransactionIsExpense}">Expense</RadioButton>
                     </Grid>
                     <ui:TextBlock Margin="0,0,0,4">Amount</ui:TextBlock>
-                    <ui:TextBox Margin="0,0,0,16" Text="{Binding ViewModel.NewTransactionAmount.Value}"/>
+                    <ui:TextBox Margin="0,0,0,16" Text="{Binding Path=ViewModel.NewTransactionAmount, Converter={StaticResource CurrencyConverter}}"/>
                     <Grid Margin="0,0,0,16">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="135"/>
