@@ -38,6 +38,12 @@ namespace MyMoney.ViewModels.Pages
         private Currency _NewTransactionAmount = new(0m);
 
         [ObservableProperty]
+        private bool _NewTransactionIsExpense = true;
+
+        [ObservableProperty]
+        private bool _NewTransactionIsIncome = false;
+
+        [ObservableProperty]
         private Account? _SelectedAccount;
 
         [ObservableProperty]
@@ -144,13 +150,16 @@ namespace MyMoney.ViewModels.Pages
                 return;
             }
 
+            var amount = NewTransactionAmount;
+            if (NewTransactionIsExpense) amount = new(-amount.Value);
+
             // Calculate the balance
             if (SelectedAccount == null) return;
-            var balance = SelectedAccount.Total + NewTransactionAmount;
+            var balance = SelectedAccount.Total + amount;
 
             SelectedAccount.Total = balance;
 
-            Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, new(NewTransactionAmount.Value), NewTransactionMemo);
+            Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, amount, NewTransactionMemo);
             SelectedAccountTransactions.Add(newTransaction);
 
             NewTransactionDate = DateTime.Today;
@@ -162,6 +171,16 @@ namespace MyMoney.ViewModels.Pages
             SortTransactions();
 
             SaveAccountsToDatabase();
+        }
+
+        [RelayCommand]
+        private void ClearTransaction()
+        {
+            NewTransactionAmount = new(0m);
+            NewTransactionCategory = "";
+            NewTransactionDate = DateTime.Today;
+            NewTransactionMemo = "";
+            NewTransactionPayee = "";
         }
 
         [RelayCommand]
