@@ -28,5 +28,11 @@ namespace MyMoney.Views.ContentDialogs
             InitializeComponent();
             DataContext = viewModel;
         }
+
+        private void ContentDialog_Loaded(object sender, RoutedEventArgs e)
+        {
+            txtAmount.Focus();
+            txtAmount.SelectAll();
+        }
     }
 }

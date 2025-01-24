@@ -14,7 +14,8 @@
                   d:DataContext="{d:DesignInstance {x:Type pages:AccountsViewModel}, IsDesignTimeCreatable=False}"
       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
       ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      Foreground="{DynamicResource TextFillColorPrimaryBrush}">
+      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      Loaded="ContentDialog_Loaded">
     <ui:ContentDialog.Resources>
         <helpers:CurrencyConverter x:Key="CurrencyConverter"/>
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:NewTransactionDialog}" />
@@ -31,7 +32,7 @@
             <RadioButton Grid.Column="0" IsChecked="{Binding NewTransactionIsExpense}">Expense</RadioButton>
         </Grid>
         <ui:TextBlock Margin="0,0,0,4">Amount</ui:TextBlock>
-        <ui:TextBox Margin="0,0,0,16" Text="{Binding Path=NewTransactionAmount, Converter={StaticResource CurrencyConverter}}"/>
+        <ui:TextBox x:Name="txtAmount" Margin="0,0,0,16" Text="{Binding Path=NewTransactionAmount, Converter={StaticResource CurrencyConverter}}"/>
         <Grid Margin="0,0,0,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="135"/>
@@ -49,7 +50,7 @@
             <TextBox Grid.Row="1" Grid.Column="1" Margin="4,0,0,0" Text="{Binding NewTransactionPayee}"/>
         </Grid>
         <ui:TextBlock Margin="0,0,0,4">Category</ui:TextBlock>
-        <ComboBox ItemsSource="{Binding CategoryNames}" Text="{Binding NewTransactionCategory}"/>
+        <ComboBox ItemsSource="{Binding CategoryNames}" Text="{Binding NewTransactionCategory}" Margin="0,0,0,4"/>
         <ui:TextBlock Margin="0,0,0,4">Memo</ui:TextBlock>
         <ui:TextBox Margin="0,0,0,24" Text="{Binding NewTransactionMemo}"/>
     </StackPanel>
