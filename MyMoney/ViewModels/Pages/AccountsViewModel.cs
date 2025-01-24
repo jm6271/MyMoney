@@ -135,6 +135,20 @@ namespace MyMoney.ViewModels.Pages
 
         private async void BttnNewTransaction_Click()
         {
+            // make sure an account is selected
+            if (SelectedAccountIndex == -1)
+            {
+                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Select Account",
+                    Content = "Select an account before adding a transaction",
+                    CloseButtonText = "OK",
+                };
+
+                await uiMessageBox.ShowDialogAsync();
+                return;
+            }
+
             var dialogHost = _contentDialogService.GetDialogHost();
             if (dialogHost == null) return;
 

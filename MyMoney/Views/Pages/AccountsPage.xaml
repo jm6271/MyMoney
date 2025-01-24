@@ -62,7 +62,7 @@
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
                 </ui:ListView>
-                <ui:Button HorizontalAlignment="Stretch" Margin="0,0,0,8" Command="{Binding ViewModel.AddTransactionButtonClickCommand}" Appearance="Primary">New Transaction</ui:Button>
+                <ui:Button HorizontalAlignment="Stretch" Margin="0,12,0,8" Command="{Binding ViewModel.AddTransactionButtonClickCommand}" Appearance="Primary">New Transaction</ui:Button>
                 <ui:Button HorizontalAlignment="Stretch" Margin="0,0,0,8" Command="{Binding ViewModel.AddNewAccountButtonClickCommand}">New Account</ui:Button>
                 <ui:Button HorizontalAlignment="Stretch" Command="{Binding ViewModel.TransferBetweenAccountsCommand}">Transfer</ui:Button>
             </StackPanel>
