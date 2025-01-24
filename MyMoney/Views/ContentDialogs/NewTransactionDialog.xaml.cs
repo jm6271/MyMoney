@@ -34,5 +34,15 @@ namespace MyMoney.Views.ContentDialogs
             txtAmount.Focus();
             txtAmount.SelectAll();
         }
+
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            // tab to next control (OK button) and press enter on it (submit the dialog) when enter is pressed
+            if (e.Key == Key.Enter)
+            {
+                txtMemo.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                e.Handled = false;
+            }
+        }
     }
 }
