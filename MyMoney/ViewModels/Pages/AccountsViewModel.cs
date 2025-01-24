@@ -305,10 +305,11 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private async Task DeleteTransaction()
         {
-            // Do not delete the first transaction (opening balance)
-            if (SelectedTransactionIndex <= 0) return;
+            // Make sure a transaction is selected
+            if (SelectedAccount == null) return;
+            if (SelectedTransactionIndex < 0) return;
 
-            // show a message box
+            // confirm deletion
             var uiMessageBox = new Wpf.Ui.Controls.MessageBox
             {
                 Title = "Delete Transaction?",
@@ -321,6 +322,10 @@ namespace MyMoney.ViewModels.Pages
             var result = await uiMessageBox.ShowDialogAsync();
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
+
+            // get the amount of the selected transaction so we can modify the account total
+            var amount = SelectedAccountTransactions[SelectedTransactionIndex].Amount;
+            SelectedAccount.Total -= amount;
 
             // Delete the selected transaction
             SelectedAccountTransactions.RemoveAt(SelectedTransactionIndex);

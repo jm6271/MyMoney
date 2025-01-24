@@ -79,6 +79,12 @@
                 <ui:ListView x:Name="TransactionsList" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" 
                                   SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}"
                                   SelectedItem="{Binding ViewModel.SelectedTransaction}" VerticalAlignment="Top">
+                    <ui:ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
+                        </ContextMenu>
+                    </ui:ListView.ContextMenu>
+                    
                     <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:Transaction}">
                             <Grid Margin="0,2,0,2">
