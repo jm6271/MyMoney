@@ -135,6 +135,18 @@ namespace MyMoney.ViewModels.Pages
 
         private async void BttnNewTransaction_Click()
         {
+            var dialogHost = _contentDialogService.GetDialogHost();
+            if (dialogHost == null) return;
+
+            var renameContentDialog = new NewTransactionDialog(dialogHost, this)
+            {
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+            };
+            var result = await renameContentDialog.ShowAsync();
+
+            if (result != ContentDialogResult.Primary) return;
+
             // Make sure that the required fields are filled out
             if (NewTransactionCategory == "")
             {

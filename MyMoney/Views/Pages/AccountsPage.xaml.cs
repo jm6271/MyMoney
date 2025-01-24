@@ -20,11 +20,6 @@ namespace MyMoney.Views.Pages
             InitializeComponent();
 
             Application.Current.MainWindow.SizeChanged += MainWindow_SizeChanged;
-
-            if (cmbAccounts.Items.Count > 0)
-            {
-                cmbAccounts.SelectedIndex = 0;
-            }
         }
 
         private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -34,7 +29,7 @@ namespace MyMoney.Views.Pages
 
         private void UpdateTransactionsMaxHeight()
         {
-            TransactionsList.MaxHeight = Application.Current.MainWindow.ActualHeight - 270;
+            TransactionsList.MaxHeight = Application.Current.MainWindow.ActualHeight - 220;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
