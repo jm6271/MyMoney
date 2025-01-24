@@ -33,7 +33,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="2*"/>
+            <ColumnDefinition Width="3*"/>
         </Grid.ColumnDefinitions>
 
         <ui:Card Grid.Column="0" VerticalAlignment="Top" Margin="0,0,12,0">

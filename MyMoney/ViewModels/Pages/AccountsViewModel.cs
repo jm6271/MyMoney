@@ -159,7 +159,11 @@ namespace MyMoney.ViewModels.Pages
             };
             var result = await renameContentDialog.ShowAsync();
 
-            if (result != ContentDialogResult.Primary) return;
+            if (result != ContentDialogResult.Primary)
+            {
+                ClearNewTransactionFields();
+                return;
+            }
 
             // Make sure that the required fields are filled out
             if (NewTransactionCategory == "")
@@ -173,6 +177,7 @@ namespace MyMoney.ViewModels.Pages
                 };
 
                 await uiMessageBox.ShowDialogAsync();
+                ClearNewTransactionFields();
                 return;
             }
             if (NewTransactionAmount.Value <= 0m)
@@ -186,6 +191,7 @@ namespace MyMoney.ViewModels.Pages
                 };
 
                 await uiMessageBox.ShowDialogAsync();
+                ClearNewTransactionFields();
                 return;
             }
 
@@ -201,15 +207,20 @@ namespace MyMoney.ViewModels.Pages
             Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, amount, NewTransactionMemo);
             SelectedAccountTransactions.Add(newTransaction);
 
+            ClearNewTransactionFields();
+
+            SortTransactions();
+
+            SaveAccountsToDatabase();
+        }
+
+        private void ClearNewTransactionFields()
+        {
             NewTransactionDate = DateTime.Today;
             NewTransactionPayee = "";
             NewTransactionCategory = "";
             NewTransactionAmount = new(0m);
             NewTransactionMemo = "";
-
-            SortTransactions();
-
-            SaveAccountsToDatabase();
         }
 
         [RelayCommand]
