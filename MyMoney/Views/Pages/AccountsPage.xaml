@@ -81,6 +81,7 @@
                                   SelectedItem="{Binding ViewModel.SelectedTransaction}" VerticalAlignment="Top">
                     <ui:ListView.ContextMenu>
                         <ContextMenu>
+                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditTransactionCommand}"/>
                             <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
                         </ContextMenu>
                     </ui:ListView.ContextMenu>

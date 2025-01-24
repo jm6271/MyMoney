@@ -152,12 +152,12 @@ namespace MyMoney.ViewModels.Pages
             var dialogHost = _contentDialogService.GetDialogHost();
             if (dialogHost == null) return;
 
-            var renameContentDialog = new NewTransactionDialog(dialogHost, this)
+            var newTransactionDialog = new NewTransactionDialog(dialogHost, this)
             {
                 PrimaryButtonText = "OK",
                 CloseButtonText = "Cancel",
             };
-            var result = await renameContentDialog.ShowAsync();
+            var result = await newTransactionDialog.ShowAsync();
 
             if (result != ContentDialogResult.Primary)
             {
@@ -331,6 +331,90 @@ namespace MyMoney.ViewModels.Pages
             SelectedAccountTransactions.RemoveAt(SelectedTransactionIndex);
 
             // Apply changes to database
+            SaveAccountsToDatabase();
+        }
+
+        [RelayCommand]
+        private async Task EditTransaction()
+        {
+            // Make sure a transaction is selected
+            if (SelectedAccount == null || SelectedTransactionIndex < 0) return;
+
+            var dialogHost = _contentDialogService.GetDialogHost();
+            if (dialogHost == null) return;
+
+            // Load contents of controls into the view model properties
+            NewTransactionDate = SelectedAccountTransactions[SelectedTransactionIndex].Date;
+            NewTransactionAmount = SelectedAccountTransactions[SelectedTransactionIndex].Amount;
+            NewTransactionCategory = SelectedAccountTransactions[SelectedTransactionIndex].Category;
+            NewTransactionIsExpense = SelectedAccountTransactions[SelectedTransactionIndex].Amount.Value < 0m;
+            NewTransactionIsIncome = !NewTransactionIsExpense;
+            NewTransactionMemo = SelectedAccountTransactions[SelectedTransactionIndex].Memo;
+            NewTransactionPayee = SelectedAccountTransactions[SelectedTransactionIndex].Payee;
+
+            // store current transaction amount so we know how to change the account total
+            var OldAmount = NewTransactionAmount;
+
+            var editTransactionDialog = new NewTransactionDialog(dialogHost, this)
+            {
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+                Title = "Edit Transaction"
+            };
+            var result = await editTransactionDialog.ShowAsync();
+
+            if (result != ContentDialogResult.Primary)
+            {
+                ClearNewTransactionFields();
+                return;
+            }
+
+            // Make sure that the required fields are filled out
+            if (NewTransactionCategory == "")
+            {
+                // Show message box
+                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Missing Category",
+                    Content = "Category field cannot be empty",
+                    CloseButtonText = "OK"
+                };
+
+                await uiMessageBox.ShowDialogAsync();
+                ClearNewTransactionFields();
+                return;
+            }
+            if (NewTransactionAmount.Value <= 0m)
+            {
+                // Show message box
+                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Invalid Amount",
+                    Content = "Amount must be a number more than $0.00",
+                    CloseButtonText = "OK"
+                };
+
+                await uiMessageBox.ShowDialogAsync();
+                ClearNewTransactionFields();
+                return;
+            }
+
+            var amount = NewTransactionAmount;
+            if (NewTransactionIsExpense) amount = new(-amount.Value);
+
+            // Calculate the balance
+            if (SelectedAccount == null) return;
+            var balance = SelectedAccount.Total - OldAmount + amount;
+
+            SelectedAccount.Total = balance;
+
+            Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, amount, NewTransactionMemo);
+            SelectedAccountTransactions.Add(newTransaction);
+
+            ClearNewTransactionFields();
+
+            SortTransactions();
+
             SaveAccountsToDatabase();
         }
 
