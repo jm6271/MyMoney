@@ -58,6 +58,9 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private string _AddTransactionButtonText = "Add Transaction";
 
+        [ObservableProperty]
+        private bool _TransactionsEnabled = false;
+
         private readonly IContentDialogService _contentDialogService;
 
         public AccountsViewModel(IContentDialogService contentDialogService)
@@ -70,6 +73,8 @@ namespace MyMoney.ViewModels.Pages
             {
                 Accounts.Add(account);
             }
+
+            if (Accounts.Count > 0) TransactionsEnabled = true;
 
             AddNewAccountButtonClickCommand = new RelayCommand(BttnNewAccount_Click);
             AddTransactionButtonClickCommand = new RelayCommand(BttnNewTransaction_Click);
@@ -130,27 +135,19 @@ namespace MyMoney.ViewModels.Pages
                 Accounts.Add(newAccount);
 
                 SaveAccountsToDatabase();
+
+                TransactionsEnabled = true;
             }
         }
 
         private async void BttnNewTransaction_Click()
         {
-            // make sure an account is selected
-            if (SelectedAccountIndex == -1)
-            {
-                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-                {
-                    Title = "Select Account",
-                    Content = "Select an account before adding a transaction",
-                    CloseButtonText = "OK",
-                };
-
-                await uiMessageBox.ShowDialogAsync();
-                return;
-            }
-
             var dialogHost = _contentDialogService.GetDialogHost();
             if (dialogHost == null) return;
+
+            // Set default account if it's not already set
+            if (Accounts.Count > 0 && SelectedAccountIndex == -1)
+                SelectedAccountIndex = 0;
 
             var newTransactionDialog = new NewTransactionDialog(dialogHost, this)
             {
@@ -192,6 +189,19 @@ namespace MyMoney.ViewModels.Pages
 
                 await uiMessageBox.ShowDialogAsync();
                 ClearNewTransactionFields();
+                return;
+            }
+            // make sure an account is selected
+            if (SelectedAccountIndex == -1)
+            {
+                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Select Account",
+                    Content = "Select an account before adding a transaction",
+                    CloseButtonText = "OK",
+                };
+
+                await uiMessageBox.ShowDialogAsync();
                 return;
             }
 
@@ -398,6 +408,20 @@ namespace MyMoney.ViewModels.Pages
                 ClearNewTransactionFields();
                 return;
             }
+            if (SelectedAccountIndex == -1)
+            {
+                // Show message box
+                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Missing Account",
+                    Content = "Account field cannot be empty",
+                    CloseButtonText = "OK"
+                };
+
+                await uiMessageBox.ShowDialogAsync();
+                ClearNewTransactionFields();
+                return;
+            }
 
             var amount = NewTransactionAmount;
             if (NewTransactionIsExpense) amount = new(-amount.Value);
@@ -422,6 +446,13 @@ namespace MyMoney.ViewModels.Pages
         {
             // Reload the categories from the database
             LoadCategoryNames();
+
+            // Check to see if we should enable new transactions
+            // Disable new transactions if there are no more accounts
+            if (Accounts.Count == 0)
+                TransactionsEnabled = false;
+            else
+                TransactionsEnabled = true;
         }
 
         [RelayCommand]
@@ -456,6 +487,12 @@ namespace MyMoney.ViewModels.Pages
 
             // save changes to database
             SaveAccountsToDatabase();
+
+            // Disable new transactions if there are no more accounts
+            if (Accounts.Count == 0)
+                TransactionsEnabled = false;
+            else
+                TransactionsEnabled = true;
         }
 
         [RelayCommand]

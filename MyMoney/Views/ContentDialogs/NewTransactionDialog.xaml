@@ -50,7 +50,16 @@
             <TextBox Grid.Row="1" Grid.Column="1" Margin="4,0,0,0" Text="{Binding NewTransactionPayee}"/>
         </Grid>
         <ui:TextBlock Margin="0,0,0,4">Category</ui:TextBlock>
-        <ComboBox ItemsSource="{Binding CategoryNames}" Text="{Binding NewTransactionCategory}" Margin="0,0,0,4"/>
+        <ComboBox ItemsSource="{Binding CategoryNames}" Text="{Binding NewTransactionCategory}" Margin="0,0,0,16"/>
+        <ui:TextBlock Margin="0,0,0,4">Account</ui:TextBlock>
+        <ComboBox Margin="0,0,0,16" ItemsSource="{Binding Accounts}" SelectedIndex="{Binding SelectedAccountIndex}"
+                  SelectedItem="{Binding SelectedAccount}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding AccountName}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
         <ui:TextBlock Margin="0,0,0,4">Memo</ui:TextBlock>
         <ui:TextBox x:Name="txtMemo" Margin="0,0,0,24" Text="{Binding NewTransactionMemo}" KeyDown="TextBox_KeyDown"/>
     </StackPanel>
