@@ -355,7 +355,7 @@ namespace MyMoney.ViewModels.Pages
 
             // Load contents of controls into the view model properties
             NewTransactionDate = SelectedAccountTransactions[SelectedTransactionIndex].Date;
-            NewTransactionAmount = SelectedAccountTransactions[SelectedTransactionIndex].Amount;
+            NewTransactionAmount = new(Math.Abs(SelectedAccountTransactions[SelectedTransactionIndex].Amount.Value));
             NewTransactionCategory = SelectedAccountTransactions[SelectedTransactionIndex].Category;
             NewTransactionIsExpense = SelectedAccountTransactions[SelectedTransactionIndex].Amount.Value < 0m;
             NewTransactionIsIncome = !NewTransactionIsExpense;
