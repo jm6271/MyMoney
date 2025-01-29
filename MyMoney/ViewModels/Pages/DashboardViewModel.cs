@@ -169,7 +169,7 @@ namespace MyMoney.ViewModels.Pages
             var AccentColor = ApplicationAccentColorManager.GetColorizationColor();
             ISeries[] s = [new ColumnSeries<double>()
             {
-                Values = new [] {Income, Expenses},
+                Values = [Income, Expenses],
                 Fill = new SolidColorPaint(new SKColor(AccentColor.R, AccentColor.G, AccentColor.B)),
                 Stroke = null,
             }];

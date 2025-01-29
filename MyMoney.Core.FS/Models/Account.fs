@@ -1,8 +1,10 @@
 ﻿namespace MyMoney.Core.FS.Models
 
 open System.Collections.ObjectModel
+open System.ComponentModel
 
 type Account() =
+    let ev = new Event<PropertyChangedEventHandler, PropertyChangedEventArgs>()
     let mutable _Id = 0
     let mutable _Transactions = ObservableCollection<Transaction>()
     let mutable _AccountName = ""
@@ -18,8 +20,16 @@ type Account() =
 
     member this.AccountName
         with get () = _AccountName
-        and set (value) = _AccountName <- value
+        and set (value) = 
+            _AccountName <- value
+            ev.Trigger(this, PropertyChangedEventArgs("AccountName"))
 
     member this.Total
         with get () = _Total
-        and set (value) = _Total <- value
+        and set (value) = 
+            _Total <- value
+            ev.Trigger(this, PropertyChangedEventArgs("Total"))
+
+    interface INotifyPropertyChanged with
+        [<CLIEvent>]
+        member this.PropertyChanged = ev.Publish

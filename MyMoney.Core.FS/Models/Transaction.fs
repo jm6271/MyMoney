@@ -2,14 +2,12 @@
 
 open System
 
-type Transaction (date:DateTime, payee:string, category:string, spend:Currency, receive:Currency, balance:Currency, memo:string) =
+type Transaction (date:DateTime, payee:string, category:string, amount:Currency, memo:string) =
     let mutable _Payee = payee
     let mutable _Category = category
-    let mutable _Spend = spend
-    let mutable _Receive = receive
-    let mutable _Balance = balance
     let mutable _Memo = memo
     let mutable _Date = date
+    let mutable _Amount = amount
 
     member this.Payee 
         with get() = _Payee
@@ -19,17 +17,9 @@ type Transaction (date:DateTime, payee:string, category:string, spend:Currency, 
         with get() = _Category
         and set (value) = _Category <- value
 
-    member this.Spend 
-        with get() = _Spend
-        and set (value) = _Spend <- value
-
-    member this.Receive
-        with get() = _Receive
-        and set (value) = _Receive <- value
-
-    member this.Balance
-        with get() = _Balance
-        and set (value) = _Balance <- value
+    member this.Amount
+        with get() = _Amount
+        and set (value) = _Amount <- value
 
     member this.Memo
         with get() = _Memo
@@ -41,3 +31,18 @@ type Transaction (date:DateTime, payee:string, category:string, spend:Currency, 
 
     member this.DateFormatted
         with get() = _Date.ToShortDateString()
+
+    member this.MonthAbbreviated
+        with get() = _Date.ToString("MMM")
+
+    member this.AmountFormatted
+        with get() = 
+            if (_Amount.Value > 0m)
+                then "+" + _Amount.ToString()
+            elif(_Amount.Value < 0m) then
+                let t = Math.Abs(_Amount.Value)
+                let tc = new Currency(t)
+                "-" + tc.ToString()
+            else
+                "$0.00"
+

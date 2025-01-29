@@ -3,6 +3,11 @@ using MyMoney.Views.Windows;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using MyMoney.Core.FS.Models;
+using Wpf.Ui;
+using Wpf.Ui.Controls;
+using Wpf.Ui.Extensions;
+using MyMoney.Views.ContentDialogs;
+using MyMoney.ViewModels.ContentDialogs;
 
 
 namespace MyMoney.ViewModels.Pages
@@ -30,10 +35,13 @@ namespace MyMoney.ViewModels.Pages
         private string _NewTransactionMemo = "";
 
         [ObservableProperty]
-        private Currency _NewTransactionSpend = new(0m);
+        private Currency _NewTransactionAmount = new(0m);
 
         [ObservableProperty]
-        private Currency _NewTransactionReceive = new(0m);
+        private bool _NewTransactionIsExpense = true;
+
+        [ObservableProperty]
+        private bool _NewTransactionIsIncome = false;
 
         [ObservableProperty]
         private Account? _SelectedAccount;
@@ -51,16 +59,22 @@ namespace MyMoney.ViewModels.Pages
         private string _AddTransactionButtonText = "Add Transaction";
 
         [ObservableProperty]
-        private double _TransactionsMaxHeight;
+        private bool _TransactionsEnabled = false;
 
-        public AccountsViewModel()
+        private readonly IContentDialogService _contentDialogService;
+
+        public AccountsViewModel(IContentDialogService contentDialogService)
         {
+            _contentDialogService = contentDialogService;
+
             var a = Core.Database.DatabaseReader.GetCollection<Account>("Accounts");
 
             foreach (var account in a)
             {
                 Accounts.Add(account);
             }
+
+            if (Accounts.Count > 0) TransactionsEnabled = true;
 
             AddNewAccountButtonClickCommand = new RelayCommand(BttnNewAccount_Click);
             AddTransactionButtonClickCommand = new RelayCommand(BttnNewTransaction_Click);
@@ -79,7 +93,7 @@ namespace MyMoney.ViewModels.Pages
             var incomeLst = budgetCollection.GetCurrentBudget().BudgetIncomeItems;
             var expenseLst = budgetCollection.GetCurrentBudget().BudgetExpenseItems;
 
-            foreach(var item in incomeLst)
+            foreach (var item in incomeLst)
             {
                 CategoryNames.Add(item.Category);
             }
@@ -89,6 +103,19 @@ namespace MyMoney.ViewModels.Pages
                 CategoryNames.Add(item.Category);
             }
 
+        }
+
+        private void SortTransactions()
+        {
+            var sorted = SelectedAccountTransactions.OrderByDescending(p => p.Date).ToList();
+            if (sorted != null)
+            {
+                SelectedAccountTransactions.Clear();
+                foreach (var transaction in sorted)
+                {
+                    SelectedAccountTransactions.Add(transaction);
+                }
+            }
         }
 
         private void BttnNewAccount_Click()
@@ -104,18 +131,37 @@ namespace MyMoney.ViewModels.Pages
                 newAccount.AccountName = newAccountDialogViewModel.AccountName;
                 newAccount.Total = newAccountDialogViewModel.StartingBalance;
 
-                // add a beginning balance transaction to the account
-                newAccount.Transactions.Add(new(DateTime.Today, "Begining Balance", string.Empty, new(0.00m), new(0.0m), newAccountDialogViewModel.StartingBalance, string.Empty));
-
                 // Add to the accounts list (shows up in the accounts list view on the accounts page)
                 Accounts.Add(newAccount);
 
                 SaveAccountsToDatabase();
+
+                TransactionsEnabled = true;
             }
         }
 
         private async void BttnNewTransaction_Click()
         {
+            var dialogHost = _contentDialogService.GetDialogHost();
+            if (dialogHost == null) return;
+
+            // Set default account if it's not already set
+            if (Accounts.Count > 0 && SelectedAccountIndex == -1)
+                SelectedAccountIndex = 0;
+
+            var newTransactionDialog = new NewTransactionDialog(dialogHost, this)
+            {
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+            };
+            var result = await newTransactionDialog.ShowAsync();
+
+            if (result != ContentDialogResult.Primary)
+            {
+                ClearNewTransactionFields();
+                return;
+            }
+
             // Make sure that the required fields are filled out
             if (NewTransactionCategory == "")
             {
@@ -128,68 +174,73 @@ namespace MyMoney.ViewModels.Pages
                 };
 
                 await uiMessageBox.ShowDialogAsync();
+                ClearNewTransactionFields();
+                return;
+            }
+            if (NewTransactionAmount.Value <= 0m)
+            {
+                // Show message box
+                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Invalid Amount",
+                    Content = "Amount must be a number more than $0.00",
+                    CloseButtonText = "OK"
+                };
+
+                await uiMessageBox.ShowDialogAsync();
+                ClearNewTransactionFields();
+                return;
+            }
+            // make sure an account is selected
+            if (SelectedAccountIndex == -1)
+            {
+                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Select Account",
+                    Content = "Select an account before adding a transaction",
+                    CloseButtonText = "OK",
+                };
+
+                await uiMessageBox.ShowDialogAsync();
                 return;
             }
 
-            if (AddTransactionButtonText == "Add Transaction")
-            {
-                // Calculate the balance
-                if (SelectedAccount == null) return;
-                var balance = SelectedAccount.Total - NewTransactionSpend + NewTransactionReceive;
+            var amount = NewTransactionAmount;
+            if (NewTransactionIsExpense) amount = new(-amount.Value);
 
-                SelectedAccount.Total = balance;
+            // Calculate the balance
+            if (SelectedAccount == null) return;
+            var balance = SelectedAccount.Total + amount;
 
-                Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, new(NewTransactionSpend.Value), new(NewTransactionReceive.Value), new(balance.Value), NewTransactionMemo);
-                SelectedAccountTransactions.Add(newTransaction);
-            }
-            else // editing the selected transaction
-            {
-                int editTransactionIndex = SelectedTransactionIndex;
+            SelectedAccount.Total = balance;
 
-                if (SelectedAccount == null || SelectedTransaction == null) return;
+            Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, amount, NewTransactionMemo);
+            SelectedAccountTransactions.Add(newTransaction);
 
-                // recalculate the balance by getting the balance for the previous transaction
-                if (editTransactionIndex == 0) // first transaction, this shows the begining balance of the account and should not be edited
-                    return;
+            ClearNewTransactionFields();
 
-                decimal previousBalance = SelectedAccountTransactions[editTransactionIndex - 1].Balance.Value;
-                decimal newBalance = previousBalance - NewTransactionSpend.Value + NewTransactionReceive.Value;
+            SortTransactions();
 
-                // Create the transaction object
-                Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, new(NewTransactionSpend.Value), new(NewTransactionReceive.Value), new(newBalance), NewTransactionMemo);
+            SaveAccountsToDatabase();
+        }
 
-                // replace the old transaction with the new one
-                SelectedAccountTransactions[editTransactionIndex] = newTransaction;
-
-                // Now we have to recalculate the balances for all the transactions after this
-
-                if (SelectedAccountTransactions.Count == editTransactionIndex + 1) // last transaction, no recalculations
-                {
-                    SelectedAccount.Total = new(newBalance);
-                }
-                else
-                {
-                    for (int i = editTransactionIndex + 1; i < SelectedAccountTransactions.Count; i++)
-                    {
-                        var spend = SelectedAccountTransactions[i].Spend;
-                        var receive = SelectedAccountTransactions[i].Receive;
-
-                        SelectedAccountTransactions[i].Balance = SelectedAccountTransactions[i - 1].Balance - spend + receive;
-                    }
-
-                    // update the account total
-                    SelectedAccount.Total = SelectedAccount.Transactions[SelectedAccount.Transactions.Count - 1].Balance;
-                }
-            }
-
+        private void ClearNewTransactionFields()
+        {
             NewTransactionDate = DateTime.Today;
             NewTransactionPayee = "";
             NewTransactionCategory = "";
-            NewTransactionSpend = new(0m);
-            NewTransactionReceive = new(0m);
+            NewTransactionAmount = new(0m);
             NewTransactionMemo = "";
+        }
 
-            SaveAccountsToDatabase();
+        [RelayCommand]
+        private void ClearTransaction()
+        {
+            NewTransactionAmount = new(0m);
+            NewTransactionCategory = "";
+            NewTransactionDate = DateTime.Today;
+            NewTransactionMemo = "";
+            NewTransactionPayee = "";
         }
 
         [RelayCommand]
@@ -212,33 +263,31 @@ namespace MyMoney.ViewModels.Pages
                 // create a new transaction in each of the accounts
 
                 // create FROM transaction
-                Transaction FROM = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, "", viewModel.Amount, new(0m), new(0m), "Transfer");
+                Transaction FROM = new(DateTime.Today, "Transfer to " + viewModel.TransferTo, "", new(-viewModel.Amount.Value), "Transfer");
 
                 // Create TO transaction
-                Transaction TO = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, "", new(0m), viewModel.Amount, new(0m), "Transfer");
+                Transaction TO = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, "", viewModel.Amount, "Transfer");
 
                 // Add the transactions to their accounts
                 for (int i = 0; i < Accounts.Count; i++)
                 {
                     if (Accounts[i].AccountName == viewModel.TransferFrom)
                     {
-                        // Calculate the balance
-                        FROM.Balance = Accounts[i].Transactions[^1].Balance - FROM.Spend;
                         Accounts[i].Transactions.Add(FROM);
-                        
+
                         // Update ending balance
-                        Accounts[i].Total = FROM.Balance;
+                        Accounts[i].Total += FROM.Amount;
                     }
                     else if (Accounts[i].AccountName == viewModel.TransferTo)
                     {
-                        // Calculate the balance
-                        TO.Balance = Accounts[i].Transactions[^1].Balance + TO.Receive;
                         Accounts[i].Transactions.Add(TO);
 
                         // Update ending balance
-                        Accounts[i].Total = TO.Balance;
+                        Accounts[i].Total += TO.Amount;
                     }
                 }
+
+                SortTransactions();
 
                 // save the accounts to the database
                 SaveAccountsToDatabase();
@@ -251,33 +300,8 @@ namespace MyMoney.ViewModels.Pages
 
             if (SelectedAccount != null) IsInputEnabled = true;
             else IsInputEnabled = false;
-        }
 
-        partial void OnSelectedTransactionChanged(Transaction? value)
-        {
-            // load the details about the transaction into the fields
-            if (SelectedTransaction == null)
-            {
-                AddTransactionButtonText = "Add Transaction";
-                NewTransactionCategory = "";
-                NewTransactionDate = DateTime.Today;
-                NewTransactionMemo = "";
-                NewTransactionPayee = "";
-                NewTransactionReceive = new(0m);
-                NewTransactionSpend = new(0m);
-
-                return;
-            }
-
-            NewTransactionDate = SelectedTransaction.Date;
-            NewTransactionCategory = SelectedTransaction.Category;
-            NewTransactionMemo = SelectedTransaction.Memo;
-            NewTransactionPayee = SelectedTransaction.Payee;
-            NewTransactionReceive = SelectedTransaction.Receive;
-            NewTransactionSpend = SelectedTransaction.Spend;
-
-            // change button text to "Edit Transaction"
-            AddTransactionButtonText = "Edit Transaction";
+            SortTransactions();
         }
 
         [ObservableProperty]
@@ -291,10 +315,11 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private async Task DeleteTransaction()
         {
-            // Do not delete the first transaction (opening balance)
-            if (SelectedTransactionIndex <= 0) return;
+            // Make sure a transaction is selected
+            if (SelectedAccount == null) return;
+            if (SelectedTransactionIndex < 0) return;
 
-            // show a message box
+            // confirm deletion
             var uiMessageBox = new Wpf.Ui.Controls.MessageBox
             {
                 Title = "Delete Transaction?",
@@ -308,6 +333,10 @@ namespace MyMoney.ViewModels.Pages
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
 
+            // get the amount of the selected transaction so we can modify the account total
+            var amount = SelectedAccountTransactions[SelectedTransactionIndex].Amount;
+            SelectedAccount.Total -= amount;
+
             // Delete the selected transaction
             SelectedAccountTransactions.RemoveAt(SelectedTransactionIndex);
 
@@ -315,10 +344,115 @@ namespace MyMoney.ViewModels.Pages
             SaveAccountsToDatabase();
         }
 
+        [RelayCommand]
+        private async Task EditTransaction()
+        {
+            // Make sure a transaction is selected
+            if (SelectedAccount == null || SelectedTransactionIndex < 0) return;
+
+            var dialogHost = _contentDialogService.GetDialogHost();
+            if (dialogHost == null) return;
+
+            // Load contents of controls into the view model properties
+            NewTransactionDate = SelectedAccountTransactions[SelectedTransactionIndex].Date;
+            NewTransactionAmount = SelectedAccountTransactions[SelectedTransactionIndex].Amount;
+            NewTransactionCategory = SelectedAccountTransactions[SelectedTransactionIndex].Category;
+            NewTransactionIsExpense = SelectedAccountTransactions[SelectedTransactionIndex].Amount.Value < 0m;
+            NewTransactionIsIncome = !NewTransactionIsExpense;
+            NewTransactionMemo = SelectedAccountTransactions[SelectedTransactionIndex].Memo;
+            NewTransactionPayee = SelectedAccountTransactions[SelectedTransactionIndex].Payee;
+
+            // store current transaction amount so we know how to change the account total
+            var OldAmount = NewTransactionAmount;
+
+            var editTransactionDialog = new NewTransactionDialog(dialogHost, this)
+            {
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+                Title = "Edit Transaction"
+            };
+            var result = await editTransactionDialog.ShowAsync();
+
+            if (result != ContentDialogResult.Primary)
+            {
+                ClearNewTransactionFields();
+                return;
+            }
+
+            // Make sure that the required fields are filled out
+            if (NewTransactionCategory == "")
+            {
+                // Show message box
+                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Missing Category",
+                    Content = "Category field cannot be empty",
+                    CloseButtonText = "OK"
+                };
+
+                await uiMessageBox.ShowDialogAsync();
+                ClearNewTransactionFields();
+                return;
+            }
+            if (NewTransactionAmount.Value <= 0m)
+            {
+                // Show message box
+                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Invalid Amount",
+                    Content = "Amount must be a number more than $0.00",
+                    CloseButtonText = "OK"
+                };
+
+                await uiMessageBox.ShowDialogAsync();
+                ClearNewTransactionFields();
+                return;
+            }
+            if (SelectedAccountIndex == -1)
+            {
+                // Show message box
+                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
+                {
+                    Title = "Missing Account",
+                    Content = "Account field cannot be empty",
+                    CloseButtonText = "OK"
+                };
+
+                await uiMessageBox.ShowDialogAsync();
+                ClearNewTransactionFields();
+                return;
+            }
+
+            var amount = NewTransactionAmount;
+            if (NewTransactionIsExpense) amount = new(-amount.Value);
+
+            // Calculate the balance
+            if (SelectedAccount == null) return;
+            var balance = SelectedAccount.Total - OldAmount + amount;
+
+            SelectedAccount.Total = balance;
+
+            Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, amount, NewTransactionMemo);
+            SelectedAccountTransactions.Add(newTransaction);
+
+            ClearNewTransactionFields();
+
+            SortTransactions();
+
+            SaveAccountsToDatabase();
+        }
+
         public void OnPageNavigatedTo()
         {
             // Reload the categories from the database
             LoadCategoryNames();
+
+            // Check to see if we should enable new transactions
+            // Disable new transactions if there are no more accounts
+            if (Accounts.Count == 0)
+                TransactionsEnabled = false;
+            else
+                TransactionsEnabled = true;
         }
 
         [RelayCommand]
@@ -352,6 +486,38 @@ namespace MyMoney.ViewModels.Pages
             }
 
             // save changes to database
+            SaveAccountsToDatabase();
+
+            // Disable new transactions if there are no more accounts
+            if (Accounts.Count == 0)
+                TransactionsEnabled = false;
+            else
+                TransactionsEnabled = true;
+        }
+
+        [RelayCommand]
+        private async Task RenameAccount(object content)
+        {
+            var dialogHost = _contentDialogService.GetDialogHost();
+            if (dialogHost == null) return;
+
+            RenameAccountViewModel renameViewModel = new()
+            {
+                NewName = Accounts[SelectedAccountIndex].AccountName
+            };
+
+            var renameContentDialog = new RenameAccountDialog(dialogHost, renameViewModel)
+            {
+                PrimaryButtonText = "Rename",
+                CloseButtonText = "Cancel",
+            };
+            var result = await renameContentDialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                Accounts[SelectedAccountIndex].AccountName = renameViewModel.NewName;
+            }
+
             SaveAccountsToDatabase();
         }
     }

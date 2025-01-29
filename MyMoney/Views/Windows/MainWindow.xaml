@@ -52,7 +52,8 @@
             MenuItemsSource="{Binding ViewModel.MenuItems, Mode=OneWay}"
             OpenPaneLength="310"
             PaneDisplayMode="Left"
-            TitleBar="{Binding ElementName=TitleBar, Mode=OneWay}">
+            TitleBar="{Binding ElementName=TitleBar, Mode=OneWay}"
+            ScrollViewer.IsDeferredScrollingEnabled="False">
             <ui:NavigationView.Header>
                 <ui:BreadcrumbBar x:Name="BreadcrumbBar" Margin="42,32,42,20" />
             </ui:NavigationView.Header>
@@ -67,7 +68,7 @@
             </ui:NavigationView.AutoSuggestBox>
             <ui:NavigationView.ContentOverlay>
                 <Grid>
-                    <ui:SnackbarPresenter x:Name="SnackbarPresenter" />
+                    <ui:SnackbarPresenter x:Name="SnackbarPresenter" ScrollViewer.CanContentScroll="False"/>
                 </Grid>
             </ui:NavigationView.ContentOverlay>
         </ui:NavigationView>

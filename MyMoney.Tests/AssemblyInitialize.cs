@@ -45,13 +45,12 @@ namespace MyMoney.Tests
             // Create an account
             Account account = new();
             account.AccountName = "Account";
-            account.Transactions.Add(new Transaction(DateTime.Today, "Begining Balance", string.Empty, new(0.00m), new(0.0m), new(5000), string.Empty));
             account.Total = new(2000);
 
             // Add some transactions
-            account.Transactions.Add(new Transaction(DateTime.Today, "My Job, Inc.", "Income", new(0m), new(500), new(2500), "Paycheck"));
-            account.Transactions.Add(new Transaction(DateTime.Today, "Gas Station", "Auto", new(50m), new(0m), new(2450m), "Fill up car"));
-            account.Transactions.Add(new Transaction(DateTime.Today, "Fast Food, Inc.", "Food", new(20m), new(0m), new(2430), "Lunch"));
+            account.Transactions.Add(new Transaction(DateTime.Today, "My Job, Inc.", "Income",new(500), "Paycheck"));
+            account.Transactions.Add(new Transaction(DateTime.Today, "Gas Station", "Auto", new(-50m), "Fill up car"));
+            account.Transactions.Add(new Transaction(DateTime.Today, "Fast Food, Inc.", "Food", new(-20m), "Lunch"));
             account.Total = new(2430);
 
             // Write account to the database
