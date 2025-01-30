@@ -497,6 +497,9 @@ namespace MyMoney.ViewModels.Pages
                         break;
                     }
                 }
+
+                // Update budget lists
+                UpdateBudgetLists();
             }
         }
 
