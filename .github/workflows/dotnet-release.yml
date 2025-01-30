@@ -45,11 +45,13 @@ jobs:
         path: Installer/installer_builder.iss
 
     - name: Zip installer
-      run: Get-ChildItem -Path Installer/mymoney-setup-*.exe | ForEach-Object { Compress-Archive -Path $_.FullName -DestinationPath "$($_.BaseName).zip" }
-
+      run: |
+        Get-ChildItem -Path Installer/mymoney-setup-*.exe | ForEach-Object { Compress-Archive -Path $_.FullName -DestinationPath "$($_.BaseName).zip" }
+        ls Installer/
+        
     - name: Upload release asset
       uses: softprops/action-gh-release@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        files: Installer/mymoney-setup-*.zip
+        files: Installer/*.zip
