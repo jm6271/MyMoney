@@ -45,7 +45,7 @@ jobs:
         path: Installer/installer_builder.iss
 
     - name: Zip installer
-      run: powershell Compress-Archive -Path Installer/mymoney-setup-*.exe
+      run: Get-ChildItem -Path Installer/mymoney-setup-*.exe | ForEach-Object { Compress-Archive -Path $_.FullName -DestinationPath "$($_.BaseName).zip" }
 
     - name: Upload release asset
       uses: softprops/action-gh-release@v2
