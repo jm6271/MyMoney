@@ -182,11 +182,17 @@
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
             </Grid.RowDefinitions>
-            
-            <lvc:PieChart Series="{Binding ViewModel.IncomePercentagesSeries}" Margin="0,0,0,12"
-                          Title="{Binding ViewModel.IncomePercentages_Title}"/>
-            <lvc:PieChart Grid.Row="1" Series="{Binding ViewModel.ExpensePercentagesSeries}" Margin="0,12,0,0"
-                          Title="{Binding ViewModel.ExpensePercentages_Title}"/>
+
+            <ui:Card Margin="0,0,0,8" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
+                <lvc:PieChart Series="{Binding ViewModel.IncomePercentagesSeries}"
+                        Title="{Binding ViewModel.IncomePercentages_Title}"/>   
+            </ui:Card>
+
+            <ui:Card Grid.Row="1" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,8,0,0">
+                <lvc:PieChart Series="{Binding ViewModel.ExpensePercentagesSeries}"
+                    Title="{Binding ViewModel.ExpensePercentages_Title}"/> 
+            </ui:Card>
+
         </Grid>
     </Grid>
 </Page>
