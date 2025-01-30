@@ -487,13 +487,30 @@ namespace MyMoney.ViewModels.Pages
 
                 // Add to list of budgets
                 Budgets.Add(newBudget);
-                
+
+                // Update budget lists
+                UpdateBudgetLists();
+
                 // Set as current budget
                 foreach (var item in Budgets)
                 {
                     if (item.BudgetTitle == budgetTitle)
                     {
                         CurrentBudget = item;
+
+                        // Select listview item for this budget item
+                        if (item.BudgetDate.Month == DateTime.Now.Month)
+                        {
+                            CurrentBudgetsSelectedIndex = 0;
+                            OldBudgetsSelectedIndex = -1;
+                            FutureBudgetsSelectedIndex = -1;
+                        }
+                        else
+                        {
+                            CurrentBudgetsSelectedIndex = -1;
+                            OldBudgetsSelectedIndex = -1;
+                            FutureBudgetsSelectedIndex = 0;
+                        }
                         break;
                     }
                 }
