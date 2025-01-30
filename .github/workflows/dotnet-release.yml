@@ -41,9 +41,9 @@ jobs:
 
     - name: Install Inno Setup
       run: choco install innosetup
-
+      
     - name: Compile the Inno Setup script
-      run: "C:/Program Files (x86)/Inno Setup 6/ISCC.exe" Installer/setup_script.iss
+      run: '"C:/Program Files (x86)/Inno Setup 6/ISCC.exe" Installer/setup_script.iss'
 
     - name: Zip installer
       run: powershell Compress-Archive -Path Installer/mymoney-setup-*.exe
