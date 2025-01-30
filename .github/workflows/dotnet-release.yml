@@ -1,0 +1,60 @@
+name: Build and upload a release
+
+on:
+  release:
+    types: [created]
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: windows-latest
+
+  env:
+    Solution_Name: MyMoney.sln
+    Test_Project_Path: MyMoney.Tests\MyMoney.csproj
+
+  steps:
+  - name: Checkout
+    uses: actions/checkout@v4
+    with:
+      fetch-depth: 0
+
+  # Install the .NET Core workload
+  - name: Install .NET Core
+    uses: actions/setup-dotnet@v4
+    with:
+      dotnet-version: 9.0.x
+
+  # Add MSBuild to the PATH
+  - name: Setup MSBuild.exe
+    uses: microsoft/setup-msbuild@v2
+
+  # Execute all unit tests in the solution
+  - name: Execute unit tests
+    run: dotnet test
+
+  # build the solution
+  - name: Build solution
+    run: dotnet build -c Release
+
+  - name: Get Version Number
+    id: get_version
+    run: echo "::set-output name=VERSION::$(dotnet msbuild -nologo -t:GetAssemblyVersion -v:q -consoleloggerparameters:NoSummary /property:MSBuildExtensionsPath=$(dotnet --info | grep 'Base Path' | cut -d: -f2) $(Solution_Name) | tail -1)"
+
+  - name: Install Inno Setup
+    run: choco install innosetup
+
+  - name: Compile the Inno Setup script
+    run: "C:/Program Files (x86)/Inno Setup 6/ISCC.exe" Installer/setup_script.iss
+
+  - name: Zip installer
+    run: powershell Compress-Archive -Path Installer/mymoney-setup-${{ steps.get_version.outputs.VERSION }}.exe
+
+  - name: Upload release asset
+    uses: softprops/action-gh-release@v2
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    with:
+      files: Installer/mymoney-setup-${{ steps.get_version.outputs.VERSION }}.zip
