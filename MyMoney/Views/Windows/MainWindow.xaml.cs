@@ -1,5 +1,6 @@
 ﻿using MyMoney.ViewModels.Windows;
 using Wpf.Ui;
+using Wpf.Ui.Abstractions;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 
@@ -11,7 +12,7 @@ namespace MyMoney.Views.Windows
 
         public MainWindow(
             MainWindowViewModel viewModel,
-            IPageService pageService,
+            INavigationViewPageProvider pageService,
             INavigationService navigationService,
             IContentDialogService contentDialogService
         )
@@ -57,7 +58,7 @@ namespace MyMoney.Views.Windows
 
         public bool Navigate(Type pageType) => RootNavigation.Navigate(pageType);
 
-        public void SetPageService(IPageService pageService) => RootNavigation.SetPageService(pageService);
+        public void SetPageService(INavigationViewPageProvider navigationViewPageProvider) => RootNavigation.SetPageProviderService(navigationViewPageProvider);
 
         public void ShowWindow() => Show();
 

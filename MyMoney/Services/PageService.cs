@@ -1,11 +1,11 @@
-using Wpf.Ui;
+using Wpf.Ui.Abstractions;
 
 namespace MyMoney.Services
 {
     /// <summary>
     /// Service that provides pages for navigation.
     /// </summary>
-    public class PageService : IPageService
+    public class PageService : INavigationViewPageProvider
     {
         /// <summary>
         /// Service which provides the instances of pages.
@@ -32,6 +32,14 @@ namespace MyMoney.Services
 
         /// <inheritdoc />
         public FrameworkElement? GetPage(Type pageType)
+        {
+            if (!typeof(FrameworkElement).IsAssignableFrom(pageType))
+                throw new InvalidOperationException("The page should be a WPF control.");
+
+            return _serviceProvider.GetService(pageType) as FrameworkElement;
+        }
+
+        object? INavigationViewPageProvider.GetPage(Type pageType)
         {
             if (!typeof(FrameworkElement).IsAssignableFrom(pageType))
                 throw new InvalidOperationException("The page should be a WPF control.");
