@@ -1,5 +1,6 @@
 ﻿using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
+using Wpf.Ui.Abstractions.Controls;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -76,6 +77,18 @@ namespace MyMoney.ViewModels.Pages
 
             // Write to database
             Core.Database.DatabaseWriter.WriteSettingsDictionary("ApplicationSettings", SettingsDict);
+        }
+
+        public Task OnNavigatedToAsync()
+        {
+            if (!_isInitialized)
+                InitializeViewModel();
+            return Task.CompletedTask;
+        }
+
+        public Task OnNavigatedFromAsync()
+        {
+            return Task.CompletedTask;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using MyMoney.ViewModels.Pages;
-using Wpf.Ui.Controls;
+using Wpf.Ui.Abstractions.Controls;
 
 namespace MyMoney.Views.Pages
 {

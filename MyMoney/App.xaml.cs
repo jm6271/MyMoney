@@ -10,6 +10,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Threading;
 using Wpf.Ui;
+using Wpf.Ui.Abstractions;
 
 namespace MyMoney
 {
@@ -31,7 +32,7 @@ namespace MyMoney
                 services.AddHostedService<ApplicationHostService>();
 
                 // Page resolver service
-                services.AddSingleton<IPageService, PageService>();
+                services.AddSingleton<INavigationViewPageProvider, PageService>();
 
                 // Theme manipulation
                 services.AddSingleton<IThemeService, ThemeService>();
