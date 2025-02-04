@@ -8,7 +8,7 @@ using Wpf.Ui.Controls;
 using Wpf.Ui.Extensions;
 using MyMoney.Views.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
-
+using System.Linq;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -62,6 +62,8 @@ namespace MyMoney.ViewModels.Pages
         private bool _TransactionsEnabled = false;
 
         private readonly IContentDialogService _contentDialogService;
+
+        public ObservableCollection<string> AutoSuggestPayees { get; set; } = [];
 
         public AccountsViewModel(IContentDialogService contentDialogService)
         {
@@ -148,6 +150,9 @@ namespace MyMoney.ViewModels.Pages
             // Set default account if it's not already set
             if (Accounts.Count > 0 && SelectedAccountIndex == -1)
                 SelectedAccountIndex = 0;
+
+            // Load the list of payees to use in the auto suggest box
+            AutoSuggestPayees = GetAllPayees();
 
             var newTransactionDialog = new NewTransactionDialog(dialogHost, this)
             {
@@ -362,6 +367,9 @@ namespace MyMoney.ViewModels.Pages
             NewTransactionMemo = SelectedAccountTransactions[SelectedTransactionIndex].Memo;
             NewTransactionPayee = SelectedAccountTransactions[SelectedTransactionIndex].Payee;
 
+            // Get auto suggest payee entries
+            AutoSuggestPayees = GetAllPayees();
+
             // store current transaction amount so we know how to change the account total
             var OldAmount = NewTransactionAmount;
 
@@ -519,6 +527,23 @@ namespace MyMoney.ViewModels.Pages
             }
 
             SaveAccountsToDatabase();
+        }
+
+        private ObservableCollection<string> GetAllPayees()
+        {
+            ObservableCollection<string> payees = [];
+
+            foreach (var account in Accounts)
+            {
+                foreach (var transaction in from transaction in account.Transactions
+                                            where !payees.Contains(transaction.Payee)
+                                            select transaction)
+                {
+                    payees.Add(transaction.Payee);
+                }
+            }
+
+            return payees;
         }
     }
 }
