@@ -27,12 +27,21 @@ namespace MyMoney.Views.ContentDialogs
         {
             InitializeComponent();
             DataContext = viewModel;
+            txtPayee.Text = viewModel.NewTransactionPayee;
         }
 
         private void ContentDialog_Loaded(object sender, RoutedEventArgs e)
         {
             txtAmount.Focus();
             txtAmount.SelectAll();
+        }
+
+        public string SelectedPayee
+        {
+            get
+            {
+                return txtPayee.Text;
+            }
         }
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)

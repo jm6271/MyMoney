@@ -219,7 +219,7 @@ namespace MyMoney.ViewModels.Pages
 
             SelectedAccount.Total = balance;
 
-            Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, amount, NewTransactionMemo);
+            Transaction newTransaction = new(NewTransactionDate, newTransactionDialog.SelectedPayee, NewTransactionCategory, amount, NewTransactionMemo);
             SelectedAccountTransactions.Add(newTransaction);
 
             ClearNewTransactionFields();
@@ -440,7 +440,7 @@ namespace MyMoney.ViewModels.Pages
 
             SelectedAccount.Total = balance;
 
-            Transaction newTransaction = new(NewTransactionDate, NewTransactionPayee, NewTransactionCategory, amount, NewTransactionMemo);
+            Transaction newTransaction = new(NewTransactionDate, editTransactionDialog.SelectedPayee, NewTransactionCategory, amount, NewTransactionMemo);
             SelectedAccountTransactions.Add(newTransaction);
 
             ClearNewTransactionFields();
