@@ -120,18 +120,28 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        private void BttnNewAccount_Click()
+        private async void BttnNewAccount_Click()
         {
             // Show the new account dialog
-            NewAccountWindowViewModel newAccountDialogViewModel = new();
-            NewAccountWindow newAccountDialog = new(newAccountDialogViewModel);
+            var dialogHost = _contentDialogService.GetDialogHost();
+            if (dialogHost == null) return;
 
-            if (newAccountDialog.ShowDialog() == true)
+            var viewModel = new NewAccountDialogViewModel();
+
+            var newTransactionDialog = new NewAccountDialog(dialogHost, viewModel)
+            {
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+            };
+
+            var result = await newTransactionDialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
             {
                 // add the new account
                 Account newAccount = new();
-                newAccount.AccountName = newAccountDialogViewModel.AccountName;
-                newAccount.Total = newAccountDialogViewModel.StartingBalance;
+                newAccount.AccountName = viewModel.AccountName;
+                newAccount.Total = viewModel.StartingBalance;
 
                 // Add to the accounts list (shows up in the accounts list view on the accounts page)
                 Accounts.Add(newAccount);
