@@ -11,6 +11,9 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using Wpf.Ui.Appearance;
 using System.Globalization;
 using System.ComponentModel;
+using MyMoney.ViewModels.ContentDialogs;
+using MyMoney.Views.ContentDialogs;
+using Wpf.Ui;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -79,6 +82,9 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private bool _IsEditingEnabled = true;
 
+        // Content dialog service
+        private IContentDialogService _contentDialogService;
+
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
@@ -121,8 +127,10 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        public BudgetViewModel()
-        {
+        public BudgetViewModel(IContentDialogService contentDialogService)
+        { 
+            _contentDialogService = contentDialogService;
+
             var budgetCollection = DatabaseReader.GetCollection<Budget>("Budgets");
 
             foreach (var budget in budgetCollection)
@@ -454,15 +462,24 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private void CreateNewBudget()
+        private async Task CreateNewBudget()
         {
             // Show the new budget dialog
-            NewBudgetWindowViewModel viewModel = new();
-            NewBudgetDialog dlg = new(viewModel);
+            // Show the new account dialog
+            var dialogHost = _contentDialogService.GetDialogHost();
+            if (dialogHost == null) return;
 
-            dlg.Owner = Application.Current.MainWindow;
+            var viewModel = new NewBudgetDialogViewModel();
 
-            if (dlg.ShowDialog() == true) 
+            var newTransactionDialog = new NewBudgetDialog(dialogHost, viewModel)
+            {
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+            };
+
+            var result = await newTransactionDialog.ShowAsync();
+
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary) 
             {
                 // Add a budget
                 Budget newBudget = new();
