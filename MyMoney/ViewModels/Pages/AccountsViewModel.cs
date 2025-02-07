@@ -259,7 +259,7 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private void TransferBetweenAccounts()
+        private async void TransferBetweenAccounts()
         {
             ObservableCollection<string> AccountNames = [];
 
@@ -268,11 +268,19 @@ namespace MyMoney.ViewModels.Pages
                 AccountNames.Add(account.AccountName);
             }
 
-            TransferWindowViewModel viewModel = new(AccountNames);
+            var dialogHost = _contentDialogService.GetDialogHost();
+            if (dialogHost == null) return;
 
-            TransferWindow transferWindow = new(viewModel);
+            var viewModel = new TransferDialogViewModel(AccountNames);
 
-            if (transferWindow.ShowDialog() == true)
+            var newTransferDialog = new TransferDialog(dialogHost, viewModel)
+            {
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+            };
+            var result = await newTransferDialog.ShowAsync();
+
+            if (result == ContentDialogResult.Primary)
             {
                 // Transfer the money
                 // create a new transaction in each of the accounts
