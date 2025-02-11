@@ -33,10 +33,10 @@ This project is licensed under the MIT License. See the LICENSE.txt file for mor
 ![Home page](Screenshots/home_page.jpg)
 
 ### Accounts Page
-![Accounts page](Screenshots/accounts_page.jpg)
+![Accounts page](Screenshots/accounts_page.png)
 
 ### Budget Page
 ![Budget page](Screenshots/budget_page.jpg)
 
 ### Reports Page
-![Reports page](Screenshots/reports_page.jpg)
+![Reports page](Screenshots/reports_page.png)
