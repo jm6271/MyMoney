@@ -1,6 +1,6 @@
 # MyMoney
 
-MyMoney is a personal accounting software designed to help you manage your finances with ease. Track your accounts, monitor transactions, create a budget, and gain insights into your spending habits, all in one simple and intuitive application.
+MyMoney is a personal finance program designed to help you manage your finances with ease. Track your accounts, monitor transactions, create a budget, and gain insights into your spending habits, all in one simple and intuitive application.
 
 ## Alpha Stage Warning
 
@@ -8,16 +8,14 @@ MyMoney is a personal accounting software designed to help you manage your finan
 
 ## Features
 
-- **Account Management**: Add, edit, and remove accounts.
 - **Transaction Tracking**: Record and categorize income and expenses.
-- **Balance Calculation**: Automatically calculates and displays account balances.
 - **Budgeting**: Create monthly budgets and view reports on your spending.
-- **LiteDB Database**: All user data is stored securely in a local LiteDB database.
-- **MVVM Pattern**: Built using the MVVM pattern for a clean, maintainable, and testable architecture.
-- **WPF UI**: A modern user interface built with WPF, leveraging the WPF-UI package for enhanced visuals.
-  
+- **Reports**: View reports on the state of your finances.
+- **Local LiteDB Database**: All user data is stored securely in a local LiteDB database.
+- **Light/Dark Modes**: Choose a light or dark theme  
+
 ## Usage
-- Create a new account by selecting Add Account.
+- Add your bank account by selecting ```Add Account``` on the Accounts page.
 - Setup a budget on the budget page by clicking ```New Budget``` and adding income and expense categories.
 - Add transactions to your account, specifying the amount, date, and category.
 - Review the balance and budget report in the main dashboard.
@@ -35,10 +33,10 @@ This project is licensed under the MIT License. See the LICENSE.txt file for mor
 ![Home page](Screenshots/home_page.jpg)
 
 ### Accounts Page
-![Accounts page](Screenshots/accounts_page.jpg)
+![Accounts page](Screenshots/accounts_page.png)
 
 ### Budget Page
 ![Budget page](Screenshots/budget_page.jpg)
 
 ### Reports Page
-![Reports page](Screenshots/reports_page.jpg)
+![Reports page](Screenshots/reports_page.png)
