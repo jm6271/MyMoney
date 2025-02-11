@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Globalization;
 
-namespace MyMoney.ViewModels.Windows
+namespace MyMoney.ViewModels.ContentDialogs
 {
-    public partial class NewBudgetWindowViewModel : ObservableObject
+    public partial class NewBudgetDialogViewModel : ObservableObject
     {
         public ObservableCollection<string> AvailableBudgetDates { get; set; } = [];
 
@@ -17,7 +16,7 @@ namespace MyMoney.ViewModels.Windows
         [ObservableProperty]
         private string _SelectedDate = string.Empty;
 
-        public NewBudgetWindowViewModel()
+        public NewBudgetDialogViewModel()
         {
             // Load the available month names
             DateTime dt = DateTime.Now;

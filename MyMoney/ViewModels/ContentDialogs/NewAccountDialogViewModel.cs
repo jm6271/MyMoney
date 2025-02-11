@@ -1,8 +1,8 @@
 ﻿using MyMoney.Core.FS.Models;
 
-namespace MyMoney.ViewModels.Windows
+namespace MyMoney.ViewModels.ContentDialogs
 {
-    public partial class NewAccountWindowViewModel : ObservableObject
+    public partial class NewAccountDialogViewModel : ObservableObject
     {
         [ObservableProperty]
         private string _AccountName = "";

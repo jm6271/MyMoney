@@ -6,16 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyMoney.ViewModels.Windows
+namespace MyMoney.ViewModels.ContentDialogs
 {
-    public partial class TransferWindowViewModel : ObservableObject
+    public partial class TransferDialogViewModel(ObservableCollection<string> AccountNames) : ObservableObject
     {
-        public ObservableCollection<string> Accounts { get; set; } = [];
-
-        public TransferWindowViewModel(ObservableCollection<string> AccountNames)
-        {
-            Accounts = AccountNames;
-        }
+        public ObservableCollection<string> Accounts { get; set; } = AccountNames;
 
         [ObservableProperty]
         private string _TransferFrom = "";
