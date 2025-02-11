@@ -298,20 +298,33 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private void AddIncomeItem()
+        private async Task AddIncomeItem()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
 
-            BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
-            BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
+            var dialogHost = _contentDialogService.GetDialogHost();
+            if (dialogHost == null) return;
 
-            if(editorWindow.ShowDialog() == true)
+            var viewModel = new BudgetCategoryDialogViewModel();
+
+            var newCategoryDialog = new BudgetCategoryDialog(dialogHost, viewModel)
+            {
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+                Title = "New Income Item",
+            };
+
+            var result = await newCategoryDialog.ShowAsync();
+
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
                 // Create a new income item with the results from the dialog
-                BudgetItem item = new();
-                item.Category = editorWindowViewModel.BudgetCategory;
-                item.Amount = new(editorWindowViewModel.BudgetAmount);
+                BudgetItem item = new()
+                {
+                    Category = viewModel.BudgetCategory,
+                    Amount = viewModel.BudgetAmount
+                };
 
                 // Add the item to the budget income items list
                 CurrentBudget.BudgetIncomeItems.Add(item);
@@ -322,20 +335,33 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private void AddExpenseItem()
+        private async Task AddExpenseItem()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
 
-            BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
-            BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
+            var dialogHost = _contentDialogService.GetDialogHost();
+            if (dialogHost == null) return;
 
-            if (editorWindow.ShowDialog() == true)
+            var viewModel = new BudgetCategoryDialogViewModel();
+
+            var newCategoryDialog = new BudgetCategoryDialog(dialogHost, viewModel)
+            {
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+                Title = "New Expense Item",
+            };
+
+            var result = await newCategoryDialog.ShowAsync();
+
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
                 // Create a new expense item with the results from the dialog
-                BudgetItem item = new();
-                item.Category = editorWindowViewModel.BudgetCategory;
-                item.Amount = new(editorWindowViewModel.BudgetAmount);
+                BudgetItem item = new()
+                {
+                    Category = viewModel.BudgetCategory,
+                    Amount = viewModel.BudgetAmount
+                };
 
                 // Add the item to the budget expense items list
                 CurrentBudget.BudgetExpenseItems.Add(item);
@@ -346,22 +372,37 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private void EditIncomeItem()
+        private async Task EditIncomeItem()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
 
-            BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
-            BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
-            editorWindowViewModel.BudgetCategory = CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex].Category;
-            editorWindowViewModel.BudgetAmount = CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex].Amount.Value;
+            var dialogHost = _contentDialogService.GetDialogHost();
+            if (dialogHost == null) return;
 
-            if (editorWindow.ShowDialog() == true)
+            var viewModel = new BudgetCategoryDialogViewModel();
+
+            var editCategoryDialog = new BudgetCategoryDialog(dialogHost, viewModel)
+            {
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+                Title = "Edit Income Item",
+            };
+
+            
+            viewModel.BudgetCategory = CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex].Category;
+            viewModel.BudgetAmount = CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex].Amount;
+
+            var result = await editCategoryDialog.ShowAsync();
+
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
                 // modify the item at the selected index
-                BudgetItem incomeItem = new();
-                incomeItem.Category = editorWindowViewModel.BudgetCategory;
-                incomeItem.Amount = new(editorWindowViewModel.BudgetAmount);
+                BudgetItem incomeItem = new()
+                {
+                    Category = viewModel.BudgetCategory,
+                    Amount = viewModel.BudgetAmount
+                };
 
                 // assign the selected index of the list with the new item
                 CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex] = incomeItem;
@@ -404,22 +445,37 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private void EditExpenseItem()
+        private async Task EditExpenseItem()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
 
-            BudgetCategoryEditorWindowViewModel editorWindowViewModel = new();
-            BudgetCategoryEditorWindow editorWindow = new(editorWindowViewModel);
-            editorWindowViewModel.BudgetCategory = CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex].Category;
-            editorWindowViewModel.BudgetAmount = CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex].Amount.Value;
+            var dialogHost = _contentDialogService.GetDialogHost();
+            if (dialogHost == null) return;
 
-            if (editorWindow.ShowDialog() == true)
+            var viewModel = new BudgetCategoryDialogViewModel();
+
+            var editCategoryDialog = new BudgetCategoryDialog(dialogHost, viewModel)
+            {
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+                Title = "Edit Expense Item",
+            };
+
+
+            viewModel.BudgetCategory = CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex].Category;
+            viewModel.BudgetAmount = CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex].Amount;
+
+            var result = await editCategoryDialog.ShowAsync();
+
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
                 // modify the item at the selected index
-                BudgetItem expenseItem = new();
-                expenseItem.Category = editorWindowViewModel.BudgetCategory;
-                expenseItem.Amount = new(editorWindowViewModel.BudgetAmount);
+                BudgetItem expenseItem = new()
+                {
+                    Category = viewModel.BudgetCategory,
+                    Amount = viewModel.BudgetAmount
+                };
 
                 // assign the selected index of the list with the new item
                 CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex] = expenseItem;
