@@ -15,7 +15,7 @@
     <StackPanel>
         <ui:TextBlock Margin="0,0,0,12">Budget for:</ui:TextBlock>
         <ComboBox x:Name="cmbBudgetDates" ItemsSource="{Binding AvailableBudgetDates}" Margin="0,0,0,16"
-                          SelectedIndex="{Binding SelectedDateIndex}" SelectedItem="{Binding ViewModel.SelectedDate}"/>
+                          SelectedIndex="{Binding SelectedDateIndex}" SelectedItem="{Binding SelectedDate}"/>
 
         <CheckBox IsChecked="{Binding UseLastMonthsBudget}">Start with previous month's budget</CheckBox>
     </StackPanel>
