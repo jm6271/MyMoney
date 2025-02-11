@@ -22,11 +22,6 @@ namespace MyMoney.Views.ContentDialogs
             TxtAccountName.SelectAll();
         }
 
-        private void txtStartingBalance_GotFocus(object sender, RoutedEventArgs e)
-        {
-            txtStartingBalance.SelectAll();
-        }
-
         private void txtStartingBalance_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if (e.Key == System.Windows.Input.Key.Enter)
@@ -36,6 +31,11 @@ namespace MyMoney.Views.ContentDialogs
 
                 e.Handled = false;
             }
+        }
+
+        private void txtStartingBalance_GotFocus(object sender, RoutedEventArgs e)
+        {
+            txtStartingBalance.SelectAll();
         }
     }
 }
