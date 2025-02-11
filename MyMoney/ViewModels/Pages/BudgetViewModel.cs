@@ -544,6 +544,21 @@ namespace MyMoney.ViewModels.Pages
                 newBudget.BudgetTitle = budgetTitle;
                 newBudget.BudgetDate = Convert.ToDateTime(budgetTitle);
 
+                // make sure this budget doesn't exist already
+                foreach (var budget in Budgets)
+                {
+                    if (budget.BudgetDate == newBudget.BudgetDate)
+                    {
+                        Wpf.Ui.Controls.MessageBox msgBox = new()
+                        {
+                            Title = "Budget Already Exists",
+                            Content = "Could not create a new budget because a budget for the selected month already exists.",
+                        };
+                        await msgBox.ShowDialogAsync();
+                        return;
+                    }
+                }
+
                 // Copy over categories if box is checked
                 if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
                 {
