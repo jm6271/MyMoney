@@ -4,20 +4,23 @@
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:helpers="clr-namespace:MyMoney.Helpers"
       xmlns:local="clr-namespace:MyMoney.Views.ContentDialogs" 
       xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs" 
       d:DataContext="{d:DesignInstance Type=contentdialogs:NewAccountDialogViewModel}"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="NewAccountDialog">
+      Title="New Account">
     <ui:ContentDialog.Resources>
+        <helpers:CurrencyConverter x:Key="CurrencyConverter"/>
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:NewAccountDialog}" />
     </ui:ContentDialog.Resources>
     <StackPanel>
         <Label Margin="0,0,0,4">Account name</Label>
-        <ui:TextBox x:Name="TxtAccountName" Margin="0,4,0,8" Text="{Binding AccountName}" GotFocus="TxtAccountName_GotFocus"/>
+        <ui:TextBox x:Name="TxtAccountName" Margin="0,4,0,8" Text="{Binding AccountName}" GotFocus="TxtAccountName_GotFocus"
+                    MinWidth="300"/>
         <Label Margin="0,8,0,4">Starting balance</Label>
-        <ui:NumberBox x:Name="txtStartingBalance" Margin="0,4,0,0" Text="{Binding StartingBalance.Value}" GotFocus="txtStartingBalance_GotFocus"
-                      KeyDown="txtStartingBalance_KeyDown"/>
+        <ui:TextBox x:Name="txtStartingBalance" Margin="0,4,0,0" Text="{Binding StartingBalance, Converter={StaticResource CurrencyConverter}}" 
+                    GotKeyboardFocus="txtStartingBalance_GotFocus" KeyDown="txtStartingBalance_KeyDown"/>
     </StackPanel>
 </ui:ContentDialog>
