@@ -22,7 +22,7 @@ namespace MyMoney.Core.Reports
             for (int i = 11; i >= 0; i--) 
             { 
                 DateTime targetDate = currentDate.AddMonths(-i); 
-                string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(targetDate.Month); 
+                string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(targetDate.Month); 
                 monthNames.Add(monthName);
             } 
             
