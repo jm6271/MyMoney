@@ -9,6 +9,7 @@ using Wpf.Ui.Extensions;
 using MyMoney.Views.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
 using System.Linq;
+using MyMoney.Core.Database;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -62,14 +63,16 @@ namespace MyMoney.ViewModels.Pages
         private bool _TransactionsEnabled = false;
 
         private readonly IContentDialogService _contentDialogService;
+        private readonly IDatabaseReader _databaseReader;
 
         public ObservableCollection<string> AutoSuggestPayees { get; set; } = [];
 
-        public AccountsViewModel(IContentDialogService contentDialogService)
+        public AccountsViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader)
         {
             _contentDialogService = contentDialogService;
+            _databaseReader = databaseReader;
 
-            var a = Core.Database.DatabaseReader.GetCollection<Account>("Accounts");
+            var a = _databaseReader.GetCollection<Account>("Accounts");
 
             foreach (var account in a)
             {
@@ -88,7 +91,7 @@ namespace MyMoney.ViewModels.Pages
         {
             CategoryNames.Clear();
 
-            Core.Database.BudgetCollection budgetCollection = new();
+            BudgetCollection budgetCollection = new(_databaseReader);
             if (!budgetCollection.DoesCurrentBudgetExist())
                 return;
 

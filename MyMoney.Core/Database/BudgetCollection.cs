@@ -11,7 +11,7 @@ namespace MyMoney.Core.Database
 
         private readonly List<Budget> _budgets;
 
-        public BudgetCollection() 
+        public BudgetCollection(IDatabaseReader DatabaseReader) 
         {
             // Load budgets
             _budgets = DatabaseReader.GetCollection<Budget>(BUDGET_COLLECTION_NAME);

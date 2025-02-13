@@ -30,7 +30,8 @@ namespace MyMoney.Views.Windows
             contentDialogService.SetDialogHost(RootContentDialog);
 
             // Load the theme from settings
-            var SettingsDict = Core.Database.DatabaseReader.GetSettingsDictionary("ApplicationSettings");
+            Core.Database.DatabaseReader dbReader = new();
+            var SettingsDict = dbReader.GetSettingsDictionary("ApplicationSettings");
 
             if (SettingsDict != null && SettingsDict.Count > 0 && SettingsDict.ContainsKey("AppTheme"))
             {

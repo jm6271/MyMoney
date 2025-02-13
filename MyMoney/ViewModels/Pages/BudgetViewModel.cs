@@ -127,11 +127,11 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        public BudgetViewModel(IContentDialogService contentDialogService)
+        public BudgetViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader)
         { 
             _contentDialogService = contentDialogService;
 
-            var budgetCollection = DatabaseReader.GetCollection<Budget>("Budgets");
+            var budgetCollection = databaseReader.GetCollection<Budget>("Budgets");
 
             foreach (var budget in budgetCollection)
             {
