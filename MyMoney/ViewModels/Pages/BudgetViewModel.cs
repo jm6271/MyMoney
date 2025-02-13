@@ -520,34 +520,28 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private async Task CreateNewBudget()
         {
-            // Show the new budget dialog
-            // Show the new account dialog
+            // Make sure there is a valid dialog host
             var dialogHost = _contentDialogService.GetDialogHost();
             if (dialogHost == null) return;
 
+            // Create the new budget dialog
             var viewModel = new NewBudgetDialogViewModel();
 
-            var newTransactionDialog = new NewBudgetDialog(dialogHost, viewModel)
+            var newBudgetDialog = new NewBudgetDialog(dialogHost, viewModel)
             {
                 PrimaryButtonText = "OK",
                 CloseButtonText = "Cancel",
             };
 
-            var result = await newTransactionDialog.ShowAsync();
+            // Show the dialog
+            var result = await _contentDialogService.ShowAsync(newBudgetDialog, CancellationToken.None);
 
-            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary) 
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
-                // Add a budget
-                Budget newBudget = new();
-
-                string budgetTitle = viewModel.SelectedDate;
-                newBudget.BudgetTitle = budgetTitle;
-                newBudget.BudgetDate = Convert.ToDateTime(budgetTitle);
-
                 // make sure this budget doesn't exist already
                 foreach (var budget in Budgets)
                 {
-                    if (budget.BudgetDate == newBudget.BudgetDate)
+                    if (budget.BudgetDate == Convert.ToDateTime(viewModel.SelectedDate))
                     {
                         Wpf.Ui.Controls.MessageBox msgBox = new()
                         {
@@ -559,48 +553,61 @@ namespace MyMoney.ViewModels.Pages
                     }
                 }
 
-                // Copy over categories if box is checked
-                if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
-                {
-                    foreach (var item in CurrentBudget.BudgetIncomeItems)
-                    {
-                        newBudget.BudgetIncomeItems.Add(item);
-                    }
+                // Add the budget
+                AddNewBudget(viewModel);
+            }
+        }
 
-                    foreach (var item in CurrentBudget.BudgetExpenseItems)
-                    {
-                        newBudget.BudgetExpenseItems.Add(item);
-                    }
+        public void AddNewBudget(NewBudgetDialogViewModel viewModel)
+        {
+            // Add a budget
+            Budget newBudget = new();
+
+            string budgetTitle = viewModel.SelectedDate;
+            newBudget.BudgetTitle = budgetTitle;
+            newBudget.BudgetDate = Convert.ToDateTime(budgetTitle);
+
+            // Copy over categories if box is checked
+            if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
+            {
+                foreach (var item in CurrentBudget.BudgetIncomeItems)
+                {
+                    newBudget.BudgetIncomeItems.Add(item);
                 }
 
-                // Add to list of budgets
-                Budgets.Add(newBudget);
-
-                // Update budget lists
-                UpdateBudgetLists();
-
-                // Set as current budget
-                foreach (var item in Budgets)
+                foreach (var item in CurrentBudget.BudgetExpenseItems)
                 {
-                    if (item.BudgetTitle == budgetTitle)
-                    {
-                        CurrentBudget = item;
+                    newBudget.BudgetExpenseItems.Add(item);
+                }
+            }
 
-                        // Select listview item for this budget item
-                        if (item.BudgetDate.Month == DateTime.Now.Month)
-                        {
-                            CurrentBudgetsSelectedIndex = 0;
-                            OldBudgetsSelectedIndex = -1;
-                            FutureBudgetsSelectedIndex = -1;
-                        }
-                        else
-                        {
-                            CurrentBudgetsSelectedIndex = -1;
-                            OldBudgetsSelectedIndex = -1;
-                            FutureBudgetsSelectedIndex = 0;
-                        }
-                        break;
+            // Add to list of budgets
+            Budgets.Add(newBudget);
+
+            // Update budget lists
+            UpdateBudgetLists();
+
+            // Set as current budget
+            foreach (var item in Budgets)
+            {
+                if (item.BudgetTitle == budgetTitle)
+                {
+                    CurrentBudget = item;
+
+                    // Select listview item for this budget item
+                    if (item.BudgetDate.Month == DateTime.Now.Month)
+                    {
+                        CurrentBudgetsSelectedIndex = 0;
+                        OldBudgetsSelectedIndex = -1;
+                        FutureBudgetsSelectedIndex = -1;
                     }
+                    else
+                    {
+                        CurrentBudgetsSelectedIndex = -1;
+                        OldBudgetsSelectedIndex = -1;
+                        FutureBudgetsSelectedIndex = 0;
+                    }
+                    break;
                 }
             }
         }
