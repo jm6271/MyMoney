@@ -319,19 +319,26 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
-                // Create a new income item with the results from the dialog
-                BudgetItem item = new()
-                {
-                    Category = viewModel.BudgetCategory,
-                    Amount = viewModel.BudgetAmount
-                };
-
-                // Add the item to the budget income items list
-                CurrentBudget.BudgetIncomeItems.Add(item);
-
-                // Recalculate the total of the income items
-                UpdateListViewTotals();
+                CreateNewIncomeItem(viewModel);
             }
+        }
+
+        public void CreateNewIncomeItem(BudgetCategoryDialogViewModel viewModel)
+        {
+            if (CurrentBudget == null) return;
+
+            // Create a new income item with the results from the dialog
+            BudgetItem item = new()
+            {
+                Category = viewModel.BudgetCategory,
+                Amount = viewModel.BudgetAmount
+            };
+
+            // Add the item to the budget income items list
+            CurrentBudget.BudgetIncomeItems.Add(item);
+
+            // Recalculate the total of the income items
+            UpdateListViewTotals();
         }
 
         [RelayCommand]

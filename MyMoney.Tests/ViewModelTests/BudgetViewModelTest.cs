@@ -3,6 +3,7 @@ using Wpf.Ui;
 using Moq;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Core.FS.Models;
+using System.Security.Cryptography.X509Certificates;
 
 namespace MyMoney.Tests.ViewModelTests
 {
@@ -106,6 +107,37 @@ namespace MyMoney.Tests.ViewModelTests
             Assert.IsNotNull(viewModel.CurrentBudget);
             Assert.AreEqual(DateTime.Today.Date.AddMonths(1).AddDays(-(DateTime.Today.Date.Day - 1)), 
                 viewModel.CurrentBudget.BudgetDate.Date);
+        }
+
+        [TestMethod]
+        public void Test_CreateNewIncomeItem()
+        {
+            BudgetViewModel viewModel = new(new ContentDialogService(), new Services.MockDatabaseReader());
+
+            NewBudgetDialogViewModel dialogViewModel = new()
+            {
+                SelectedDateIndex = 0
+            };
+
+            dialogViewModel.SelectedDate = dialogViewModel.AvailableBudgetDates[dialogViewModel.SelectedDateIndex];
+            dialogViewModel.UseLastMonthsBudget = false;
+
+            // Create a new budget
+            viewModel.AddNewBudget(dialogViewModel);
+
+            Assert.IsNotNull(viewModel.CurrentBudget);
+
+            // Add a new income item
+            BudgetCategoryDialogViewModel incomeItem = new()
+            {
+                BudgetCategory = "Income1",
+                BudgetAmount = new(2000)
+            };
+            viewModel.CreateNewIncomeItem(incomeItem);
+
+            Assert.AreEqual(1, viewModel.CurrentBudget.BudgetIncomeItems.Count);
+            Assert.AreEqual("Income1", viewModel.CurrentBudget.BudgetIncomeItems[0].Category);
+            Assert.AreEqual(2000, viewModel.CurrentBudget.BudgetIncomeItems[0].Amount.Value);
         }
     }
 }
