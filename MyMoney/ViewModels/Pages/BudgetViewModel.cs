@@ -409,19 +409,26 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
-                // modify the item at the selected index
-                BudgetItem incomeItem = new()
-                {
-                    Category = viewModel.BudgetCategory,
-                    Amount = viewModel.BudgetAmount
-                };
-
-                // assign the selected index of the list with the new item
-                CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex] = incomeItem;
-
-                // Recalculate the total of the income items
-                UpdateListViewTotals();
+                EditIncomeItem(viewModel);
             }
+        }
+
+        public void EditIncomeItem(BudgetCategoryDialogViewModel viewModel)
+        {
+            if (CurrentBudget == null) return;
+
+            // modify the item at the selected index
+            BudgetItem incomeItem = new()
+            {
+                Category = viewModel.BudgetCategory,
+                Amount = viewModel.BudgetAmount
+            };
+
+            // assign the selected index of the list with the new item
+            CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex] = incomeItem;
+
+            // Recalculate the total of the income items
+            UpdateListViewTotals();
         }
 
         [RelayCommand]
@@ -445,6 +452,12 @@ namespace MyMoney.ViewModels.Pages
             var result = await uiMessageBox.ShowDialogAsync();
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Secondary) return; // User clicked no
+            DeleteSelectedIncomeItem();
+        }
+
+        public void DeleteSelectedIncomeItem()
+        {
+            if (CurrentBudget == null) return;
             CurrentBudget.BudgetIncomeItems.RemoveAt(IncomeItemsSelectedIndex);
 
             // replace the id property of the remaining elements so the IDs are in a concecutive order (We have all kinds of problems when we don't do this)
@@ -482,19 +495,25 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
-                // modify the item at the selected index
-                BudgetItem expenseItem = new()
-                {
-                    Category = viewModel.BudgetCategory,
-                    Amount = viewModel.BudgetAmount
-                };
-
-                // assign the selected index of the list with the new item
-                CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex] = expenseItem;
-
-                // Recalculate the total of the expense items
-                UpdateListViewTotals();
+                EditExpenseItem(viewModel);
             }
+        }
+
+        public void EditExpenseItem(BudgetCategoryDialogViewModel viewModel)
+        {
+            if (CurrentBudget == null) return;
+            // modify the item at the selected index
+            BudgetItem expenseItem = new()
+            {
+                Category = viewModel.BudgetCategory,
+                Amount = viewModel.BudgetAmount
+            };
+
+            // assign the selected index of the list with the new item
+            CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex] = expenseItem;
+
+            // Recalculate the total of the expense items
+            UpdateListViewTotals();
         }
 
         [RelayCommand]
@@ -518,6 +537,12 @@ namespace MyMoney.ViewModels.Pages
             var result = await uiMessageBox.ShowDialogAsync();
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Secondary) return; // User clicked no
+            DeleteSelectedExpenseItem();
+        }
+
+        public void DeleteSelectedExpenseItem()
+        {
+            if (CurrentBudget == null) return;
             CurrentBudget.BudgetExpenseItems.RemoveAt(ExpenseItemsSelectedIndex);
 
             // replace the id property of the remaining elements so the IDs are in a concecutive order (We have all kinds of problems when we don't do this)
