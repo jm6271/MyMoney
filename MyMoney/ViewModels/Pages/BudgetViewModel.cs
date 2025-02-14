@@ -1,6 +1,4 @@
-﻿using MyMoney.ViewModels.Windows;
-using MyMoney.Views.Windows;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using MyMoney.Core.FS.Models;
 using MyMoney.Core.Database;
 using LiveChartsCore;
@@ -298,7 +296,7 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task AddIncomeItem()
+        private async Task AddIncomeItem_Click()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -342,7 +340,7 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task AddExpenseItem()
+        private async Task AddExpenseItem_Click()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -386,7 +384,7 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task EditIncomeItem()
+        private async Task EditIncomeItem_Click()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -427,7 +425,7 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task DeleteIncomeItem()
+        private async Task DeleteIncomeItem_Click()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -459,7 +457,7 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task EditExpenseItem()
+        private async Task EditExpenseItem_Click()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -500,7 +498,7 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task DeleteExpenseItem()
+        private async Task DeleteExpenseItem_Click()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -532,7 +530,7 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task CreateNewBudget()
+        private async Task CreateNewBudget_Click()
         {
             // Make sure there is a valid dialog host
             var dialogHost = _contentDialogService.GetDialogHost();
