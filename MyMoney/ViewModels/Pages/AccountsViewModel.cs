@@ -262,7 +262,7 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async void TransferBetweenAccounts()
+        private async Task TransferBetweenAccounts()
         {
             ObservableCollection<string> AccountNames = [];
 
@@ -286,38 +286,43 @@ namespace MyMoney.ViewModels.Pages
             if (result == ContentDialogResult.Primary)
             {
                 // Transfer the money
-                // create a new transaction in each of the accounts
-
-                // create FROM transaction
-                Transaction FROM = new(DateTime.Today, "Transfer to " + viewModel.TransferTo, "", new(-viewModel.Amount.Value), "Transfer");
-
-                // Create TO transaction
-                Transaction TO = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, "", viewModel.Amount, "Transfer");
-
-                // Add the transactions to their accounts
-                for (int i = 0; i < Accounts.Count; i++)
-                {
-                    if (Accounts[i].AccountName == viewModel.TransferFrom)
-                    {
-                        Accounts[i].Transactions.Add(FROM);
-
-                        // Update ending balance
-                        Accounts[i].Total += FROM.Amount;
-                    }
-                    else if (Accounts[i].AccountName == viewModel.TransferTo)
-                    {
-                        Accounts[i].Transactions.Add(TO);
-
-                        // Update ending balance
-                        Accounts[i].Total += TO.Amount;
-                    }
-                }
-
-                SortTransactions();
-
-                // save the accounts to the database
-                SaveAccountsToDatabase();
+                Transfer(viewModel);
             }
+        }
+
+        public void Transfer(TransferDialogViewModel viewModel)
+        {
+            // create a new transaction in each of the accounts
+
+            // create FROM transaction
+            Transaction FROM = new(DateTime.Today, "Transfer to " + viewModel.TransferTo, "", new(-viewModel.Amount.Value), "Transfer");
+
+            // Create TO transaction
+            Transaction TO = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, "", viewModel.Amount, "Transfer");
+
+            // Add the transactions to their accounts
+            for (int i = 0; i < Accounts.Count; i++)
+            {
+                if (Accounts[i].AccountName == viewModel.TransferFrom)
+                {
+                    Accounts[i].Transactions.Add(FROM);
+
+                    // Update ending balance
+                    Accounts[i].Total += FROM.Amount;
+                }
+                else if (Accounts[i].AccountName == viewModel.TransferTo)
+                {
+                    Accounts[i].Transactions.Add(TO);
+
+                    // Update ending balance
+                    Accounts[i].Total += TO.Amount;
+                }
+            }
+
+            SortTransactions();
+
+            // save the accounts to the database
+            SaveAccountsToDatabase();
         }
 
         partial void OnSelectedAccountChanged(Account? value)
