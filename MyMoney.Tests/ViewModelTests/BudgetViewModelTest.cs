@@ -4,6 +4,7 @@ using Moq;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Core.FS.Models;
 using System.Security.Cryptography.X509Certificates;
+using MyMoney.Views.ContentDialogs;
 
 namespace MyMoney.Tests.ViewModelTests
 {
@@ -138,6 +139,36 @@ namespace MyMoney.Tests.ViewModelTests
             Assert.AreEqual(1, viewModel.CurrentBudget.BudgetIncomeItems.Count);
             Assert.AreEqual("Income1", viewModel.CurrentBudget.BudgetIncomeItems[0].Category);
             Assert.AreEqual(2000, viewModel.CurrentBudget.BudgetIncomeItems[0].Amount.Value);
+        }
+
+        [TestMethod]
+        public void Test_CreateNewExpenseItem()
+        {
+            BudgetViewModel viewModel = new(new ContentDialogService(), new Services.MockDatabaseReader());
+
+            NewBudgetDialogViewModel dialogViewModel = new()
+            {
+                SelectedDateIndex = 0,
+                UseLastMonthsBudget = false
+            };
+            dialogViewModel.SelectedDate = dialogViewModel.AvailableBudgetDates[dialogViewModel.SelectedDateIndex];
+
+            // Create a new budget
+            viewModel.AddNewBudget(dialogViewModel);
+
+            Assert.IsNotNull(viewModel.CurrentBudget);
+
+            // Add a new expense item
+            BudgetCategoryDialogViewModel expenseItem = new()
+            {
+                BudgetCategory = "Expense1",
+                BudgetAmount = new(500)
+            };
+            viewModel.CreateNewExpenseItem(expenseItem);
+
+            Assert.AreEqual(1, viewModel.CurrentBudget.BudgetExpenseItems.Count);
+            Assert.AreEqual("Expense1", viewModel.CurrentBudget.BudgetExpenseItems[0].Category);
+            Assert.AreEqual(500, viewModel.CurrentBudget.BudgetExpenseItems [0].Amount.Value);
         }
     }
 }
