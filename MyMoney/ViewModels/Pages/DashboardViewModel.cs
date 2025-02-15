@@ -81,9 +81,13 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private SKColor _ChartTextColor = new(0x33, 0x33, 0x33);
 
-        public DashboardViewModel() 
+        // Service for reading from the database
+        IDatabaseReader databaseReader;
+
+        public DashboardViewModel(IDatabaseReader databaseReader)
         {
             Series = UpdateChartSeries();
+            this.databaseReader = databaseReader;
         }
 
         private void CalculateBudgetReport()
@@ -181,7 +185,7 @@ namespace MyMoney.ViewModels.Pages
             // Reload information from the database
             Accounts.Clear();
 
-            var lst = DatabaseReader.GetCollection<Account>("Accounts");
+            var lst = databaseReader.GetCollection<Account>("Accounts");
 
             foreach (var item in lst)
             {

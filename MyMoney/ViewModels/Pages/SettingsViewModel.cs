@@ -1,6 +1,7 @@
 ﻿using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
 using Wpf.Ui.Abstractions.Controls;
+using MyMoney.Core.Database;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -67,7 +68,8 @@ namespace MyMoney.ViewModels.Pages
 
         private void SaveTheme()
         {
-            var SettingsDict = Core.Database.DatabaseReader.GetSettingsDictionary("ApplicationSettings");
+            DatabaseReader reader = new();
+            var SettingsDict = reader.GetSettingsDictionary("ApplicationSettings");
 
             // Assign the theme
             if (CurrentTheme == ApplicationTheme.Light)

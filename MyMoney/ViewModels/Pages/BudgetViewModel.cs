@@ -1,6 +1,4 @@
-﻿using MyMoney.ViewModels.Windows;
-using MyMoney.Views.Windows;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using MyMoney.Core.FS.Models;
 using MyMoney.Core.Database;
 using LiveChartsCore;
@@ -127,11 +125,11 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        public BudgetViewModel(IContentDialogService contentDialogService)
+        public BudgetViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader)
         { 
             _contentDialogService = contentDialogService;
 
-            var budgetCollection = DatabaseReader.GetCollection<Budget>("Budgets");
+            var budgetCollection = databaseReader.GetCollection<Budget>("Budgets");
 
             foreach (var budget in budgetCollection)
             {
@@ -298,7 +296,7 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task AddIncomeItem()
+        private async Task AddIncomeItem_Click()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -319,23 +317,30 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
-                // Create a new income item with the results from the dialog
-                BudgetItem item = new()
-                {
-                    Category = viewModel.BudgetCategory,
-                    Amount = viewModel.BudgetAmount
-                };
-
-                // Add the item to the budget income items list
-                CurrentBudget.BudgetIncomeItems.Add(item);
-
-                // Recalculate the total of the income items
-                UpdateListViewTotals();
+                CreateNewIncomeItem(viewModel);
             }
         }
 
+        public void CreateNewIncomeItem(BudgetCategoryDialogViewModel viewModel)
+        {
+            if (CurrentBudget == null) return;
+
+            // Create a new income item with the results from the dialog
+            BudgetItem item = new()
+            {
+                Category = viewModel.BudgetCategory,
+                Amount = viewModel.BudgetAmount
+            };
+
+            // Add the item to the budget income items list
+            CurrentBudget.BudgetIncomeItems.Add(item);
+
+            // Recalculate the total of the income items
+            UpdateListViewTotals();
+        }
+
         [RelayCommand]
-        private async Task AddExpenseItem()
+        private async Task AddExpenseItem_Click()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -356,23 +361,30 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
-                // Create a new expense item with the results from the dialog
-                BudgetItem item = new()
-                {
-                    Category = viewModel.BudgetCategory,
-                    Amount = viewModel.BudgetAmount
-                };
-
-                // Add the item to the budget expense items list
-                CurrentBudget.BudgetExpenseItems.Add(item);
-
-                // Recalculate the total of the expense items
-                UpdateListViewTotals();
+                CreateNewExpenseItem(viewModel);
             }
         }
 
+        public void CreateNewExpenseItem(BudgetCategoryDialogViewModel viewModel)
+        {
+            if (CurrentBudget == null) return;
+
+            // Create a new expense item with the results from the dialog
+            BudgetItem item = new()
+            {
+                Category = viewModel.BudgetCategory,
+                Amount = viewModel.BudgetAmount
+            };
+
+            // Add the item to the budget expense items list
+            CurrentBudget.BudgetExpenseItems.Add(item);
+
+            // Recalculate the total of the expense items
+            UpdateListViewTotals();
+        }
+
         [RelayCommand]
-        private async Task EditIncomeItem()
+        private async Task EditIncomeItem_Click()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -397,23 +409,30 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
-                // modify the item at the selected index
-                BudgetItem incomeItem = new()
-                {
-                    Category = viewModel.BudgetCategory,
-                    Amount = viewModel.BudgetAmount
-                };
-
-                // assign the selected index of the list with the new item
-                CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex] = incomeItem;
-
-                // Recalculate the total of the income items
-                UpdateListViewTotals();
+                EditIncomeItem(viewModel);
             }
         }
 
+        public void EditIncomeItem(BudgetCategoryDialogViewModel viewModel)
+        {
+            if (CurrentBudget == null) return;
+
+            // modify the item at the selected index
+            BudgetItem incomeItem = new()
+            {
+                Category = viewModel.BudgetCategory,
+                Amount = viewModel.BudgetAmount
+            };
+
+            // assign the selected index of the list with the new item
+            CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex] = incomeItem;
+
+            // Recalculate the total of the income items
+            UpdateListViewTotals();
+        }
+
         [RelayCommand]
-        private async Task DeleteIncomeItem()
+        private async Task DeleteIncomeItem_Click()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -433,6 +452,12 @@ namespace MyMoney.ViewModels.Pages
             var result = await uiMessageBox.ShowDialogAsync();
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Secondary) return; // User clicked no
+            DeleteSelectedIncomeItem();
+        }
+
+        public void DeleteSelectedIncomeItem()
+        {
+            if (CurrentBudget == null) return;
             CurrentBudget.BudgetIncomeItems.RemoveAt(IncomeItemsSelectedIndex);
 
             // replace the id property of the remaining elements so the IDs are in a concecutive order (We have all kinds of problems when we don't do this)
@@ -445,7 +470,7 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task EditExpenseItem()
+        private async Task EditExpenseItem_Click()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -470,23 +495,29 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
-                // modify the item at the selected index
-                BudgetItem expenseItem = new()
-                {
-                    Category = viewModel.BudgetCategory,
-                    Amount = viewModel.BudgetAmount
-                };
-
-                // assign the selected index of the list with the new item
-                CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex] = expenseItem;
-
-                // Recalculate the total of the expense items
-                UpdateListViewTotals();
+                EditExpenseItem(viewModel);
             }
         }
 
+        public void EditExpenseItem(BudgetCategoryDialogViewModel viewModel)
+        {
+            if (CurrentBudget == null) return;
+            // modify the item at the selected index
+            BudgetItem expenseItem = new()
+            {
+                Category = viewModel.BudgetCategory,
+                Amount = viewModel.BudgetAmount
+            };
+
+            // assign the selected index of the list with the new item
+            CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex] = expenseItem;
+
+            // Recalculate the total of the expense items
+            UpdateListViewTotals();
+        }
+
         [RelayCommand]
-        private async Task DeleteExpenseItem()
+        private async Task DeleteExpenseItem_Click()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -506,6 +537,12 @@ namespace MyMoney.ViewModels.Pages
             var result = await uiMessageBox.ShowDialogAsync();
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Secondary) return; // User clicked no
+            DeleteSelectedExpenseItem();
+        }
+
+        public void DeleteSelectedExpenseItem()
+        {
+            if (CurrentBudget == null) return;
             CurrentBudget.BudgetExpenseItems.RemoveAt(ExpenseItemsSelectedIndex);
 
             // replace the id property of the remaining elements so the IDs are in a concecutive order (We have all kinds of problems when we don't do this)
@@ -518,36 +555,30 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task CreateNewBudget()
+        private async Task CreateNewBudget_Click()
         {
-            // Show the new budget dialog
-            // Show the new account dialog
+            // Make sure there is a valid dialog host
             var dialogHost = _contentDialogService.GetDialogHost();
             if (dialogHost == null) return;
 
+            // Create the new budget dialog
             var viewModel = new NewBudgetDialogViewModel();
 
-            var newTransactionDialog = new NewBudgetDialog(dialogHost, viewModel)
+            var newBudgetDialog = new NewBudgetDialog(dialogHost, viewModel)
             {
                 PrimaryButtonText = "OK",
                 CloseButtonText = "Cancel",
             };
 
-            var result = await newTransactionDialog.ShowAsync();
+            // Show the dialog
+            var result = await _contentDialogService.ShowAsync(newBudgetDialog, CancellationToken.None);
 
-            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary) 
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
-                // Add a budget
-                Budget newBudget = new();
-
-                string budgetTitle = viewModel.SelectedDate;
-                newBudget.BudgetTitle = budgetTitle;
-                newBudget.BudgetDate = Convert.ToDateTime(budgetTitle);
-
                 // make sure this budget doesn't exist already
                 foreach (var budget in Budgets)
                 {
-                    if (budget.BudgetDate == newBudget.BudgetDate)
+                    if (budget.BudgetDate == Convert.ToDateTime(viewModel.SelectedDate))
                     {
                         Wpf.Ui.Controls.MessageBox msgBox = new()
                         {
@@ -559,48 +590,61 @@ namespace MyMoney.ViewModels.Pages
                     }
                 }
 
-                // Copy over categories if box is checked
-                if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
-                {
-                    foreach (var item in CurrentBudget.BudgetIncomeItems)
-                    {
-                        newBudget.BudgetIncomeItems.Add(item);
-                    }
+                // Add the budget
+                AddNewBudget(viewModel);
+            }
+        }
 
-                    foreach (var item in CurrentBudget.BudgetExpenseItems)
-                    {
-                        newBudget.BudgetExpenseItems.Add(item);
-                    }
+        public void AddNewBudget(NewBudgetDialogViewModel viewModel)
+        {
+            // Add a budget
+            Budget newBudget = new();
+
+            string budgetTitle = viewModel.SelectedDate;
+            newBudget.BudgetTitle = budgetTitle;
+            newBudget.BudgetDate = Convert.ToDateTime(budgetTitle);
+
+            // Copy over categories if box is checked
+            if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
+            {
+                foreach (var item in CurrentBudget.BudgetIncomeItems)
+                {
+                    newBudget.BudgetIncomeItems.Add(item);
                 }
 
-                // Add to list of budgets
-                Budgets.Add(newBudget);
-
-                // Update budget lists
-                UpdateBudgetLists();
-
-                // Set as current budget
-                foreach (var item in Budgets)
+                foreach (var item in CurrentBudget.BudgetExpenseItems)
                 {
-                    if (item.BudgetTitle == budgetTitle)
-                    {
-                        CurrentBudget = item;
+                    newBudget.BudgetExpenseItems.Add(item);
+                }
+            }
 
-                        // Select listview item for this budget item
-                        if (item.BudgetDate.Month == DateTime.Now.Month)
-                        {
-                            CurrentBudgetsSelectedIndex = 0;
-                            OldBudgetsSelectedIndex = -1;
-                            FutureBudgetsSelectedIndex = -1;
-                        }
-                        else
-                        {
-                            CurrentBudgetsSelectedIndex = -1;
-                            OldBudgetsSelectedIndex = -1;
-                            FutureBudgetsSelectedIndex = 0;
-                        }
-                        break;
+            // Add to list of budgets
+            Budgets.Add(newBudget);
+
+            // Update budget lists
+            UpdateBudgetLists();
+
+            // Set as current budget
+            foreach (var item in Budgets)
+            {
+                if (item.BudgetTitle == budgetTitle)
+                {
+                    CurrentBudget = item;
+
+                    // Select listview item for this budget item
+                    if (item.BudgetDate.Month == DateTime.Now.Month)
+                    {
+                        CurrentBudgetsSelectedIndex = 0;
+                        OldBudgetsSelectedIndex = -1;
+                        FutureBudgetsSelectedIndex = -1;
                     }
+                    else
+                    {
+                        CurrentBudgetsSelectedIndex = -1;
+                        OldBudgetsSelectedIndex = -1;
+                        FutureBudgetsSelectedIndex = 0;
+                    }
+                    break;
                 }
             }
         }

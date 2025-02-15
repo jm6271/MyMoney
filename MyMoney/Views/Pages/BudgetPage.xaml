@@ -67,7 +67,7 @@
                     </Grid.ColumnDefinitions>
                     
                     <ui:TextBlock FontTypography="Title" Text="{Binding ViewModel.CurrentBudget.BudgetTitle}"/>
-                    <ui:Button Command="{Binding ViewModel.CreateNewBudgetCommand}" Grid.Column="1" Appearance="Primary" Margin="12,0,0,0">
+                    <ui:Button Command="{Binding ViewModel.CreateNewBudget_ClickCommand}" Grid.Column="1" Appearance="Primary" Margin="12,0,0,0">
                         <StackPanel Orientation="Horizontal">
                             <ui:SymbolIcon Symbol="FormNew20" Margin="0,0,4,0"/>
                             <ui:TextBlock Margin="4,0,0,0">New Budget</ui:TextBlock>
@@ -78,7 +78,7 @@
             
             <StackPanel Orientation="Horizontal">
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
-                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
+                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItem_ClickCommand}" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                     <ui:SymbolIcon Symbol="Add24"/>
                 </ui:Button>
             </StackPanel>
@@ -88,14 +88,14 @@
                 <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetIncomeItems}" SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}">
                     <ui:ListView.ContextMenu>
                         <ContextMenu IsEnabled="{Binding ViewModel.IsEditingEnabled}">
-                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditIncomeItemCommand}"/>
-                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
+                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditIncomeItem_ClickCommand}"/>
+                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteIncomeItem_ClickCommand}"/>
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
 
                     <ui:ListView.InputBindings>
                         <KeyBinding 
-                            Key="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
+                            Key="Delete" Command="{Binding ViewModel.DeleteIncomeItem_ClickCommand}"/>
                     </ui:ListView.InputBindings>
 
                     <ui:ListView.ItemTemplate>
@@ -128,7 +128,7 @@
 
             <StackPanel Orientation="Horizontal">
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
-                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddExpenseItemCommand}" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
+                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddExpenseItem_ClickCommand}" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                     <ui:SymbolIcon Symbol="Add24"/>
                 </ui:Button>
             </StackPanel>
@@ -138,13 +138,13 @@
                 <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}" SelectedIndex="{Binding ViewModel.ExpenseItemsSelectedIndex}">
                     <ui:ListView.ContextMenu>
                         <ContextMenu IsEnabled="{Binding ViewModel.IsEditingEnabled}">
-                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditExpenseItemCommand}"/>
-                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteExpenseItemCommand}"/>
+                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditExpenseItem_ClickCommand}"/>
+                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteExpenseItem_ClickCommand}"/>
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
 
                     <ui:ListView.InputBindings>
-                        <KeyBinding Key="Delete" Command="{Binding ViewModel.DeleteExpenseItemCommand}"/>
+                        <KeyBinding Key="Delete" Command="{Binding ViewModel.DeleteExpenseItem_ClickCommand}"/>
                     </ui:ListView.InputBindings>
 
                     <ui:ListView.ItemTemplate>

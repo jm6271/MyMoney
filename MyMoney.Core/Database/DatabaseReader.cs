@@ -1,16 +1,18 @@
 ﻿using LiteDB;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyMoney.Core.Database
 {
+    public interface IDatabaseReader
+    {
+        public List<T> GetCollection<T>(string CollectionName);
+        public Dictionary<string, string> GetSettingsDictionary(string CollectionName);
+    }
+
+
     /// <summary>
     /// Read from the applications LiteDB database
     /// </summary>
-    public static class DatabaseReader
+    public class DatabaseReader : IDatabaseReader
     {
         /// <summary>
         /// Read a collection from the database
@@ -18,7 +20,7 @@ namespace MyMoney.Core.Database
         /// <typeparam name="T">The type of objects in the collection</typeparam>
         /// <param name="CollectionName">The name of the collection</param>
         /// <returns>A List<typeparamref name="T"/> containing the items in the collection</returns>
-        public static List<T> GetCollection<T>(string CollectionName)
+        public List<T> GetCollection<T>(string CollectionName)
         {
             using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
 
@@ -35,7 +37,7 @@ namespace MyMoney.Core.Database
             return result;
         }
 
-        public static Dictionary<string, string> GetSettingsDictionary(string CollectionName)
+        public Dictionary<string, string> GetSettingsDictionary(string CollectionName)
         {
             Dictionary<string, string> Dict = [];
 

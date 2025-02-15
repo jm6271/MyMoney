@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MyMoney.Core.Database;
 using MyMoney.Services;
 using MyMoney.ViewModels.Pages;
 using MyMoney.ViewModels.Windows;
@@ -60,6 +61,9 @@ namespace MyMoney
                 services.AddSingleton<ReportsViewModel>();
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsViewModel>();
+
+                // Database
+                services.AddSingleton<IDatabaseReader, DatabaseReader>();
 
             }).Build();
 

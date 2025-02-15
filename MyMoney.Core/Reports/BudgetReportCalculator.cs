@@ -8,7 +8,7 @@ namespace MyMoney.Core.Reports
         public static List<BudgetReportItem> CalculateIncomeReportItems()
         {
             // read income items collection from the database
-            BudgetCollection budgetCollection = new();
+            BudgetCollection budgetCollection = new(new DatabaseReader());
             if (!budgetCollection.DoesCurrentBudgetExist())
             {
                 return [];
@@ -40,7 +40,7 @@ namespace MyMoney.Core.Reports
 
         public static List<BudgetReportItem> CalculateExpenseReportItems()
         {
-            BudgetCollection budgetCollection = new();
+            BudgetCollection budgetCollection = new(new DatabaseReader());
             if (!budgetCollection.DoesCurrentBudgetExist())
             {
                 return [];
@@ -72,7 +72,8 @@ namespace MyMoney.Core.Reports
         private static Currency CalculateTotalForCategory(string CategoryName)
         {
             // Read the accounts from the database
-            var accounts = Database.DatabaseReader.GetCollection<Account>("Accounts");
+            DatabaseReader dbReader = new();
+            var accounts = dbReader.GetCollection<Account>("Accounts");
 
             // search through each account for transactions in this category that happened this month
 
