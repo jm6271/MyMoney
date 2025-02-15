@@ -87,5 +87,10 @@ namespace MyMoney.Views.Windows
         {
             throw new NotImplementedException();
         }
+
+        private void FluentWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Maximized;
+        }
     }
 }
