@@ -20,9 +20,10 @@
     WindowBackdropType="Mica"
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
-    mc:Ignorable="d" WindowState="Maximized"
+    mc:Ignorable="d" WindowState="Normal"
     MinWidth="1000"
-    MinHeight="500">
+    MinHeight="500"
+    Loaded="FluentWindow_Loaded">
     <ui:FluentWindow.InputBindings>
         <KeyBinding
             Key="F"
