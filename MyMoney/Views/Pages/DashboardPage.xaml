@@ -37,25 +37,27 @@
                                             ReportTotal="{Binding ViewModel.DifferenceTotal}"/>
 
             <StackPanel Grid.Column="1" Margin="11,0,0,0">
-                <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,12">
-                    <Run Text="Accounts"/>
-                </ui:TextBlock>
                 <ui:Card Margin="0,0,0,24">
-                    <ui:ListView ItemsSource="{Binding ViewModel.Accounts}">
-                        <ui:ListView.ItemTemplate>
-                            <DataTemplate DataType="{x:Type models:AccountDashboardDisplayItem}">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,16">
+                            <Run Text="Accounts"/>
+                        </ui:TextBlock>
+                        <ui:ListView ItemsSource="{Binding ViewModel.Accounts}">
+                            <ui:ListView.ItemTemplate>
+                                <DataTemplate DataType="{x:Type models:AccountDashboardDisplayItem}">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
 
-                                    <TextBlock Text="{Binding AccountName}" Margin="5,5,0,5" Grid.Column="0"/>
-                                    <TextBlock Text="{Binding Total}" Margin="0,5,5,5" Grid.Column="1"/>
-                                </Grid>
-                            </DataTemplate>
-                        </ui:ListView.ItemTemplate>
-                    </ui:ListView>
+                                        <TextBlock Text="{Binding AccountName}" Margin="5,5,0,5" Grid.Column="0"/>
+                                        <TextBlock Text="{Binding Total}" Margin="0,5,5,5" Grid.Column="1"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ui:ListView.ItemTemplate>
+                        </ui:ListView>
+                    </StackPanel>
                 </ui:Card>
                 <ui:Card Margin="0,0,0,24">
                     <lvc:CartesianChart x:Name="IncomeExpenseChart" Height="350" Series="{Binding ViewModel.Series}" 
