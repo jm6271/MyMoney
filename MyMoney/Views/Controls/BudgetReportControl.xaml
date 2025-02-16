@@ -41,7 +41,7 @@
                                         Width="{Binding ActualColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                         DisplayMemberBinding="{Binding Actual}"/>
                         <GridViewColumn Header="Remaining" 
-                                        Width="{Binding DifferenceColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                        Width="{Binding RemainingColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                         DisplayMemberBinding="{Binding Remaining}"/>
                     </ui:GridView>
                 </ui:ListView.View>
@@ -66,7 +66,7 @@
                                         Width="{Binding ActualColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                         DisplayMemberBinding="{Binding Actual}"/>
                         <GridViewColumn Header="Remaining" 
-                                        Width="{Binding DifferenceColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                                        Width="{Binding RemainingColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                                         DisplayMemberBinding="{Binding Remaining}"/>
                     </ui:GridView>
                 </ui:ListView.View>

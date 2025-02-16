@@ -29,5 +29,10 @@ namespace MyMoney.Views.Pages.ReportPages
             ViewModel = viewModel;
             DataContext = this;
         }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            ViewModel.OnPageNavigatedTo();
+        }
     }
 }
