@@ -5,16 +5,36 @@ namespace MyMoney.Core.Reports
 {
     public static class BudgetReportCalculator
     {
-        public static List<BudgetReportItem> CalculateIncomeReportItems()
+        /// <summary>
+        /// Calculate an income items report for all income in the specified month
+        /// </summary>
+        /// <param name="BudgetMonth">The month of the budget to generate a report on</param>
+        /// <returns>A list of income report items that occurred in the specified month</returns>
+        public static List<BudgetReportItem> CalculateIncomeReportItems(DateTime BudgetMonth)
         {
-            // read income items collection from the database
+            // read the budget from the database
             BudgetCollection budgetCollection = new(new DatabaseReader());
-            if (!budgetCollection.DoesCurrentBudgetExist())
+
+            // Make sure the specified budget exists
+            Budget? budget = null;
+
+            foreach (var b in budgetCollection.Budgets)
             {
+                if (b.BudgetDate.Month == BudgetMonth.Month &&
+                    b.BudgetDate.Year == BudgetMonth.Year)
+                {
+                    budget = b;
+                    break;
+                }
+            }
+
+            if (budget == null)
+            {
+                // No budget for this month
                 return [];
             }
 
-            var incomeItems = budgetCollection.GetCurrentBudget().BudgetIncomeItems;
+            var incomeItems = budget.BudgetIncomeItems;
 
             // Create a list of budget report items
             List<BudgetReportItem> budgetReportItems = [];
@@ -26,7 +46,7 @@ namespace MyMoney.Core.Reports
                 {
                     Category = item.Category,
                     Budgeted = item.Amount,
-                    Actual = CalculateTotalForCategory(item.Category),
+                    Actual = CalculateTotalForCategory(item.Category, BudgetMonth),
                 };
 
                 budgetReportItem.Remaining = new(
@@ -38,27 +58,57 @@ namespace MyMoney.Core.Reports
             return budgetReportItems;
         }
 
-        public static List<BudgetReportItem> CalculateExpenseReportItems()
+        /// <summary>
+        /// Calculate the income report items from the beginning of the current month
+        /// </summary>
+        /// <returns>A list of report items, for each budget category</returns>
+        public static List<BudgetReportItem> CalculateIncomeReportItems()
         {
+            return CalculateIncomeReportItems(DateTime.Today);
+        }
+
+        /// <summary>
+        /// Calculate an expense items report for all expenses in the specified month
+        /// </summary>
+        /// <param name="BudgetMonth">The month of the budget to generate a report on</param>
+        /// <returns>A list of expense report items that occurred in the specified month</returns>
+        public static List<BudgetReportItem> CalculateExpenseReportItems(DateTime BudgetMonth)
+        {
+            // read the budget from the database
             BudgetCollection budgetCollection = new(new DatabaseReader());
-            if (!budgetCollection.DoesCurrentBudgetExist())
+
+            // Make sure the specified budget exists
+            Budget? budget = null;
+
+            foreach (var b in budgetCollection.Budgets)
             {
+                if (b.BudgetDate.Month == BudgetMonth.Month &&
+                    b.BudgetDate.Year == BudgetMonth.Year)
+                {
+                    budget = b;
+                    break;
+                }
+            }
+
+            if (budget == null)
+            {
+                // No budget for this month
                 return [];
             }
 
-            var expenseItems = budgetCollection.GetCurrentBudget().BudgetExpenseItems;
+            var expenseItems = budget.BudgetExpenseItems;
 
             // Create a list of budget report items
             List<BudgetReportItem> budgetReportItems = [];
 
-            // loop through the expenseItems and create the budget report items
+            // loop through the incomeItems and create the budget report items
             foreach (var item in expenseItems)
             {
                 BudgetReportItem budgetReportItem = new()
                 {
                     Category = item.Category,
                     Budgeted = item.Amount,
-                    Actual = new(Math.Abs(CalculateTotalForCategory(item.Category).Value)),
+                    Actual = new(Math.Abs(CalculateTotalForCategory(item.Category, DateTime.Today).Value)),
                 };
 
                 budgetReportItem.Remaining = budgetReportItem.Budgeted - budgetReportItem.Actual;
@@ -69,13 +119,22 @@ namespace MyMoney.Core.Reports
             return budgetReportItems;
         }
 
-        private static Currency CalculateTotalForCategory(string CategoryName)
+        /// <summary>
+        /// Calculate the expense report items from the beginning of the current month
+        /// </summary>
+        /// <returns>A list of report items, for each budget category</returns>
+        public static List<BudgetReportItem> CalculateExpenseReportItems()
+        {
+            return CalculateExpenseReportItems(DateTime.Today);
+        }
+
+        private static Currency CalculateTotalForCategory(string CategoryName, DateTime Month)
         {
             // Read the accounts from the database
             DatabaseReader dbReader = new();
             var accounts = dbReader.GetCollection<Account>("Accounts");
 
-            // search through each account for transactions in this category that happened this month
+            // search through each account for transactions in this category that happened in the specified month
 
             // Total for this category so far
             decimal Actual = 0m;
@@ -84,7 +143,7 @@ namespace MyMoney.Core.Reports
             {
                 foreach (var transaction in account.Transactions)
                 {
-                    if (transaction.Category == CategoryName && IsDateInCurrentMonth(transaction.Date))
+                    if (transaction.Category == CategoryName && IsDateInCurrentMonth(transaction.Date, Month))
                     {
                         Actual += transaction.Amount.Value;
                     }
@@ -94,10 +153,9 @@ namespace MyMoney.Core.Reports
             return new Currency(Actual);
         }
 
-        private static bool IsDateInCurrentMonth(DateTime date)
+        private static bool IsDateInCurrentMonth(DateTime date, DateTime Month)
         {
-            DateTime currentDate = DateTime.Now;
-            return date.Year == currentDate.Year && date.Month == currentDate.Month;
+            return date.Year == Month.Year && date.Month == Month.Month;
         }
 
         private static decimal InvertSign(decimal amount)
