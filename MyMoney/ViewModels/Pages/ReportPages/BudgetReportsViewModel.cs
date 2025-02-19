@@ -1,4 +1,5 @@
-﻿using MyMoney.Core.FS.Models;
+﻿using MyMoney.Core.Database;
+using MyMoney.Core.FS.Models;
 using MyMoney.Core.Reports;
 using System;
 using System.Collections.Generic;
@@ -23,9 +24,34 @@ namespace MyMoney.ViewModels.Pages.ReportPages
         [ObservableProperty]
         private Currency _ReportTotal = new(0m);
 
+        [ObservableProperty]
+        private ObservableCollection<Budget> _Budgets = [];
+
+        [ObservableProperty]
+        private Budget? _SelectedBudget = null;
+
+        [ObservableProperty]
+        private int _SelectedBudgetIndex = 0;
+
+        private readonly IDatabaseReader _DatabaseReader;
+        public BudgetReportsViewModel(IDatabaseReader databaseReader)
+        {
+            _DatabaseReader = databaseReader;
+        }
+
         public void OnPageNavigatedTo()
         {
             CalculateReport();
+            LoadBudgets();
+        }
+
+        private void LoadBudgets()
+        {
+            // Read all the budgets from the database
+            BudgetCollection budgetCollection = new(_DatabaseReader);
+            Budgets = [.. budgetCollection.Budgets];
+            if (Budgets.Count > 0)
+                SelectedBudgetIndex = 0;
         }
 
         private void CalculateReport()
