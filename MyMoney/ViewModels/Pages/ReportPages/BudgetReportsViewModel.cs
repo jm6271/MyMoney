@@ -64,7 +64,11 @@ namespace MyMoney.ViewModels.Pages.ReportPages
         {
             // Read all the budgets from the database
             BudgetCollection budgetCollection = new(_DatabaseReader);
-            Budgets = [.. budgetCollection.Budgets];
+            ObservableCollection<Budget> unsortedBudgets = [.. budgetCollection.Budgets];
+
+            // Sort the budgets
+            Budgets = [.. unsortedBudgets.OrderByDescending(o => o.BudgetDate)];
+
             if (Budgets.Count > 0)
                 SelectedBudgetIndex = 0;
         }
