@@ -41,8 +41,23 @@ namespace MyMoney.ViewModels.Pages.ReportPages
 
         public void OnPageNavigatedTo()
         {
-            CalculateReport();
             LoadBudgets();
+        }
+
+        partial void OnSelectedBudgetChanged(Budget? value)
+        {
+            // Load the new budget report
+            // Make sure a budget is selected
+            if (value == null)
+            {
+                ReportTitle = "Budget Report";
+                return;
+            }
+
+            CalculateReport(value.BudgetDate);
+
+            // Set the report title
+            ReportTitle = value.BudgetTitle;
         }
 
         private void LoadBudgets()
@@ -54,14 +69,14 @@ namespace MyMoney.ViewModels.Pages.ReportPages
                 SelectedBudgetIndex = 0;
         }
 
-        private void CalculateReport()
+        private void CalculateReport(DateTime date)
         {
             // clear the current report
             IncomeItems.Clear();
             ExpenseItems.Clear();
 
-            var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems();
-            var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems();
+            var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(date);
+            var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(date);
 
             foreach (var item in incomeItems)
             {
