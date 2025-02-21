@@ -91,6 +91,9 @@ namespace MyMoney.ViewModels.Pages.ReportPages
 
             // Set the report title
             ReportTitle = value.BudgetTitle;
+
+            // Update the charts
+            UpdateCharts();
         }
 
         private void LoadBudgets()
