@@ -6,6 +6,7 @@
       xmlns:local="clr-namespace:MyMoney.Views.Pages.ReportPages"
       xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
       xmlns:Controls="clr-namespace:MyMoney.Views.Controls" x:Class="MyMoney.Views.Pages.ReportPages.BudgetReportsPage"
+      xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
       d:DataContext="{d:DesignInstance {x:Type local:BudgetReportsPage}, IsDesignTimeCreatable=False}"
       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
       ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
@@ -17,12 +18,17 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="5*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <ui:Card Grid.Column="0" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,0,8,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+
+        <ui:Card Grid.Column="0" Grid.RowSpan="2" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,0,8,24">
             <ui:ListView ItemsSource="{Binding ViewModel.Budgets}" SelectedItem="{Binding ViewModel.SelectedBudget}"
                          SelectedIndex="{Binding ViewModel.SelectedBudgetIndex}">
                 <ui:ListView.ItemTemplate>
@@ -33,8 +39,18 @@
             </ui:ListView>
         </ui:Card>
 
-        <Controls:BudgetReportControl Grid.Column="1"
+        <Controls:BudgetReportControl Grid.Column="1" Grid.ColumnSpan="2"
                 Title="{Binding ViewModel.ReportTitle}" IncomeItems="{Binding ViewModel.IncomeItems}"
-                ExpenseItems="{Binding ViewModel.ExpenseItems}" ReportTotal="{Binding ViewModel.ReportTotal}" Margin="8,0,8,24"/>
+                ExpenseItems="{Binding ViewModel.ExpenseItems}" ReportTotal="{Binding ViewModel.ReportTotal}" Margin="8,0,0,8"/>
+
+        <ui:Card Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" Margin="8,8,8,24">
+            <lvc:PieChart Height="300" Series="{Binding ViewModel.ActualIncomeSeries}"
+                          Title="{Binding ViewModel.ActualIncome_Title}"/>
+        </ui:Card>
+
+        <ui:Card Grid.Column="2" Grid.Row="1" VerticalAlignment="Stretch" Margin="8,8,0,24">
+            <lvc:PieChart Height="300" Series="{Binding ViewModel.ActualExpenseSeries}"
+                          Title="{Binding ViewModel.ActualExpenses_Title}"/>
+        </ui:Card>
     </Grid>
 </Page>

@@ -1,4 +1,7 @@
-﻿using MyMoney.Core.Database;
+﻿using LiveChartsCore;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.VisualElements;
+using MyMoney.Core.Database;
 using MyMoney.Core.FS.Models;
 using MyMoney.Core.Reports;
 using System;
@@ -33,6 +36,28 @@ namespace MyMoney.ViewModels.Pages.ReportPages
         [ObservableProperty]
         private int _SelectedBudgetIndex = 0;
 
+        [ObservableProperty]
+        private ISeries[] _ActualIncomeSeries = [];
+
+        [ObservableProperty]
+        private LabelVisual _ActualIncome_Title = new()
+        {
+            Text = "Actual Income",
+            TextSize = 25,
+            Padding = new LiveChartsCore.Drawing.Padding(15)
+        };
+
+        [ObservableProperty]
+        private ISeries[] _ActualExpenseSeries = [];
+
+        [ObservableProperty]
+        private LabelVisual _ActualExpenses_Title = new()
+        {
+            Text = "Actual Expenses",
+            TextSize = 25,
+            Padding = new LiveChartsCore.Drawing.Padding(15)
+        };
+
         private readonly IDatabaseReader _DatabaseReader;
         public BudgetReportsViewModel(IDatabaseReader databaseReader)
         {
@@ -42,6 +67,7 @@ namespace MyMoney.ViewModels.Pages.ReportPages
         public void OnPageNavigatedTo()
         {
             LoadBudgets();
+            UpdateCharts();
         }
 
         partial void OnSelectedBudgetChanged(Budget? value)
@@ -122,6 +148,56 @@ namespace MyMoney.ViewModels.Pages.ReportPages
             Currency BudgetedTotal = incomeTotal.Budgeted - expenseTotal.Budgeted;
             Currency ActualTotal = incomeTotal.Actual - expenseTotal.Actual;
             ReportTotal = ActualTotal - BudgetedTotal;
+        }
+
+        private void UpdateCharts()
+        {
+            UpdateActualIncomeChart();
+            UpdateActualExpensesChart();
+        }
+
+        private void UpdateActualIncomeChart()
+        {
+            if (SelectedBudget == null)
+                return;
+
+            Dictionary<string, double> incomeTotals = [];
+            for (int j = 0; j < IncomeItems.Count - 1; j++)
+            {
+                if (IncomeItems[j].Actual.Value == 0m) continue;
+
+                incomeTotals.Add(IncomeItems[j].Category, (double)IncomeItems[j].Actual.Value);
+            }
+
+            ActualIncomeSeries = new ISeries[incomeTotals.Count];
+            int i = 0;
+            foreach (var item in incomeTotals)
+            {
+                ActualIncomeSeries[i] = new PieSeries<double> { Values = [item.Value], Name = item.Key };
+                i++;
+            }
+        }
+
+        private void UpdateActualExpensesChart()
+        {
+            if (SelectedBudget == null)
+                return;
+
+            Dictionary<string, double> expenseTotals = [];
+            for (int j = 0; j < ExpenseItems.Count - 1; j++)
+            {
+                if (ExpenseItems[j].Actual.Value == 0m) continue;
+
+                expenseTotals.Add(ExpenseItems[j].Category, (double)ExpenseItems[j].Actual.Value);
+            }
+
+            ActualExpenseSeries = new ISeries[expenseTotals.Count];
+            int i = 0;
+            foreach (var item in expenseTotals)
+            {
+                ActualExpenseSeries[i] = new PieSeries<double> { Values = [item.Value], Name = item.Key };
+                i++;
+            }
         }
     }
 }
