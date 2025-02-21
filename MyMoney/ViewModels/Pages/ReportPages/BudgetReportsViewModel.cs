@@ -1,15 +1,18 @@
 ﻿using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.VisualElements;
 using MyMoney.Core.Database;
 using MyMoney.Core.FS.Models;
 using MyMoney.Core.Reports;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Wpf.Ui.Appearance;
 
 namespace MyMoney.ViewModels.Pages.ReportPages
 {
@@ -57,6 +60,10 @@ namespace MyMoney.ViewModels.Pages.ReportPages
             TextSize = 25,
             Padding = new LiveChartsCore.Drawing.Padding(15)
         };
+
+        // Colors for chart text (changes in light and dark modes)
+        [ObservableProperty]
+        private SKColor _ChartTextColor = new(0x33, 0x33, 0x33);
 
         private readonly IDatabaseReader _DatabaseReader;
         public BudgetReportsViewModel(IDatabaseReader databaseReader)
@@ -154,6 +161,7 @@ namespace MyMoney.ViewModels.Pages.ReportPages
         {
             UpdateActualIncomeChart();
             UpdateActualExpensesChart();
+            UpdateChartsTheme();
         }
 
         private void UpdateActualIncomeChart()
@@ -198,6 +206,21 @@ namespace MyMoney.ViewModels.Pages.ReportPages
                 ActualExpenseSeries[i] = new PieSeries<double> { Values = [item.Value], Name = item.Key };
                 i++;
             }
+        }
+
+        private void UpdateChartsTheme()
+        {
+            if (ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light)
+            {
+                ChartTextColor = new SKColor(0x33, 0x33, 0x33);
+            }
+            else
+            {
+                ChartTextColor = new SKColor(0xff, 0xff, 0xff);
+            }
+
+            ActualIncome_Title.Paint = new SolidColorPaint(ChartTextColor);
+            ActualExpenses_Title.Paint = new SolidColorPaint(ChartTextColor);
         }
     }
 }
