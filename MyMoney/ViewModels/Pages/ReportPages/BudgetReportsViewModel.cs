@@ -6,12 +6,7 @@ using MyMoney.Core.Database;
 using MyMoney.Core.FS.Models;
 using MyMoney.Core.Reports;
 using SkiaSharp;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Wpf.Ui.Appearance;
 
 namespace MyMoney.ViewModels.Pages.ReportPages
@@ -109,14 +104,14 @@ namespace MyMoney.ViewModels.Pages.ReportPages
                 SelectedBudgetIndex = 0;
         }
 
-        private void CalculateReport(DateTime date)
+        public void CalculateReport(DateTime date)
         {
             // clear the current report
             IncomeItems.Clear();
             ExpenseItems.Clear();
 
-            var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(date);
-            var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(date);
+            var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(date, _DatabaseReader);
+            var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(date, _DatabaseReader);
 
             foreach (var item in incomeItems)
             {

@@ -10,10 +10,10 @@ namespace MyMoney.Core.Reports
         /// </summary>
         /// <param name="BudgetMonth">The month of the budget to generate a report on</param>
         /// <returns>A list of income report items that occurred in the specified month</returns>
-        public static List<BudgetReportItem> CalculateIncomeReportItems(DateTime BudgetMonth)
+        public static List<BudgetReportItem> CalculateIncomeReportItems(DateTime BudgetMonth, IDatabaseReader databaseReader)
         {
             // read the budget from the database
-            BudgetCollection budgetCollection = new(new DatabaseReader());
+            BudgetCollection budgetCollection = new(databaseReader);
 
             // Make sure the specified budget exists
             Budget? budget = null;
@@ -46,7 +46,7 @@ namespace MyMoney.Core.Reports
                 {
                     Category = item.Category,
                     Budgeted = item.Amount,
-                    Actual = CalculateTotalForCategory(item.Category, BudgetMonth),
+                    Actual = CalculateTotalForCategory(item.Category, BudgetMonth, databaseReader),
                 };
 
                 budgetReportItem.Remaining = new(
@@ -62,9 +62,9 @@ namespace MyMoney.Core.Reports
         /// Calculate the income report items from the beginning of the current month
         /// </summary>
         /// <returns>A list of report items, for each budget category</returns>
-        public static List<BudgetReportItem> CalculateIncomeReportItems()
+        public static List<BudgetReportItem> CalculateIncomeReportItems(IDatabaseReader databaseReader)
         {
-            return CalculateIncomeReportItems(DateTime.Today);
+            return CalculateIncomeReportItems(DateTime.Today, databaseReader);
         }
 
         /// <summary>
@@ -72,10 +72,10 @@ namespace MyMoney.Core.Reports
         /// </summary>
         /// <param name="BudgetMonth">The month of the budget to generate a report on</param>
         /// <returns>A list of expense report items that occurred in the specified month</returns>
-        public static List<BudgetReportItem> CalculateExpenseReportItems(DateTime BudgetMonth)
+        public static List<BudgetReportItem> CalculateExpenseReportItems(DateTime BudgetMonth, IDatabaseReader databaseReader)
         {
             // read the budget from the database
-            BudgetCollection budgetCollection = new(new DatabaseReader());
+            BudgetCollection budgetCollection = new(databaseReader);
 
             // Make sure the specified budget exists
             Budget? budget = null;
@@ -108,7 +108,7 @@ namespace MyMoney.Core.Reports
                 {
                     Category = item.Category,
                     Budgeted = item.Amount,
-                    Actual = new(Math.Abs(CalculateTotalForCategory(item.Category, DateTime.Today).Value)),
+                    Actual = new(Math.Abs(CalculateTotalForCategory(item.Category, DateTime.Today, databaseReader).Value)),
                 };
 
                 budgetReportItem.Remaining = budgetReportItem.Budgeted - budgetReportItem.Actual;
@@ -123,16 +123,15 @@ namespace MyMoney.Core.Reports
         /// Calculate the expense report items from the beginning of the current month
         /// </summary>
         /// <returns>A list of report items, for each budget category</returns>
-        public static List<BudgetReportItem> CalculateExpenseReportItems()
+        public static List<BudgetReportItem> CalculateExpenseReportItems(IDatabaseReader databaseReader)
         {
-            return CalculateExpenseReportItems(DateTime.Today);
+            return CalculateExpenseReportItems(DateTime.Today, databaseReader);
         }
 
-        private static Currency CalculateTotalForCategory(string CategoryName, DateTime Month)
+        private static Currency CalculateTotalForCategory(string CategoryName, DateTime Month, IDatabaseReader databaseReader)
         {
             // Read the accounts from the database
-            DatabaseReader dbReader = new();
-            var accounts = dbReader.GetCollection<Account>("Accounts");
+            var accounts = databaseReader.GetCollection<Account>("Accounts");
 
             // search through each account for transactions in this category that happened in the specified month
 
