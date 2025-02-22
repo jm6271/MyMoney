@@ -10,9 +10,7 @@ namespace MyMoney.Core.Database
     {
         public static string GetDataFilePath()
         {
-#if TESTING
-            return "MyMoney-LiteDB-Database-TESTING.db";
-#elif DEBUG
+#if DEBUG
             return "MyMoney-LiteDB-Database-DEBUG.db";
 #else
             // make sure all the directories are already created

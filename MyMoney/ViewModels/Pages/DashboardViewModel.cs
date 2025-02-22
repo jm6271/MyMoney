@@ -96,8 +96,8 @@ namespace MyMoney.ViewModels.Pages
             BudgetReportIncomeItems.Clear();
             BudgetReportExpenseItems.Clear();
 
-            var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems();
-            var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems();
+            var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(databaseReader);
+            var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(databaseReader);
 
             foreach (var item in incomeItems)
             {
