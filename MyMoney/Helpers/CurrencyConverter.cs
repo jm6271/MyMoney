@@ -17,9 +17,16 @@ namespace MyMoney.Helpers
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is string text && decimal.TryParse(text, out decimal result))
+            if (value is string text)
             {
-                return new Currency(result);
+                string amount = text;
+                if (text.StartsWith('$'))
+                {
+                    amount = text.Substring(1);
+                }
+
+                if (decimal.TryParse(amount, out decimal result))
+                    return new Currency(result);
             }
             return DependencyProperty.UnsetValue;
         }
