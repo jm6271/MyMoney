@@ -33,7 +33,7 @@
                 <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudgets}" SelectedIndex="{Binding ViewModel.CurrentBudgetsSelectedIndex}" Margin="0,0,0,20">
                     <ui:ListView.ItemTemplate>
                         <DataTemplate>
-                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="0,2,0,2"/>
+                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="4"/>
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
                 </ui:ListView>
@@ -41,7 +41,7 @@
                 <ui:ListView ItemsSource="{Binding ViewModel.FutureBudgets}" SelectedIndex="{Binding ViewModel.FutureBudgetsSelectedIndex}" Margin="0,0,0,20">
                     <ui:ListView.ItemTemplate>
                         <DataTemplate>
-                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="0,2,0,2"/>
+                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="4"/>
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
                 </ui:ListView>
@@ -49,7 +49,7 @@
                 <ui:ListView ItemsSource="{Binding ViewModel.OldBudgets}" SelectedIndex="{Binding ViewModel.OldBudgetsSelectedIndex}">
                     <ui:ListView.ItemTemplate>
                         <DataTemplate>
-                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="0,2,0,2"/>
+                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="4"/>
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
                 </ui:ListView>
