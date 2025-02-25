@@ -29,5 +29,10 @@ namespace MyMoney.Views.ContentDialogs
                 e.Handled = false;
             }
         }
+
+        private void txtAmount_GotMouseCapture(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            txtAmount.SelectAll();
+        }
     }
 }

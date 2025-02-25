@@ -18,9 +18,9 @@
     <StackPanel>
         <Label Margin="0,0,0,4">Account name</Label>
         <ui:TextBox x:Name="TxtAccountName" Margin="0,4,0,8" Text="{Binding AccountName}" GotFocus="TxtAccountName_GotFocus"
-                    MinWidth="300"/>
+                    MinWidth="300" GotMouseCapture="TxtAccountName_GotMouseCapture"/>
         <Label Margin="0,8,0,4">Starting balance</Label>
         <ui:TextBox x:Name="txtStartingBalance" Margin="0,4,0,0" Text="{Binding StartingBalance, Converter={StaticResource CurrencyConverter}}" 
-                    GotKeyboardFocus="txtStartingBalance_GotFocus" KeyDown="txtStartingBalance_KeyDown"/>
+                    GotKeyboardFocus="txtStartingBalance_GotFocus" KeyDown="txtStartingBalance_KeyDown" GotMouseCapture="txtStartingBalance_GotMouseCapture"/>
     </StackPanel>
 </ui:ContentDialog>

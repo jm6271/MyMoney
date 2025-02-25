@@ -32,7 +32,7 @@
             <RadioButton Grid.Column="0" IsChecked="{Binding NewTransactionIsExpense}">Expense</RadioButton>
         </Grid>
         <ui:TextBlock Margin="0,0,0,4">Amount</ui:TextBlock>
-        <ui:TextBox x:Name="txtAmount" Margin="0,0,0,16" Text="{Binding Path=NewTransactionAmount, Converter={StaticResource CurrencyConverter}}"/>
+        <ui:TextBox x:Name="txtAmount" Margin="0,0,0,16" Text="{Binding Path=NewTransactionAmount, Converter={StaticResource CurrencyConverter}}" GotKeyboardFocus="txtAmount_GotKeyboardFocus" GotMouseCapture="txtAmount_GotMouseCapture"/>
         <Grid Margin="0,0,0,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="135"/>
@@ -66,6 +66,7 @@
             </ComboBox.ItemTemplate>
         </ComboBox>
         <ui:TextBlock Margin="0,0,0,4">Memo</ui:TextBlock>
-        <ui:TextBox x:Name="txtMemo" Margin="0,0,0,24" Text="{Binding NewTransactionMemo}" KeyDown="TextBox_KeyDown"/>
+        <ui:TextBox x:Name="txtMemo" Margin="0,0,0,24" Text="{Binding NewTransactionMemo}" KeyDown="TextBox_KeyDown"
+                    GotKeyboardFocus="txtMemo_GotKeyboardFocus" GotMouseCapture="txtMemo_GotMouseCapture"/>
     </StackPanel>
 </ui:ContentDialog>
