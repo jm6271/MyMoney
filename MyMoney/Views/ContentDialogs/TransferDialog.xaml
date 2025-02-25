@@ -28,6 +28,6 @@
 
         <ui:TextBlock Margin="0,8,0,4">Transfer amount</ui:TextBlock>
         <ui:TextBox x:Name="txtAmount" Text="{Binding Path=Amount, Converter={StaticResource CurrencyConverter}}" 
-                    GotKeyboardFocus="txtAmount_GotFocus" KeyDown="txtAmount_KeyDown"/>
+                    GotKeyboardFocus="txtAmount_GotFocus" KeyDown="txtAmount_KeyDown" GotMouseCapture="txtAmount_GotMouseCapture"/>
     </StackPanel>
 </ui:ContentDialog>

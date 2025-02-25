@@ -36,5 +36,15 @@ namespace MyMoney.Views.ContentDialogs
                 e.Handled = false;
             }
         }
+
+        private void txtAmount_GotMouseCapture(object sender, MouseEventArgs e)
+        {
+            txtAmount.SelectAll();
+        }
+
+        private void TxtCategory_GotMouseCapture(object sender, MouseEventArgs e)
+        {
+            TxtCategory.SelectAll();
+        }
     }
 }
