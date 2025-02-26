@@ -15,7 +15,7 @@
       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
       ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      Loaded="ContentDialog_Loaded">
+      Loaded="ContentDialog_Loaded" Closing="ContentDialog_Closing">
     <ui:ContentDialog.Resources>
         <helpers:CurrencyConverter x:Key="CurrencyConverter"/>
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:NewTransactionDialog}" />
@@ -55,9 +55,9 @@
             </ui:AutoSuggestBox>
         </Grid>
         <ui:TextBlock Margin="0,0,0,4">Category</ui:TextBlock>
-        <ComboBox ItemsSource="{Binding CategoryNames}" Text="{Binding NewTransactionCategory}" Margin="0,0,0,16"/>
+        <ComboBox x:Name="cmbCategory" ItemsSource="{Binding CategoryNames}" Text="{Binding NewTransactionCategory}" Margin="0,0,0,16"/>
         <ui:TextBlock Margin="0,0,0,4">Account</ui:TextBlock>
-        <ComboBox Margin="0,0,0,16" ItemsSource="{Binding Accounts}" SelectedIndex="{Binding SelectedAccountIndex}"
+        <ComboBox x:Name="cmbAccount" Margin="0,0,0,16" ItemsSource="{Binding Accounts}" SelectedIndex="{Binding SelectedAccountIndex}"
                   SelectedItem="{Binding SelectedAccount}">
             <ComboBox.ItemTemplate>
                 <DataTemplate>

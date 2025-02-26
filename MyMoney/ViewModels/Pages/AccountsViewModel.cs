@@ -180,49 +180,6 @@ namespace MyMoney.ViewModels.Pages
                 return;
             }
 
-            // Make sure that the required fields are filled out
-            if (NewTransactionCategory == "")
-            {
-                // Show message box
-                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-                {
-                    Title = "Missing Category",
-                    Content = "Category field cannot be empty",
-                    CloseButtonText = "OK"
-                };
-
-                await uiMessageBox.ShowDialogAsync();
-                ClearNewTransactionFields();
-                return;
-            }
-            if (NewTransactionAmount.Value <= 0m)
-            {
-                // Show message box
-                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-                {
-                    Title = "Invalid Amount",
-                    Content = "Amount must be a number more than $0.00",
-                    CloseButtonText = "OK"
-                };
-
-                await uiMessageBox.ShowDialogAsync();
-                ClearNewTransactionFields();
-                return;
-            }
-            // make sure an account is selected
-            if (SelectedAccountIndex == -1)
-            {
-                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-                {
-                    Title = "Select Account",
-                    Content = "Select an account before adding a transaction",
-                    CloseButtonText = "OK",
-                };
-
-                await uiMessageBox.ShowDialogAsync();
-                return;
-            }
-
             var amount = NewTransactionAmount;
             if (NewTransactionIsExpense) amount = new(-amount.Value);
 
@@ -409,50 +366,6 @@ namespace MyMoney.ViewModels.Pages
 
             if (result != ContentDialogResult.Primary)
             {
-                ClearNewTransactionFields();
-                return;
-            }
-
-            // Make sure that the required fields are filled out
-            if (NewTransactionCategory == "")
-            {
-                // Show message box
-                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-                {
-                    Title = "Missing Category",
-                    Content = "Category field cannot be empty",
-                    CloseButtonText = "OK"
-                };
-
-                await uiMessageBox.ShowDialogAsync();
-                ClearNewTransactionFields();
-                return;
-            }
-            if (NewTransactionAmount.Value <= 0m)
-            {
-                // Show message box
-                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-                {
-                    Title = "Invalid Amount",
-                    Content = "Amount must be a number more than $0.00",
-                    CloseButtonText = "OK"
-                };
-
-                await uiMessageBox.ShowDialogAsync();
-                ClearNewTransactionFields();
-                return;
-            }
-            if (SelectedAccountIndex == -1)
-            {
-                // Show message box
-                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-                {
-                    Title = "Missing Account",
-                    Content = "Account field cannot be empty",
-                    CloseButtonText = "OK"
-                };
-
-                await uiMessageBox.ShowDialogAsync();
                 ClearNewTransactionFields();
                 return;
             }

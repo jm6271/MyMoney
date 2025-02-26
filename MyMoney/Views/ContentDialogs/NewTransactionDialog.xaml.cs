@@ -73,5 +73,24 @@ namespace MyMoney.Views.ContentDialogs
         {
             txtMemo.SelectAll();
         }
+
+        private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
+        {
+            if (args.Result != ContentDialogResult.Primary) return;
+
+            // validate the user data, and if it is invalid, prevent the dialog from closing
+
+            // get validation errors for all the required fields
+            var amountValidationErrors = Validation.GetErrors(txtAmount);
+            bool invalidPayee = txtPayee.Text == "";
+            bool invalidCategory = cmbCategory.Text == "";
+            bool invalidAccount = cmbAccount.Text == "";
+
+            // validate
+            if (invalidPayee || invalidCategory || invalidAccount || (amountValidationErrors != null && amountValidationErrors.Count > 0))
+            {
+                args.Cancel = true;
+            }
+        }
     }
 }
