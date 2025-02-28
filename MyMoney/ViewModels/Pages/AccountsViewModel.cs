@@ -190,7 +190,18 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private async Task BttnNewTransaction_Click()
         {
-            if (SelectedAccount == null) return;
+            if (SelectedAccount == null)
+            {
+                if (Accounts.Count > 0)
+                {
+                    SelectedAccountIndex = 0;
+                    SelectedAccount = Accounts[SelectedAccountIndex];
+                }
+                else
+                {
+                    return;
+                }
+            }
 
             var (success, transaction) = await ShowTransactionDialog();
             if (!success || transaction == null) return;
