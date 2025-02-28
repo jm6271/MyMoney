@@ -223,7 +223,7 @@ namespace MyMoney.ViewModels.Pages
 
             SelectedAccount.Total -= oldTransaction.Amount;
             SelectedAccount.Total += transaction.Amount;
-            SelectedAccountTransactions.Add(transaction);
+            SelectedAccountTransactions[SelectedTransactionIndex] = transaction;
 
             ClearNewTransactionFields();
             SortTransactions();
