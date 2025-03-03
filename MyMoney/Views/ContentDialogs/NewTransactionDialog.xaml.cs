@@ -82,13 +82,20 @@ namespace MyMoney.Views.ContentDialogs
 
             // get validation errors for all the required fields
             var amountValidationErrors = Validation.GetErrors(txtAmount);
+            var dateValidationErrors = Validation.GetErrors(txtDate);
             bool invalidPayee = txtPayee.Text == "";
             bool invalidCategory = cmbCategory.Text == "";
-            bool invalidAccount = cmbAccount.Text == "";
 
             // validate
-            if (invalidPayee || invalidCategory || invalidAccount || (amountValidationErrors != null && amountValidationErrors.Count > 0))
+            if (invalidPayee || invalidCategory
+                || (amountValidationErrors != null && amountValidationErrors.Count > 0)
+                || (dateValidationErrors != null && dateValidationErrors.Count > 0))
             {
+                if (invalidPayee)
+                {
+                    // do custom validation styling on the payee field
+                    txtPayee.BorderBrush = Brushes.Red;
+                }
                 args.Cancel = true;
             }
         }
