@@ -91,6 +91,11 @@ namespace MyMoney.Views.ContentDialogs
                 || (amountValidationErrors != null && amountValidationErrors.Count > 0)
                 || (dateValidationErrors != null && dateValidationErrors.Count > 0))
             {
+                if (invalidPayee)
+                {
+                    // do custom validation styling on the payee field
+                    txtPayee.BorderBrush = Brushes.Red;
+                }
                 args.Cancel = true;
             }
         }
