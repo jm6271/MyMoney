@@ -108,7 +108,7 @@ namespace MyMoney.Core.Reports
                 {
                     Category = item.Category,
                     Budgeted = item.Amount,
-                    Actual = new(Math.Abs(CalculateTotalForCategory(item.Category, DateTime.Today, databaseReader).Value)),
+                    Actual = new(Math.Abs(CalculateTotalForCategory(item.Category, BudgetMonth, databaseReader).Value)),
                 };
 
                 budgetReportItem.Remaining = budgetReportItem.Budgeted - budgetReportItem.Actual;
