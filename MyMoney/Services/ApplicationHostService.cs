@@ -13,7 +13,9 @@ namespace MyMoney.Services
 
         private INavigationWindow _navigationWindow;
 
+#pragma warning disable CS8618, CS9264
         public ApplicationHostService(IServiceProvider serviceProvider)
+#pragma warning restore CS8618, CS9264
         {
             _serviceProvider = serviceProvider;
         }
