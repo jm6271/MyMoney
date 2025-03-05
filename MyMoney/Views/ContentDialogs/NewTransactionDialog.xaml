@@ -21,7 +21,7 @@
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:NewTransactionDialog}" />
     </ui:ContentDialog.Resources>
 
-    <StackPanel>
+    <StackPanel Margin="1,0,1,0">
         <ui:TextBlock Margin="0,0,0,4">Transaction type</ui:TextBlock>
         <Grid Margin="0,0,0,16">
             <Grid.ColumnDefinitions>
@@ -47,15 +47,23 @@
             <DatePicker x:Name="txtDate" Grid.Row="1" Margin="0,0,4,0" SelectedDateFormat="Short" IsTodayHighlighted="True"
                                     SelectedDate="{Binding NewTransactionDate}"/>
             <ui:TextBlock Grid.Column="1" Grid.Row="0" Margin="4,0,0,4">Payee</ui:TextBlock>
-            <ui:AutoSuggestBox x:Name="txtPayee" Grid.Row="1" Grid.Column="1" Margin="4,0,0,0" MinWidth="300"
+            <Border x:Name="PayeeBorder" Grid.Row="1" Grid.Column="1" Margin="3,0,0,0" BorderThickness="1" BorderBrush="Transparent">
+                <ui:AutoSuggestBox x:Name="txtPayee" MinWidth="300" LostFocus="TxtPayee_OnLostFocus"
                                OriginalItemsSource="{Binding AutoSuggestPayees, Mode=OneWay}">
                 <ui:AutoSuggestBox.Icon>
                     <ui:FontIcon Glyph=""/>
                 </ui:AutoSuggestBox.Icon>
-            </ui:AutoSuggestBox>
+            </ui:AutoSuggestBox>    
+            </Border>
+
         </Grid>
         <ui:TextBlock Margin="0,0,0,4">Category</ui:TextBlock>
-        <ComboBox x:Name="cmbCategory" ItemsSource="{Binding CategoryNames}" Text="{Binding NewTransactionCategory}" Margin="0,0,0,16"/>
+        
+        <Border x:Name="CategoryBorder" BorderThickness="1" BorderBrush="Transparent" Margin="0,0,0,16">
+            <ComboBox x:Name="cmbCategory" ItemsSource="{Binding CategoryNames}" Text="{Binding NewTransactionCategory}"
+                  SelectionChanged="cmbCategory_SelectionChanged"/>            
+        </Border>
+
         <ui:TextBlock Margin="0,0,0,4">Account</ui:TextBlock>
         <ComboBox x:Name="cmbAccount" Margin="0,0,0,16" ItemsSource="{Binding Accounts}" SelectedIndex="{Binding SelectedAccountIndex}"
                   SelectedItem="{Binding SelectedAccount}">
