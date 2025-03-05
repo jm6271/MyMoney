@@ -20,9 +20,6 @@ namespace MyMoney.ViewModels.Pages
 
         public ObservableCollection<string> CategoryNames { get; set; } = [];
 
-        public ICommand AddNewAccountButtonClickCommand { get; private set; }
-        public ICommand AddTransactionButtonClickCommand { get; private set; }
-
         [ObservableProperty]
         private DateTime _NewTransactionDate = DateTime.Today;
 
@@ -81,9 +78,6 @@ namespace MyMoney.ViewModels.Pages
 
             if (Accounts.Count > 0) TransactionsEnabled = true;
 
-            AddNewAccountButtonClickCommand = new RelayCommand(BttnNewAccount_Click);
-            AddTransactionButtonClickCommand = new RelayCommand(BttnNewTransaction_Click);
-
             LoadCategoryNames();
         }
 
@@ -123,7 +117,8 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        private async void BttnNewAccount_Click()
+        [RelayCommand]
+        private async Task BttnNewAccount_Click()
         {
             // Show the new account dialog
             var dialogHost = _contentDialogService.GetDialogHost();
@@ -155,90 +150,94 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        private async void BttnNewTransaction_Click()
+        private async Task<(bool success, Transaction? transaction)> ShowTransactionDialog(bool isEdit = false)
         {
             var dialogHost = _contentDialogService.GetDialogHost();
-            if (dialogHost == null) return;
+            if (dialogHost == null) return (false, null);
 
-            // Set default account if it's not already set
-            if (Accounts.Count > 0 && SelectedAccountIndex == -1)
+            if (!isEdit && Accounts.Count > 0 && SelectedAccountIndex == -1)
+            {
                 SelectedAccountIndex = 0;
+            }
 
             // Load the list of payees to use in the auto suggest box
             AutoSuggestPayees = GetAllPayees();
 
-            var newTransactionDialog = new NewTransactionDialog(dialogHost, this)
+            var transactionDialog = new NewTransactionDialog(dialogHost, this)
             {
-                PrimaryButtonText = "OK",
-                CloseButtonText = "Cancel",
+            PrimaryButtonText = "OK",
+            CloseButtonText = "Cancel",
+            Title = isEdit ? "Edit Transaction" : "New Transaction"
             };
-            var result = await newTransactionDialog.ShowAsync();
+
+            var result = await transactionDialog.ShowAsync();
 
             if (result != ContentDialogResult.Primary)
             {
-                ClearNewTransactionFields();
-                return;
-            }
-
-            // Make sure that the required fields are filled out
-            if (NewTransactionCategory == "")
-            {
-                // Show message box
-                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-                {
-                    Title = "Missing Category",
-                    Content = "Category field cannot be empty",
-                    CloseButtonText = "OK"
-                };
-
-                await uiMessageBox.ShowDialogAsync();
-                ClearNewTransactionFields();
-                return;
-            }
-            if (NewTransactionAmount.Value <= 0m)
-            {
-                // Show message box
-                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-                {
-                    Title = "Invalid Amount",
-                    Content = "Amount must be a number more than $0.00",
-                    CloseButtonText = "OK"
-                };
-
-                await uiMessageBox.ShowDialogAsync();
-                ClearNewTransactionFields();
-                return;
-            }
-            // make sure an account is selected
-            if (SelectedAccountIndex == -1)
-            {
-                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-                {
-                    Title = "Select Account",
-                    Content = "Select an account before adding a transaction",
-                    CloseButtonText = "OK",
-                };
-
-                await uiMessageBox.ShowDialogAsync();
-                return;
+            ClearNewTransactionFields();
+            return (false, null);
             }
 
             var amount = NewTransactionAmount;
             if (NewTransactionIsExpense) amount = new(-amount.Value);
 
-            // Calculate the balance
-            if (SelectedAccount == null) return;
-            var balance = SelectedAccount.Total + amount;
+            var transaction = new Transaction(NewTransactionDate, transactionDialog.SelectedPayee, 
+            NewTransactionCategory, amount, NewTransactionMemo);
 
-            SelectedAccount.Total = balance;
+            return (true, transaction);
+        }
 
-            Transaction newTransaction = new(NewTransactionDate, newTransactionDialog.SelectedPayee, NewTransactionCategory, amount, NewTransactionMemo);
-            SelectedAccountTransactions.Add(newTransaction);
+        [RelayCommand]
+        private async Task BttnNewTransaction_Click()
+        {
+            if (SelectedAccount == null)
+            {
+                if (Accounts.Count > 0)
+                {
+                    SelectedAccountIndex = 0;
+                    SelectedAccount = Accounts[SelectedAccountIndex];
+                }
+                else
+                {
+                    return;
+                }
+            }
+
+            var (success, transaction) = await ShowTransactionDialog();
+            if (!success || transaction == null) return;
+
+            SelectedAccount.Total += transaction.Amount;
+            SelectedAccountTransactions.Add(transaction);
+            
+            ClearNewTransactionFields();
+            SortTransactions();
+            SaveAccountsToDatabase();
+        }
+
+        [RelayCommand]
+        private async Task EditTransaction()
+        {
+            if (SelectedAccount == null || SelectedTransactionIndex < 0) return;
+
+            // Load current transaction values
+            var oldTransaction = SelectedAccountTransactions[SelectedTransactionIndex];
+            NewTransactionDate = oldTransaction.Date;
+            NewTransactionAmount = new(Math.Abs(oldTransaction.Amount.Value));
+            NewTransactionCategory = oldTransaction.Category;
+            NewTransactionIsExpense = oldTransaction.Amount.Value < 0m;
+            NewTransactionIsIncome = !NewTransactionIsExpense;
+            NewTransactionMemo = oldTransaction.Memo;
+            NewTransactionPayee = oldTransaction.Payee;
+
+            var (success, transaction) = await ShowTransactionDialog(true);
+            if (!success || transaction == null) return;
+
+            SelectedAccount.Total -= oldTransaction.Amount;
+            SelectedAccount.Total += transaction.Amount;
+            SelectedAccountTransactions[SelectedTransactionIndex] = transaction;
 
             ClearNewTransactionFields();
-
             SortTransactions();
-
             SaveAccountsToDatabase();
         }
 
@@ -372,107 +371,6 @@ namespace MyMoney.ViewModels.Pages
             SelectedAccountTransactions.RemoveAt(SelectedTransactionIndex);
 
             // Apply changes to database
-            SaveAccountsToDatabase();
-        }
-
-        [RelayCommand]
-        private async Task EditTransaction()
-        {
-            // Make sure a transaction is selected
-            if (SelectedAccount == null || SelectedTransactionIndex < 0) return;
-
-            var dialogHost = _contentDialogService.GetDialogHost();
-            if (dialogHost == null) return;
-
-            // Load contents of controls into the view model properties
-            NewTransactionDate = SelectedAccountTransactions[SelectedTransactionIndex].Date;
-            NewTransactionAmount = new(Math.Abs(SelectedAccountTransactions[SelectedTransactionIndex].Amount.Value));
-            NewTransactionCategory = SelectedAccountTransactions[SelectedTransactionIndex].Category;
-            NewTransactionIsExpense = SelectedAccountTransactions[SelectedTransactionIndex].Amount.Value < 0m;
-            NewTransactionIsIncome = !NewTransactionIsExpense;
-            NewTransactionMemo = SelectedAccountTransactions[SelectedTransactionIndex].Memo;
-            NewTransactionPayee = SelectedAccountTransactions[SelectedTransactionIndex].Payee;
-
-            // Get auto suggest payee entries
-            AutoSuggestPayees = GetAllPayees();
-
-            // store current transaction amount so we know how to change the account total
-            var OldAmount = NewTransactionAmount;
-
-            var editTransactionDialog = new NewTransactionDialog(dialogHost, this)
-            {
-                PrimaryButtonText = "OK",
-                CloseButtonText = "Cancel",
-                Title = "Edit Transaction"
-            };
-            var result = await editTransactionDialog.ShowAsync();
-
-            if (result != ContentDialogResult.Primary)
-            {
-                ClearNewTransactionFields();
-                return;
-            }
-
-            // Make sure that the required fields are filled out
-            if (NewTransactionCategory == "")
-            {
-                // Show message box
-                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-                {
-                    Title = "Missing Category",
-                    Content = "Category field cannot be empty",
-                    CloseButtonText = "OK"
-                };
-
-                await uiMessageBox.ShowDialogAsync();
-                ClearNewTransactionFields();
-                return;
-            }
-            if (NewTransactionAmount.Value <= 0m)
-            {
-                // Show message box
-                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-                {
-                    Title = "Invalid Amount",
-                    Content = "Amount must be a number more than $0.00",
-                    CloseButtonText = "OK"
-                };
-
-                await uiMessageBox.ShowDialogAsync();
-                ClearNewTransactionFields();
-                return;
-            }
-            if (SelectedAccountIndex == -1)
-            {
-                // Show message box
-                var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-                {
-                    Title = "Missing Account",
-                    Content = "Account field cannot be empty",
-                    CloseButtonText = "OK"
-                };
-
-                await uiMessageBox.ShowDialogAsync();
-                ClearNewTransactionFields();
-                return;
-            }
-
-            var amount = NewTransactionAmount;
-            if (NewTransactionIsExpense) amount = new(-amount.Value);
-
-            // Calculate the balance
-            if (SelectedAccount == null) return;
-            var balance = SelectedAccount.Total - OldAmount + amount;
-
-            SelectedAccount.Total = balance;
-
-            Transaction newTransaction = new(NewTransactionDate, editTransactionDialog.SelectedPayee, NewTransactionCategory, amount, NewTransactionMemo);
-            SelectedAccountTransactions.Add(newTransaction);
-
-            ClearNewTransactionFields();
-
-            SortTransactions();
-
             SaveAccountsToDatabase();
         }
 

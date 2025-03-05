@@ -73,5 +73,43 @@ namespace MyMoney.Views.ContentDialogs
         {
             txtMemo.SelectAll();
         }
+
+        private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
+        {
+            if (args.Result != ContentDialogResult.Primary) return;
+
+            // validate the user data, and if it is invalid, prevent the dialog from closing
+
+            // get validation errors for all the required fields
+            var amountValidationErrors = Validation.GetErrors(txtAmount);
+            var dateValidationErrors = Validation.GetErrors(txtDate);
+            var invalidPayee = txtPayee.Text == "";
+            var invalidCategory = cmbCategory.Text == "";
+
+            // Clear the red border from custom validated controls
+            CategoryBorder.BorderBrush = Brushes.Transparent;
+            PayeeBorder.BorderBrush = Brushes.Transparent;
+
+            // validate
+            if (!invalidPayee && !invalidCategory
+                              && amountValidationErrors is not { Count: > 0 }
+                              && dateValidationErrors is not { Count: > 0 }) return;
+            args.Cancel = true;
+
+            if (invalidCategory)
+                CategoryBorder.BorderBrush = Brushes.Red;
+            if (invalidPayee)
+                PayeeBorder.BorderBrush = Brushes.Red;
+        }
+
+        private void cmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            CategoryBorder.BorderBrush = Brushes.Transparent;
+        }
+
+        private void TxtPayee_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            PayeeBorder.BorderBrush = string.IsNullOrEmpty(txtPayee.Text) ? Brushes.Red : Brushes.Transparent;
+        }
     }
 }
