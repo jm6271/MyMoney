@@ -24,9 +24,9 @@
         </Grid.RowDefinitions>
 
         <ui:Card>
-            <lvc:CartesianChart Grid.Row="0" Height="350" Series="{Binding ViewModel.IncomeExpense12Month_Series}"
-                                XAxes="{Binding ViewModel.IncomeExpense12Month_XAxes}" LegendPosition="Bottom"
-                                YAxes="{Binding ViewModel.IncomeExpense12Month_YAxes}" LegendTextPaint="{Binding ViewModel.IncomeExpense12Month_LegendPaint}"/>
+            <lvc:CartesianChart Grid.Row="0" Height="350" Series="{Binding ViewModel.IncomeExpense12MonthSeries}"
+                                XAxes="{Binding ViewModel.IncomeExpense12MonthXAxes}" LegendPosition="Bottom"
+                                YAxes="{Binding ViewModel.IncomeExpense12MonthYAxes}" LegendTextPaint="{Binding ViewModel.IncomeExpense12MonthLegendPaint}"/>
         </ui:Card>
     </Grid>
 </Page>

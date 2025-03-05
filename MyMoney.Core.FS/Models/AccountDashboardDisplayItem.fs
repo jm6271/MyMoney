@@ -6,11 +6,11 @@ type AccountDashboardDisplayItem() =
 
     member this.AccountName 
         with get () = _AccountName
-        and set (value) = _AccountName <- value
+        and set value = _AccountName <- value
 
     member this.Total
         with get () = _Total
-        and set (value) = _Total <- value
+        and set value = _Total <- value
 
     static member FromAccount(account: Account):AccountDashboardDisplayItem =
         let displayItem = AccountDashboardDisplayItem()

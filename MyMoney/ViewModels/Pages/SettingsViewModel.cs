@@ -1,5 +1,4 @@
 ﻿using Wpf.Ui.Appearance;
-using Wpf.Ui.Controls;
 using Wpf.Ui.Abstractions.Controls;
 using MyMoney.Core.Database;
 
@@ -7,21 +6,13 @@ namespace MyMoney.ViewModels.Pages
 {
     public partial class SettingsViewModel : ObservableObject, INavigationAware
     {
-        private bool _isInitialized = false;
+        private bool _isInitialized;
 
         [ObservableProperty]
-        private string _appVersion = String.Empty;
+        private string _appVersion = string.Empty;
 
         [ObservableProperty]
         private ApplicationTheme _currentTheme = ApplicationTheme.Unknown;
-
-        public void OnNavigatedTo()
-        {
-            if (!_isInitialized)
-                InitializeViewModel();
-        }
-
-        public void OnNavigatedFrom() { }
 
         private void InitializeViewModel()
         {
@@ -31,10 +22,10 @@ namespace MyMoney.ViewModels.Pages
             _isInitialized = true;
         }
 
-        private string GetAssemblyVersion()
+        private static string GetAssemblyVersion()
         {
             return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString()
-                ?? String.Empty;
+                ?? string.Empty;
         }
 
         [RelayCommand]
@@ -69,16 +60,16 @@ namespace MyMoney.ViewModels.Pages
         private void SaveTheme()
         {
             DatabaseReader reader = new();
-            var SettingsDict = reader.GetSettingsDictionary("ApplicationSettings");
+            var settingsDict = reader.GetSettingsDictionary("ApplicationSettings");
 
             // Assign the theme
             if (CurrentTheme == ApplicationTheme.Light)
-                SettingsDict["AppTheme"] = "Light";
+                settingsDict["AppTheme"] = "Light";
             else
-                SettingsDict["AppTheme"] = "Dark";
+                settingsDict["AppTheme"] = "Dark";
 
             // Write to database
-            Core.Database.DatabaseWriter.WriteSettingsDictionary("ApplicationSettings", SettingsDict);
+            DatabaseWriter.WriteSettingsDictionary("ApplicationSettings", settingsDict);
         }
 
         public Task OnNavigatedToAsync()

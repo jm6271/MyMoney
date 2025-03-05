@@ -45,12 +45,12 @@
 
         <ui:Card Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" Margin="8,8,8,24">
             <lvc:PieChart Height="300" Series="{Binding ViewModel.ActualIncomeSeries}"
-                          Title="{Binding ViewModel.ActualIncome_Title}"/>
+                          Title="{Binding ViewModel.ActualIncomeTitle}"/>
         </ui:Card>
 
         <ui:Card Grid.Column="2" Grid.Row="1" VerticalAlignment="Stretch" Margin="8,8,0,24">
             <lvc:PieChart Height="300" Series="{Binding ViewModel.ActualExpenseSeries}"
-                          Title="{Binding ViewModel.ActualExpenses_Title}"/>
+                          Title="{Binding ViewModel.ActualExpensesTitle}"/>
         </ui:Card>
     </Grid>
 </Page>

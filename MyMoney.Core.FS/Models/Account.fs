@@ -4,7 +4,7 @@ open System.Collections.ObjectModel
 open System.ComponentModel
 
 type Account() =
-    let ev = new Event<PropertyChangedEventHandler, PropertyChangedEventArgs>()
+    let ev = Event<PropertyChangedEventHandler, PropertyChangedEventArgs>()
     let mutable _Id = 0
     let mutable _Transactions = ObservableCollection<Transaction>()
     let mutable _AccountName = ""
@@ -12,21 +12,21 @@ type Account() =
 
     member this.Id
         with get () = _Id
-        and set (value) = _Id <- value
+        and set value = _Id <- value
 
     member this.Transactions
         with get () = _Transactions
-        and set (value) = _Transactions <- value
+        and set value = _Transactions <- value
 
     member this.AccountName
         with get () = _AccountName
-        and set (value) = 
+        and set value = 
             _AccountName <- value
             ev.Trigger(this, PropertyChangedEventArgs("AccountName"))
 
     member this.Total
         with get () = _Total
-        and set (value) = 
+        and set value = 
             _Total <- value
             ev.Trigger(this, PropertyChangedEventArgs("Total"))
 

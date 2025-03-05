@@ -6,14 +6,14 @@ type Currency(value:decimal) =
     let mutable _Value = value
     member this.Value
         with get () = _Value
-        and set (v) = _Value <- v
+        and set v = _Value <- v
 
     // Overloaded ToString() method
     // Returns a formatted string
     override this.ToString (): string = 
         if this.Value >= 0m then // normal number
             $"${this.Value:N2}"
-        else // negative number, print in parenthesis
+        else // negative number, print in parentheses
             $"(${Math.Abs(this.Value):N2})"
 
     // Overloaded operators

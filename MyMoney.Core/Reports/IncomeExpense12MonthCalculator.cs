@@ -1,12 +1,11 @@
 ﻿using MyMoney.Core.Database;
 using MyMoney.Core.FS.Models;
 using System.Globalization;
-using System.Linq;
 
 namespace MyMoney.Core.Reports
 {
     /// <summary>
-    /// Calculates values for a 12 month income vs. expense bar chart
+    /// Calculates values for a 12-month income vs. expense bar chart
     /// </summary>
     public static class IncomeExpense12MonthCalculator
     {
@@ -17,12 +16,12 @@ namespace MyMoney.Core.Reports
         public static List<string> GetMonthNames() 
         { 
             List<string> monthNames = []; 
-            DateTime currentDate = DateTime.Now; 
+            var currentDate = DateTime.Now; 
             
-            for (int i = 11; i >= 0; i--) 
+            for (var i = 11; i >= 0; i--) 
             { 
-                DateTime targetDate = currentDate.AddMonths(-i); 
-                string monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(targetDate.Month); 
+                var targetDate = currentDate.AddMonths(-i); 
+                var monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(targetDate.Month); 
                 monthNames.Add(monthName);
             } 
             
@@ -33,7 +32,7 @@ namespace MyMoney.Core.Reports
         {
             List<double> income = [];
 
-            for (int i = 11; i >= 0; i--)
+            for (var i = 11; i >= 0; i--)
             {
                 var transactions = GetMonthOfTransactions(i);
 
@@ -48,7 +47,7 @@ namespace MyMoney.Core.Reports
         {
             List<double> expenses = [];
 
-            for (int i = 11; i >= 0; i--)
+            for (var i = 11; i >= 0; i--)
             {
                 var transactions = GetMonthOfTransactions(i);
 
@@ -61,34 +60,19 @@ namespace MyMoney.Core.Reports
 
         private static decimal GetIncome(List<Transaction> transactions)
         {
-            decimal income = 0;
-
-            foreach (Transaction transaction in transactions)
-            {
-                // Only list items with a category (this prevents beginning balances and transfers from showing up in the chart)
-                if (string.IsNullOrWhiteSpace(transaction.Category))
-                    continue;
-
-                if (transaction.Amount.Value > 0)
-                    income += transaction.Amount.Value;
-            }
-
-            return income;
+            return (from transaction in transactions 
+                where !string.IsNullOrWhiteSpace(transaction.Category) 
+                where transaction.Amount.Value > 0 
+                select transaction.Amount.Value).Sum();
         }
 
         private static decimal GetExpenses(List<Transaction> transactions)
         {
-            decimal expenses = 0;
-
-            foreach (Transaction transaction in transactions)
-            {
-                // Only list items with a category (this prevents transfers from showing up in the chart)
-                if (string.IsNullOrWhiteSpace(transaction.Category))
-                    continue;
-                
-                if (transaction.Amount.Value < 0)
-                    expenses += transaction.Amount.Value;
-            }
+            var expenses = 
+                (from transaction in transactions 
+                    where !string.IsNullOrWhiteSpace(transaction.Category) 
+                    where transaction.Amount.Value < 0 
+                    select transaction.Amount.Value).Sum();
 
             return Math.Abs(expenses);
         }
@@ -105,8 +89,8 @@ namespace MyMoney.Core.Reports
 
         private static DateTime GetMonthEndDate(int monthsAgo)
         {
-            int monthNumber = DateTime.Now.Month;
-            int yearNumber = DateTime.Now.Year;
+            var monthNumber = DateTime.Now.Month;
+            var yearNumber = DateTime.Now.Year;
 
             if (monthsAgo < monthNumber)
                 monthNumber -= monthsAgo;
@@ -116,15 +100,15 @@ namespace MyMoney.Core.Reports
                 yearNumber--;
             }
 
-            int day = DateTime.DaysInMonth(yearNumber, monthNumber);
+            var day = DateTime.DaysInMonth(yearNumber, monthNumber);
             DateTime dt = new(yearNumber, monthNumber, day);
             return dt;
         }
 
         private static DateTime GetMonthStartDate(int monthsAgo)
         {
-            int monthNumber = DateTime.Now.Month;
-            int yearNumber = DateTime.Now.Year;
+            var monthNumber = DateTime.Now.Month;
+            var yearNumber = DateTime.Now.Year;
 
             if (monthsAgo < monthNumber)
                 monthNumber -= monthsAgo;
@@ -144,14 +128,7 @@ namespace MyMoney.Core.Reports
             var accounts = dbReader.GetCollection<Account>("Accounts");
 
             List<Transaction> allTransactions = [];
-
-            foreach (var account in accounts)
-            {
-                foreach (var t in account.Transactions)
-                {
-                    allTransactions.Add(t);
-                }
-            }
+            allTransactions.AddRange(accounts.SelectMany(account => account.Transactions));
 
             // go through the transactions and get the ones in the specified date range
             List<Transaction> transactions = [];
@@ -161,7 +138,7 @@ namespace MyMoney.Core.Reports
             return transactions;
         }
 
-        public static bool IsDateBetween(DateTime dateToCheck, DateTime startDate, DateTime endDate) 
+        private static bool IsDateBetween(DateTime dateToCheck, DateTime startDate, DateTime endDate) 
         { 
             return dateToCheck >= startDate && dateToCheck <= endDate; 
         }
