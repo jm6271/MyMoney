@@ -1,20 +1,15 @@
 ﻿using MyMoney.Core.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MyMoney.Tests.Services
 {
     public class MockDatabaseReader : IDatabaseReader
     {
-        public List<T> GetCollection<T>(string CollectionName)
+        public List<T> GetCollection<T>(string collectionName)
         {
             return [];
         }
 
-        public Dictionary<string, string> GetSettingsDictionary(string CollectionName)
+        public Dictionary<string, string> GetSettingsDictionary(string collectionName)
         {
             throw new NotImplementedException();
         }

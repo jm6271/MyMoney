@@ -35,25 +35,25 @@ namespace MyMoney.Tests.ViewModelTests
             // Add some items
             BudgetItem income1 = new()
             {
-                Amount = new(1000),
+                Amount = new Currency(1000),
                 Category = "Income"
             };
             BudgetItem income2 = new()
             {
-                Amount = new(500),
+                Amount = new Currency(500),
                 Category = "Income 2"
             };
             
             viewModel.CurrentBudget.BudgetIncomeItems.Add(income1);
             viewModel.CurrentBudget.BudgetIncomeItems.Add(income2);
 
-            BudgetItem Expense1 = new() { Category = "Housing", Amount = new(500) };
-            BudgetItem Expense2 = new() { Category = "Food", Amount = new(200) };
-            BudgetItem Expense3 = new() { Category = "Misc", Amount = new(800) };
+            BudgetItem expense1 = new() { Category = "Housing", Amount = new(500) };
+            BudgetItem expense2 = new() { Category = "Food", Amount = new(200) };
+            BudgetItem expense3 = new() { Category = "Misc", Amount = new(800) };
 
-            viewModel.CurrentBudget.BudgetExpenseItems.Add(Expense1);
-            viewModel.CurrentBudget.BudgetExpenseItems.Add(Expense2);
-            viewModel.CurrentBudget.BudgetExpenseItems.Add(Expense3);
+            viewModel.CurrentBudget.BudgetExpenseItems.Add(expense1);
+            viewModel.CurrentBudget.BudgetExpenseItems.Add(expense2);
+            viewModel.CurrentBudget.BudgetExpenseItems.Add(expense3);
 
 
             viewModel.UpdateListViewTotals();

@@ -5,22 +5,16 @@ namespace MyMoney.Core.Database
     /// <summary>
     /// Represents the collection of budgets in the database
     /// </summary>
-    public class BudgetCollection
+    public class BudgetCollection(IDatabaseReader databaseReader)
     {
-        private const string BUDGET_COLLECTION_NAME = "Budgets";
+        private const string BudgetCollectionName = "Budgets";
 
-        private readonly List<Budget> _budgets;
-
-        public BudgetCollection(IDatabaseReader DatabaseReader) 
-        {
-            // Load budgets
-            _budgets = DatabaseReader.GetCollection<Budget>(BUDGET_COLLECTION_NAME);
-        }
+        // Load budgets
 
         /// <summary>
         /// A list of the budgets currently in the database
         /// </summary>
-        public List<Budget> Budgets { get { return _budgets; } }
+        public List<Budget> Budgets { get; } = databaseReader.GetCollection<Budget>(BudgetCollectionName);
 
         /// <summary>
         /// Get the budget for the current month
@@ -34,10 +28,9 @@ namespace MyMoney.Core.Database
                 throw new BudgetNotFoundException("No budget exists for current month");
             }
 
-            foreach (var budget in _budgets)
+            foreach (var budget in Budgets.Where(budget => budget.BudgetTitle == GetCurrentBudgetName()))
             {
-                if (budget.BudgetTitle == GetCurrentBudgetName())
-                    return budget;
+                return budget;
             }
 
             throw new BudgetNotFoundException("No budget exists for current month");
@@ -52,34 +45,23 @@ namespace MyMoney.Core.Database
             var budgetName = GetCurrentBudgetName();
 
             // search through budget collection for a budget with this name
-            foreach (var budget in _budgets)
-            {
-                if (budget.BudgetTitle == budgetName)
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            return Budgets.Any(budget => budget.BudgetTitle == budgetName);
         }
 
         /// <summary>
-        /// Get the title for this months budget. This works even if there is no budget for this month
+        /// Get the title for this month's budget. This works even if there is no budget for this month
         /// </summary>
-        /// <returns>A string with the title of this months budget</returns>
-        public static string GetCurrentBudgetName()
+        /// <returns>A string with the title of this month's budget</returns>
+        private static string GetCurrentBudgetName()
         {
             return DateTime.Today.ToString("MMMM, yyyy");
         }
 
         /// <summary>
-        /// An error that occurrs when a budget is not found
+        /// An error that occurs when a budget is not found
         /// </summary>
-        public class BudgetNotFoundException : Exception
+        private class BudgetNotFoundException(string message) : Exception(message)
         {
-            public BudgetNotFoundException() : base() { }
-            public BudgetNotFoundException(string message) : base(message) { }
-            public BudgetNotFoundException(string message, Exception innerException) : base(message, innerException) { }
         }
     }
 }

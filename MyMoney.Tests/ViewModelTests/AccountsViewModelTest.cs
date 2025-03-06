@@ -1,11 +1,6 @@
 ﻿using MyMoney.Core.FS.Models;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.ViewModels.Pages;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Wpf.Ui;
 
 namespace MyMoney.Tests.ViewModelTests
@@ -31,14 +26,14 @@ namespace MyMoney.Tests.ViewModelTests
             Account account1 = new()
             {
                 AccountName = "Account1",
-                Total = new(2000)
+                Total = new Currency(2000)
             };
             viewModel.Accounts.Add(account1);
 
             Account account2 = new()
             {
                 AccountName = "Account2",
-                Total = new(1000)
+                Total = new Currency(1000)
             };
             viewModel.Accounts.Add(account2);
 

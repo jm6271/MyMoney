@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LiveChartsCore;
+﻿using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using MyMoney.Core.Reports;
@@ -21,22 +15,22 @@ namespace MyMoney.ViewModels.Pages
         /*********************************************************************/
 
         [ObservableProperty]
-        private ISeries[] _IncomeExpense12Month_Series;
+        private ISeries[] _incomeExpense12MonthSeries;
 
         [ObservableProperty]
-        private Axis[] _IncomeExpense12Month_XAxes;
+        private Axis[] _incomeExpense12MonthXAxes;
 
         [ObservableProperty]
-        private Axis[] _IncomeExpense12Month_YAxes;
+        private Axis[] _incomeExpense12MonthYAxes;
 
         [ObservableProperty]
-        private SolidColorPaint _IncomeExpense12Month_LegendPaint;
+        private SolidColorPaint _incomeExpense12MonthLegendPaint;
 
         /*********************************************************************/
 
 
         [ObservableProperty]
-        private SKColor _ChartTextColor = new(0x33, 0x33, 0x33);
+        private SKColor _chartTextColor = new(0x33, 0x33, 0x33);
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
         public ReportsViewModel()
@@ -62,21 +56,21 @@ namespace MyMoney.ViewModels.Pages
         private void Update12MonthIncomeExpenseChart()
         {
             // Set series
-            var IncomeSeries = IncomeExpense12MonthCalculator.GetPast12MonthsIncome();
-            var ExpenseSeries = IncomeExpense12MonthCalculator.GetPast12MonthsExpenses();
+            var incomeSeries = IncomeExpense12MonthCalculator.GetPast12MonthsIncome();
+            var expenseSeries = IncomeExpense12MonthCalculator.GetPast12MonthsExpenses();
 
-            IncomeExpense12Month_Series =
+            IncomeExpense12MonthSeries =
             [
                 new ColumnSeries<double>
                 {
-                    Values = IncomeSeries,
+                    Values = incomeSeries,
                     MaxBarWidth = 25,
                     Name = "Income",
                     Fill = new SolidColorPaint(new SKColor(0x21, 0x96, 0xf3))
                 },
                 new ColumnSeries<double>
                 {
-                    Values = ExpenseSeries,
+                    Values = expenseSeries,
                     MaxBarWidth = 25,
                     Name = "Expenses",
                     Fill = new SolidColorPaint(new SKColor(0xf4, 0x43, 0x36)),
@@ -84,7 +78,7 @@ namespace MyMoney.ViewModels.Pages
             ];
 
             // Set XAxis
-            IncomeExpense12Month_XAxes =
+            IncomeExpense12MonthXAxes =
             [
                 new Axis
                 {
@@ -100,7 +94,7 @@ namespace MyMoney.ViewModels.Pages
             ];
 
             // Set YAxis
-            IncomeExpense12Month_YAxes =
+            IncomeExpense12MonthYAxes =
             [
                 new Axis
                 {
@@ -111,20 +105,15 @@ namespace MyMoney.ViewModels.Pages
             ];
 
             // Set legend color
-            IncomeExpense12Month_LegendPaint = new SolidColorPaint(ChartTextColor);
+            IncomeExpense12MonthLegendPaint = new SolidColorPaint(ChartTextColor);
 
         }
 
         private void UpdateTextColor()
         {
-            if (ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light)
-            {
-                ChartTextColor = new SKColor(0x33, 0x33, 0x33);
-            }
-            else
-            {
-                ChartTextColor = new SKColor(0xff, 0xff, 0xff);
-            }
+            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light 
+                ? new SKColor(0x33, 0x33, 0x33) 
+                : new SKColor(0xff, 0xff, 0xff);
         }
     }
 }

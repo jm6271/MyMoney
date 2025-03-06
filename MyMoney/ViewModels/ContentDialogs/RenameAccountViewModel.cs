@@ -3,6 +3,6 @@
     public partial class RenameAccountViewModel : ObservableObject
     {
         [ObservableProperty]
-        private string _NewName = string.Empty;
+        private string _newName = string.Empty;
     }
 }

@@ -9,26 +9,29 @@ namespace MyMoney.ViewModels.Windows
         private string _applicationTitle = "MyMoney";
 
         [ObservableProperty]
-        private ObservableCollection<object> _menuItems = new()
-        {
+        private ObservableCollection<object> _menuItems =
+        [
             new NavigationViewItem()
             {
                 Content = "Home",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Home24 },
                 TargetPageType = typeof(Views.Pages.DashboardPage)
             },
+
             new NavigationViewItem()
             {
                 Content = "Accounts",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.TextBulletListRtl24 },
                 TargetPageType = typeof(Views.Pages.AccountsPage)
             },
+
             new NavigationViewItem()
             {
                 Content = "Budget",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.MoneyCalculator24 },
                 TargetPageType = typeof(Views.Pages.BudgetPage)
             },
+
             new NavigationViewItem()
             {
                 Content = "Reports",
@@ -39,7 +42,7 @@ namespace MyMoney.ViewModels.Windows
                     {
                         Content = "Overview",
                         Icon = new SymbolIcon { Symbol = SymbolRegular.ChartMultiple24 },
-                        TargetPageType= typeof(Views.Pages.ReportsPage),
+                        TargetPageType = typeof(Views.Pages.ReportsPage),
                     },
                     new()
                     {
@@ -48,24 +51,22 @@ namespace MyMoney.ViewModels.Windows
                         TargetPageType = typeof(Views.Pages.ReportPages.BudgetReportsPage),
                     }
                 }
-            },
-        };
+            }
+
+        ];
 
         [ObservableProperty]
-        private ObservableCollection<object> _footerMenuItems = new()
-        {
+        private ObservableCollection<object> _footerMenuItems =
+        [
             new NavigationViewItem()
             {
                 Content = "Settings",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Settings24 },
                 TargetPageType = typeof(Views.Pages.SettingsPage)
             }
-        };
+        ];
 
         [ObservableProperty]
-        private ObservableCollection<MenuItem> _trayMenuItems = new()
-        {
-            new MenuItem { Header = "Home", Tag = "tray_home" }
-        };
+        private ObservableCollection<MenuItem> _trayMenuItems = [new MenuItem { Header = "Home", Tag = "tray_home" }];
     }
 }

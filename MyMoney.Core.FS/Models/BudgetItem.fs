@@ -7,12 +7,12 @@ type BudgetItem () =
 
     member this.Id
         with get () = _Id
-        and set (value) = _Id <- value
+        and set value = _Id <- value
 
     member this.Category
         with get () = _Category
-        and set (value) = _Category <- value
+        and set value = _Category <- value
 
     member this.Amount
         with get () = _Amount
-        and set (value) = _Amount <- value
+        and set value = _Amount <- value

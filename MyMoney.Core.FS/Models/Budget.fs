@@ -12,20 +12,20 @@ type Budget () =
 
     member this.Id
         with get () = _Id
-        and set (value) = _Id <- value
+        and set value = _Id <- value
 
     member this.BudgetTitle
         with get () = _BudgetTitle
-        and set (value) = _BudgetTitle <- value
+        and set value = _BudgetTitle <- value
 
     member this.BudgetDate
         with get () = _BudgetDate
-        and set (value) = _BudgetDate <- value
+        and set value = _BudgetDate <- value
 
     member this.BudgetIncomeItems
         with get () = _BudgetIncomeItems
-        and set (value) = _BudgetIncomeItems <- value
+        and set value = _BudgetIncomeItems <- value
 
     member this.BudgetExpenseItems
         with get () = _BudgetExpenseItems
-        and set (value) = _BudgetExpenseItems <- value
+        and set value = _BudgetExpenseItems <- value

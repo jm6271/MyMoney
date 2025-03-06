@@ -1,68 +1,66 @@
-﻿using MyMoney.ViewModels.Windows;
-using MyMoney.Views.Windows;
-using System.Collections.ObjectModel;
-using System.Windows.Input;
+﻿using System.Collections.ObjectModel;
 using MyMoney.Core.FS.Models;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
-using Wpf.Ui.Extensions;
 using MyMoney.Views.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
-using System.Linq;
 using MyMoney.Core.Database;
 
 namespace MyMoney.ViewModels.Pages
 {
     public partial class AccountsViewModel : ObservableObject
     {
-        public ObservableCollection<Account> Accounts { get; set; } = [];
+        public ObservableCollection<Account> Accounts { get; } = [];
         public ObservableCollection<Transaction> SelectedAccountTransactions => SelectedAccount?.Transactions ?? new ObservableCollection<Transaction>();
 
-        public ObservableCollection<string> CategoryNames { get; set; } = [];
+        public ObservableCollection<string> CategoryNames { get; } = [];
 
         [ObservableProperty]
-        private DateTime _NewTransactionDate = DateTime.Today;
+        private DateTime _newTransactionDate = DateTime.Today;
 
         [ObservableProperty]
-        private string _NewTransactionPayee = "";
+        private string _newTransactionPayee = "";
 
         [ObservableProperty]
-        private string _NewTransactionCategory = "";
+        private string _newTransactionCategory = "";
 
         [ObservableProperty]
-        private string _NewTransactionMemo = "";
+        private string _newTransactionMemo = "";
 
         [ObservableProperty]
-        private Currency _NewTransactionAmount = new(0m);
+        private Currency _newTransactionAmount = new(0m);
 
         [ObservableProperty]
-        private bool _NewTransactionIsExpense = true;
+        private bool _newTransactionIsExpense = true;
 
         [ObservableProperty]
-        private bool _NewTransactionIsIncome = false;
+        private bool _newTransactionIsIncome;
 
         [ObservableProperty]
-        private Account? _SelectedAccount;
+        private Account? _selectedAccount;
 
         [ObservableProperty]
-        private int _SelectedAccountIndex = 0;
+        private int _selectedAccountIndex;
 
         [ObservableProperty]
-        private Transaction? _SelectedTransaction;
+        private Transaction? _selectedTransaction;
 
         [ObservableProperty]
-        private int _SelectedTransactionIndex = -1;
+        private int _selectedTransactionIndex = -1;
 
         [ObservableProperty]
-        private string _AddTransactionButtonText = "Add Transaction";
+        private string _addTransactionButtonText = "Add Transaction";
 
         [ObservableProperty]
-        private bool _TransactionsEnabled = false;
+        private bool _transactionsEnabled;
+        
+        [ObservableProperty]
+        private bool _isInputEnabled;
 
         private readonly IContentDialogService _contentDialogService;
         private readonly IDatabaseReader _databaseReader;
 
-        public ObservableCollection<string> AutoSuggestPayees { get; set; } = [];
+        public ObservableCollection<string> AutoSuggestPayees { get; private set; } = [];
 
         public AccountsViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader)
         {
@@ -107,18 +105,15 @@ namespace MyMoney.ViewModels.Pages
         private void SortTransactions()
         {
             var sorted = SelectedAccountTransactions.OrderByDescending(p => p.Date).ToList();
-            if (sorted != null)
+            SelectedAccountTransactions.Clear();
+            foreach (var transaction in sorted)
             {
-                SelectedAccountTransactions.Clear();
-                foreach (var transaction in sorted)
-                {
-                    SelectedAccountTransactions.Add(transaction);
-                }
+                SelectedAccountTransactions.Add(transaction);
             }
         }
 
         [RelayCommand]
-        private async Task BttnNewAccount_Click()
+        private async Task CreateNewAccount()
         {
             // Show the new account dialog
             var dialogHost = _contentDialogService.GetDialogHost();
@@ -137,9 +132,11 @@ namespace MyMoney.ViewModels.Pages
             if (result == ContentDialogResult.Primary)
             {
                 // add the new account
-                Account newAccount = new();
-                newAccount.AccountName = viewModel.AccountName;
-                newAccount.Total = viewModel.StartingBalance;
+                Account newAccount = new()
+                {
+                    AccountName = viewModel.AccountName,
+                    Total = viewModel.StartingBalance
+                };
 
                 // Add to the accounts list (shows up in the accounts list view on the accounts page)
                 Accounts.Add(newAccount);
@@ -174,8 +171,8 @@ namespace MyMoney.ViewModels.Pages
 
             if (result != ContentDialogResult.Primary)
             {
-            ClearNewTransactionFields();
-            return (false, null);
+                ClearNewTransactionFields();
+                return (false, null);
             }
 
             var amount = NewTransactionAmount;
@@ -188,7 +185,7 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task BttnNewTransaction_Click()
+        private async Task CreateNewTransaction()
         {
             if (SelectedAccount == null)
             {
@@ -263,17 +260,17 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private async Task TransferBetweenAccounts()
         {
-            ObservableCollection<string> AccountNames = [];
+            ObservableCollection<string> accountNames = [];
 
             foreach (var account in Accounts)
             {
-                AccountNames.Add(account.AccountName);
+                accountNames.Add(account.AccountName);
             }
 
             var dialogHost = _contentDialogService.GetDialogHost();
             if (dialogHost == null) return;
 
-            var viewModel = new TransferDialogViewModel(AccountNames);
+            var viewModel = new TransferDialogViewModel(accountNames);
 
             var newTransferDialog = new TransferDialog(dialogHost, viewModel)
             {
@@ -294,27 +291,27 @@ namespace MyMoney.ViewModels.Pages
             // create a new transaction in each of the accounts
 
             // create FROM transaction
-            Transaction FROM = new(DateTime.Today, "Transfer to " + viewModel.TransferTo, "", new(-viewModel.Amount.Value), "Transfer");
+            Transaction from = new(DateTime.Today, "Transfer to " + viewModel.TransferTo, "", new(-viewModel.Amount.Value), "Transfer");
 
             // Create TO transaction
-            Transaction TO = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, "", viewModel.Amount, "Transfer");
+            Transaction to = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, "", viewModel.Amount, "Transfer");
 
             // Add the transactions to their accounts
-            for (int i = 0; i < Accounts.Count; i++)
+            foreach (var t in Accounts)
             {
-                if (Accounts[i].AccountName == viewModel.TransferFrom)
+                if (t.AccountName == viewModel.TransferFrom)
                 {
-                    Accounts[i].Transactions.Add(FROM);
+                    t.Transactions.Add(from);
 
                     // Update ending balance
-                    Accounts[i].Total += FROM.Amount;
+                    t.Total += from.Amount;
                 }
-                else if (Accounts[i].AccountName == viewModel.TransferTo)
+                else if (t.AccountName == viewModel.TransferTo)
                 {
-                    Accounts[i].Transactions.Add(TO);
+                    t.Transactions.Add(to);
 
                     // Update ending balance
-                    Accounts[i].Total += TO.Amount;
+                    t.Total += to.Amount;
                 }
             }
 
@@ -328,18 +325,14 @@ namespace MyMoney.ViewModels.Pages
         {
             OnPropertyChanged(nameof(SelectedAccountTransactions));
 
-            if (SelectedAccount != null) IsInputEnabled = true;
-            else IsInputEnabled = false;
+            IsInputEnabled = SelectedAccount != null;
 
             SortTransactions();
         }
 
-        [ObservableProperty]
-        private bool _IsInputEnabled = false;
-
         private void SaveAccountsToDatabase()
         {
-            Core.Database.DatabaseWriter.WriteCollection("Accounts", [.. Accounts]);
+            DatabaseWriter.WriteCollection("Accounts", [.. Accounts]);
         }
 
         [RelayCommand]
@@ -381,10 +374,7 @@ namespace MyMoney.ViewModels.Pages
 
             // Check to see if we should enable new transactions
             // Disable new transactions if there are no more accounts
-            if (Accounts.Count == 0)
-                TransactionsEnabled = false;
-            else
-                TransactionsEnabled = true;
+            TransactionsEnabled = Accounts.Count != 0;
         }
 
         [RelayCommand]
@@ -402,7 +392,7 @@ namespace MyMoney.ViewModels.Pages
                 IsSecondaryButtonEnabled = true,
                 SecondaryButtonText = "Yes",
                 CloseButtonText = "No",
-                CloseButtonAppearance = Wpf.Ui.Controls.ControlAppearance.Primary
+                CloseButtonAppearance = ControlAppearance.Primary
             };
 
             var result = await uiMessageBox.ShowDialogAsync();
@@ -412,7 +402,7 @@ namespace MyMoney.ViewModels.Pages
             Accounts.RemoveAt(SelectedAccountIndex);
 
             // Reset the IDs on the remaining accounts so they're in consecutive order
-            for (int i = 0; i < Accounts.Count; i++)
+            for (var i = 0; i < Accounts.Count; i++)
             {
                 Accounts[i].Id = i + 1; // ID starts with 1, and loop counter with 0
             }
@@ -421,10 +411,7 @@ namespace MyMoney.ViewModels.Pages
             SaveAccountsToDatabase();
 
             // Disable new transactions if there are no more accounts
-            if (Accounts.Count == 0)
-                TransactionsEnabled = false;
-            else
-                TransactionsEnabled = true;
+            TransactionsEnabled = Accounts.Count != 0;
         }
 
         [RelayCommand]

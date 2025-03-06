@@ -11,34 +11,34 @@ using Wpf.Ui.Appearance;
 
 namespace MyMoney.ViewModels.Pages.ReportPages
 {
-    public partial class BudgetReportsViewModel : ObservableObject
+    public partial class BudgetReportsViewModel(IDatabaseReader databaseReader) : ObservableObject
     {
         [ObservableProperty]
         private string _reportTitle = "Budget Report";
 
         [ObservableProperty]
-        private ObservableCollection<BudgetReportItem> _IncomeItems = [];
+        private ObservableCollection<BudgetReportItem> _incomeItems = [];
 
         [ObservableProperty]
-        private ObservableCollection<BudgetReportItem> _ExpenseItems = [];
+        private ObservableCollection<BudgetReportItem> _expenseItems = [];
 
         [ObservableProperty]
-        private Currency _ReportTotal = new(0m);
+        private Currency _reportTotal = new(0m);
 
         [ObservableProperty]
-        private ObservableCollection<Budget> _Budgets = [];
+        private ObservableCollection<Budget> _budgets = [];
 
         [ObservableProperty]
-        private Budget? _SelectedBudget = null;
+        private Budget? _selectedBudget;
 
         [ObservableProperty]
-        private int _SelectedBudgetIndex = 0;
+        private int _selectedBudgetIndex;
 
         [ObservableProperty]
-        private ISeries[] _ActualIncomeSeries = [];
+        private ISeries[] _actualIncomeSeries = [];
 
         [ObservableProperty]
-        private LabelVisual _ActualIncome_Title = new()
+        private LabelVisual _actualIncomeTitle = new()
         {
             Text = "Actual Income",
             TextSize = 25,
@@ -46,10 +46,10 @@ namespace MyMoney.ViewModels.Pages.ReportPages
         };
 
         [ObservableProperty]
-        private ISeries[] _ActualExpenseSeries = [];
+        private ISeries[] _actualExpenseSeries = [];
 
         [ObservableProperty]
-        private LabelVisual _ActualExpenses_Title = new()
+        private LabelVisual _actualExpensesTitle = new()
         {
             Text = "Actual Expenses",
             TextSize = 25,
@@ -58,13 +58,7 @@ namespace MyMoney.ViewModels.Pages.ReportPages
 
         // Colors for chart text (changes in light and dark modes)
         [ObservableProperty]
-        private SKColor _ChartTextColor = new(0x33, 0x33, 0x33);
-
-        private readonly IDatabaseReader _DatabaseReader;
-        public BudgetReportsViewModel(IDatabaseReader databaseReader)
-        {
-            _DatabaseReader = databaseReader;
-        }
+        private SKColor _chartTextColor = new(0x33, 0x33, 0x33);
 
         public void OnPageNavigatedTo()
         {
@@ -94,7 +88,7 @@ namespace MyMoney.ViewModels.Pages.ReportPages
         private void LoadBudgets()
         {
             // Read all the budgets from the database
-            BudgetCollection budgetCollection = new(_DatabaseReader);
+            BudgetCollection budgetCollection = new(databaseReader);
             ObservableCollection<Budget> unsortedBudgets = [.. budgetCollection.Budgets];
 
             // Sort the budgets
@@ -110,8 +104,8 @@ namespace MyMoney.ViewModels.Pages.ReportPages
             IncomeItems.Clear();
             ExpenseItems.Clear();
 
-            var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(date, _DatabaseReader);
-            var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(date, _DatabaseReader);
+            var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(date, databaseReader);
+            var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(date, databaseReader);
 
             foreach (var item in incomeItems)
             {
@@ -149,10 +143,10 @@ namespace MyMoney.ViewModels.Pages.ReportPages
             expenseTotal.Category = "Total";
             ExpenseItems.Add(expenseTotal);
 
-            // Calulate budget report overall total
-            Currency BudgetedTotal = incomeTotal.Budgeted - expenseTotal.Budgeted;
-            Currency ActualTotal = incomeTotal.Actual - expenseTotal.Actual;
-            ReportTotal = ActualTotal - BudgetedTotal;
+            // Calculate budget report overall total
+            var budgetedTotal = incomeTotal.Budgeted - expenseTotal.Budgeted;
+            var actualTotal = incomeTotal.Actual - expenseTotal.Actual;
+            ReportTotal = actualTotal - budgetedTotal;
         }
 
         private void UpdateCharts()
@@ -168,7 +162,7 @@ namespace MyMoney.ViewModels.Pages.ReportPages
                 return;
 
             Dictionary<string, double> incomeTotals = [];
-            for (int j = 0; j < IncomeItems.Count - 1; j++)
+            for (var j = 0; j < IncomeItems.Count - 1; j++)
             {
                 if (IncomeItems[j].Actual.Value == 0m) continue;
 
@@ -176,7 +170,7 @@ namespace MyMoney.ViewModels.Pages.ReportPages
             }
 
             ActualIncomeSeries = new ISeries[incomeTotals.Count];
-            int i = 0;
+            var i = 0;
             foreach (var item in incomeTotals)
             {
                 ActualIncomeSeries[i] = new PieSeries<double> { Values = [item.Value], Name = item.Key };
@@ -190,7 +184,7 @@ namespace MyMoney.ViewModels.Pages.ReportPages
                 return;
 
             Dictionary<string, double> expenseTotals = [];
-            for (int j = 0; j < ExpenseItems.Count - 1; j++)
+            for (var j = 0; j < ExpenseItems.Count - 1; j++)
             {
                 if (ExpenseItems[j].Actual.Value == 0m) continue;
 
@@ -198,7 +192,7 @@ namespace MyMoney.ViewModels.Pages.ReportPages
             }
 
             ActualExpenseSeries = new ISeries[expenseTotals.Count];
-            int i = 0;
+            var i = 0;
             foreach (var item in expenseTotals)
             {
                 ActualExpenseSeries[i] = new PieSeries<double> { Values = [item.Value], Name = item.Key };
@@ -208,17 +202,12 @@ namespace MyMoney.ViewModels.Pages.ReportPages
 
         private void UpdateChartsTheme()
         {
-            if (ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light)
-            {
-                ChartTextColor = new SKColor(0x33, 0x33, 0x33);
-            }
-            else
-            {
-                ChartTextColor = new SKColor(0xff, 0xff, 0xff);
-            }
+            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light 
+                ? new SKColor(0x33, 0x33, 0x33) 
+                : new SKColor(0xff, 0xff, 0xff);
 
-            ActualIncome_Title.Paint = new SolidColorPaint(ChartTextColor);
-            ActualExpenses_Title.Paint = new SolidColorPaint(ChartTextColor);
+            ActualIncomeTitle.Paint = new SolidColorPaint(ChartTextColor);
+            ActualExpensesTitle.Paint = new SolidColorPaint(ChartTextColor);
         }
     }
 }

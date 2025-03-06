@@ -17,33 +17,33 @@ namespace MyMoney.ViewModels.Pages
 {
     public partial class BudgetViewModel : ObservableObject
     {
-        public ObservableCollection<Budget> Budgets { get; set; } = [];
+        private ObservableCollection<Budget> Budgets { get; } = [];
 
         // Collections for different groups of budgets
-        public ObservableCollection<Budget> OldBudgets { get; set; } = [];
-        public ObservableCollection<Budget> CurrentBudgets { get; set; } = [];
-        public ObservableCollection<Budget> FutureBudgets { get; set; } = [];
+        public ObservableCollection<Budget> OldBudgets { get; } = [];
+        public ObservableCollection<Budget> CurrentBudgets { get; } = [];
+        public ObservableCollection<Budget> FutureBudgets { get; } = [];
 
         [ObservableProperty]
-        private int _OldBudgetsSelectedIndex = -1;
+        private int _oldBudgetsSelectedIndex = -1;
 
         [ObservableProperty]
-        private int _CurrentBudgetsSelectedIndex = -1;
+        private int _currentBudgetsSelectedIndex = -1;
 
         [ObservableProperty]
-        private int _FutureBudgetsSelectedIndex = -1;
+        private int _futureBudgetsSelectedIndex = -1;
 
         [ObservableProperty]
-        private Budget? _CurrentBudget = null;
+        private Budget? _currentBudget;
 
         [ObservableProperty]
-        private ISeries[] _IncomePercentagesSeries  = [];
+        private ISeries[] _incomePercentagesSeries  = [];
 
         [ObservableProperty]
-        private ISeries[] _ExpensePercentagesSeries  = [];
+        private ISeries[] _expensePercentagesSeries  = [];
 
         [ObservableProperty]
-        private LabelVisual _IncomePercentages_Title = new LabelVisual
+        private LabelVisual _incomePercentagesTitle = new()
         {
             Text = "Income",
             TextSize = 25,
@@ -51,7 +51,7 @@ namespace MyMoney.ViewModels.Pages
         };
 
         [ObservableProperty]
-        private LabelVisual _ExpensePercentages_Title = new LabelVisual
+        private LabelVisual _expensePercentagesTitle = new()
         {
             Text = "Expenses",
             TextSize = 25,
@@ -60,67 +60,76 @@ namespace MyMoney.ViewModels.Pages
 
         // Colors for chart text (changes in light and dark modes)
         [ObservableProperty]
-        private SKColor _ChartTextColor = new(0x33, 0x33, 0x33);
+        private SKColor _chartTextColor = new(0x33, 0x33, 0x33);
 
         [ObservableProperty]
-        private int _IncomeItemsSelectedIndex = 0;
+        private int _incomeItemsSelectedIndex;
 
         [ObservableProperty]
-        private int _ExpenseItemsSelectedIndex = 0;
+        private int _expenseItemsSelectedIndex;
 
         [ObservableProperty]
-        private Currency _IncomeTotal = new(0m);
+        private Currency _incomeTotal = new(0m);
 
         [ObservableProperty]
-        private Currency _ExpenseTotal = new(0m);
+        private Currency _expenseTotal = new(0m);
 
         [ObservableProperty]
-        private decimal _ExpensePercentTotal = 0;
+        private decimal _expensePercentTotal;
 
         [ObservableProperty]
-        private bool _IsEditingEnabled = true;
+        private bool _isEditingEnabled = true;
 
         // Content dialog service
-        private IContentDialogService _contentDialogService;
+        private readonly IContentDialogService _contentDialogService;
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
 
-            if (e.PropertyName == nameof(OldBudgetsSelectedIndex) && OldBudgetsSelectedIndex != -1)
+            switch (e.PropertyName)
             {
-                CurrentBudgetsSelectedIndex = -1;
-                FutureBudgetsSelectedIndex = -1;
-
-                // Find this budget in the budgets collection and load it
-                var index = FindBudgetIndex(OldBudgets[OldBudgetsSelectedIndex].BudgetTitle);
-                if (index != -1)
+                case nameof(OldBudgetsSelectedIndex) when OldBudgetsSelectedIndex != -1:
                 {
-                    LoadBudget(index);
+                    CurrentBudgetsSelectedIndex = -1;
+                    FutureBudgetsSelectedIndex = -1;
+
+                    // Find this budget in the budgets collection and load it
+                    var index = FindBudgetIndex(OldBudgets[OldBudgetsSelectedIndex].BudgetTitle);
+                    if (index != -1)
+                    {
+                        LoadBudget(index);
+                    }
+
+                    break;
                 }
-            }
-            else if (e.PropertyName == nameof(CurrentBudgetsSelectedIndex) && CurrentBudgetsSelectedIndex != -1)
-            {
-                OldBudgetsSelectedIndex = -1;
-                FutureBudgetsSelectedIndex = -1;
-
-                // Find this budget in the budgets collection and load it
-                var index = FindBudgetIndex(CurrentBudgets[CurrentBudgetsSelectedIndex].BudgetTitle);
-                if (index != -1)
+                case nameof(CurrentBudgetsSelectedIndex) when CurrentBudgetsSelectedIndex != -1:
                 {
-                    LoadBudget(index);
+                    OldBudgetsSelectedIndex = -1;
+                    FutureBudgetsSelectedIndex = -1;
+
+                    // Find this budget in the budgets collection and load it
+                    var index = FindBudgetIndex(CurrentBudgets[CurrentBudgetsSelectedIndex].BudgetTitle);
+                    if (index != -1)
+                    {
+                        LoadBudget(index);
+                    }
+
+                    break;
                 }
-            }
-            else if (e.PropertyName == nameof(FutureBudgetsSelectedIndex) && FutureBudgetsSelectedIndex != -1)
-            {
-                OldBudgetsSelectedIndex = -1;
-                CurrentBudgetsSelectedIndex = -1;
-
-                // Find this budget in the budgets collection and load it
-                var index = FindBudgetIndex(FutureBudgets[FutureBudgetsSelectedIndex].BudgetTitle);
-                if (index != -1)
+                case nameof(FutureBudgetsSelectedIndex) when FutureBudgetsSelectedIndex != -1:
                 {
-                    LoadBudget(index);
+                    OldBudgetsSelectedIndex = -1;
+                    CurrentBudgetsSelectedIndex = -1;
+
+                    // Find this budget in the budgets collection and load it
+                    var index = FindBudgetIndex(FutureBudgets[FutureBudgetsSelectedIndex].BudgetTitle);
+                    if (index != -1)
+                    {
+                        LoadBudget(index);
+                    }
+
+                    break;
                 }
             }
         }
@@ -131,20 +140,17 @@ namespace MyMoney.ViewModels.Pages
 
             var budgetCollection = databaseReader.GetCollection<Budget>("Budgets");
 
-            foreach (var budget in budgetCollection)
+            foreach (var budget in budgetCollection.OfType<Budget>())
             {
-                if (budget != null)
-                {
-                    Budgets.Add(budget);
-                }
+                Budgets.Add(budget);
             }
 
             // figure out which budget is there for the current month and display it
             // Budgets are stored with a key that is the month name, followed by the year
 
             // look for current month
-            DateTime dt = DateTime.Now;
-            string key = dt.ToString("MMMM, yyyy", CultureInfo.InvariantCulture);
+            var dt = DateTime.Now;
+            var key = dt.ToString("MMMM, yyyy", CultureInfo.InvariantCulture);
 
             foreach (var budget in Budgets)
             {
@@ -255,7 +261,7 @@ namespace MyMoney.ViewModels.Pages
             }
 
             IncomePercentagesSeries = new ISeries[incomeTotals.Count];
-            int i = 0;
+            var i = 0;
             foreach (var item in incomeTotals)
             {
                 IncomePercentagesSeries[i] = new PieSeries<double> { Values = [item.Value], Name = item.Key };
@@ -282,17 +288,10 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateChartTheme()
         {
-            if (ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light)
-            {
-                ChartTextColor = new SKColor(0x33, 0x33, 0x33);
-            }
-            else
-            {
-                ChartTextColor = new SKColor(0xff, 0xff, 0xff);
-            }
+            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light ? new SKColor(0x33, 0x33, 0x33) : new SKColor(0xff, 0xff, 0xff);
 
-            IncomePercentages_Title.Paint = new SolidColorPaint(ChartTextColor);
-            ExpensePercentages_Title.Paint = new SolidColorPaint(ChartTextColor);
+            IncomePercentagesTitle.Paint = new SolidColorPaint(ChartTextColor);
+            ExpensePercentagesTitle.Paint = new SolidColorPaint(ChartTextColor);
         }
 
         [RelayCommand]
@@ -460,8 +459,8 @@ namespace MyMoney.ViewModels.Pages
             if (CurrentBudget == null) return;
             CurrentBudget.BudgetIncomeItems.RemoveAt(IncomeItemsSelectedIndex);
 
-            // replace the id property of the remaining elements so the IDs are in a concecutive order (We have all kinds of problems when we don't do this)
-            for (int i = 0; i < CurrentBudget.BudgetIncomeItems.Count; i++)
+            // replace the id property of the remaining elements so the IDs are in a consecutive order (We have all kinds of problems when we don't do this)
+            for (var i = 0; i < CurrentBudget.BudgetIncomeItems.Count; i++)
             {
                 CurrentBudget.BudgetIncomeItems[i].Id = i + 1;
             }
@@ -545,7 +544,7 @@ namespace MyMoney.ViewModels.Pages
             if (CurrentBudget == null) return;
             CurrentBudget.BudgetExpenseItems.RemoveAt(ExpenseItemsSelectedIndex);
 
-            // replace the id property of the remaining elements so the IDs are in a concecutive order (We have all kinds of problems when we don't do this)
+            // replace the id property of the remaining elements so the IDs are in a consecutive order (We have all kinds of problems when we don't do this)
             for (int i = 0; i < CurrentBudget.BudgetExpenseItems.Count; i++)
             {
                 CurrentBudget.BudgetExpenseItems[i].Id = i + 1;
@@ -600,7 +599,7 @@ namespace MyMoney.ViewModels.Pages
             // Add a budget
             Budget newBudget = new();
 
-            string budgetTitle = viewModel.SelectedDate;
+            var budgetTitle = viewModel.SelectedDate;
             newBudget.BudgetTitle = budgetTitle;
             newBudget.BudgetDate = Convert.ToDateTime(budgetTitle);
 
@@ -627,25 +626,23 @@ namespace MyMoney.ViewModels.Pages
             // Set as current budget
             foreach (var item in Budgets)
             {
-                if (item.BudgetTitle == budgetTitle)
-                {
-                    CurrentBudget = item;
+                if (item.BudgetTitle != budgetTitle) continue;
+                CurrentBudget = item;
 
-                    // Select listview item for this budget item
-                    if (item.BudgetDate.Month == DateTime.Now.Month)
-                    {
-                        CurrentBudgetsSelectedIndex = 0;
-                        OldBudgetsSelectedIndex = -1;
-                        FutureBudgetsSelectedIndex = -1;
-                    }
-                    else
-                    {
-                        CurrentBudgetsSelectedIndex = -1;
-                        OldBudgetsSelectedIndex = -1;
-                        FutureBudgetsSelectedIndex = 0;
-                    }
-                    break;
+                // Select listview item for this budget item
+                if (item.BudgetDate.Month == DateTime.Now.Month)
+                {
+                    CurrentBudgetsSelectedIndex = 0;
+                    OldBudgetsSelectedIndex = -1;
+                    FutureBudgetsSelectedIndex = -1;
                 }
+                else
+                {
+                    CurrentBudgetsSelectedIndex = -1;
+                    OldBudgetsSelectedIndex = -1;
+                    FutureBudgetsSelectedIndex = 0;
+                }
+                break;
             }
         }
 
@@ -654,19 +651,16 @@ namespace MyMoney.ViewModels.Pages
             // Load into current budget
             CurrentBudget = Budgets[index];
 
-            if (CurrentBudget.BudgetDate <= DateTime.Now.AddMonths(-1))
-                IsEditingEnabled = false;
-            else
-                IsEditingEnabled = true;
+            IsEditingEnabled = CurrentBudget.BudgetDate > DateTime.Now.AddMonths(-1);
 
             UpdateCharts();
         }
 
-        private int FindBudgetIndex(string BudgetName)
+        private int FindBudgetIndex(string budgetName)
         {
-            for (int i = 0; i < Budgets.Count; i++)
+            for (var i = 0; i < Budgets.Count; i++)
             {
-                if (Budgets[i].BudgetTitle == BudgetName)
+                if (Budgets[i].BudgetTitle == budgetName)
                 {
                     return i;
                 }

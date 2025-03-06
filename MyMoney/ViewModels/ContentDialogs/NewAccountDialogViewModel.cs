@@ -5,9 +5,9 @@ namespace MyMoney.ViewModels.ContentDialogs
     public partial class NewAccountDialogViewModel : ObservableObject
     {
         [ObservableProperty]
-        private string _AccountName = "";
+        private string _accountName = "";
 
         [ObservableProperty]
-        private Currency _StartingBalance = new(0m);
+        private Currency _startingBalance = new(0m);
     }
 }

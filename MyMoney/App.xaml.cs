@@ -29,7 +29,9 @@ namespace MyMoney
         // https://docs.microsoft.com/dotnet/core/extensions/logging
         private static readonly IHost _host = Host
             .CreateDefaultBuilder()
-            .ConfigureAppConfiguration(c => { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)); })
+            .ConfigureAppConfiguration(c => 
+                { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) 
+                                ?? throw new InvalidOperationException()); })
             .ConfigureServices((context, services) =>
             {
                 services.AddHostedService<ApplicationHostService>();
@@ -81,7 +83,7 @@ namespace MyMoney
         public static T GetService<T>()
             where T : class
         {
-            return _host.Services.GetService(typeof(T)) as T;
+            return _host.Services.GetService(typeof(T)) as T ?? throw new InvalidOperationException();
         }
 
         /// <summary>

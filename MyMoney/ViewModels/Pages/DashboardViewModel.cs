@@ -24,34 +24,34 @@ namespace MyMoney.ViewModels.Pages
         private double _expenses;
 
         [ObservableProperty]
-        private ISeries[] _Series;
+        private ISeries[] _series;
 
         // Widths for budget report gridview columns
         [ObservableProperty]
-        private int _CategoryColumnWidth = 200;
+        private int _categoryColumnWidth = 200;
 
         [ObservableProperty]
-        private int _BudgetedColumnWidth = 100;
+        private int _budgetedColumnWidth = 100;
 
         [ObservableProperty]
-        private int _ActualColumnWidth = 100;
+        private int _actualColumnWidth = 100;
 
         [ObservableProperty]
-        private int _DifferenceColumnWidth = 100;
+        private int _differenceColumnWidth = 100;
 
         [ObservableProperty]
-        private Currency _DifferenceTotal = new(0m);
+        private Currency _differenceTotal = new(0m);
 
         // Axis for the chart
         [ObservableProperty]
-        private Axis[] _XAxes  =
+        private Axis[] _xAxes  =
         [
-        new Axis
+        new ()
         {
             Labels = ["Income", "Expenses"],
             LabelsRotation = 0,
             TicksAtCenter = true,
-            // By default the axis tries to optimize the number of 
+            // By default, the axis tries to optimize the number of 
             // labels to fit the available space, 
             // when you need to force the axis to show all the labels then you must: 
             ForceStepToMin = true,
@@ -60,9 +60,9 @@ namespace MyMoney.ViewModels.Pages
         ];
 
         [ObservableProperty]
-        private Axis[] _YAxes =
+        private Axis[] _yAxes =
         [
-            new Axis
+            new ()
             {
                 Name = "Amount"
             }
@@ -70,7 +70,7 @@ namespace MyMoney.ViewModels.Pages
 
         // Chart title
         [ObservableProperty]
-        private LabelVisual _ChartTitle = new LabelVisual
+        private LabelVisual _chartTitle = new()
         {
             Text = "Income vs. Expenses",
             TextSize = 25,
@@ -79,15 +79,15 @@ namespace MyMoney.ViewModels.Pages
 
         // Colors for text (changes in light and dark modes)
         [ObservableProperty]
-        private SKColor _ChartTextColor = new(0x33, 0x33, 0x33);
+        private SKColor _chartTextColor = new(0x33, 0x33, 0x33);
 
         // Service for reading from the database
-        IDatabaseReader databaseReader;
+        readonly IDatabaseReader _databaseReader;
 
         public DashboardViewModel(IDatabaseReader databaseReader)
         {
             Series = UpdateChartSeries();
-            this.databaseReader = databaseReader;
+            _databaseReader = databaseReader;
         }
 
         private void CalculateBudgetReport()
@@ -96,8 +96,8 @@ namespace MyMoney.ViewModels.Pages
             BudgetReportIncomeItems.Clear();
             BudgetReportExpenseItems.Clear();
 
-            var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(databaseReader);
-            var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(databaseReader);
+            var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(_databaseReader);
+            var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(_databaseReader);
 
             foreach (var item in incomeItems)
             {
@@ -137,10 +137,10 @@ namespace MyMoney.ViewModels.Pages
             BudgetReportExpenseItems.Add(expenseTotal);
             Expenses = (double)expenseTotal.Actual.Value;
 
-            // Calulate budget report overall total
-            Currency BudgetedTotal = incomeTotal.Budgeted - expenseTotal.Budgeted;
-            Currency ActualTotal = incomeTotal.Actual - expenseTotal.Actual;
-            DifferenceTotal = ActualTotal - BudgetedTotal;
+            // Calculate budget report overall total
+            var budgetedTotal = incomeTotal.Budgeted - expenseTotal.Budgeted;
+            var actualTotal = incomeTotal.Actual - expenseTotal.Actual;
+            DifferenceTotal = actualTotal - budgetedTotal;
 
 
             // update the chart series
@@ -153,14 +153,9 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateChartTheme()
         {
-            if (ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light)
-            {
-                ChartTextColor = new SKColor(0x33, 0x33, 0x33);
-            }
-            else
-            {
-                ChartTextColor = new SKColor(0xff, 0xff, 0xff);
-            }
+            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light 
+                ? new SKColor(0x33, 0x33, 0x33) 
+                : new SKColor(0xff, 0xff, 0xff);
 
             XAxes[0].LabelsPaint = new SolidColorPaint(ChartTextColor);
             YAxes[0].LabelsPaint = new SolidColorPaint(ChartTextColor);
@@ -170,11 +165,11 @@ namespace MyMoney.ViewModels.Pages
 
         private ISeries[] UpdateChartSeries()
         {
-            var AccentColor = ApplicationAccentColorManager.GetColorizationColor();
+            var accentColor = ApplicationAccentColorManager.GetColorizationColor();
             ISeries[] s = [new ColumnSeries<double>()
             {
                 Values = [Income, Expenses],
-                Fill = new SolidColorPaint(new SKColor(AccentColor.R, AccentColor.G, AccentColor.B)),
+                Fill = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B)),
                 Stroke = null,
             }];
             return s;
@@ -185,17 +180,18 @@ namespace MyMoney.ViewModels.Pages
             // Reload information from the database
             Accounts.Clear();
 
-            var lst = databaseReader.GetCollection<Account>("Accounts");
+            var lst = _databaseReader.GetCollection<Account>("Accounts");
 
-            foreach (var item in lst)
+            foreach (var accountDisplayItem in lst.Select(AccountDashboardDisplayItem.FromAccount))
             {
-                var accountDisplayItem = AccountDashboardDisplayItem.FromAccount(item);
                 Accounts.Add(accountDisplayItem);
             }
 
             // add an item displaying the total as the last item in the list
-            AccountDashboardDisplayItem totalItem = new();
-            totalItem.AccountName = "Total";
+            AccountDashboardDisplayItem totalItem = new()
+            {
+                AccountName = "Total"
+            };
             foreach (var account in Accounts)
             {
                 totalItem.Total += account.Total;
