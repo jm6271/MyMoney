@@ -79,7 +79,7 @@
                         <ColumnDefinition Width="{Binding CategoryColumnWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="{Binding BudgetedColumnWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                         <ColumnDefinition Width="{Binding ActualColumnWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <ColumnDefinition Width="{Binding DifferenceColumnWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="{Binding RemainingColumnWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     </Grid.ColumnDefinitions>
 
                     <ui:TextBlock Grid.Column="0" FontTypography="BodyStrong" FontWeight="Bold">Remaining</ui:TextBlock>
