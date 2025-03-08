@@ -31,13 +31,18 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="1*"/>
+            </Grid.RowDefinitions>
+
             <Controls:BudgetReportControl   Grid.Column="0" Margin="0,0,8,24"
                                             IncomeItems="{Binding ViewModel.BudgetReportIncomeItems}"
                                             ExpenseItems="{Binding ViewModel.BudgetReportExpenseItems}"
                                             ReportTotal="{Binding ViewModel.DifferenceTotal}"/>
 
-            <StackPanel Grid.Column="1" Margin="11,0,0,0">
-                <ui:Card Margin="0,0,0,24">
+            <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="8,0,0,0">
+                <ui:Card Margin="0,0,0,8">
                     <StackPanel>
                         <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,16">
                             <Run Text="Accounts"/>
@@ -59,7 +64,7 @@
                         </ui:ListView>
                     </StackPanel>
                 </ui:Card>
-                <ui:Card Margin="0,0,0,24">
+                <ui:Card Margin="0,8,0,24">
                     <lvc:CartesianChart x:Name="IncomeExpenseChart" Height="350" Series="{Binding ViewModel.Series}" 
                                         XAxes="{Binding ViewModel.XAxes}" YAxes="{Binding ViewModel.YAxes}"
                                         Title="{Binding ViewModel.ChartTitle}"></lvc:CartesianChart>
