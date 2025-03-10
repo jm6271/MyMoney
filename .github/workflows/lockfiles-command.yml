@@ -2,6 +2,9 @@ name: Update lockfiles
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   lockfiles:
     runs-on: windows-latest
