@@ -126,8 +126,7 @@ namespace MyMoney.ViewModels.Pages
                 PrimaryButtonText = "OK",
                 CloseButtonText = "Cancel",
             };
-
-            var result = await newTransactionDialog.ShowAsync();
+            var result = await _contentDialogService.ShowAsync(newTransactionDialog, CancellationToken.None);
 
             if (result == ContentDialogResult.Primary)
             {

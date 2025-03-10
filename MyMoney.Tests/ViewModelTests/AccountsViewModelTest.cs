@@ -2,6 +2,8 @@
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.ViewModels.Pages;
 using Wpf.Ui;
+using Moq;
+using MyMoney.Views.ContentDialogs;
 
 namespace MyMoney.Tests.ViewModelTests
 {
@@ -9,13 +11,24 @@ namespace MyMoney.Tests.ViewModelTests
     public class AccountsViewModelTest
     {
         [TestMethod]
-        public void Test_NoAccountsLoadedByDefault()
+        public void Test_NewAccount()
         {
-            AccountsViewModel viewModel = new(new ContentDialogService(), new Services.MockDatabaseReader());
+            // Create a mock database object
+            var mockDatabaseService = new Mock<Core.Database.IDatabaseReader>();
+            mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts")).Returns([]);
 
-            Assert.AreEqual(0, viewModel.Accounts.Count);
-            Assert.AreEqual(0, viewModel.CategoryNames.Count);
+            // Create a mock content dialog service
+            var mockContentDialogService = new Mock<IContentDialogService>();
+            mockContentDialogService.Setup(service => service.GetDialogHost()).Returns(new System.Windows.Controls.ContentPresenter());
+            mockContentDialogService.Setup(service => service.ShowAsync(It.IsAny<NewAccountDialog>(), It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Wpf.Ui.Controls.ContentDialogResult.Primary);
+
+            AccountsViewModel viewModel = new(mockContentDialogService.Object, mockDatabaseService.Object);
+            viewModel.CreateNewAccountCommand.Execute(null);
+
+            Assert.AreEqual(1, viewModel.Accounts.Count);
         }
+
 
         [TestMethod]
         public void Test_Transfer()
