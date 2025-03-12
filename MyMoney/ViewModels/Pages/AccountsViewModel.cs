@@ -65,11 +65,11 @@ namespace MyMoney.ViewModels.Pages
         public ObservableCollection<string> AutoSuggestPayees { get; private set; } = [];
 
         public AccountsViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader, 
-            INewAccountDialogService newAcccountDialogService)
+            INewAccountDialogService newAccountDialogService)
         {
             _contentDialogService = contentDialogService;
             _databaseReader = databaseReader;
-            _newAccountDialogService = newAcccountDialogService;
+            _newAccountDialogService = newAccountDialogService;
 
             var a = _databaseReader.GetCollection<Account>("Accounts");
 
@@ -119,19 +119,6 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private async Task CreateNewAccount()
         {
-            //// Show the new account dialog
-            //var dialogHost = _contentDialogService.GetDialogHost();
-            //if (dialogHost == null) return;
-
-            //var viewModel = new NewAccountDialogViewModel();
-
-            //var newTransactionDialog = new NewAccountDialog(dialogHost, viewModel)
-            //{
-            //    PrimaryButtonText = "OK",
-            //    CloseButtonText = "Cancel",
-            //};
-            //var result = await _contentDialogService.ShowAsync(newTransactionDialog, CancellationToken.None);
-
             var viewModel = new NewAccountDialogViewModel();
             _newAccountDialogService.SetViewModel(viewModel);
             var result = await _newAccountDialogService.ShowDialogAsync(_contentDialogService);
