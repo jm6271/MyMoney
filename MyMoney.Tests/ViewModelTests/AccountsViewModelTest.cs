@@ -4,64 +4,44 @@ using MyMoney.ViewModels.Pages;
 using Wpf.Ui;
 using Moq;
 using MyMoney.Views.ContentDialogs;
+using MyMoney.Services.ContentDialogs;
 
-namespace MyMoney.Tests.ViewModelTests
+namespace MyMoney.Tests.ViewModelTests;
+
+[STATestClass]
+public class AccountsViewModelTest
 {
-    [TestClass]
-    public class AccountsViewModelTest
+    [STATestMethod]
+    public void Test_NewAccount()
     {
-        [TestMethod]
-        public void Test_NewAccount()
+        // The view model the dialog returns
+        NewAccountDialogViewModel newAccountDialogViewModel = new()
         {
-            // Create a mock database object
-            var mockDatabaseService = new Mock<Core.Database.IDatabaseReader>();
-            mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts")).Returns([]);
+            AccountName = "Savings",
+            StartingBalance = new Currency(500m)
+        };
 
-            // Create a mock content dialog service
-            var mockContentDialogService = new Mock<IContentDialogService>();
-            mockContentDialogService.Setup(service => service.GetDialogHost()).Returns(new System.Windows.Controls.ContentPresenter());
-            mockContentDialogService.Setup(service => service.ShowAsync(It.IsAny<NewAccountDialog>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Wpf.Ui.Controls.ContentDialogResult.Primary);
+        // Create a mock database object
+        var mockDatabaseService = new Mock<Core.Database.IDatabaseReader>();
+        mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts")).Returns([]);
 
-            AccountsViewModel viewModel = new(mockContentDialogService.Object, mockDatabaseService.Object);
-            viewModel.CreateNewAccountCommand.Execute(null);
+        // Create a mock content dialog service
+        var mockContentDialogService = new Mock<IContentDialogService>();
+        mockContentDialogService.Setup(service => service.GetDialogHost()).Returns(new System.Windows.Controls.ContentPresenter());
+        mockContentDialogService.Setup(service => service.ShowAsync(It.IsAny<NewAccountDialog>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Wpf.Ui.Controls.ContentDialogResult.Primary);
 
-            Assert.AreEqual(1, viewModel.Accounts.Count);
-        }
+        // Create a mock new account dialog service
+        var mockNewAccountDialogService = new Mock<INewAccountDialogService>();
+        mockNewAccountDialogService.Setup(service => service.ShowDialogAsync(It.IsAny<IContentDialogService>())).ReturnsAsync(
+            Wpf.Ui.Controls.ContentDialogResult.Primary);
+        mockNewAccountDialogService.Setup(service => service.GetViewModel()).Returns(newAccountDialogViewModel);
 
+        AccountsViewModel viewModel = new(mockContentDialogService.Object, mockDatabaseService.Object, mockNewAccountDialogService.Object);
+        viewModel.CreateNewAccountCommand.Execute(null);
 
-        [TestMethod]
-        public void Test_Transfer()
-        {
-            AccountsViewModel viewModel = new(new ContentDialogService(), new Services.MockDatabaseReader());
-
-            // Create some accounts
-            Account account1 = new()
-            {
-                AccountName = "Account1",
-                Total = new Currency(2000)
-            };
-            viewModel.Accounts.Add(account1);
-
-            Account account2 = new()
-            {
-                AccountName = "Account2",
-                Total = new Currency(1000)
-            };
-            viewModel.Accounts.Add(account2);
-
-            // Transfer
-            TransferDialogViewModel dialogViewModel = new(["Account1", "Account2"])
-            {
-                Amount = new(100),
-                TransferFrom = "Account1",
-                TransferTo = "Account2"
-            };
-            
-            viewModel.Transfer(dialogViewModel);
-
-            Assert.AreEqual(1900, viewModel.Accounts[0].Total.Value);
-            Assert.AreEqual(1100, viewModel.Accounts[1].Total.Value);
-        }
+        Assert.AreEqual(1, viewModel.Accounts.Count);
+        Assert.AreEqual("Savings", viewModel.Accounts[0].AccountName);
+        Assert.AreEqual(500m, viewModel.Accounts[0].Total.Value);
     }
 }

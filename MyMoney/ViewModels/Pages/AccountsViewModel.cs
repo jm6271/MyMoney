@@ -5,6 +5,7 @@ using Wpf.Ui.Controls;
 using MyMoney.Views.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Core.Database;
+using MyMoney.Services.ContentDialogs;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -59,13 +60,16 @@ namespace MyMoney.ViewModels.Pages
 
         private readonly IContentDialogService _contentDialogService;
         private readonly IDatabaseReader _databaseReader;
+        private readonly INewAccountDialogService _newAccountDialogService;
 
         public ObservableCollection<string> AutoSuggestPayees { get; private set; } = [];
 
-        public AccountsViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader)
+        public AccountsViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader, 
+            INewAccountDialogService newAcccountDialogService)
         {
             _contentDialogService = contentDialogService;
             _databaseReader = databaseReader;
+            _newAccountDialogService = newAcccountDialogService;
 
             var a = _databaseReader.GetCollection<Account>("Accounts");
 
@@ -115,18 +119,23 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private async Task CreateNewAccount()
         {
-            // Show the new account dialog
-            var dialogHost = _contentDialogService.GetDialogHost();
-            if (dialogHost == null) return;
+            //// Show the new account dialog
+            //var dialogHost = _contentDialogService.GetDialogHost();
+            //if (dialogHost == null) return;
+
+            //var viewModel = new NewAccountDialogViewModel();
+
+            //var newTransactionDialog = new NewAccountDialog(dialogHost, viewModel)
+            //{
+            //    PrimaryButtonText = "OK",
+            //    CloseButtonText = "Cancel",
+            //};
+            //var result = await _contentDialogService.ShowAsync(newTransactionDialog, CancellationToken.None);
 
             var viewModel = new NewAccountDialogViewModel();
-
-            var newTransactionDialog = new NewAccountDialog(dialogHost, viewModel)
-            {
-                PrimaryButtonText = "OK",
-                CloseButtonText = "Cancel",
-            };
-            var result = await _contentDialogService.ShowAsync(newTransactionDialog, CancellationToken.None);
+            _newAccountDialogService.SetViewModel(viewModel);
+            var result = await _newAccountDialogService.ShowDialogAsync(_contentDialogService);
+            viewModel = _newAccountDialogService.GetViewModel();
 
             if (result == ContentDialogResult.Primary)
             {
