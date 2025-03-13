@@ -21,6 +21,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         private Mock<INewAccountDialogService> _mockNewAccountDialogService;
         private Mock<ITransferDialogService> _mockTransferDialogService;
         private Mock<ITransactionDialogService> _mockTransactionDialogService;
+        private Mock<IRenameAccountDialogService> _mockRenameAccountDialogService;
         private MyMoney.ViewModels.Pages.AccountsViewModel _viewModel;
 
         [TestInitialize]
@@ -31,6 +32,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _mockNewAccountDialogService = new Mock<INewAccountDialogService>();
             _mockTransferDialogService = new Mock<ITransferDialogService>();
             _mockTransactionDialogService = new Mock<ITransactionDialogService>();
+            _mockRenameAccountDialogService = new Mock<IRenameAccountDialogService>();
 
             // Set up empty accounts collection in database reader
             _mockDatabaseReader.Setup(x => x.GetCollection<Account>("Accounts"))
@@ -41,7 +43,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
                 _mockDatabaseReader.Object,
                 _mockNewAccountDialogService.Object,
                 _mockTransferDialogService.Object,
-                _mockTransactionDialogService.Object
+                _mockTransactionDialogService.Object,
+                _mockRenameAccountDialogService.Object
             );
         }
 

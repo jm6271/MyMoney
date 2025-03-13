@@ -42,16 +42,18 @@ namespace MyMoney.ViewModels.Pages
         private readonly INewAccountDialogService _newAccountDialogService;
         private readonly ITransferDialogService _transferDialogService;
         private readonly ITransactionDialogService _transactionDialogService;
+        private readonly IRenameAccountDialogService _renameAccountDialogService;
 
         public AccountsViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader, 
             INewAccountDialogService newAccountDialogService, ITransferDialogService transferDialogService,
-            ITransactionDialogService transactionDialogService)
+            ITransactionDialogService transactionDialogService, IRenameAccountDialogService renameAccountDialogService)
         {
             _contentDialogService = contentDialogService;
             _databaseReader = databaseReader;
             _newAccountDialogService = newAccountDialogService;
             _transferDialogService = transferDialogService;
             _transactionDialogService = transactionDialogService;
+            _renameAccountDialogService = renameAccountDialogService;
 
             var a = _databaseReader.GetCollection<Account>("Accounts");
 
@@ -360,20 +362,14 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private async Task RenameAccount(object content)
         {
-            var dialogHost = _contentDialogService.GetDialogHost();
-            if (dialogHost == null) return;
-
             RenameAccountViewModel renameViewModel = new()
             {
                 NewName = Accounts[SelectedAccountIndex].AccountName
             };
 
-            var renameContentDialog = new RenameAccountDialog(dialogHost, renameViewModel)
-            {
-                PrimaryButtonText = "Rename",
-                CloseButtonText = "Cancel",
-            };
-            var result = await renameContentDialog.ShowAsync();
+            _renameAccountDialogService.SetViewModel(renameViewModel);
+            var result = await _renameAccountDialogService.ShowDialogAsync(_contentDialogService);
+            renameViewModel = _renameAccountDialogService.GetViewModel();
 
             if (result == ContentDialogResult.Primary)
             {

@@ -18,6 +18,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         private Mock<INewAccountDialogService> _accountDialogService;
         private Mock<ITransferDialogService> _transferDialogService;
         private Mock<ITransactionDialogService> _transactionDialogService;
+        private Mock<IRenameAccountDialogService> _renameAccountDialogService;
         private MyMoney.ViewModels.Pages.AccountsViewModel _viewModel;
 
         [TestInitialize]
@@ -28,6 +29,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _accountDialogService = new Mock<INewAccountDialogService>();
             _transferDialogService = new Mock<ITransferDialogService>();
             _transactionDialogService = new Mock<ITransactionDialogService>();
+            _renameAccountDialogService = new Mock<IRenameAccountDialogService>();
 
             _databaseReader.Setup(x => x.GetCollection<Account>("Accounts"))
                 .Returns([]);
@@ -37,7 +39,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
                 _databaseReader.Object,
                 _accountDialogService.Object,
                 _transferDialogService.Object,
-                _transactionDialogService.Object
+                _transactionDialogService.Object,
+                _renameAccountDialogService.Object
             );
         }
 
