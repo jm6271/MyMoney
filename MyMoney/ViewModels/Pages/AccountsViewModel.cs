@@ -41,14 +41,17 @@ namespace MyMoney.ViewModels.Pages
         private readonly IDatabaseReader _databaseReader;
         private readonly INewAccountDialogService _newAccountDialogService;
         private readonly ITransferDialogService _transferDialogService;
+        private readonly ITransactionDialogService _transactionDialogService;
 
         public AccountsViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader, 
-            INewAccountDialogService newAccountDialogService, ITransferDialogService transferDialogService)
+            INewAccountDialogService newAccountDialogService, ITransferDialogService transferDialogService,
+            ITransactionDialogService transactionDialogService)
         {
             _contentDialogService = contentDialogService;
             _databaseReader = databaseReader;
             _newAccountDialogService = newAccountDialogService;
             _transferDialogService = transferDialogService;
+            _transactionDialogService = transactionDialogService;
 
             var a = _databaseReader.GetCollection<Account>("Accounts");
 
@@ -123,22 +126,15 @@ namespace MyMoney.ViewModels.Pages
 
         private async Task<(bool success, Transaction? transaction)> ShowTransactionDialog(NewTransactionDialogViewModel viewModel, bool isEdit = false)
         {
-            var dialogHost = _contentDialogService.GetDialogHost();
-            if (dialogHost == null) return (false, null);
-
             if (!isEdit && Accounts.Count > 0 && SelectedAccountIndex == -1)
             {
                 SelectedAccountIndex = 0;
             }
 
-            var transactionDialog = new NewTransactionDialog(dialogHost, viewModel)
-            {
-                PrimaryButtonText = "OK",
-                CloseButtonText = "Cancel",
-                Title = isEdit ? "Edit Transaction" : "New Transaction"
-            };
-
-            var result = await transactionDialog.ShowAsync();
+            _transactionDialogService.SetViewModel(viewModel);
+            _transactionDialogService.SetTitle(isEdit ? "Edit Transaction" : "New Transaction");
+            var result = await _transactionDialogService.ShowDialogAsync(_contentDialogService);
+            viewModel = _transactionDialogService.GetViewModel();
 
             if (result != ContentDialogResult.Primary)
             {
@@ -148,7 +144,7 @@ namespace MyMoney.ViewModels.Pages
             var amount = viewModel.NewTransactionAmount;
             if (viewModel.NewTransactionIsExpense) amount = new(-amount.Value);
 
-            var transaction = new Transaction(viewModel.NewTransactionDate, transactionDialog.SelectedPayee, 
+            var transaction = new Transaction(viewModel.NewTransactionDate, _transactionDialogService.GetSelectedPayee(), 
             viewModel.NewTransactionCategory, amount, viewModel.NewTransactionMemo);
 
             return (true, transaction);

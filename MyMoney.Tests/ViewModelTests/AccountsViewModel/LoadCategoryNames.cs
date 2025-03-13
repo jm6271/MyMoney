@@ -15,6 +15,7 @@ public class LoadCategoryNames
     private Mock<IDatabaseReader> _databaseReader;
     private Mock<INewAccountDialogService> _newAccountDialogService;
     private Mock<ITransferDialogService> _transferDialogService;
+    private Mock<ITransactionDialogService> _transactionDialogService;
     private ViewModels.Pages.AccountsViewModel _viewModel;
 
     [TestInitialize]
@@ -24,6 +25,7 @@ public class LoadCategoryNames
         _databaseReader = new Mock<IDatabaseReader>();
         _newAccountDialogService = new Mock<INewAccountDialogService>();
         _transferDialogService = new Mock<ITransferDialogService>();
+        _transactionDialogService = new Mock<ITransactionDialogService>();
             
         // Setup empty accounts collection
         _databaseReader.Setup(x => x.GetCollection<Account>("Accounts"))
@@ -42,7 +44,8 @@ public class LoadCategoryNames
             _contentDialogService.Object,
             _databaseReader.Object,
             _newAccountDialogService.Object,
-            _transferDialogService.Object);
+            _transferDialogService.Object,
+            _transactionDialogService.Object);
 
         // Assert
         Assert.AreEqual(0, _viewModel.CategoryNames.Count);
@@ -76,7 +79,8 @@ public class LoadCategoryNames
             _contentDialogService.Object,
             _databaseReader.Object,
             _newAccountDialogService.Object,
-            _transferDialogService.Object);
+            _transferDialogService.Object,
+            _transactionDialogService.Object);
 
         // Assert
         Assert.AreEqual(4, _viewModel.CategoryNames.Count);
@@ -105,7 +109,8 @@ public class LoadCategoryNames
             _contentDialogService.Object,
             _databaseReader.Object,
             _newAccountDialogService.Object,
-            _transferDialogService.Object);
+            _transferDialogService.Object,
+            _transactionDialogService.Object);
 
         // Act
         _viewModel.OnPageNavigatedTo(); // This calls LoadCategoryNames again

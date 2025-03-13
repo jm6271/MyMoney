@@ -14,16 +14,30 @@ namespace MyMoney.Services.ContentDialogs
     {
         public void SetViewModel(NewTransactionDialogViewModel viewModel);
         public NewTransactionDialogViewModel GetViewModel();
+        public void SetTitle(string title);
+        public string GetSelectedPayee();
         public Task<ContentDialogResult> ShowDialogAsync(IContentDialogService dialogService);
     }
 
     public class TransactionDialogService : ITransactionDialogService
     {
         NewTransactionDialogViewModel _viewModel = new();
+        string _title = "New Transaction";
+        string _selectedPayee = "";
+
+        public string GetSelectedPayee()
+        {
+            return _selectedPayee;
+        }
 
         public NewTransactionDialogViewModel GetViewModel()
         {
             return _viewModel;
+        }
+
+        public void SetTitle(string title)
+        {
+            _title = title;
         }
 
         public void SetViewModel(NewTransactionDialogViewModel viewModel)
@@ -37,12 +51,15 @@ namespace MyMoney.Services.ContentDialogs
             if (host == null)
                 return ContentDialogResult.None;
 
-            NewTransactionDialog newAccountDialog = new(host, _viewModel)
+            NewTransactionDialog newTransactionDialog = new(host, _viewModel)
             {
                 PrimaryButtonText = "OK",
-                CloseButtonText = "Cancel"
+                CloseButtonText = "Cancel",
+                Title = _title
             };
-            return await dialogService.ShowAsync(newAccountDialog, CancellationToken.None);
+            var result =  await dialogService.ShowAsync(newTransactionDialog, CancellationToken.None);
+            _selectedPayee = newTransactionDialog.SelectedPayee;
+            return result;
         }
     }
 }
