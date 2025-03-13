@@ -17,27 +17,6 @@ namespace MyMoney.ViewModels.Pages
         public ObservableCollection<string> CategoryNames { get; } = [];
 
         [ObservableProperty]
-        private DateTime _newTransactionDate = DateTime.Today;
-
-        [ObservableProperty]
-        private string _newTransactionPayee = "";
-
-        [ObservableProperty]
-        private string _newTransactionCategory = "";
-
-        [ObservableProperty]
-        private string _newTransactionMemo = "";
-
-        [ObservableProperty]
-        private Currency _newTransactionAmount = new(0m);
-
-        [ObservableProperty]
-        private bool _newTransactionIsExpense = true;
-
-        [ObservableProperty]
-        private bool _newTransactionIsIncome;
-
-        [ObservableProperty]
         private Account? _selectedAccount;
 
         [ObservableProperty]
@@ -62,8 +41,6 @@ namespace MyMoney.ViewModels.Pages
         private readonly IDatabaseReader _databaseReader;
         private readonly INewAccountDialogService _newAccountDialogService;
         private readonly ITransferDialogService _transferDialogService;
-
-        public ObservableCollection<string> AutoSuggestPayees { get; private set; } = [];
 
         public AccountsViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader, 
             INewAccountDialogService newAccountDialogService, ITransferDialogService transferDialogService)
@@ -144,7 +121,7 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        private async Task<(bool success, Transaction? transaction)> ShowTransactionDialog(bool isEdit = false)
+        private async Task<(bool success, Transaction? transaction)> ShowTransactionDialog(NewTransactionDialogViewModel viewModel, bool isEdit = false)
         {
             var dialogHost = _contentDialogService.GetDialogHost();
             if (dialogHost == null) return (false, null);
@@ -154,29 +131,25 @@ namespace MyMoney.ViewModels.Pages
                 SelectedAccountIndex = 0;
             }
 
-            // Load the list of payees to use in the auto suggest box
-            AutoSuggestPayees = GetAllPayees();
-
-            var transactionDialog = new NewTransactionDialog(dialogHost, this)
+            var transactionDialog = new NewTransactionDialog(dialogHost, viewModel)
             {
-            PrimaryButtonText = "OK",
-            CloseButtonText = "Cancel",
-            Title = isEdit ? "Edit Transaction" : "New Transaction"
+                PrimaryButtonText = "OK",
+                CloseButtonText = "Cancel",
+                Title = isEdit ? "Edit Transaction" : "New Transaction"
             };
 
             var result = await transactionDialog.ShowAsync();
 
             if (result != ContentDialogResult.Primary)
             {
-                ClearNewTransactionFields();
                 return (false, null);
             }
 
-            var amount = NewTransactionAmount;
-            if (NewTransactionIsExpense) amount = new(-amount.Value);
+            var amount = viewModel.NewTransactionAmount;
+            if (viewModel.NewTransactionIsExpense) amount = new(-amount.Value);
 
-            var transaction = new Transaction(NewTransactionDate, transactionDialog.SelectedPayee, 
-            NewTransactionCategory, amount, NewTransactionMemo);
+            var transaction = new Transaction(viewModel.NewTransactionDate, transactionDialog.SelectedPayee, 
+            viewModel.NewTransactionCategory, amount, viewModel.NewTransactionMemo);
 
             return (true, transaction);
         }
@@ -197,13 +170,20 @@ namespace MyMoney.ViewModels.Pages
                 }
             }
 
-            var (success, transaction) = await ShowTransactionDialog();
+            NewTransactionDialogViewModel viewModel = new();
+            viewModel.AutoSuggestPayees = GetAllPayees();
+            viewModel.SelectedAccountIndex = SelectedAccountIndex;
+            viewModel.Accounts = Accounts;
+            viewModel.SelectedAccount = SelectedAccount;
+            viewModel.CategoryNames = CategoryNames;
+
+            var (success, transaction) = await ShowTransactionDialog(viewModel);
             if (!success || transaction == null) return;
 
+            SelectedAccountIndex = viewModel.SelectedAccountIndex;
             SelectedAccount.Total += transaction.Amount;
             SelectedAccountTransactions.Add(transaction);
             
-            ClearNewTransactionFields();
             SortTransactions();
             SaveAccountsToDatabase();
         }
@@ -214,44 +194,31 @@ namespace MyMoney.ViewModels.Pages
             if (SelectedAccount == null || SelectedTransactionIndex < 0) return;
 
             // Load current transaction values
+            NewTransactionDialogViewModel viewModel = new();
             var oldTransaction = SelectedAccountTransactions[SelectedTransactionIndex];
-            NewTransactionDate = oldTransaction.Date;
-            NewTransactionAmount = new(Math.Abs(oldTransaction.Amount.Value));
-            NewTransactionCategory = oldTransaction.Category;
-            NewTransactionIsExpense = oldTransaction.Amount.Value < 0m;
-            NewTransactionIsIncome = !NewTransactionIsExpense;
-            NewTransactionMemo = oldTransaction.Memo;
-            NewTransactionPayee = oldTransaction.Payee;
+            viewModel.NewTransactionDate = oldTransaction.Date;
+            viewModel.NewTransactionAmount = new(Math.Abs(oldTransaction.Amount.Value));
+            viewModel.NewTransactionCategory = oldTransaction.Category;
+            viewModel.NewTransactionIsExpense = oldTransaction.Amount.Value < 0m;
+            viewModel.NewTransactionIsIncome = !viewModel.NewTransactionIsExpense;
+            viewModel.NewTransactionMemo = oldTransaction.Memo;
+            viewModel.NewTransactionPayee = oldTransaction.Payee;
+            viewModel.AutoSuggestPayees = GetAllPayees();
+            viewModel.SelectedAccountIndex = SelectedAccountIndex;
+            viewModel.Accounts = Accounts;
+            viewModel.SelectedAccount = SelectedAccount;
+            viewModel.CategoryNames = CategoryNames;
+            viewModel.AccountsVisibility = Visibility.Collapsed;
 
-            var (success, transaction) = await ShowTransactionDialog(true);
+            var (success, transaction) = await ShowTransactionDialog(viewModel, true);
             if (!success || transaction == null) return;
 
             SelectedAccount.Total -= oldTransaction.Amount;
             SelectedAccount.Total += transaction.Amount;
             SelectedAccountTransactions[SelectedTransactionIndex] = transaction;
 
-            ClearNewTransactionFields();
             SortTransactions();
             SaveAccountsToDatabase();
-        }
-
-        private void ClearNewTransactionFields()
-        {
-            NewTransactionDate = DateTime.Today;
-            NewTransactionPayee = "";
-            NewTransactionCategory = "";
-            NewTransactionAmount = new(0m);
-            NewTransactionMemo = "";
-        }
-
-        [RelayCommand]
-        private void ClearTransaction()
-        {
-            NewTransactionAmount = new(0m);
-            NewTransactionCategory = "";
-            NewTransactionDate = DateTime.Today;
-            NewTransactionMemo = "";
-            NewTransactionPayee = "";
         }
 
         [RelayCommand]

@@ -23,7 +23,7 @@ namespace MyMoney.Views.ContentDialogs
     /// </summary>
     public partial class NewTransactionDialog : ContentDialog
     {
-        public NewTransactionDialog(ContentPresenter dialogHost, AccountsViewModel viewModel) : base(dialogHost)
+        public NewTransactionDialog(ContentPresenter dialogHost, NewTransactionDialogViewModel viewModel) : base(dialogHost)
         {
             InitializeComponent();
             DataContext = viewModel;
