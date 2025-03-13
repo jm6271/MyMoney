@@ -76,6 +76,7 @@ namespace MyMoney
 
                 // Custom content dialogs
                 services.AddSingleton<INewAccountDialogService, NewAccountDialogService>();
+                services.AddSingleton<ITransferDialogService, TransferDialogService>();
 
             }).Build();
 

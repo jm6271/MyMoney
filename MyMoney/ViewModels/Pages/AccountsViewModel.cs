@@ -61,15 +61,17 @@ namespace MyMoney.ViewModels.Pages
         private readonly IContentDialogService _contentDialogService;
         private readonly IDatabaseReader _databaseReader;
         private readonly INewAccountDialogService _newAccountDialogService;
+        private readonly ITransferDialogService _transferDialogService;
 
         public ObservableCollection<string> AutoSuggestPayees { get; private set; } = [];
 
         public AccountsViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader, 
-            INewAccountDialogService newAccountDialogService)
+            INewAccountDialogService newAccountDialogService, ITransferDialogService transferDialogService)
         {
             _contentDialogService = contentDialogService;
             _databaseReader = databaseReader;
             _newAccountDialogService = newAccountDialogService;
+            _transferDialogService = transferDialogService;
 
             var a = _databaseReader.GetCollection<Account>("Accounts");
 
@@ -262,58 +264,41 @@ namespace MyMoney.ViewModels.Pages
                 accountNames.Add(account.AccountName);
             }
 
-            var dialogHost = _contentDialogService.GetDialogHost();
-            if (dialogHost == null) return;
-
             var viewModel = new TransferDialogViewModel(accountNames);
-
-            var newTransferDialog = new TransferDialog(dialogHost, viewModel)
-            {
-                PrimaryButtonText = "OK",
-                CloseButtonText = "Cancel",
-            };
-            var result = await newTransferDialog.ShowAsync();
+            _transferDialogService.SetViewModel(viewModel);
+            var result = await _transferDialogService.ShowDialogAsync(_contentDialogService);
+            viewModel = _transferDialogService.GetViewModel();
 
             if (result == ContentDialogResult.Primary)
             {
                 // Transfer the money
-                Transfer(viewModel);
-            }
-        }
+                // create a new transaction in each of the accounts
 
-        public void Transfer(TransferDialogViewModel viewModel)
-        {
-            // create a new transaction in each of the accounts
+                // create FROM transaction
+                Transaction from = new(DateTime.Today, "Transfer to " + viewModel.TransferTo, "", new(-viewModel.Amount.Value), "Transfer");
 
-            // create FROM transaction
-            Transaction from = new(DateTime.Today, "Transfer to " + viewModel.TransferTo, "", new(-viewModel.Amount.Value), "Transfer");
+                // Create TO transaction
+                Transaction to = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, "", viewModel.Amount, "Transfer");
 
-            // Create TO transaction
-            Transaction to = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, "", viewModel.Amount, "Transfer");
-
-            // Add the transactions to their accounts
-            foreach (var t in Accounts)
-            {
-                if (t.AccountName == viewModel.TransferFrom)
+                // Add the transactions to their accounts
+                foreach (var t in Accounts)
                 {
-                    t.Transactions.Add(from);
+                    if (t.AccountName == viewModel.TransferFrom)
+                    {
+                        t.Transactions.Add(from);
 
-                    // Update ending balance
-                    t.Total += from.Amount;
-                }
-                else if (t.AccountName == viewModel.TransferTo)
-                {
-                    t.Transactions.Add(to);
+                        // Update ending balance
+                        t.Total += from.Amount;
+                    }
+                    else if (t.AccountName == viewModel.TransferTo)
+                    {
+                        t.Transactions.Add(to);
 
-                    // Update ending balance
-                    t.Total += to.Amount;
+                        // Update ending balance
+                        t.Total += to.Amount;
+                    }
                 }
             }
-
-            SortTransactions();
-
-            // save the accounts to the database
-            SaveAccountsToDatabase();
         }
 
         partial void OnSelectedAccountChanged(Account? value)

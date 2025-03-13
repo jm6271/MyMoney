@@ -14,6 +14,7 @@ public class LoadCategoryNames
     private Mock<IContentDialogService> _contentDialogService;
     private Mock<IDatabaseReader> _databaseReader;
     private Mock<INewAccountDialogService> _newAccountDialogService;
+    private Mock<ITransferDialogService> _transferDialogService;
     private ViewModels.Pages.AccountsViewModel _viewModel;
 
     [TestInitialize]
@@ -22,6 +23,7 @@ public class LoadCategoryNames
         _contentDialogService = new Mock<IContentDialogService>();
         _databaseReader = new Mock<IDatabaseReader>();
         _newAccountDialogService = new Mock<INewAccountDialogService>();
+        _transferDialogService = new Mock<ITransferDialogService>();
             
         // Setup empty accounts collection
         _databaseReader.Setup(x => x.GetCollection<Account>("Accounts"))
@@ -39,7 +41,8 @@ public class LoadCategoryNames
         _viewModel = new ViewModels.Pages.AccountsViewModel(
             _contentDialogService.Object,
             _databaseReader.Object,
-            _newAccountDialogService.Object);
+            _newAccountDialogService.Object,
+            _transferDialogService.Object);
 
         // Assert
         Assert.AreEqual(0, _viewModel.CategoryNames.Count);
@@ -72,7 +75,8 @@ public class LoadCategoryNames
         _viewModel = new ViewModels.Pages.AccountsViewModel(
             _contentDialogService.Object,
             _databaseReader.Object,
-            _newAccountDialogService.Object);
+            _newAccountDialogService.Object,
+            _transferDialogService.Object);
 
         // Assert
         Assert.AreEqual(4, _viewModel.CategoryNames.Count);
@@ -100,7 +104,8 @@ public class LoadCategoryNames
         _viewModel = new ViewModels.Pages.AccountsViewModel(
             _contentDialogService.Object,
             _databaseReader.Object,
-            _newAccountDialogService.Object);
+            _newAccountDialogService.Object,
+            _transferDialogService.Object);
 
         // Act
         _viewModel.OnPageNavigatedTo(); // This calls LoadCategoryNames again
