@@ -43,10 +43,12 @@ namespace MyMoney.ViewModels.Pages
         private readonly ITransferDialogService _transferDialogService;
         private readonly ITransactionDialogService _transactionDialogService;
         private readonly IRenameAccountDialogService _renameAccountDialogService;
+        private readonly IMessageBoxService _messageBoxService;
 
         public AccountsViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader, 
             INewAccountDialogService newAccountDialogService, ITransferDialogService transferDialogService,
-            ITransactionDialogService transactionDialogService, IRenameAccountDialogService renameAccountDialogService)
+            ITransactionDialogService transactionDialogService, IRenameAccountDialogService renameAccountDialogService,
+            IMessageBoxService messageBoxService)
         {
             _contentDialogService = contentDialogService;
             _databaseReader = databaseReader;
@@ -54,6 +56,7 @@ namespace MyMoney.ViewModels.Pages
             _transferDialogService = transferDialogService;
             _transactionDialogService = transactionDialogService;
             _renameAccountDialogService = renameAccountDialogService;
+            _messageBoxService = messageBoxService;
 
             var a = _databaseReader.GetCollection<Account>("Accounts");
 
@@ -296,8 +299,8 @@ namespace MyMoney.ViewModels.Pages
                 PrimaryButtonText = "Yes",
                 CloseButtonText = "No"
             };
-
-            var result = await uiMessageBox.ShowDialogAsync();
+            
+            var result = await _messageBoxService.ShowAsync(uiMessageBox);
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
 
@@ -340,7 +343,7 @@ namespace MyMoney.ViewModels.Pages
                 CloseButtonAppearance = ControlAppearance.Primary
             };
 
-            var result = await uiMessageBox.ShowDialogAsync();
+            var result = await _messageBoxService.ShowAsync(uiMessageBox);
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Secondary) return; // User clicked no
 
