@@ -10,6 +10,7 @@ namespace MyMoney.Services.ContentDialogs
     {
         public Task<Wpf.Ui.Controls.MessageBoxResult> ShowAsync(string title, string content, string primaryButtonText,
                                                                 string closeButtonText);
+        public Task<Wpf.Ui.Controls.MessageBoxResult> ShowInfoAsync(string title, string content, string closeButtonText);
     }
 
     public class MessageBoxService : IMessageBoxService
@@ -24,6 +25,19 @@ namespace MyMoney.Services.ContentDialogs
                 PrimaryButtonText = primaryButtonText,
                 CloseButtonText = closeButtonText
             };
+            return await messageBox.ShowDialogAsync();
+        }
+
+        public async Task<Wpf.Ui.Controls.MessageBoxResult> ShowInfoAsync(string title, string content, string closeButtonText)
+        {
+            Wpf.Ui.Controls.MessageBox messageBox = new()
+            {
+                Title = title,
+                Content = content,
+                IsPrimaryButtonEnabled = false,
+                CloseButtonText = closeButtonText,
+            };
+
             return await messageBox.ShowDialogAsync();
         }
     }

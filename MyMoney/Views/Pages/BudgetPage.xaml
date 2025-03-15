@@ -67,7 +67,7 @@
                     </Grid.ColumnDefinitions>
                     
                     <ui:TextBlock FontTypography="Title" Text="{Binding ViewModel.CurrentBudget.BudgetTitle}"/>
-                    <ui:Button Command="{Binding ViewModel.CreateNewBudget_ClickCommand}" Grid.Column="1" Appearance="Primary" Margin="12,0,0,0">
+                    <ui:Button Command="{Binding ViewModel.CreateNewBudgetCommand}" Grid.Column="1" Appearance="Primary" Margin="12,0,0,0">
                         <StackPanel Orientation="Horizontal">
                             <ui:SymbolIcon Symbol="FormNew20" Margin="0,0,4,0"/>
                             <ui:TextBlock Margin="4,0,0,0">New Budget</ui:TextBlock>

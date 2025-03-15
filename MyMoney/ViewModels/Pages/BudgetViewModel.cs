@@ -12,6 +12,7 @@ using System.ComponentModel;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
+using MyMoney.Services.ContentDialogs;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -82,6 +83,8 @@ namespace MyMoney.ViewModels.Pages
 
         // Content dialog service
         private readonly IContentDialogService _contentDialogService;
+        private readonly IMessageBoxService _messageBoxService;
+        private readonly INewBudgetDialogService _newBudgetDialogService;
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
@@ -134,9 +137,12 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        public BudgetViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader)
+        public BudgetViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader,
+            IMessageBoxService messageBoxService, INewBudgetDialogService newBudgetDialogService)
         { 
             _contentDialogService = contentDialogService;
+            _messageBoxService = messageBoxService;
+            _newBudgetDialogService = newBudgetDialogService;
 
             var budgetCollection = databaseReader.GetCollection<Budget>("Budgets");
 
@@ -554,7 +560,7 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task CreateNewBudget_Click()
+        private async Task CreateNewBudget()
         {
             // Make sure there is a valid dialog host
             var dialogHost = _contentDialogService.GetDialogHost();
@@ -562,68 +568,55 @@ namespace MyMoney.ViewModels.Pages
 
             // Create the new budget dialog
             var viewModel = new NewBudgetDialogViewModel();
-
-            var newBudgetDialog = new NewBudgetDialog(dialogHost, viewModel)
-            {
-                PrimaryButtonText = "OK",
-                CloseButtonText = "Cancel",
-            };
-
-            // Show the dialog
-            var result = await _contentDialogService.ShowAsync(newBudgetDialog, CancellationToken.None);
+            _newBudgetDialogService.SetViewModel(viewModel);
+            var result = await _newBudgetDialogService.ShowDialogAsync(_contentDialogService);
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
                 // make sure this budget doesn't exist already
-                foreach (var budget in Budgets)
+                if (DoesBudgetExist(Convert.ToDateTime(viewModel.SelectedDate)))
                 {
-                    if (budget.BudgetDate == Convert.ToDateTime(viewModel.SelectedDate))
-                    {
-                        Wpf.Ui.Controls.MessageBox msgBox = new()
-                        {
-                            Title = "Budget Already Exists",
-                            Content = "Could not create a new budget because a budget for the selected month already exists.",
-                        };
-                        await msgBox.ShowDialogAsync();
-                        return;
-                    }
+                    // warn user that the budget exists
+                    await _messageBoxService.ShowInfoAsync("Budget Already Exists",
+                            "Cannot create a budget for the selected month because a budget for this month already exists",
+                            "OK");
+                    return;
                 }
 
                 // Add the budget
-                AddNewBudget(viewModel);
+                Budget newBudget = new();
+
+                var budgetTitle = viewModel.SelectedDate;
+                newBudget.BudgetTitle = budgetTitle;
+                newBudget.BudgetDate = Convert.ToDateTime(budgetTitle);
+
+                // Copy over categories if box is checked
+                if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
+                {
+                    foreach (var item in CurrentBudget.BudgetIncomeItems)
+                    {
+                        newBudget.BudgetIncomeItems.Add(item);
+                    }
+
+                    foreach (var item in CurrentBudget.BudgetExpenseItems)
+                    {
+                        newBudget.BudgetExpenseItems.Add(item);
+                    }
+                }
+
+                // Add to list of budgets
+                Budgets.Add(newBudget);
+
+                // Update budget lists
+                UpdateBudgetLists();
+
+                // Set as current budget
+                SetCurrentBudget(budgetTitle);
             }
         }
 
-        public void AddNewBudget(NewBudgetDialogViewModel viewModel)
+        private void SetCurrentBudget(string budgetTitle)
         {
-            // Add a budget
-            Budget newBudget = new();
-
-            var budgetTitle = viewModel.SelectedDate;
-            newBudget.BudgetTitle = budgetTitle;
-            newBudget.BudgetDate = Convert.ToDateTime(budgetTitle);
-
-            // Copy over categories if box is checked
-            if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
-            {
-                foreach (var item in CurrentBudget.BudgetIncomeItems)
-                {
-                    newBudget.BudgetIncomeItems.Add(item);
-                }
-
-                foreach (var item in CurrentBudget.BudgetExpenseItems)
-                {
-                    newBudget.BudgetExpenseItems.Add(item);
-                }
-            }
-
-            // Add to list of budgets
-            Budgets.Add(newBudget);
-
-            // Update budget lists
-            UpdateBudgetLists();
-
-            // Set as current budget
             foreach (var item in Budgets)
             {
                 if (item.BudgetTitle != budgetTitle) continue;
@@ -644,6 +637,19 @@ namespace MyMoney.ViewModels.Pages
                 }
                 break;
             }
+        }
+
+        private bool DoesBudgetExist(DateTime selectedDate)
+        {
+            foreach (var budget in Budgets)
+            {
+                if (budget.BudgetDate == Convert.ToDateTime(selectedDate))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void LoadBudget(int index)

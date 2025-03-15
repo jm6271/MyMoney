@@ -80,6 +80,7 @@ namespace MyMoney
                 services.AddSingleton<ITransactionDialogService, TransactionDialogService>();
                 services.AddSingleton<IRenameAccountDialogService, RenameAccountDialogService>();
                 services.AddSingleton<IMessageBoxService, MessageBoxService>();
+                services.AddSingleton<INewBudgetDialogService, NewBudgetDialogService>();
 
             }).Build();
 
