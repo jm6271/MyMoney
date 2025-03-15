@@ -364,9 +364,6 @@ namespace MyMoney.ViewModels.Pages
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
 
-            var dialogHost = _contentDialogService.GetDialogHost();
-            if (dialogHost == null) return;
-
             var viewModel = new BudgetCategoryDialogViewModel
             {
                 BudgetCategory = CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex].Category,
@@ -480,10 +477,6 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private async Task CreateNewBudget()
         {
-            // Make sure there is a valid dialog host
-            var dialogHost = _contentDialogService.GetDialogHost();
-            if (dialogHost == null) return;
-
             // Create the new budget dialog
             var viewModel = new NewBudgetDialogViewModel();
             _newBudgetDialogService.SetViewModel(viewModel);
