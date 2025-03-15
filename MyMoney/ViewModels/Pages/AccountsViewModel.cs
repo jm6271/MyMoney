@@ -289,18 +289,12 @@ namespace MyMoney.ViewModels.Pages
             // Make sure a transaction is selected
             if (SelectedAccount == null) return;
             if (SelectedTransactionIndex < 0) return;
-
-            // confirm deletion
-            var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-            {
-                Title = "Delete Transaction?",
-                Content = "Are you sure you want to delete the selected transaction?",
-                IsPrimaryButtonEnabled = true,
-                PrimaryButtonText = "Yes",
-                CloseButtonText = "No"
-            };
             
-            var result = await _messageBoxService.ShowAsync(uiMessageBox);
+            var result = await _messageBoxService.ShowAsync(
+                "Delete Transaction?",
+                "Are you sure you want to delete the selected transaction?",
+                "Yes",
+                "No");
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
 
@@ -332,20 +326,13 @@ namespace MyMoney.ViewModels.Pages
 
             // Show message box asking user if they really want to delete the account
             // show a message box
-            var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-            {
-                Title = "Delete Account?",
-                Content = "Are you sure you want to delete the selected Account?\nTHIS CANNOT BE UNDONE!",
-                IsPrimaryButtonEnabled = false,
-                IsSecondaryButtonEnabled = true,
-                SecondaryButtonText = "Yes",
-                CloseButtonText = "No",
-                CloseButtonAppearance = ControlAppearance.Primary
-            };
+            var result = await _messageBoxService.ShowAsync(
+                "Delete Account?",
+                "Are you sure you want to delete the selected Account?\nTHIS CANNOT BE UNDONE!",
+                "Yes",
+                "No");
 
-            var result = await _messageBoxService.ShowAsync(uiMessageBox);
-
-            if (result != Wpf.Ui.Controls.MessageBoxResult.Secondary) return; // User clicked no
+            if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
 
             Accounts.RemoveAt(SelectedAccountIndex);
 

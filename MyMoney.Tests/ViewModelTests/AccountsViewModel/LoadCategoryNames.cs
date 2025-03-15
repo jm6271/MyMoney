@@ -17,6 +17,7 @@ public class LoadCategoryNames
     private Mock<ITransferDialogService> _transferDialogService;
     private Mock<ITransactionDialogService> _transactionDialogService;
     private Mock<IRenameAccountDialogService> _renameDialogService;
+    private Mock<IMessageBoxService> _messageBoxService;
     private ViewModels.Pages.AccountsViewModel _viewModel;
 
     [TestInitialize]
@@ -28,6 +29,7 @@ public class LoadCategoryNames
         _transferDialogService = new Mock<ITransferDialogService>();
         _transactionDialogService = new Mock<ITransactionDialogService>();
         _renameDialogService = new Mock<IRenameAccountDialogService>();
+        _messageBoxService = new Mock<IMessageBoxService>();
             
         // Setup empty accounts collection
         _databaseReader.Setup(x => x.GetCollection<Account>("Accounts"))
@@ -48,7 +50,8 @@ public class LoadCategoryNames
             _newAccountDialogService.Object,
             _transferDialogService.Object,
             _transactionDialogService.Object,
-            _renameDialogService.Object);
+            _renameDialogService.Object,
+            _messageBoxService.Object);
 
         // Assert
         Assert.AreEqual(0, _viewModel.CategoryNames.Count);
@@ -84,7 +87,8 @@ public class LoadCategoryNames
             _newAccountDialogService.Object,
             _transferDialogService.Object,
             _transactionDialogService.Object,
-            _renameDialogService.Object);
+            _renameDialogService.Object,
+            _messageBoxService.Object);
 
         // Assert
         Assert.AreEqual(4, _viewModel.CategoryNames.Count);
@@ -115,7 +119,8 @@ public class LoadCategoryNames
             _newAccountDialogService.Object,
             _transferDialogService.Object,
             _transactionDialogService.Object,
-            _renameDialogService.Object);
+            _renameDialogService.Object,
+            _messageBoxService.Object);
 
         // Act
         _viewModel.OnPageNavigatedTo(); // This calls LoadCategoryNames again

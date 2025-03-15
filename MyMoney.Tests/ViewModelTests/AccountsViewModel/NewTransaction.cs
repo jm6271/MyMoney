@@ -21,6 +21,7 @@ public class NewTransactionTests
     private Mock<ITransferDialogService> _transferDialogServiceMock;
     private Mock<ITransactionDialogService> _transactionDialogServiceMock;
     private Mock<IRenameAccountDialogService> _renameAccountDialogService;
+    private Mock<IMessageBoxService> _messageBoxServiceMock;
     private ViewModels.Pages.AccountsViewModel _viewModel;
 
     [TestInitialize]
@@ -32,6 +33,7 @@ public class NewTransactionTests
         _transferDialogServiceMock = new Mock<ITransferDialogService>();
         _transactionDialogServiceMock = new Mock<ITransactionDialogService>();
         _renameAccountDialogService = new Mock<IRenameAccountDialogService>();
+        _messageBoxServiceMock = new Mock<IMessageBoxService>();
 
         _databaseReaderMock.Setup(x => x.GetCollection<Account>("Accounts"))
             .Returns([]);
@@ -42,7 +44,8 @@ public class NewTransactionTests
             _newAccountDialogServiceMock.Object,
             _transferDialogServiceMock.Object,
             _transactionDialogServiceMock.Object,
-            _renameAccountDialogService.Object
+            _renameAccountDialogService.Object,
+            _messageBoxServiceMock.Object
         );
     }
 
