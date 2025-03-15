@@ -10,7 +10,6 @@ using Wpf.Ui.Appearance;
 using System.Globalization;
 using System.ComponentModel;
 using MyMoney.ViewModels.ContentDialogs;
-using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
 using MyMoney.Services.ContentDialogs;
 
