@@ -89,7 +89,7 @@
                     <ui:ListView.ContextMenu>
                         <ContextMenu IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                             <MenuItem Header="Edit" Command="{Binding ViewModel.EditIncomeItem_ClickCommand}"/>
-                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteIncomeItem_ClickCommand}"/>
+                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
 
@@ -139,7 +139,7 @@
                     <ui:ListView.ContextMenu>
                         <ContextMenu IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                             <MenuItem Header="Edit" Command="{Binding ViewModel.EditExpenseItem_ClickCommand}"/>
-                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteExpenseItem_ClickCommand}"/>
+                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteExpenseItemCommand}"/>
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
 

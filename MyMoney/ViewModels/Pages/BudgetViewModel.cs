@@ -437,32 +437,20 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task DeleteIncomeItem_Click()
+        private async Task DeleteIncomeItem()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
 
+
             // Show message box asking user if they really want to delete the category
-            var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-            {
-                Title = "Delete Category?",
-                Content = "Are you sure you want to delete the selected Category?",
-                IsPrimaryButtonEnabled = false,
-                IsSecondaryButtonEnabled = true,
-                SecondaryButtonText = "Yes",
-                CloseButtonText = "No",
-                CloseButtonAppearance = Wpf.Ui.Controls.ControlAppearance.Primary
-            };
+            var result = await _messageBoxService.ShowAsync("Delete Category?",
+                                                "Are you sure you want to delete the selected category?",
+                                                "Yes",
+                                                "No");
 
-            var result = await uiMessageBox.ShowDialogAsync();
+            if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
 
-            if (result != Wpf.Ui.Controls.MessageBoxResult.Secondary) return; // User clicked no
-            DeleteSelectedIncomeItem();
-        }
-
-        public void DeleteSelectedIncomeItem()
-        {
-            if (CurrentBudget == null) return;
             CurrentBudget.BudgetIncomeItems.RemoveAt(IncomeItemsSelectedIndex);
 
             // replace the id property of the remaining elements so the IDs are in a consecutive order (We have all kinds of problems when we don't do this)
@@ -522,35 +510,23 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task DeleteExpenseItem_Click()
+        private async Task DeleteExpenseItem()
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
 
             // Show message box asking user if they really want to delete the category
-            var uiMessageBox = new Wpf.Ui.Controls.MessageBox
-            {
-                Title = "Delete Category?",
-                Content = "Are you sure you want to delete the selected Category?",
-                IsPrimaryButtonEnabled = false,
-                IsSecondaryButtonEnabled = true,
-                SecondaryButtonText = "Yes",
-                CloseButtonText = "No",
-                CloseButtonAppearance = Wpf.Ui.Controls.ControlAppearance.Primary
-            };
+            var result = await _messageBoxService.ShowAsync("Delete Category?",
+                                                "Are you sure you want to delete the selected category?",
+                                                "Yes",
+                                                "No");
 
-            var result = await uiMessageBox.ShowDialogAsync();
+            if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
 
-            if (result != Wpf.Ui.Controls.MessageBoxResult.Secondary) return; // User clicked no
-            DeleteSelectedExpenseItem();
-        }
-
-        public void DeleteSelectedExpenseItem()
-        {
-            if (CurrentBudget == null) return;
             CurrentBudget.BudgetExpenseItems.RemoveAt(ExpenseItemsSelectedIndex);
 
-            // replace the id property of the remaining elements so the IDs are in a consecutive order (We have all kinds of problems when we don't do this)
+            // replace the id property of the remaining elements so the IDs are
+            // in a consecutive order (We have all kinds of problems when we don't do this)
             for (int i = 0; i < CurrentBudget.BudgetExpenseItems.Count; i++)
             {
                 CurrentBudget.BudgetExpenseItems[i].Id = i + 1;

@@ -23,7 +23,9 @@ namespace MyMoney.Services.ContentDialogs
                 Content = content,
                 IsPrimaryButtonEnabled = true,
                 PrimaryButtonText = primaryButtonText,
-                CloseButtonText = closeButtonText
+                PrimaryButtonAppearance = Wpf.Ui.Controls.ControlAppearance.Secondary,
+                CloseButtonText = closeButtonText,
+                CloseButtonAppearance = Wpf.Ui.Controls.ControlAppearance.Primary,
             };
             return await messageBox.ShowDialogAsync();
         }
