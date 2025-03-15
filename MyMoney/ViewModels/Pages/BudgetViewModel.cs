@@ -336,9 +336,6 @@ namespace MyMoney.ViewModels.Pages
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
 
-            var dialogHost = _contentDialogService.GetDialogHost();
-            if (dialogHost == null) return;
-
             var viewModel = new BudgetCategoryDialogViewModel();
             _budgetCategoryDialogService.SetViewModel(viewModel);
             var result = await _budgetCategoryDialogService.ShowDialogAsync(_contentDialogService, "New Expense Item");
