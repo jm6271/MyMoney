@@ -5,7 +5,7 @@ namespace MyMoney.Core.Database
     /// <summary>
     /// Represents the collection of budgets in the database
     /// </summary>
-    public class BudgetCollection(IDatabaseReader databaseReader)
+    public class BudgetCollection
     {
         private const string BudgetCollectionName = "Budgets";
 
@@ -14,7 +14,16 @@ namespace MyMoney.Core.Database
         /// <summary>
         /// A list of the budgets currently in the database
         /// </summary>
-        public List<Budget> Budgets { get; } = databaseReader.GetCollection<Budget>(BudgetCollectionName);
+        public List<Budget> Budgets { get; } = [];
+
+        public BudgetCollection(IDatabaseReader databaseReader)
+        {
+            var budgetsInDatabase = databaseReader.GetCollection<Budget>(BudgetCollectionName);
+            if (budgetsInDatabase != null)
+            {
+                Budgets.AddRange(budgetsInDatabase);
+            }
+        }
 
         /// <summary>
         /// Get the budget for the current month
