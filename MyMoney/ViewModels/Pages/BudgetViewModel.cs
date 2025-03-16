@@ -554,7 +554,7 @@ namespace MyMoney.ViewModels.Pages
         {
             foreach (var budget in Budgets)
             {
-                if (budget.BudgetDate == Convert.ToDateTime(selectedDate))
+                if (budget.BudgetDate.ToString("MMMM, yyyy") == selectedDate.ToString("MMMM, yyyy"))
                 {
                     return true;
                 }
