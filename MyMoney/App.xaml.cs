@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyMoney.Core.Database;
 using MyMoney.Services;
+using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.Pages;
 using MyMoney.ViewModels.Pages.ReportPages;
 using MyMoney.ViewModels.Windows;
@@ -72,6 +73,15 @@ namespace MyMoney
 
                 // Database
                 services.AddSingleton<IDatabaseReader, DatabaseReader>();
+
+                // Custom content dialogs
+                services.AddSingleton<INewAccountDialogService, NewAccountDialogService>();
+                services.AddSingleton<ITransferDialogService, TransferDialogService>();
+                services.AddSingleton<ITransactionDialogService, TransactionDialogService>();
+                services.AddSingleton<IRenameAccountDialogService, RenameAccountDialogService>();
+                services.AddSingleton<IMessageBoxService, MessageBoxService>();
+                services.AddSingleton<INewBudgetDialogService, NewBudgetDialogService>();
+                services.AddSingleton<IBudgetCategoryDialogService, BudgetCategoryDialogService>();
 
             }).Build();
 
