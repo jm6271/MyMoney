@@ -11,12 +11,12 @@ namespace MyMoney.Core.Models
         private int _id;
 
         [ObservableProperty]
-        private ObservableCollection<Transaction> _transactions;
+        private ObservableCollection<Transaction> _transactions = [];
 
         [ObservableProperty]
-        private string _accountName;
+        private string _accountName = "";
 
         [ObservableProperty]
-        private Currency _total;
+        private Currency _total = new (0m);
     }
 }
