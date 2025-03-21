@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using MyMoney.Core.FS.Models;
+using MyMoney.Core.Models;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 using MyMoney.Views.ContentDialogs;

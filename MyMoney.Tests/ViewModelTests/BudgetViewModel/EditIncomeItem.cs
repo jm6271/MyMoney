@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using Moq;
 using MyMoney.Core.Database;
-using MyMoney.Core.FS.Models;
+using MyMoney.Core.Models;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui;

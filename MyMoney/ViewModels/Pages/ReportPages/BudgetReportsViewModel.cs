@@ -3,7 +3,7 @@ using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.VisualElements;
 using MyMoney.Core.Database;
-using MyMoney.Core.FS.Models;
+using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
 using SkiaSharp;
 using System.Collections.ObjectModel;

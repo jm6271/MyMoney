@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-    xmlns:models="clr-namespace:MyMoney.Core.FS.Models;assembly=MyMoney.Core.FS" xmlns:Controls="clr-namespace:MyMoney.Views.Controls"
+    xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core" xmlns:Controls="clr-namespace:MyMoney.Views.Controls"
     x:Class="MyMoney.Views.Pages.DashboardPage"
     Title="DashboardPage"
     d:DataContext="{d:DesignInstance {x:Type local:DashboardPage}, IsDesignTimeCreatable=False}"

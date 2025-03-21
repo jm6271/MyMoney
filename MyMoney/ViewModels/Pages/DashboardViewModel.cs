@@ -1,5 +1,5 @@
 ﻿using System.Collections.ObjectModel;
-using MyMoney.Core.FS.Models;
+using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
 using MyMoney.Core.Database;
 using LiveChartsCore;

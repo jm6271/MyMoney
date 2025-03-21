@@ -1,6 +1,6 @@
 // filepath: MyMoney/Tests/ViewModelTests/BudgetViewModel/DeleteIncomeItem.cs
 using MyMoney.ViewModels.Pages;
-using MyMoney.Core.FS.Models;
+using MyMoney.Core.Models;
 using Moq;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.Core.Database;

@@ -1,4 +1,4 @@
-﻿using MyMoney.Core.FS.Models;
+﻿using MyMoney.Core.Models;
 
 namespace MyMoney.Core.Database
 {
