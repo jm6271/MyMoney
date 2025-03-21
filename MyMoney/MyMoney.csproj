@@ -29,7 +29,6 @@
     <None Remove="Assets\pexels-johannes-plenio-1103970.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MyMoney.Core.FS\MyMoney.Core.FS.fsproj" />
     <ProjectReference Include="..\MyMoney.Core\MyMoney.Core.csproj" />
   </ItemGroup>
   <ItemGroup>

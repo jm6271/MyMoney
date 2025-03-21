@@ -7,7 +7,7 @@
       xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
       xmlns:local="clr-namespace:MyMoney.Views.Pages" 
       xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
-      xmlns:models="clr-namespace:MyMoney.Core.FS.Models;assembly=MyMoney.Core.FS" xmlns:Controls="clr-namespace:MyMoney.Views.Controls" x:Class="MyMoney.Views.Pages.AccountsPage"
+      xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core" xmlns:Controls="clr-namespace:MyMoney.Views.Controls" x:Class="MyMoney.Views.Pages.AccountsPage"
       xmlns:helpers="clr-namespace:MyMoney.Helpers"
       mc:Ignorable="d" 
       d:DesignHeight="800" d:DesignWidth="1200"

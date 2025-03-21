@@ -6,7 +6,7 @@
         [TestMethod]
         public void TestCurrencyToString()
         {
-            Core.FS.Models.Currency currency = new(25.99m);
+            Core.Models.Currency currency = new(25.99m);
 
             Assert.AreEqual("$25.99", currency.ToString());
 

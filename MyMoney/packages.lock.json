@@ -67,11 +67,6 @@
           "WPF-UI.Abstractions": "4.0.0"
         }
       },
-      "FSharp.Core": {
-        "type": "Transitive",
-        "resolved": "9.0.201",
-        "contentHash": "Ozq4T0ISTkqTYJ035XW/JkdDDaXofbykvfyVwkjLSqaDZ/4uNXfpf92cjcMI9lf9CxWqmlWHScViPh/4AvnWcw=="
-      },
       "HarfBuzzSharp": {
         "type": "Transitive",
         "resolved": "8.3.0.1",
@@ -434,14 +429,7 @@
         "type": "Project",
         "dependencies": {
           "CommunityToolkit.Mvvm": "[8.4.0, )",
-          "LiteDB": "[5.0.21, )",
-          "MyMoney.Core.FS": "[1.0.0, )"
-        }
-      },
-      "mymoney.core.fs": {
-        "type": "Project",
-        "dependencies": {
-          "FSharp.Core": "[9.0.201, )"
+          "LiteDB": "[5.0.21, )"
         }
       }
     }

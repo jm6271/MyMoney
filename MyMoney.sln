@@ -12,8 +12,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyMoney.Tests", "MyMoney.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyMoney.Core", "MyMoney.Core\MyMoney.Core.csproj", "{33C73902-75C4-4195-8F04-2B86A007D31B}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "MyMoney.Core.FS", "MyMoney.Core.FS\MyMoney.Core.FS.fsproj", "{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -88,26 +86,6 @@ Global
 		{33C73902-75C4-4195-8F04-2B86A007D31B}.Release|x64.Build.0 = Release|Any CPU
 		{33C73902-75C4-4195-8F04-2B86A007D31B}.Release|x86.ActiveCfg = Release|Any CPU
 		{33C73902-75C4-4195-8F04-2B86A007D31B}.Release|x86.Build.0 = Release|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Debug|ARM.Build.0 = Debug|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Debug|x64.Build.0 = Debug|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Debug|x86.Build.0 = Debug|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Release|Any CPU.Build.0 = Release|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Release|ARM.ActiveCfg = Release|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Release|ARM.Build.0 = Release|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Release|ARM64.Build.0 = Release|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Release|x64.ActiveCfg = Release|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Release|x64.Build.0 = Release|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Release|x86.ActiveCfg = Release|Any CPU
-		{33714D49-A7AF-4E04-86A5-85BB7CFCCF11}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
 ﻿using MyMoney.ViewModels.Pages.ReportPages;
 using Moq;
-using MyMoney.Core.FS.Models;
+using MyMoney.Core.Models;
 
 namespace MyMoney.Tests.ViewModelTests
 {

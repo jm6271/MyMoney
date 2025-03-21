@@ -1,4 +1,4 @@
-﻿using MyMoney.Core.FS.Models;
+﻿using MyMoney.Core.Models;
 using MyMoney.ViewModels.Pages;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
