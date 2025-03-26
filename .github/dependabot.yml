@@ -19,7 +19,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "07:00"
+      time: "07:10"
       timezone: "America/New_York"
     groups:
       dependencies:
@@ -33,7 +33,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "07:00"
+      time: "07:20"
       timezone: "America/New_York"
     groups:
       dependencies:
