@@ -17,21 +17,10 @@
           "System.Buffers": "4.5.1"
         }
       },
-      "FSharp.Core": {
-        "type": "Transitive",
-        "resolved": "9.0.201",
-        "contentHash": "Ozq4T0ISTkqTYJ035XW/JkdDDaXofbykvfyVwkjLSqaDZ/4uNXfpf92cjcMI9lf9CxWqmlWHScViPh/4AvnWcw=="
-      },
       "System.Buffers": {
         "type": "Transitive",
         "resolved": "4.5.1",
         "contentHash": "Rw7ijyl1qqRS0YQD/WycNst8hUUMgrMH4FCn1nNm27M4VxchZ1js3fVjQaANHO5f3sN4isvP4a+Met9Y4YomAg=="
-      },
-      "mymoney.core.fs": {
-        "type": "Project",
-        "dependencies": {
-          "FSharp.Core": "[9.0.201, )"
-        }
       }
     }
   }
