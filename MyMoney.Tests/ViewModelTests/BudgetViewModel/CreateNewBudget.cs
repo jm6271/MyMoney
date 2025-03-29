@@ -121,7 +121,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 BudgetTitle = DateTime.Now.ToString("MMMM, yyyy", System.Globalization.CultureInfo.InvariantCulture),
                 BudgetDate = DateTime.Now,
                 BudgetIncomeItems = { new BudgetItem { Category = "Income", Amount = new Currency(1000) } },
-                BudgetExpenseItems = { new BudgetItem { Category = "Expense", Amount = new Currency(500) } }
+                BudgetExpenseItems = { new BudgetExpenseCategory { CategoryName = "Expense" } }
             };
 
             _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
@@ -154,7 +154,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             Assert.AreEqual(1, _viewModel.FutureBudgets[0].BudgetIncomeItems.Count);
             Assert.AreEqual(1, _viewModel.FutureBudgets[0].BudgetExpenseItems.Count);
             Assert.AreEqual("Income", _viewModel.FutureBudgets[0].BudgetIncomeItems[0].Category);
-            Assert.AreEqual("Expense", _viewModel.FutureBudgets[0].BudgetExpenseItems[0].Category);
+            Assert.AreEqual("Expense", _viewModel.FutureBudgets[0].BudgetExpenseItems[0].CategoryName);
         }
 
         [TestMethod]

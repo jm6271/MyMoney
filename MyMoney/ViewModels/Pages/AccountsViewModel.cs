@@ -88,7 +88,10 @@ namespace MyMoney.ViewModels.Pages
 
             foreach (var item in expenseLst)
             {
-                CategoryNames.Add(item.Category);
+                foreach (var subItem in item.SubItems)
+                {
+                    CategoryNames.Add(subItem.Category);
+                }
             }
 
         }

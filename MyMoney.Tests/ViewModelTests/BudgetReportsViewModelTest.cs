@@ -21,10 +21,14 @@ namespace MyMoney.Tests.ViewModelTests
                         new BudgetItem { Category = "Income 2", Amount = new Currency(500) }
                         ],
                     BudgetExpenseItems = [
-                        new BudgetItem { Category = "Expense 1", Amount = new Currency(150) },
-                        new BudgetItem { Category = "Expense 2", Amount = new Currency(750) },
-                        new BudgetItem { Category = "Expense 3", Amount = new Currency(250) },
-                        new BudgetItem { Category = "Expense 4", Amount = new Currency(350) }
+                        new BudgetExpenseCategory { CategoryName = "Category 1", SubItems = [
+                            new () { Category = "Expense 1", Amount = new(105) },
+                            new () { Category = "Expense 2", Amount = new(750) }
+                            ]},
+                        new BudgetExpenseCategory { CategoryName = "Category 2", SubItems = [
+                            new () { Category = "Expense 3", Amount = new(250) },
+                            new () { Category = "Expense 4", Amount = new(350) }
+                            ]},
                         ]
                 }
             ]);

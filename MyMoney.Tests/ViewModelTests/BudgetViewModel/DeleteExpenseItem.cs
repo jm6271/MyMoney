@@ -62,7 +62,7 @@ public class DeleteExpenseItemTests
         var budget = new Budget
         {
             BudgetDate = DateTime.Now,
-            BudgetExpenseItems = new ObservableCollection<BudgetItem>()
+            BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>()
         };
         _viewModel.CurrentBudget = budget;
         _viewModel.IsEditingEnabled = false;
@@ -86,9 +86,9 @@ public class DeleteExpenseItemTests
         var budget = new Budget
         {
             BudgetDate = DateTime.Now,
-            BudgetExpenseItems = new ObservableCollection<BudgetItem>
+            BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>
             {
-                new() { Category = "Test", Amount = new Currency(100m), Id = 1 }
+                new() { CategoryName = "Test", /* Amount = new Currency(100m), Id = 1 */}
             }
         };
         _viewModel.CurrentBudget = budget;
@@ -115,11 +115,11 @@ public class DeleteExpenseItemTests
         var budget = new Budget
         {
             BudgetDate = DateTime.Now,
-            BudgetExpenseItems = new ObservableCollection<BudgetItem>
+            BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>
             {
-                new() { Category = "Item1", Amount = new Currency(100m), Id = 1 },
-                new() { Category = "Item2", Amount = new Currency(200m), Id = 2 },
-                new() { Category = "Item3", Amount = new Currency(300m), Id = 3 }
+                new() {CategoryName = "Item1"},
+                new() {CategoryName = "Item2"},
+                new() {CategoryName = "Item3"}
             }
         };
         _viewModel.CurrentBudget = budget;
@@ -137,8 +137,8 @@ public class DeleteExpenseItemTests
 
         // Assert
         Assert.AreEqual(2, budget.BudgetExpenseItems.Count);
-        Assert.AreEqual("Item1", budget.BudgetExpenseItems[0].Category);
-        Assert.AreEqual("Item3", budget.BudgetExpenseItems[1].Category);
+        Assert.AreEqual("Item1", budget.BudgetExpenseItems[0].CategoryName);
+        Assert.AreEqual("Item3", budget.BudgetExpenseItems[1].CategoryName);
         Assert.AreEqual(1, budget.BudgetExpenseItems[0].Id);
         Assert.AreEqual(2, budget.BudgetExpenseItems[1].Id);
     }

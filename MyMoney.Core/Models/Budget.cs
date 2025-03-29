@@ -18,6 +18,6 @@ namespace MyMoney.Core.Models
         private ObservableCollection<BudgetItem> _budgetIncomeItems = [];
 
         [ObservableProperty]
-        private ObservableCollection<BudgetItem> _budgetExpenseItems = [];
+        private ObservableCollection<BudgetExpenseCategory> _budgetExpenseItems = [];
     }
 }
