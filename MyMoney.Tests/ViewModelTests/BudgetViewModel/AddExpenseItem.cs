@@ -4,6 +4,7 @@ using MyMoney.Core.Models;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.ViewModels.Pages;
+using System.Printing;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -19,6 +20,7 @@ public class AddExpenseItemTests
     private Mock<IMessageBoxService> _mockMessageBoxService;
     private Mock<INewBudgetDialogService> _mockNewBudgetDialogService;
     private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
+    private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
 
     [TestInitialize]
@@ -29,6 +31,7 @@ public class AddExpenseItemTests
         _mockMessageBoxService = new Mock<IMessageBoxService>();
         _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
         _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
+        _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
 
         // Setup database reader to return empty collection
         _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
@@ -39,7 +42,8 @@ public class AddExpenseItemTests
             _mockDatabaseReader.Object,
             _mockMessageBoxService.Object,
             _mockNewBudgetDialogService.Object,
-            _mockBudgetCategoryDialogService.Object
+            _mockBudgetCategoryDialogService.Object,
+            _mockExpenseGroupDialogService.Object
         );
     }
 
@@ -95,6 +99,10 @@ public class AddExpenseItemTests
     {
         // Arrange
         _viewModel.CurrentBudget = new Budget();
+        BudgetExpenseCategory budgetExpenseCategory = new();
+        budgetExpenseCategory.CategoryName = "Test Group";
+        _viewModel.CurrentBudget.BudgetExpenseItems.Add(budgetExpenseCategory);
+
         var dialogViewModel = new BudgetCategoryDialogViewModel
         {
             BudgetCategory = "Test Category",
@@ -106,11 +114,12 @@ public class AddExpenseItemTests
         _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
 
         // Act
-        await _viewModel.AddExpenseItemCommand.ExecuteAsync(null);
+        await _viewModel.AddExpenseItemCommand.ExecuteAsync(budgetExpenseCategory);
 
         // Assert
         Assert.AreEqual(1, _viewModel.CurrentBudget.BudgetExpenseItems.Count);
-        Assert.AreEqual("Test Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].CategoryName);
-        // Assert.AreEqual(100m, _viewModel.CurrentBudget.BudgetExpenseItems[0].Amount.Value);
+        Assert.AreEqual(1, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems.Count);
+        Assert.AreEqual("Test Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Category);
+        Assert.AreEqual(100m, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Amount.Value);
     }
 }

@@ -17,6 +17,7 @@ public class EditExpenseItem
     private Mock<IMessageBoxService> _mockMessageBoxService;
     private Mock<INewBudgetDialogService> _mockNewBudgetDialogService;
     private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
+    private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
     private Mock<Core.Database.IDatabaseReader> _mockDatabaseReader;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
 
@@ -27,6 +28,7 @@ public class EditExpenseItem
         _mockMessageBoxService = new Mock<IMessageBoxService>();
         _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
         _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
+        _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
         _mockDatabaseReader = new Mock<Core.Database.IDatabaseReader>();
 
         _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
@@ -37,7 +39,8 @@ public class EditExpenseItem
             _mockDatabaseReader.Object,
             _mockMessageBoxService.Object,
             _mockNewBudgetDialogService.Object,
-            _mockBudgetCategoryDialogService.Object
+            _mockBudgetCategoryDialogService.Object,
+            _mockExpenseGroupDialogService.Object
         );
     }
 

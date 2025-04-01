@@ -17,6 +17,7 @@ public class DeleteExpenseItemTests
     private Mock<INewBudgetDialogService> _newBudgetDialogServiceMock;
     private Mock<IBudgetCategoryDialogService> _budgetCategoryDialogServiceMock;
     private Mock<Core.Database.IDatabaseReader> _databaseReaderMock;
+    private Mock<INewExpenseGroupDialogService> _expenseGroupDialogServiceMock;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
 
     [TestInitialize]
@@ -27,6 +28,7 @@ public class DeleteExpenseItemTests
         _newBudgetDialogServiceMock = new Mock<INewBudgetDialogService>();
         _budgetCategoryDialogServiceMock = new Mock<IBudgetCategoryDialogService>();
         _databaseReaderMock = new Mock<Core.Database.IDatabaseReader>();
+        _expenseGroupDialogServiceMock = new Mock<INewExpenseGroupDialogService>();
 
         _databaseReaderMock.Setup(x => x.GetCollection<Budget>("Budgets"))
             .Returns(new List<Budget>());
@@ -36,7 +38,8 @@ public class DeleteExpenseItemTests
             _databaseReaderMock.Object,
             _messageBoxServiceMock.Object,
             _newBudgetDialogServiceMock.Object,
-            _budgetCategoryDialogServiceMock.Object
+            _budgetCategoryDialogServiceMock.Object,
+            _expenseGroupDialogServiceMock.Object
         );
     }
 

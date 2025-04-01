@@ -136,7 +136,7 @@
             <ItemsControl ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <ui:CardExpander Margin="0,8,0,8">
+                        <ui:CardExpander Margin="0,8,0,8" IsExpanded="True">
                             <ui:CardExpander.Header>
                                 <ui:TextBlock FontTypography="Subtitle" Text="{Binding CategoryName}" />
                             </ui:CardExpander.Header>
