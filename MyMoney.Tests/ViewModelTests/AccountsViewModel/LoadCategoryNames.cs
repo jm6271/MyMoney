@@ -70,8 +70,13 @@ public class LoadCategoryNames
             ],
             BudgetExpenseItems =
             [
-                new BudgetItem { Category = "Groceries" },
-                new BudgetItem { Category = "Utilities" }
+                new BudgetExpenseCategory { CategoryName = "Category 1", SubItems = [
+                    new () { Category = "Groceries"},
+                    new () { Category = "Fast Food"}
+                    ] },
+                new BudgetExpenseCategory { CategoryName = "Category 1", SubItems = [
+                    new () {Category = "Utilities" }
+                    ] }
             ],
             BudgetDate = DateTime.Now,
             BudgetTitle = DateTime.Now.ToString("MMMM, yyyy"),
@@ -91,11 +96,12 @@ public class LoadCategoryNames
             _messageBoxService.Object);
 
         // Assert
-        Assert.AreEqual(4, _viewModel.CategoryNames.Count);
+        Assert.AreEqual(5, _viewModel.CategoryNames.Count);
         CollectionAssert.Contains(_viewModel.CategoryNames.ToList(), "Salary");
         CollectionAssert.Contains(_viewModel.CategoryNames.ToList(), "Bonus");
         CollectionAssert.Contains(_viewModel.CategoryNames.ToList(), "Groceries");
         CollectionAssert.Contains(_viewModel.CategoryNames.ToList(), "Utilities");
+        CollectionAssert.Contains(_viewModel.CategoryNames.ToList(), "Fast Food");
     }
 
     [TestMethod]
@@ -105,7 +111,7 @@ public class LoadCategoryNames
         var budget = new Budget
         {
             BudgetIncomeItems = [new BudgetItem { Category = "Salary" }],
-            BudgetExpenseItems = [new BudgetItem { Category = "Groceries" }],
+            BudgetExpenseItems = [new BudgetExpenseCategory { CategoryName = "Category 1", SubItems = [ new() { Category = "Groceries"}] }],
             BudgetDate = DateTime.Now,
             BudgetTitle = DateTime.Now.ToString("MMMM, yyyy"),
         };

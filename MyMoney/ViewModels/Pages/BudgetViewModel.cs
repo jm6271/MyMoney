@@ -85,6 +85,7 @@ namespace MyMoney.ViewModels.Pages
         private readonly IMessageBoxService _messageBoxService;
         private readonly INewBudgetDialogService _newBudgetDialogService;
         private readonly IBudgetCategoryDialogService _budgetCategoryDialogService;
+        private readonly INewExpenseGroupDialogService _newExpenseGroupDialogService;
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
@@ -139,12 +140,13 @@ namespace MyMoney.ViewModels.Pages
 
         public BudgetViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader,
             IMessageBoxService messageBoxService, INewBudgetDialogService newBudgetDialogService,
-            IBudgetCategoryDialogService budgetCategoryDialogService)
+            IBudgetCategoryDialogService budgetCategoryDialogService, INewExpenseGroupDialogService newExpenseGroupDialogService)
         { 
             _contentDialogService = contentDialogService;
             _messageBoxService = messageBoxService;
             _newBudgetDialogService = newBudgetDialogService;
             _budgetCategoryDialogService = budgetCategoryDialogService;
+            _newExpenseGroupDialogService = newExpenseGroupDialogService;
 
             var budgetCollection = databaseReader.GetCollection<Budget>("Budgets");
 
@@ -247,7 +249,7 @@ namespace MyMoney.ViewModels.Pages
 
             foreach (var item in CurrentBudget.BudgetExpenseItems)
             {
-                ExpenseTotal += item.Amount;
+                ExpenseTotal += item.CategoryTotal;
             }
 
             // write the items to the database
@@ -279,7 +281,7 @@ namespace MyMoney.ViewModels.Pages
             Dictionary<string, double> expenseTotals = [];
             foreach (var item in CurrentBudget.BudgetExpenseItems)
             {
-                expenseTotals.Add(item.Category, (double)item.Amount.Value);
+                expenseTotals.Add(item.CategoryName, (double)item.CategoryTotal.Value);
             }
 
             ExpensePercentagesSeries = new ISeries[expenseTotals.Count];
@@ -331,7 +333,30 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task AddExpenseItem()
+        private async Task AddExpenseGroup()
+        {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
+            var viewModel = new NewExpenseGroupDialogViewModel();
+            _newExpenseGroupDialogService.SetViewModel(viewModel);
+            var result = await _newExpenseGroupDialogService.ShowDialogAsync(_contentDialogService);
+            viewModel = _newExpenseGroupDialogService.GetViewModel();
+
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
+            {
+                // Add a new expense group
+                BudgetExpenseCategory expenseGroup = new();
+                expenseGroup.CategoryName = viewModel.GroupName;
+                CurrentBudget.BudgetExpenseItems.Add(expenseGroup);
+
+                // Update totals and write to database
+                UpdateListViewTotals();
+            }
+        }
+
+        [RelayCommand]
+        private async Task AddExpenseItem(BudgetExpenseCategory parameter)
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -351,7 +376,7 @@ namespace MyMoney.ViewModels.Pages
                 };
 
                 // Add the item to the budget expense items list
-                CurrentBudget.BudgetExpenseItems.Add(item);
+                parameter.SubItems.Add(item);
 
                 // Recalculate the total of the expense items
                 UpdateListViewTotals();
@@ -424,8 +449,8 @@ namespace MyMoney.ViewModels.Pages
             if (!IsEditingEnabled) return;
 
             var viewModel = new BudgetCategoryDialogViewModel();
-            viewModel.BudgetCategory = CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex].Category;
-            viewModel.BudgetAmount = CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex].Amount;
+            viewModel.BudgetCategory = CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex].CategoryName;
+            // viewModel.BudgetAmount = CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex].Amount;
 
             _budgetCategoryDialogService.SetViewModel(viewModel);
             var result = await _budgetCategoryDialogService.ShowDialogAsync(_contentDialogService, "Edit Expense Item");
@@ -434,10 +459,10 @@ namespace MyMoney.ViewModels.Pages
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
                 // modify the item at the selected index
-                BudgetItem expenseItem = new()
+                BudgetExpenseCategory expenseItem = new()
                 {
-                    Category = viewModel.BudgetCategory,
-                    Amount = viewModel.BudgetAmount
+                    CategoryName = viewModel.BudgetCategory,
+                    // Amount = viewModel.BudgetAmount
                 };
 
                 // assign the selected index of the list with the new item

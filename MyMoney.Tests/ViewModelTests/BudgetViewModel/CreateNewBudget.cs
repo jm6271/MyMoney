@@ -18,6 +18,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
         private Mock<IMessageBoxService> _mockMessageBoxService = null!;
         private Mock<INewBudgetDialogService> _mockNewBudgetDialogService = null!;
         private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService = null!;
+        private Mock<INewExpenseGroupDialogService> _mockNewExpenseDialogService = null!;
         private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel = null!;
 
         [TestInitialize]
@@ -28,6 +29,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             _mockMessageBoxService = new Mock<IMessageBoxService>();
             _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
             _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
+            _mockNewExpenseDialogService = new Mock<INewExpenseGroupDialogService>();
 
             _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
                 .Returns(new List<Budget>());
@@ -37,7 +39,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockDatabaseReader.Object,
                 _mockMessageBoxService.Object,
                 _mockNewBudgetDialogService.Object,
-                _mockBudgetCategoryDialogService.Object
+                _mockBudgetCategoryDialogService.Object,
+                _mockNewExpenseDialogService.Object
             );
         }
 
@@ -98,7 +101,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockDatabaseReader.Object,
                 _mockMessageBoxService.Object,
                 _mockNewBudgetDialogService.Object,
-                _mockBudgetCategoryDialogService.Object
+                _mockBudgetCategoryDialogService.Object,
+                _mockNewExpenseDialogService.Object
             );
 
             // Act
@@ -121,7 +125,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 BudgetTitle = DateTime.Now.ToString("MMMM, yyyy", System.Globalization.CultureInfo.InvariantCulture),
                 BudgetDate = DateTime.Now,
                 BudgetIncomeItems = { new BudgetItem { Category = "Income", Amount = new Currency(1000) } },
-                BudgetExpenseItems = { new BudgetItem { Category = "Expense", Amount = new Currency(500) } }
+                BudgetExpenseItems = { new BudgetExpenseCategory { CategoryName = "Expense" } }
             };
 
             _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
@@ -143,7 +147,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockDatabaseReader.Object,
                 _mockMessageBoxService.Object,
                 _mockNewBudgetDialogService.Object,
-                _mockBudgetCategoryDialogService.Object
+                _mockBudgetCategoryDialogService.Object,
+                _mockNewExpenseDialogService.Object
             );
 
             // Act
@@ -154,7 +159,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             Assert.AreEqual(1, _viewModel.FutureBudgets[0].BudgetIncomeItems.Count);
             Assert.AreEqual(1, _viewModel.FutureBudgets[0].BudgetExpenseItems.Count);
             Assert.AreEqual("Income", _viewModel.FutureBudgets[0].BudgetIncomeItems[0].Category);
-            Assert.AreEqual("Expense", _viewModel.FutureBudgets[0].BudgetExpenseItems[0].Category);
+            Assert.AreEqual("Expense", _viewModel.FutureBudgets[0].BudgetExpenseItems[0].CategoryName);
         }
 
         [TestMethod]
