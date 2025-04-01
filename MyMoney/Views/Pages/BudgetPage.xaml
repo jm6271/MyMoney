@@ -128,7 +128,7 @@
 
             <StackPanel Orientation="Horizontal">
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
-                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddExpenseItemCommand}" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
+                <ui:Button Margin="8,0,0,0" IsEnabled="{Binding ViewModel.IsEditingEnabled}" Command="{Binding ViewModel.AddExpenseGroupCommand}">
                     <ui:SymbolIcon Symbol="Add24"/>
                 </ui:Button>
             </StackPanel>
@@ -136,9 +136,11 @@
             <ItemsControl ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <ui:Card Margin="0,8,0,8">
+                        <ui:CardExpander Margin="0,8,0,8">
+                            <ui:CardExpander.Header>
+                                <ui:TextBlock FontTypography="Subtitle" Text="{Binding CategoryName}" />
+                            </ui:CardExpander.Header>
                             <StackPanel>
-                                <ui:TextBlock FontTypography="Subtitle" Text="{Binding CategoryName}" Margin="0,0,0,12"/>
                                 <ui:ListView ItemsSource="{Binding SubItems}">
                                     <ui:ListView.ItemTemplate>
                                         <DataTemplate>
@@ -154,8 +156,13 @@
                                         </DataTemplate>
                                     </ui:ListView.ItemTemplate>
                                 </ui:ListView>
+
+                                <ui:Button Command="{Binding DataContext.ViewModel.AddExpenseItemCommand, 
+                                                    RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                    CommandParameter="{Binding}"
+                                                    Content="Add Item"/>
                             </StackPanel>
-                        </ui:Card>
+                        </ui:CardExpander>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

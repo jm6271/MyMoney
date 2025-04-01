@@ -82,6 +82,7 @@ namespace MyMoney
                 services.AddSingleton<IMessageBoxService, MessageBoxService>();
                 services.AddSingleton<INewBudgetDialogService, NewBudgetDialogService>();
                 services.AddSingleton<IBudgetCategoryDialogService, BudgetCategoryDialogService>();
+                services.AddSingleton<INewExpenseGroupDialogService, NewExpenseGroupDialogService>();
 
             }).Build();
 
