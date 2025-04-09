@@ -19,6 +19,9 @@ namespace MyMoney.Core.Models
         [ObservableProperty]
         private ObservableCollection<BudgetItem> _subItems = [];
 
+        [ObservableProperty]
+        private int _selectedSubItemIndex = 1;
+
         public Currency CategoryTotal
         {
             get

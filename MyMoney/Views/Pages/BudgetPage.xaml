@@ -141,7 +141,18 @@
                                 <ui:TextBlock FontTypography="Subtitle" Text="{Binding CategoryName}" />
                             </ui:CardExpander.Header>
                             <StackPanel>
-                                <ui:ListView ItemsSource="{Binding SubItems}">
+                                <ui:ListView ItemsSource="{Binding SubItems}" SelectedIndex="{Binding SelectedSubItemIndex}"
+                                             Tag="{Binding DataContext.ViewModel, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">
+                                    <ui:ListView.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Edit" Command="{Binding PlacementTarget.Tag.EditExpenseItemCommand,
+                                                                            RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"
+                                                                            CommandParameter="{Binding}"/>
+                                            <MenuItem Header="Delete" Command="{Binding PlacementTarget.Tag.DeleteExpenseItemCommand,
+                                                                            RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"
+                                                                            CommandParameter="{Binding}"/>
+                                        </ContextMenu>
+                                    </ui:ListView.ContextMenu>
                                     <ui:ListView.ItemTemplate>
                                         <DataTemplate>
                                             <Grid>

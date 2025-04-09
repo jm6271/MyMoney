@@ -443,14 +443,16 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task EditExpenseItem()
+        private async Task EditExpenseItem(BudgetExpenseCategory parameter)
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
 
-            var viewModel = new BudgetCategoryDialogViewModel();
-            viewModel.BudgetCategory = CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex].CategoryName;
-            // viewModel.BudgetAmount = CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex].Amount;
+            var viewModel = new BudgetCategoryDialogViewModel
+            {
+                BudgetCategory = parameter.SubItems[parameter.SelectedSubItemIndex].Category,
+                BudgetAmount = parameter.SubItems[parameter.SelectedSubItemIndex].Amount,
+            };
 
             _budgetCategoryDialogService.SetViewModel(viewModel);
             var result = await _budgetCategoryDialogService.ShowDialogAsync(_contentDialogService, "Edit Expense Item");
@@ -459,14 +461,14 @@ namespace MyMoney.ViewModels.Pages
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
                 // modify the item at the selected index
-                BudgetExpenseCategory expenseItem = new()
+                BudgetItem expenseItem = new()
                 {
-                    CategoryName = viewModel.BudgetCategory,
-                    // Amount = viewModel.BudgetAmount
+                    Category = viewModel.BudgetCategory,
+                    Amount = viewModel.BudgetAmount
                 };
 
                 // assign the selected index of the list with the new item
-                CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex] = expenseItem;
+                parameter.SubItems[parameter.SelectedSubItemIndex] = expenseItem;
 
                 // Recalculate the total of the expense items
                 UpdateListViewTotals();
@@ -474,7 +476,7 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task DeleteExpenseItem()
+        private async Task DeleteExpenseItem(BudgetExpenseCategory parameter)
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -487,13 +489,13 @@ namespace MyMoney.ViewModels.Pages
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
 
-            CurrentBudget.BudgetExpenseItems.RemoveAt(ExpenseItemsSelectedIndex);
+            parameter.SubItems.RemoveAt(parameter.SelectedSubItemIndex);
 
             // replace the id property of the remaining elements so the IDs are
             // in a consecutive order (We have all kinds of problems when we don't do this)
-            for (int i = 0; i < CurrentBudget.BudgetExpenseItems.Count; i++)
+            for (int i = 0; i < parameter.SubItems.Count; i++)
             {
-                CurrentBudget.BudgetExpenseItems[i].Id = i + 1;
+                parameter.SubItems[i].Id = i + 1;
             }
 
             UpdateListViewTotals();

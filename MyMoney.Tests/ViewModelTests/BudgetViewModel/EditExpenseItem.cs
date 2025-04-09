@@ -52,7 +52,9 @@ public class EditExpenseItem
         {
             BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>
             {
-                new() { CategoryName = "Original Category", /* Amount = new Currency(100m) */ }
+                new() { CategoryName = "Group 1", SubItems = [
+                    new() { Category = "Original Category", Amount = new(100m)}
+                    ], SelectedSubItemIndex = 0 }
             }
         };
         _viewModel.CurrentBudget = testBudget;
@@ -73,11 +75,12 @@ public class EditExpenseItem
             .Returns(dialogViewModel);
 
         // Act
-        await _viewModel.EditExpenseItemCommand.ExecuteAsync(null);
+        await _viewModel.EditExpenseItemCommand.ExecuteAsync(_viewModel.CurrentBudget.BudgetExpenseItems[0]);
 
         // Assert
-        Assert.AreEqual("Updated Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].CategoryName);
-        // Assert.AreEqual(200m, _viewModel.CurrentBudget.BudgetExpenseItems[0].Amount.Value);
+        Assert.AreEqual(1, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems.Count);
+        Assert.AreEqual("Updated Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Category);
+        Assert.AreEqual(200m, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Amount.Value);
     }
 
     [TestMethod]
@@ -88,9 +91,12 @@ public class EditExpenseItem
         {
             BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>
             {
-                new() { CategoryName = "Original Category" }
+                new() { CategoryName = "Group", SubItems = [
+                    new() {Category = "Original Category", Amount = new(100m) }
+                    ], SelectedSubItemIndex = 0 }
             }
         };
+        
         _viewModel.CurrentBudget = testBudget;
         _viewModel.ExpenseItemsSelectedIndex = 0;
 
@@ -99,11 +105,11 @@ public class EditExpenseItem
             .ReturnsAsync(ContentDialogResult.Secondary);
 
         // Act
-        await _viewModel.EditExpenseItemCommand.ExecuteAsync(null);
+        await _viewModel.EditExpenseItemCommand.ExecuteAsync(_viewModel.CurrentBudget.BudgetExpenseItems[0]);
 
         // Assert
-        Assert.AreEqual("Original Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].CategoryName);
-        // Assert.AreEqual(100m, _viewModel.CurrentBudget.BudgetExpenseItems[0].Amount.Value);
+        Assert.AreEqual("Original Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Category);
+        Assert.AreEqual(100m, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Amount.Value);
     }
 
     [TestMethod]
@@ -114,7 +120,9 @@ public class EditExpenseItem
         {
             BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>
             {
-                new() { CategoryName = "Original Category" }
+                new() { CategoryName = "Original Group", SubItems = [
+                    new() {Category = "Original Category", Amount = new(100m) }
+                    ] }
             }
         };
         _viewModel.CurrentBudget = testBudget;
@@ -122,11 +130,11 @@ public class EditExpenseItem
         _viewModel.IsEditingEnabled = false;
 
         // Act
-        await _viewModel.EditExpenseItemCommand.ExecuteAsync(null);
+        await _viewModel.EditExpenseItemCommand.ExecuteAsync(_viewModel.CurrentBudget.BudgetExpenseItems[0]);
 
         // Assert
-        Assert.AreEqual("Original Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].CategoryName);
-        // Assert.AreEqual(100m, _viewModel.CurrentBudget.BudgetExpenseItems[0].Amount.Value);
+        Assert.AreEqual("Original Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Category);
+        Assert.AreEqual(100m, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Amount.Value);
         _mockBudgetCategoryDialogService.Verify(
             x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()), 
             Times.Never);
