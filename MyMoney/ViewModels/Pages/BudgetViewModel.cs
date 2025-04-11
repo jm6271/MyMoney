@@ -340,7 +340,7 @@ namespace MyMoney.ViewModels.Pages
 
             var viewModel = new NewExpenseGroupDialogViewModel();
             _newExpenseGroupDialogService.SetViewModel(viewModel);
-            var result = await _newExpenseGroupDialogService.ShowDialogAsync(_contentDialogService);
+            var result = await _newExpenseGroupDialogService.ShowDialogAsync(_contentDialogService, "New Expense Group");
             viewModel = _newExpenseGroupDialogService.GetViewModel();
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
@@ -443,6 +443,27 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
+        private async Task EditExpenseGroup(BudgetExpenseCategory parameter)
+        {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
+            var viewModel = new NewExpenseGroupDialogViewModel
+            {
+                GroupName = parameter.CategoryName,
+            };
+
+            _newExpenseGroupDialogService.SetViewModel(viewModel);
+            var result = await _newExpenseGroupDialogService.ShowDialogAsync(_contentDialogService, "Edit Group Name");
+            viewModel = _newExpenseGroupDialogService.GetViewModel();
+
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
+            {
+                parameter.CategoryName = viewModel.GroupName;
+            }
+        }
+
+        [RelayCommand]
         private async Task EditExpenseItem(BudgetExpenseCategory parameter)
         {
             if (CurrentBudget == null) return;
@@ -473,6 +494,24 @@ namespace MyMoney.ViewModels.Pages
                 // Recalculate the total of the expense items
                 UpdateListViewTotals();
             }
+        }
+
+        [RelayCommand]
+        private async Task DeleteExpenseGroup(BudgetExpenseCategory parameter)
+        {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
+            // as user if they really want to delete the group
+            var result = await _messageBoxService.ShowAsync("Delete Group?",
+                "Are you sure you want to delete the selected category?",
+                "Yes",
+                "No");
+
+            if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
+
+            // delete the item
+            CurrentBudget.BudgetExpenseItems.Remove(parameter);
         }
 
         [RelayCommand]
