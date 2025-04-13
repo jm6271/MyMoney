@@ -24,7 +24,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Assets\MyMoney-icon-256.png" />
-    <None Remove="Assets\MyMoney-icon-1024.png" />
     <None Remove="Assets\MyMoney-Banner.png" />
     <None Remove="Assets\pexels-johannes-plenio-1103970.jpg" />
   </ItemGroup>
@@ -33,8 +32,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Assets\MyMoney-icon-256.png" />
-    <Resource Include="Assets\MyMoney-icon-1024.png" />
     <Resource Include="Assets\MyMoney-Banner.png" />
-    <Resource Include="Assets\pexels-johannes-plenio-1103970.jpg" />
   </ItemGroup>
 </Project>
