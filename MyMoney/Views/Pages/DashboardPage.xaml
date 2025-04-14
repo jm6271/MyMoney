@@ -18,14 +18,22 @@
     mc:Ignorable="d"
     Loaded="Page_Loaded">
 
-    <StackPanel>
-        <Border Height="200" CornerRadius="8">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="200"/>
+            <RowDefinition Height="1*"/>
+        </Grid.RowDefinitions>
+        <Border VerticalAlignment="Stretch" CornerRadius="8" Grid.Row="0">
             <Border.Background>
-                <ImageBrush ImageSource="pack://application:,,,/Assets/MyMoney-Banner.png"/>
+                <ImageBrush ImageSource="pack://application:,,,/Assets/MyMoney-Banner.png" Stretch="Fill"/>
             </Border.Background>
+            <StackPanel VerticalAlignment="Center" Margin="24,0,0,0">
+                <ui:TextBlock FontTypography="TitleLarge" Text="MyMoney" Foreground="LightGray"/>
+                <ui:TextBlock FontTypography="Title" Text="Personal Finance Software" Foreground="LightGray"/>
+            </StackPanel>
         </Border>
 
-        <Grid Margin="0,24,0,0">
+        <Grid Margin="0,24,0,0" Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition/>
@@ -72,6 +80,6 @@
 
             </StackPanel>
         </Grid>
-    </StackPanel>
+    </Grid>
 
 </Page>
