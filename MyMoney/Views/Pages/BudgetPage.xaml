@@ -210,22 +210,20 @@
 
         </StackPanel>
 
-        <Grid Grid.Column="2" Margin="0,0,0,24">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="1*"/>
-                <RowDefinition Height="1*"/>
-            </Grid.RowDefinitions>
+        <StackPanel Grid.Column="2" Margin="0,0,0,24">
 
             <ui:Card Margin="0,0,0,8" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
                 <lvc:PieChart Series="{Binding ViewModel.IncomePercentagesSeries}"
-                        Title="{Binding ViewModel.IncomePercentagesTitle}"/>
+                        Title="{Binding ViewModel.IncomePercentagesTitle}"
+                        Height="300"/>
             </ui:Card>
 
-            <ui:Card Grid.Row="1" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,8,0,0">
+            <ui:Card VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,8,0,0">
                 <lvc:PieChart Series="{Binding ViewModel.ExpensePercentagesSeries}"
-                    Title="{Binding ViewModel.ExpensePercentagesTitle}"/>
+                    Title="{Binding ViewModel.ExpensePercentagesTitle}"
+                    Height="300"/>
             </ui:Card>
 
-        </Grid>
+        </StackPanel>
     </Grid>
 </Page>
