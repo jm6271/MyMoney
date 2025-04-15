@@ -15,7 +15,8 @@ namespace MyMoney.ViewModels.Windows
             {
                 Content = "Home",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Home24 },
-                TargetPageType = typeof(Views.Pages.DashboardPage)
+                TargetPageType = typeof(Views.Pages.DashboardPage),
+                
             },
 
             new NavigationViewItem()
