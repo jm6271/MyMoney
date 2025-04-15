@@ -512,6 +512,9 @@ namespace MyMoney.ViewModels.Pages
 
             // delete the item
             CurrentBudget.BudgetExpenseItems.Remove(parameter);
+
+            // Update the budget totals
+            UpdateListViewTotals();
         }
 
         [RelayCommand]
