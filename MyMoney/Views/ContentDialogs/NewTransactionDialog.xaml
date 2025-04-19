@@ -9,7 +9,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
       xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core" 
-      xmlns:helpers="clr-namespace:MyMoney.Helpers" xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs" xmlns:pages="clr-namespace:MyMoney.ViewModels.Pages"
+      xmlns:helpers="clr-namespace:MyMoney.Helpers" xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs" xmlns:pages="clr-namespace:MyMoney.ViewModels.Pages" xmlns:controls="clr-namespace:MyMoney.Views.Controls"
                   Title="New Transaction"
                   d:DataContext="{d:DesignInstance {x:Type contentdialogs:NewTransactionDialogViewModel}, IsDesignTimeCreatable=False}"
       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
@@ -60,8 +60,9 @@
         <ui:TextBlock Margin="0,0,0,4">Category</ui:TextBlock>
         
         <Border x:Name="CategoryBorder" BorderThickness="1" BorderBrush="Transparent" Margin="0,0,0,16">
-            <ComboBox x:Name="cmbCategory" ItemsSource="{Binding CategoryNames}" Text="{Binding NewTransactionCategory}"
-                  SelectionChanged="cmbCategory_SelectionChanged"/>            
+            <controls:GroupedComboBox x:Name="cmbCategory" ItemsSource="{Binding CategoryNames}">
+                
+            </controls:GroupedComboBox>
         </Border>
 
         <ui:TextBlock Margin="0,0,0,4" Visibility="{Binding AccountsVisibility}">Account</ui:TextBlock>

@@ -6,6 +6,7 @@ using MyMoney.Views.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Core.Database;
 using MyMoney.Services.ContentDialogs;
+using MyMoney.Views.Controls;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -14,7 +15,7 @@ namespace MyMoney.ViewModels.Pages
         public ObservableCollection<Account> Accounts { get; } = [];
         public ObservableCollection<Transaction> SelectedAccountTransactions => SelectedAccount?.Transactions ?? new ObservableCollection<Transaction>();
 
-        public ObservableCollection<string> CategoryNames { get; } = [];
+        public ObservableCollection<GroupedComboBox.GroupedComboBoxItem> CategoryNames { get; } = [];
 
         [ObservableProperty]
         private Account? _selectedAccount;
@@ -83,14 +84,23 @@ namespace MyMoney.ViewModels.Pages
 
             foreach (var item in incomeLst)
             {
-                CategoryNames.Add(item.Category);
+                GroupedComboBox.GroupedComboBoxItem cmbItem = new()
+                {
+                    Group = "Income",
+                    Item = item.Category
+                };
+
+                CategoryNames.Add(cmbItem);
             }
 
             foreach (var item in expenseLst)
             {
                 foreach (var subItem in item.SubItems)
                 {
-                    CategoryNames.Add(subItem.Category);
+                    GroupedComboBox.GroupedComboBoxItem cmbItem = new();
+                    cmbItem.Group = item.CategoryName;
+                    cmbItem.Item = subItem.Category;
+                    CategoryNames.Add(cmbItem);
                 }
             }
 

@@ -1,4 +1,5 @@
 ﻿using MyMoney.Core.Models;
+using MyMoney.Views.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -44,7 +45,7 @@ namespace MyMoney.ViewModels.ContentDialogs
         private Account? _selectedAccount;
 
         [ObservableProperty]
-        private ObservableCollection<string> _categoryNames = [];
+        private ObservableCollection<GroupedComboBox.GroupedComboBoxItem> _categoryNames = [];
 
         [ObservableProperty]
         private Visibility _accountsVisibility = Visibility.Visible;
