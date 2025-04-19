@@ -85,6 +85,7 @@ namespace MyMoney.ViewModels.Pages
         private readonly IMessageBoxService _messageBoxService;
         private readonly INewBudgetDialogService _newBudgetDialogService;
         private readonly IBudgetCategoryDialogService _budgetCategoryDialogService;
+        private readonly INewExpenseGroupDialogService _newExpenseGroupDialogService;
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
@@ -139,12 +140,13 @@ namespace MyMoney.ViewModels.Pages
 
         public BudgetViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader,
             IMessageBoxService messageBoxService, INewBudgetDialogService newBudgetDialogService,
-            IBudgetCategoryDialogService budgetCategoryDialogService)
+            IBudgetCategoryDialogService budgetCategoryDialogService, INewExpenseGroupDialogService newExpenseGroupDialogService)
         { 
             _contentDialogService = contentDialogService;
             _messageBoxService = messageBoxService;
             _newBudgetDialogService = newBudgetDialogService;
             _budgetCategoryDialogService = budgetCategoryDialogService;
+            _newExpenseGroupDialogService = newExpenseGroupDialogService;
 
             var budgetCollection = databaseReader.GetCollection<Budget>("Budgets");
 
@@ -247,7 +249,7 @@ namespace MyMoney.ViewModels.Pages
 
             foreach (var item in CurrentBudget.BudgetExpenseItems)
             {
-                ExpenseTotal += item.Amount;
+                ExpenseTotal += item.CategoryTotal;
             }
 
             // write the items to the database
@@ -279,7 +281,7 @@ namespace MyMoney.ViewModels.Pages
             Dictionary<string, double> expenseTotals = [];
             foreach (var item in CurrentBudget.BudgetExpenseItems)
             {
-                expenseTotals.Add(item.Category, (double)item.Amount.Value);
+                expenseTotals.Add(item.CategoryName, (double)item.CategoryTotal.Value);
             }
 
             ExpensePercentagesSeries = new ISeries[expenseTotals.Count];
@@ -331,7 +333,30 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task AddExpenseItem()
+        private async Task AddExpenseGroup()
+        {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
+            var viewModel = new NewExpenseGroupDialogViewModel();
+            _newExpenseGroupDialogService.SetViewModel(viewModel);
+            var result = await _newExpenseGroupDialogService.ShowDialogAsync(_contentDialogService, "New Expense Group");
+            viewModel = _newExpenseGroupDialogService.GetViewModel();
+
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
+            {
+                // Add a new expense group
+                BudgetExpenseCategory expenseGroup = new();
+                expenseGroup.CategoryName = viewModel.GroupName;
+                CurrentBudget.BudgetExpenseItems.Add(expenseGroup);
+
+                // Update totals and write to database
+                UpdateListViewTotals();
+            }
+        }
+
+        [RelayCommand]
+        private async Task AddExpenseItem(BudgetExpenseCategory parameter)
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -351,7 +376,7 @@ namespace MyMoney.ViewModels.Pages
                 };
 
                 // Add the item to the budget expense items list
-                CurrentBudget.BudgetExpenseItems.Add(item);
+                parameter.SubItems.Add(item);
 
                 // Recalculate the total of the expense items
                 UpdateListViewTotals();
@@ -418,14 +443,37 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task EditExpenseItem()
+        private async Task EditExpenseGroup(BudgetExpenseCategory parameter)
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
 
-            var viewModel = new BudgetCategoryDialogViewModel();
-            viewModel.BudgetCategory = CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex].Category;
-            viewModel.BudgetAmount = CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex].Amount;
+            var viewModel = new NewExpenseGroupDialogViewModel
+            {
+                GroupName = parameter.CategoryName,
+            };
+
+            _newExpenseGroupDialogService.SetViewModel(viewModel);
+            var result = await _newExpenseGroupDialogService.ShowDialogAsync(_contentDialogService, "Edit Group Name");
+            viewModel = _newExpenseGroupDialogService.GetViewModel();
+
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
+            {
+                parameter.CategoryName = viewModel.GroupName;
+            }
+        }
+
+        [RelayCommand]
+        private async Task EditExpenseItem(BudgetExpenseCategory parameter)
+        {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
+            var viewModel = new BudgetCategoryDialogViewModel
+            {
+                BudgetCategory = parameter.SubItems[parameter.SelectedSubItemIndex].Category,
+                BudgetAmount = parameter.SubItems[parameter.SelectedSubItemIndex].Amount,
+            };
 
             _budgetCategoryDialogService.SetViewModel(viewModel);
             var result = await _budgetCategoryDialogService.ShowDialogAsync(_contentDialogService, "Edit Expense Item");
@@ -441,7 +489,7 @@ namespace MyMoney.ViewModels.Pages
                 };
 
                 // assign the selected index of the list with the new item
-                CurrentBudget.BudgetExpenseItems[ExpenseItemsSelectedIndex] = expenseItem;
+                parameter.SubItems[parameter.SelectedSubItemIndex] = expenseItem;
 
                 // Recalculate the total of the expense items
                 UpdateListViewTotals();
@@ -449,7 +497,28 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task DeleteExpenseItem()
+        private async Task DeleteExpenseGroup(BudgetExpenseCategory parameter)
+        {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
+            // as user if they really want to delete the group
+            var result = await _messageBoxService.ShowAsync("Delete Group?",
+                "Are you sure you want to delete the selected category?",
+                "Yes",
+                "No");
+
+            if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
+
+            // delete the item
+            CurrentBudget.BudgetExpenseItems.Remove(parameter);
+
+            // Update the budget totals
+            UpdateListViewTotals();
+        }
+
+        [RelayCommand]
+        private async Task DeleteExpenseItem(BudgetExpenseCategory parameter)
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
@@ -462,13 +531,13 @@ namespace MyMoney.ViewModels.Pages
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
 
-            CurrentBudget.BudgetExpenseItems.RemoveAt(ExpenseItemsSelectedIndex);
+            parameter.SubItems.RemoveAt(parameter.SelectedSubItemIndex);
 
             // replace the id property of the remaining elements so the IDs are
             // in a consecutive order (We have all kinds of problems when we don't do this)
-            for (int i = 0; i < CurrentBudget.BudgetExpenseItems.Count; i++)
+            for (int i = 0; i < parameter.SubItems.Count; i++)
             {
-                CurrentBudget.BudgetExpenseItems[i].Id = i + 1;
+                parameter.SubItems[i].Id = i + 1;
             }
 
             UpdateListViewTotals();

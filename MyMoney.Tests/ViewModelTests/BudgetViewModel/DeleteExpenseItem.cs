@@ -17,6 +17,7 @@ public class DeleteExpenseItemTests
     private Mock<INewBudgetDialogService> _newBudgetDialogServiceMock;
     private Mock<IBudgetCategoryDialogService> _budgetCategoryDialogServiceMock;
     private Mock<Core.Database.IDatabaseReader> _databaseReaderMock;
+    private Mock<INewExpenseGroupDialogService> _expenseGroupDialogServiceMock;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
 
     [TestInitialize]
@@ -27,6 +28,7 @@ public class DeleteExpenseItemTests
         _newBudgetDialogServiceMock = new Mock<INewBudgetDialogService>();
         _budgetCategoryDialogServiceMock = new Mock<IBudgetCategoryDialogService>();
         _databaseReaderMock = new Mock<Core.Database.IDatabaseReader>();
+        _expenseGroupDialogServiceMock = new Mock<INewExpenseGroupDialogService>();
 
         _databaseReaderMock.Setup(x => x.GetCollection<Budget>("Budgets"))
             .Returns(new List<Budget>());
@@ -36,7 +38,8 @@ public class DeleteExpenseItemTests
             _databaseReaderMock.Object,
             _messageBoxServiceMock.Object,
             _newBudgetDialogServiceMock.Object,
-            _budgetCategoryDialogServiceMock.Object
+            _budgetCategoryDialogServiceMock.Object,
+            _expenseGroupDialogServiceMock.Object
         );
     }
 
@@ -62,7 +65,7 @@ public class DeleteExpenseItemTests
         var budget = new Budget
         {
             BudgetDate = DateTime.Now,
-            BudgetExpenseItems = new ObservableCollection<BudgetItem>()
+            BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>()
         };
         _viewModel.CurrentBudget = budget;
         _viewModel.IsEditingEnabled = false;
@@ -86,9 +89,9 @@ public class DeleteExpenseItemTests
         var budget = new Budget
         {
             BudgetDate = DateTime.Now,
-            BudgetExpenseItems = new ObservableCollection<BudgetItem>
+            BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>
             {
-                new() { Category = "Test", Amount = new Currency(100m), Id = 1 }
+                new() { CategoryName = "Test", /* Amount = new Currency(100m), Id = 1 */}
             }
         };
         _viewModel.CurrentBudget = budget;
@@ -115,11 +118,13 @@ public class DeleteExpenseItemTests
         var budget = new Budget
         {
             BudgetDate = DateTime.Now,
-            BudgetExpenseItems = new ObservableCollection<BudgetItem>
+            BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>
             {
-                new() { Category = "Item1", Amount = new Currency(100m), Id = 1 },
-                new() { Category = "Item2", Amount = new Currency(200m), Id = 2 },
-                new() { Category = "Item3", Amount = new Currency(300m), Id = 3 }
+                new() {CategoryName = "Group 1", SubItems = [
+                    new() { Category = "Category 1", Amount = new(50m)},
+                    new() {Category = "Category 2", Amount = new(100m)},
+                    new() { Category = "Category 3", Amount = new (200m)}
+                    ]},
             }
         };
         _viewModel.CurrentBudget = budget;
@@ -133,13 +138,14 @@ public class DeleteExpenseItemTests
             .ReturnsAsync(MessageBoxResult.Primary);
 
         // Act
-        await _viewModel.DeleteExpenseItemCommand.ExecuteAsync(null);
+        await _viewModel.DeleteExpenseItemCommand.ExecuteAsync(budget.BudgetExpenseItems[0]);
 
         // Assert
-        Assert.AreEqual(2, budget.BudgetExpenseItems.Count);
-        Assert.AreEqual("Item1", budget.BudgetExpenseItems[0].Category);
-        Assert.AreEqual("Item3", budget.BudgetExpenseItems[1].Category);
-        Assert.AreEqual(1, budget.BudgetExpenseItems[0].Id);
-        Assert.AreEqual(2, budget.BudgetExpenseItems[1].Id);
+        Assert.AreEqual(1, budget.BudgetExpenseItems.Count);
+        Assert.AreEqual(2, budget.BudgetExpenseItems[0].SubItems.Count);
+        Assert.AreEqual("Category 1", budget.BudgetExpenseItems[0].SubItems[0].Category);
+        Assert.AreEqual("Category 3", budget.BudgetExpenseItems[0].SubItems[1].Category);
+        Assert.AreEqual(1, budget.BudgetExpenseItems[0].SubItems[0].Id);
+        Assert.AreEqual(2, budget.BudgetExpenseItems[0].SubItems[1].Id);
     }
 }

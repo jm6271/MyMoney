@@ -28,6 +28,7 @@ namespace MyMoney.Views.ContentDialogs
             InitializeComponent();
             DataContext = viewModel;
             txtPayee.Text = viewModel.NewTransactionPayee;
+            cmbCategory.ItemsSource = viewModel.CategoryNames;
         }
 
         private void ContentDialog_Loaded(object sender, RoutedEventArgs e)

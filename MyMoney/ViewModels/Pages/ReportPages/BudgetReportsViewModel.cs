@@ -144,9 +144,7 @@ namespace MyMoney.ViewModels.Pages.ReportPages
             ExpenseItems.Add(expenseTotal);
 
             // Calculate budget report overall total
-            var budgetedTotal = incomeTotal.Budgeted - expenseTotal.Budgeted;
-            var actualTotal = incomeTotal.Actual - expenseTotal.Actual;
-            ReportTotal = actualTotal - budgetedTotal;
+            ReportTotal = incomeTotal.Actual - expenseTotal.Actual;
         }
 
         private void UpdateCharts()
