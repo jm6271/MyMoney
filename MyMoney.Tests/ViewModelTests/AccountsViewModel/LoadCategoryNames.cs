@@ -3,6 +3,7 @@ using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Services.ContentDialogs;
 using Wpf.Ui;
+using MyMoney.Views.Controls;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -74,7 +75,7 @@ public class LoadCategoryNames
                     new () { Category = "Groceries"},
                     new () { Category = "Fast Food"}
                     ] },
-                new BudgetExpenseCategory { CategoryName = "Category 1", SubItems = [
+                new BudgetExpenseCategory { CategoryName = "Category 2", SubItems = [
                     new () {Category = "Utilities" }
                     ] }
             ],
@@ -97,11 +98,11 @@ public class LoadCategoryNames
 
         // Assert
         Assert.AreEqual(5, _viewModel.CategoryNames.Count);
-        CollectionAssert.Contains(_viewModel.CategoryNames.ToList(), "Salary");
-        CollectionAssert.Contains(_viewModel.CategoryNames.ToList(), "Bonus");
-        CollectionAssert.Contains(_viewModel.CategoryNames.ToList(), "Groceries");
-        CollectionAssert.Contains(_viewModel.CategoryNames.ToList(), "Utilities");
-        CollectionAssert.Contains(_viewModel.CategoryNames.ToList(), "Fast Food");
+        Assert.AreEqual("Salary", _viewModel.CategoryNames[0].Item.ToString());
+        Assert.AreEqual("Bonus", _viewModel.CategoryNames[1].Item.ToString());
+        Assert.AreEqual("Groceries", _viewModel.CategoryNames[2].Item.ToString());
+        Assert.AreEqual("Fast Food", _viewModel.CategoryNames[3].Item.ToString());
+        Assert.AreEqual("Utilities", _viewModel.CategoryNames[4].Item.ToString());  
     }
 
     [TestMethod]
@@ -133,7 +134,7 @@ public class LoadCategoryNames
 
         // Assert
         Assert.AreEqual(2, _viewModel.CategoryNames.Count);
-        Assert.AreEqual(1, _viewModel.CategoryNames.Count(x => x == "Salary"));
-        Assert.AreEqual(1, _viewModel.CategoryNames.Count(x => x == "Groceries"));
+        Assert.AreEqual(1, _viewModel.CategoryNames.Count(x => x.Item.ToString() == "Salary"));
+        Assert.AreEqual(1, _viewModel.CategoryNames.Count(x => x.Item.ToString() == "Groceries"));
     }
 }
