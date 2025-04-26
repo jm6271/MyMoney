@@ -61,7 +61,7 @@ namespace MyMoney.Services.ContentDialogs
             if (result != ContentDialogResult.Primary) return result;
 
             _selectedPayee = newTransactionDialog.SelectedPayee;
-            _viewModel.NewTransactionCategory = newTransactionDialog.SelectedCategory;
+
             return result;
         }
     }

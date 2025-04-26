@@ -18,6 +18,7 @@
       Loaded="ContentDialog_Loaded" Closing="ContentDialog_Closing">
     <ui:ContentDialog.Resources>
         <helpers:CurrencyConverter x:Key="CurrencyConverter"/>
+        <helpers:CategoryToGroupedItemConverter x:Key="CategoryToGroupedItemConverter"/>
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:NewTransactionDialog}" />
     </ui:ContentDialog.Resources>
 
@@ -60,7 +61,7 @@
         <ui:TextBlock Margin="0,0,0,4">Category</ui:TextBlock>
         
         <Border x:Name="CategoryBorder" BorderThickness="1" BorderBrush="Transparent" Margin="0,0,0,16">
-            <controls:GroupedComboBox x:Name="cmbCategory" ItemsSource="{Binding CategoryNames}">
+            <controls:GroupedComboBox x:Name="cmbCategory" ItemsSource="{Binding CategoryNames}" SelectedItem="{Binding NewTransactionCategory, Converter={StaticResource CategoryToGroupedItemConverter}}">
                 
             </controls:GroupedComboBox>
         </Border>

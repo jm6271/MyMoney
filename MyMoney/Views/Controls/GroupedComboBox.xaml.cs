@@ -46,22 +46,36 @@ namespace MyMoney.Views.Controls
             typeof(int), typeof(GroupedComboBox), new PropertyMetadata(-1));
 
 
-        private GroupedComboBoxItem? _selectedItem = null;
+        public static readonly DependencyProperty SelectedItemProperty =
+            DependencyProperty.Register(
+                nameof(SelectedItem),
+                typeof(GroupedComboBoxItem),
+                typeof(GroupedComboBox),
+                new FrameworkPropertyMetadata(
+                    null,
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                    OnSelectedItemChanged));
+
         public GroupedComboBoxItem? SelectedItem
         {
-            get
-            {
-                return _selectedItem;
-            }
-            set
-            {
-                if (_selectedItem != value)
-                {
-                    _selectedItem = value;
-                    dropDownPopup.IsOpen = false;
-                    OnPropertyChanged(nameof(Text));
-                }
-            }
+            get => (GroupedComboBoxItem?)GetValue(SelectedItemProperty);
+            set => SetValue(SelectedItemProperty, value);
+        }
+
+        private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (GroupedComboBox)d;
+
+            // Execute your custom logic when SelectedItem changes
+            control.OnSelectedItemChanged();
+        }
+
+        private void OnSelectedItemChanged()
+        {
+            // Custom logic here
+            dropDownPopup.IsOpen = false;
+            OnPropertyChanged(nameof(Text));
+            OnPropertyChanged(nameof(SelectedItem));
         }
 
         public string Text => SelectedItem?.Item.ToString() ?? string.Empty;
