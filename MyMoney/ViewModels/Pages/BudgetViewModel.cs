@@ -12,6 +12,7 @@ using System.ComponentModel;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui;
 using MyMoney.Services.ContentDialogs;
+using System.Linq.Expressions;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -37,10 +38,10 @@ namespace MyMoney.ViewModels.Pages
         private Budget? _currentBudget;
 
         [ObservableProperty]
-        private ISeries[] _incomePercentagesSeries  = [];
+        private ISeries[] _incomePercentagesSeries = [];
 
         [ObservableProperty]
-        private ISeries[] _expensePercentagesSeries  = [];
+        private ISeries[] _expensePercentagesSeries = [];
 
         [ObservableProperty]
         private LabelVisual _incomePercentagesTitle = new()
@@ -94,54 +95,54 @@ namespace MyMoney.ViewModels.Pages
             switch (e.PropertyName)
             {
                 case nameof(OldBudgetsSelectedIndex) when OldBudgetsSelectedIndex != -1:
-                {
-                    CurrentBudgetsSelectedIndex = -1;
-                    FutureBudgetsSelectedIndex = -1;
-
-                    // Find this budget in the budgets collection and load it
-                    var index = FindBudgetIndex(OldBudgets[OldBudgetsSelectedIndex].BudgetTitle);
-                    if (index != -1)
                     {
-                        LoadBudget(index);
-                    }
+                        CurrentBudgetsSelectedIndex = -1;
+                        FutureBudgetsSelectedIndex = -1;
 
-                    break;
-                }
+                        // Find this budget in the budgets collection and load it
+                        var index = FindBudgetIndex(OldBudgets[OldBudgetsSelectedIndex].BudgetTitle);
+                        if (index != -1)
+                        {
+                            LoadBudget(index);
+                        }
+
+                        break;
+                    }
                 case nameof(CurrentBudgetsSelectedIndex) when CurrentBudgetsSelectedIndex != -1:
-                {
-                    OldBudgetsSelectedIndex = -1;
-                    FutureBudgetsSelectedIndex = -1;
-
-                    // Find this budget in the budgets collection and load it
-                    var index = FindBudgetIndex(CurrentBudgets[CurrentBudgetsSelectedIndex].BudgetTitle);
-                    if (index != -1)
                     {
-                        LoadBudget(index);
-                    }
+                        OldBudgetsSelectedIndex = -1;
+                        FutureBudgetsSelectedIndex = -1;
 
-                    break;
-                }
+                        // Find this budget in the budgets collection and load it
+                        var index = FindBudgetIndex(CurrentBudgets[CurrentBudgetsSelectedIndex].BudgetTitle);
+                        if (index != -1)
+                        {
+                            LoadBudget(index);
+                        }
+
+                        break;
+                    }
                 case nameof(FutureBudgetsSelectedIndex) when FutureBudgetsSelectedIndex != -1:
-                {
-                    OldBudgetsSelectedIndex = -1;
-                    CurrentBudgetsSelectedIndex = -1;
-
-                    // Find this budget in the budgets collection and load it
-                    var index = FindBudgetIndex(FutureBudgets[FutureBudgetsSelectedIndex].BudgetTitle);
-                    if (index != -1)
                     {
-                        LoadBudget(index);
-                    }
+                        OldBudgetsSelectedIndex = -1;
+                        CurrentBudgetsSelectedIndex = -1;
 
-                    break;
-                }
+                        // Find this budget in the budgets collection and load it
+                        var index = FindBudgetIndex(FutureBudgets[FutureBudgetsSelectedIndex].BudgetTitle);
+                        if (index != -1)
+                        {
+                            LoadBudget(index);
+                        }
+
+                        break;
+                    }
             }
         }
 
         public BudgetViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader,
             IMessageBoxService messageBoxService, INewBudgetDialogService newBudgetDialogService,
             IBudgetCategoryDialogService budgetCategoryDialogService, INewExpenseGroupDialogService newExpenseGroupDialogService)
-        { 
+        {
             _contentDialogService = contentDialogService;
             _messageBoxService = messageBoxService;
             _newBudgetDialogService = newBudgetDialogService;
@@ -317,6 +318,14 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
+                // Make sure item doesn't exist
+                if (DoesIncomeItemExist(viewModel.BudgetCategory))
+                {
+                    await _messageBoxService.ShowInfoAsync(
+                        "Category Already Exists", "A category called \"" + viewModel.BudgetCategory + "\" already exists", "OK");
+                    return;
+                }
+
                 // Create a new income item with the results from the dialog
                 BudgetItem item = new()
                 {
@@ -345,6 +354,14 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
+                // Make sure a group with this name doesn't already exist
+                if (DoesExpenseGroupExist(viewModel.GroupName))
+                {
+                    await _messageBoxService.ShowInfoAsync(
+                        "Group Already Exists", "A group called \"" + viewModel.GroupName + "\" already exists", "OK");
+                    return;
+                }
+
                 // Add a new expense group
                 BudgetExpenseCategory expenseGroup = new();
                 expenseGroup.CategoryName = viewModel.GroupName;
@@ -368,6 +385,14 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
+                // Make sure an item with this name doesn't already exist
+                if (DoesExpenseItemExist(viewModel.BudgetCategory))
+                {
+                    await _messageBoxService.ShowInfoAsync(
+                        "Category Already Exists", "A category called \"" + viewModel.BudgetCategory + "\" already exists", "OK");
+                    return;
+                }
+
                 // Create a new expense item with the results from the dialog
                 BudgetItem item = new()
                 {
@@ -401,6 +426,14 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
+                // Make sure the category name of the edited item doesn't already exist
+                if (DoesIncomeItemExist(viewModel.BudgetCategory))
+                {
+                    await _messageBoxService.ShowInfoAsync(
+                        "Category Already Exists", "A category called \"" + viewModel.BudgetCategory + "\" already exists", "OK");
+                    return;
+                }
+
                 // modify the item at the selected index
                 BudgetItem incomeItem = new()
                 {
@@ -459,6 +492,14 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
+                // Make sure a group with this name doesn't already exist
+                if (DoesExpenseGroupExist(viewModel.GroupName))
+                {
+                    await _messageBoxService.ShowInfoAsync(
+                        "Group Already Exists", "A group called \"" + viewModel.GroupName + "\" already exists", "OK");
+                    return;
+                }
+
                 parameter.CategoryName = viewModel.GroupName;
             }
         }
@@ -481,6 +522,14 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
+                // Make sure an item with this name doesn't already exist
+                if (DoesExpenseItemExist(viewModel.BudgetCategory))
+                {
+                    await _messageBoxService.ShowInfoAsync(
+                        "Category Already Exists", "A category called \"" + viewModel.BudgetCategory + "\" already exists", "OK");
+                    return;
+                }
+
                 // modify the item at the selected index
                 BudgetItem expenseItem = new()
                 {
@@ -653,6 +702,45 @@ namespace MyMoney.ViewModels.Pages
             }
 
             return -1;
+        }
+
+        private bool DoesIncomeItemExist(string item)
+        {
+            if (CurrentBudget == null) return false;
+
+            foreach (var incomeCategory in CurrentBudget.BudgetIncomeItems)
+            {
+                if (incomeCategory.Category == item)
+                    return true;
+            }
+            return false;
+        }
+
+        private bool DoesExpenseGroupExist(string groupName)
+        {
+            if (CurrentBudget == null) return false;
+
+            foreach (var expenseGroup in CurrentBudget.BudgetExpenseItems)
+            {
+                if (expenseGroup.CategoryName == groupName)
+                    return true;
+            }
+            return false;
+        }
+
+        private bool DoesExpenseItemExist(string item)
+        {
+            if (CurrentBudget == null) return false;
+
+            foreach (var expenseGroup in CurrentBudget.BudgetExpenseItems)
+            {
+                foreach (var expenseCategory in expenseGroup.SubItems)
+                {
+                    if (expenseCategory.Category == item)
+                        return true;
+                }
+            }
+            return false;
         }
     }
 }

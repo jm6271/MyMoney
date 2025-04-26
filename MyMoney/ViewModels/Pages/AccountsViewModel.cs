@@ -256,10 +256,10 @@ namespace MyMoney.ViewModels.Pages
                 // create a new transaction in each of the accounts
 
                 // create FROM transaction
-                Transaction from = new(DateTime.Today, "Transfer to " + viewModel.TransferTo, "", new(-viewModel.Amount.Value), "Transfer");
+                Transaction from = new(DateTime.Today, "Transfer to " + viewModel.TransferTo, new(), new(-viewModel.Amount.Value), "Transfer");
 
                 // Create TO transaction
-                Transaction to = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, "", viewModel.Amount, "Transfer");
+                Transaction to = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, new(), viewModel.Amount, "Transfer");
 
                 // Add the transactions to their accounts
                 foreach (var t in Accounts)

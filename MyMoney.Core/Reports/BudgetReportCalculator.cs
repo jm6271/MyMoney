@@ -37,7 +37,7 @@ namespace MyMoney.Core.Reports
                 {
                     Category = item.Category,
                     Budgeted = item.Amount,
-                    Actual = CalculateTotalForCategory(item.Category, budgetMonth, databaseReader),
+                    Actual = CalculateTotalForCategory(new() { Group = "Income", Name = item.Category }, budgetMonth, databaseReader),
                 };
 
                 budgetReportItem.Remaining = new(
@@ -93,7 +93,7 @@ namespace MyMoney.Core.Reports
                     {
                         Category = subItem.Category,
                         Budgeted = subItem.Amount,
-                        Actual = new(Math.Abs(CalculateTotalForCategory(subItem.Category, budgetMonth, databaseReader).Value)),
+                        Actual = new(Math.Abs(CalculateTotalForCategory(new() { Group = item.CategoryName, Name = subItem.Category}, budgetMonth, databaseReader).Value)),
                     };
 
                     budgetReportItem.Remaining = budgetReportItem.Budgeted - budgetReportItem.Actual;
@@ -114,26 +114,18 @@ namespace MyMoney.Core.Reports
             return CalculateExpenseReportItems(DateTime.Today, databaseReader);
         }
 
-        private static Currency CalculateTotalForCategory(string categoryName, DateTime month, IDatabaseReader databaseReader)
+        private static Currency CalculateTotalForCategory(Category category, DateTime month, IDatabaseReader databaseReader)
         {
             // Read the accounts from the database
             var accounts = databaseReader.GetCollection<Account>("Accounts");
 
             // search through each account for transactions in this category that happened in the specified month
-
-            // Total for this category so far
-            //var actual =
-            //    (from account in accounts 
-            //        from transaction in account.Transactions 
-            //        where transaction.Category == categoryName && IsDateInCurrentMonth(transaction.Date, month) 
-            //        select transaction.Amount.Value).Sum();
-
             var actual = 0m;
             foreach (var account in accounts)
             {
-                foreach (var transaction  in account.Transactions)
+                foreach (var transaction in account.Transactions)
                 {
-                    if (transaction.Category == categoryName && IsDateInCurrentMonth(transaction.Date, month))
+                    if (transaction.Category.Name == category.Name && IsDateInCurrentMonth(transaction.Date, month))
                     {
                         actual += transaction.Amount.Value;
                     }

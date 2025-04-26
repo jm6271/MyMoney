@@ -18,7 +18,7 @@ namespace MyMoney.ViewModels.ContentDialogs
         private string _newTransactionPayee = "";
 
         [ObservableProperty]
-        private string _newTransactionCategory = "";
+        private Category _newTransactionCategory = new();
 
         [ObservableProperty]
         private string _newTransactionMemo = "";

@@ -1,4 +1,5 @@
-﻿using MyMoney.ViewModels.ContentDialogs;
+﻿using MyMoney.Core.Models;
+using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.ViewModels.Pages;
 using System;
 using System.Collections.Generic;
@@ -42,6 +43,14 @@ namespace MyMoney.Views.ContentDialogs
             get
             {
                 return txtPayee.Text;
+            }
+        }
+
+        public Category SelectedCategory
+        {
+            get
+            {
+                return new() { Name = cmbCategory.Text, Group = cmbCategory.ItemsSource[cmbCategory.SelectedIndex].Group };
             }
         }
 

@@ -2,11 +2,11 @@
 
 namespace MyMoney.Core.Models;
 
-public class Transaction(DateTime date, string payee, string category, Currency amount, string memo)
+public class Transaction(DateTime date, string payee, Category category, Currency amount, string memo)
 {
     public string Payee { get; set; } = payee;
 
-    public string Category { get; set; } = category;
+    public Category Category { get; set; } = category;
 
     public Currency Amount { get; set; } = amount;
 

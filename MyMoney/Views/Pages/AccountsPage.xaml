@@ -102,7 +102,7 @@
                                 <Controls:MonthDayControl Grid.RowSpan="2" Day="{Binding Path=Date.Day}" Month="{Binding Path=MonthAbbreviated}" HorizontalAlignment="Left" Margin="16,0,0,0"/>
 
                                 <ui:TextBlock Grid.Row="0" Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Text="{Binding Payee}"/>
-                                <ui:TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Category}"/>
+                                <ui:TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Category.Name}"/>
 
                                 <ui:TextBlock Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" FontSize="24" FontWeight="SemiBold"
                                                   Text="{Binding AmountFormatted}" HorizontalAlignment="Right" Margin="0,0,16,0">
