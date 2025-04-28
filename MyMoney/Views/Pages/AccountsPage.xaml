@@ -20,9 +20,8 @@
       >
     <Page.Resources>
         <ResourceDictionary>
-            <helpers:StartsWithPlusConverter x:Key="StartsWithPlusConverter"/>
             <helpers:CurrencyConverter x:Key="CurrencyConverter"/>
-
+            <helpers:StartsWithPlusConverter x:Key="StartsWithPlusConverter"/>
             <StackPanel x:Key="RenameDialogContent">
                 <TextBlock Margin="0,0,0,8">Rename account to</TextBlock>
                 <TextBox HorizontalAlignment="Stretch"/>
@@ -104,18 +103,18 @@
                                 <ui:TextBlock Grid.Row="0" Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Text="{Binding Payee}"/>
                                 <ui:TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Category.Name}"/>
 
-                                <ui:TextBlock Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" FontSize="24" FontWeight="SemiBold"
+                                <TextBlock Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" FontSize="24" FontWeight="SemiBold"
                                                   Text="{Binding AmountFormatted}" HorizontalAlignment="Right" Margin="0,0,16,0">
-                                    <ui:TextBlock.Style>
-                                        <Style TargetType="ui:TextBlock">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding AmountFormatted, Converter={StaticResource StartsWithPlusConverter} }" Value="True">
                                                     <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
-                                    </ui:TextBlock.Style>
-                                </ui:TextBlock>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </Grid>
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
