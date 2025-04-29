@@ -50,7 +50,7 @@ namespace MyMoney.Views.ContentDialogs
         {
             get
             {
-                return new() { Name = cmbCategory.Text, Group = cmbCategory.ItemsSource[cmbCategory.SelectedIndex].Group };
+                return new() { Name = cmbCategory.SelectedItem?.Item.ToString() ?? "", Group = cmbCategory.SelectedItem?.Group ?? ""};
             }
         }
 
@@ -94,7 +94,7 @@ namespace MyMoney.Views.ContentDialogs
             var amountValidationErrors = Validation.GetErrors(txtAmount);
             var dateValidationErrors = Validation.GetErrors(txtDate);
             var invalidPayee = txtPayee.Text == "";
-            var invalidCategory = cmbCategory.Text == "";
+            var invalidCategory = cmbCategory.SelectedIndex == -1;
 
             // Clear the red border from custom validated controls
             CategoryBorder.BorderBrush = Brushes.Transparent;
@@ -112,14 +112,14 @@ namespace MyMoney.Views.ContentDialogs
                 PayeeBorder.BorderBrush = Brushes.Red;
         }
 
-        private void cmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            CategoryBorder.BorderBrush = Brushes.Transparent;
-        }
-
         private void TxtPayee_OnLostFocus(object sender, RoutedEventArgs e)
         {
             PayeeBorder.BorderBrush = string.IsNullOrEmpty(txtPayee.Text) ? Brushes.Red : Brushes.Transparent;
+        }
+
+        private void cmbCategory_SelectionChanged_1(object sender, RoutedEventArgs e)
+        {
+            CategoryBorder.BorderBrush = Brushes.Transparent;
         }
     }
 }

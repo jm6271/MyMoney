@@ -24,6 +24,23 @@ namespace MyMoney.Views.Controls
     /// </summary>
     public partial class GroupedComboBox : UserControl, INotifyPropertyChanged
     {
+        public static readonly RoutedEvent SelectionChangedEvent =
+            EventManager.RegisterRoutedEvent("SelectionChanged", RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler), typeof(GroupedComboBox));
+
+        public event RoutedEventHandler SelectionChanged
+        {
+            add { AddHandler(SelectionChangedEvent, value); }
+            remove { RemoveHandler(SelectionChangedEvent, value); }
+        }
+
+        protected virtual void OnSelectionChanged()
+        {
+            RoutedEventArgs args = new(SelectionChangedEvent);
+            RaiseEvent(args);
+        }
+
+
         public ListCollectionView GroupedItems { get; set; }
 
         public GroupedComboBox()
@@ -80,7 +97,20 @@ namespace MyMoney.Views.Controls
             OnPropertyChanged(nameof(SelectedItem));
         }
 
-        public string Text => SelectedItem?.Item.ToString() ?? "";
+        public string Text
+        {
+            get
+            {
+                if (SelectedIndex == -1)
+                {
+                    return "Select an item...";
+                }
+                else
+                {
+                    return SelectedItem?.Item.ToString() ?? "";
+                }
+            }
+        } 
 
         public ObservableCollection<GroupedComboBoxItem> ItemsSource
         {
@@ -140,5 +170,10 @@ namespace MyMoney.Views.Controls
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string name) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            OnSelectionChanged();
+        }
     }
 }

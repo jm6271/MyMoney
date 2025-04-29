@@ -61,7 +61,10 @@
         <ui:TextBlock Margin="0,0,0,4">Category</ui:TextBlock>
         
         <Border x:Name="CategoryBorder" BorderThickness="1" BorderBrush="Transparent" Margin="0,0,0,16">
-            <controls:GroupedComboBox x:Name="cmbCategory" ItemsSource="{Binding CategoryNames}" SelectedItem="{Binding NewTransactionCategory, Converter={StaticResource CategoryToGroupedItemConverter}}">
+            <controls:GroupedComboBox x:Name="cmbCategory" ItemsSource="{Binding CategoryNames}" 
+                                      SelectedItem="{Binding NewTransactionCategory, 
+                                        Converter={StaticResource CategoryToGroupedItemConverter}}"
+                                      SelectionChanged="cmbCategory_SelectionChanged_1">
                 
             </controls:GroupedComboBox>
         </Border>
