@@ -7,45 +7,84 @@
              xmlns:local="clr-namespace:MyMoney.Views.Controls"
              mc:Ignorable="d" 
              d:DesignHeight="60" d:DesignWidth="200">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <SineEase x:Key="SmoothEase" EasingMode="EaseInOut"/>
+
+            <Storyboard x:Key="OpenAnimation">
+                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                     From="0" To="1"
+                     Duration="0:0:0.15"
+                     EasingFunction="{StaticResource SmoothEase}"/>
+                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                     From="0" To="1"
+                     Duration="0:0:0.15"/>
+            </Storyboard>
+
+            <Storyboard x:Key="CloseAnimation">
+                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                     From="1" To="0"
+                     Duration="0:0:0.15"
+                     EasingFunction="{StaticResource SmoothEase}"/>
+                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                     From="1" To="0"
+                     Duration="0:0:0.15"/>
+            </Storyboard>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <ui:Button x:Name="dropdownButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="10,7"
                    HorizontalContentAlignment="Stretch" Click="dropdownButton_Click">
-            <Grid VerticalAlignment="Center">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <ui:TextBlock Grid.Column="0" HorizontalAlignment="Stretch" Text="{Binding Text,
-                RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-
-                <ui:SymbolIcon FontSize="11" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Symbol="ChevronDown12"/>
-            </Grid>
+            <ui:TextBlock HorizontalAlignment="Stretch" Text="{Binding Text,
+                            RelativeSource={RelativeSource AncestorType=UserControl}}"/>
         </ui:Button>
 
-        <Popup x:Name="dropDownPopup" PlacementTarget="{Binding ElementName=dropdownButton}" Placement="Bottom"
+        <Popup x:Name="dropDownPopup" PlacementTarget="{Binding ElementName=dropdownButton}" Placement="Center"
                StaysOpen="False" Focusable="False" AllowsTransparency="True" Width="{Binding ElementName=dropdownButton, Path=ActualWidth}">
-            <Border CornerRadius="8" Background="{DynamicResource LayerOnMicaBaseAltFillColorTertiaryBrush}"
-                    BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
-                <ui:ListView Margin="8,12" MaxHeight="250"
+            <Grid RenderTransformOrigin="0.5,0.5">
+                <Grid.RenderTransform>
+                    <ScaleTransform ScaleY="1"/>
+                </Grid.RenderTransform>
+                <Border CornerRadius="8" Background="#AA282828">
+                    <Border.Effect>
+                        <BlurEffect Radius="20"/>
+                    </Border.Effect>
+                </Border>
+                <Border CornerRadius="8" Background="#AA282828"
+                    BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform>
+                        <ScaleTransform ScaleY="1"/>
+                    </Border.RenderTransform>
+
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black"
+                          BlurRadius="20"
+                          Direction="270"
+                          ShadowDepth="4"
+                          Opacity="0.5"/>
+                    </Border.Effect>
+
+                    <ui:ListView Margin="8,12" MaxHeight="300"
                              ItemsSource="{Binding GroupedItems, RelativeSource={RelativeSource AncestorType=UserControl}}"
                              SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=UserControl}}"
                              SelectedIndex="{Binding SelectedIndex, RelativeSource={RelativeSource AncestorType=UserControl}}">
-                    <ui:ListView.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate>
-                                    <ui:TextBlock Margin="4,0,4,0" FontWeight="Bold" Text="{Binding Name}" Foreground="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
-                                </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
-                        </GroupStyle>
-                    </ui:ListView.GroupStyle>
-                    <ui:ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ui:TextBlock Margin="4" Text="{Binding Item}"/>
-                        </DataTemplate>
-                    </ui:ListView.ItemTemplate>
-                </ui:ListView>
-            </Border>
+                        <ui:ListView.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <ui:TextBlock Margin="4,0,4,0" FontWeight="Bold" Text="{Binding Name}" Foreground="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ui:ListView.GroupStyle>
+                        <ui:ListView.ItemTemplate>
+                            <DataTemplate>
+                                <ui:TextBlock Margin="4" Text="{Binding Item}"/>
+                            </DataTemplate>
+                        </ui:ListView.ItemTemplate>
+                    </ui:ListView>
+                </Border>
+            </Grid>
         </Popup>
     </Grid>
 

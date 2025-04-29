@@ -7,10 +7,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -73,12 +75,12 @@ namespace MyMoney.Views.Controls
         private void OnSelectedItemChanged()
         {
             // Custom logic here
-            dropDownPopup.IsOpen = false;
+            HidePopUp();
             OnPropertyChanged(nameof(Text));
             OnPropertyChanged(nameof(SelectedItem));
         }
 
-        public string Text => SelectedItem?.Item.ToString() ?? string.Empty;
+        public string Text => SelectedItem?.Item.ToString() ?? "";
 
         public ObservableCollection<GroupedComboBoxItem> ItemsSource
         {
@@ -111,12 +113,28 @@ namespace MyMoney.Views.Controls
             // if dropdown is not down, then close it
             if (!dropDownPopup.IsOpen)
             {
-                dropDownPopup.IsOpen = true;
+                ShowPopUp();
             }
             else
             {
-                dropDownPopup.IsOpen = false;
+                HidePopUp();
             }
+        }
+
+        private void ShowPopUp()
+        {
+            dropDownPopup.IsOpen = true;
+            var openAnimation = (Storyboard)FindResource("OpenAnimation");
+            openAnimation.Begin((FrameworkElement)dropDownPopup.Child);
+
+        }
+
+        private void HidePopUp()
+        {
+            var closeAnimation = (Storyboard)FindResource("CloseAnimation");
+            closeAnimation.Completed += (s, e) => dropDownPopup.IsOpen = false;
+            closeAnimation.Begin((FrameworkElement)dropDownPopup.Child);
+
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
