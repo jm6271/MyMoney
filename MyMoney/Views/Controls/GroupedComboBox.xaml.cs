@@ -156,7 +156,6 @@ namespace MyMoney.Views.Controls
             dropDownPopup.IsOpen = true;
             var openAnimation = (Storyboard)FindResource("OpenAnimation");
             openAnimation.Begin((FrameworkElement)dropDownPopup.Child);
-
         }
 
         private void HidePopUp()
@@ -174,6 +173,21 @@ namespace MyMoney.Views.Controls
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             OnSelectionChanged();
+        }
+
+        private void UserControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            // if this is the up or down key, scroll to the next item in the list
+            if (e.Key == Key.Up && SelectedIndex > 0)
+            {
+                SelectedIndex--;
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Down && SelectedIndex < ItemsSource.Count - 1)
+            {
+                SelectedIndex++;
+                e.Handled = true;
+            }
         }
     }
 }

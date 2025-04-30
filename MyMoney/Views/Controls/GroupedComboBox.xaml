@@ -6,7 +6,8 @@
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:local="clr-namespace:MyMoney.Views.Controls"
              mc:Ignorable="d" 
-             d:DesignHeight="60" d:DesignWidth="200">
+             d:DesignHeight="60" d:DesignWidth="200"
+             KeyDown="UserControl_KeyDown">
     <UserControl.Resources>
         <ResourceDictionary>
             <SineEase x:Key="SmoothEase" EasingMode="EaseInOut"/>
@@ -32,6 +33,7 @@
             </Storyboard>
         </ResourceDictionary>
     </UserControl.Resources>
+
     <Grid>
         <ui:Button x:Name="dropdownButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="10,7"
                    HorizontalContentAlignment="Stretch" Click="dropdownButton_Click">
@@ -40,7 +42,8 @@
         </ui:Button>
 
         <Popup x:Name="dropDownPopup" PlacementTarget="{Binding ElementName=dropdownButton}" Placement="Center"
-               StaysOpen="False" Focusable="False" AllowsTransparency="True" Width="{Binding ElementName=dropdownButton, Path=ActualWidth}">
+               StaysOpen="False" Focusable="True" AllowsTransparency="True" 
+               Width="{Binding ElementName=dropdownButton, Path=ActualWidth}">
             <Border CornerRadius="8" Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                     BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" RenderTransformOrigin="0.5,0.5">
                 <Border.RenderTransform>
