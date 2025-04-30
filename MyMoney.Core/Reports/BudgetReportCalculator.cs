@@ -92,6 +92,7 @@ namespace MyMoney.Core.Reports
                     BudgetReportItem budgetReportItem = new()
                     {
                         Category = subItem.Category,
+                        Group = item.CategoryName,
                         Budgeted = subItem.Amount,
                         Actual = new(Math.Abs(CalculateTotalForCategory(new() { Group = item.CategoryName, Name = subItem.Category}, budgetMonth, databaseReader).Value)),
                     };

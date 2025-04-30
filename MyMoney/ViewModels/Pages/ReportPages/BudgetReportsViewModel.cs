@@ -64,6 +64,9 @@ namespace MyMoney.ViewModels.Pages.ReportPages
         {
             LoadBudgets();
             UpdateCharts();
+
+            if (SelectedBudget != null)
+                CalculateReport(SelectedBudget.BudgetDate);
         }
 
         partial void OnSelectedBudgetChanged(Budget? value)

@@ -48,12 +48,22 @@
             </ui:ListView>
 
             <ui:TextBlock FontWeight="SemiBold" Grid.Row="3" Text="Expenses" Margin="0,16,0,8"/>
-            <ui:ListView Grid.Row="4" ItemsSource="{Binding ExpenseItems, RelativeSource={RelativeSource AncestorType=UserControl}}">
+            <ui:ListView Grid.Row="4" 
+                         ItemsSource="{Binding GroupedExpenseItems, RelativeSource={RelativeSource AncestorType=UserControl}}">
                 <ListView.Resources>
                     <Style TargetType="{x:Type GridViewColumnHeader}">
                         <Setter Property="HorizontalContentAlignment" Value="Left" />
                     </Style>
                 </ListView.Resources>
+                <ui:ListView.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <ui:TextBlock Margin="4,0,4,0" FontWeight="Bold" Text="{Binding Name}" Foreground="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ui:ListView.GroupStyle>
                 <ui:ListView.View>
                     <ui:GridView>
                         <GridViewColumn Header="Category" 
