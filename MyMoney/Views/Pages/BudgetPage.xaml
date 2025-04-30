@@ -21,9 +21,9 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*" MaxWidth="200" MinWidth="150"/>
             <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*" MaxWidth="250" MinWidth="200"/>
         </Grid.ColumnDefinitions>
 
         <ui:Card Grid.Column="0" VerticalAlignment="Top">
@@ -80,6 +80,9 @@
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
                 <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                     <ui:SymbolIcon Symbol="Add24"/>
+                    <ui:Button.ToolTip>
+                        <ToolTip Content="Add income item"/>
+                    </ui:Button.ToolTip>
                 </ui:Button>
             </StackPanel>
 
@@ -130,6 +133,9 @@
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
                 <ui:Button Margin="8,0,0,0" IsEnabled="{Binding ViewModel.IsEditingEnabled}" Command="{Binding ViewModel.AddExpenseGroupCommand}">
                     <ui:SymbolIcon Symbol="Add24"/>
+                    <ui:Button.ToolTip>
+                        <ToolTip Content="Add expense group"/>
+                    </ui:Button.ToolTip>
                 </ui:Button>
             </StackPanel>
 
@@ -149,11 +155,17 @@
                                                     RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                                                     CommandParameter="{Binding}">
                                         <ui:SymbolIcon Symbol="Edit24"/>
+                                        <ui:Button.ToolTip>
+                                            <ToolTip Content="Edit group"/>
+                                        </ui:Button.ToolTip>
                                     </ui:Button>
                                     <ui:Button Margin="4,0,24,0" Grid.Column="2" Command="{Binding DataContext.ViewModel.DeleteExpenseGroupCommand,
                                                     RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                                                     CommandParameter="{Binding}">
                                         <ui:SymbolIcon Symbol="Delete24"/>
+                                        <ui:Button.ToolTip>
+                                            <ToolTip Content="Delete group"/>
+                                        </ui:Button.ToolTip>
                                     </ui:Button>
                                 </Grid>
                                 
