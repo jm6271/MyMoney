@@ -42,8 +42,9 @@
         </ui:Button>
 
         <Popup x:Name="dropDownPopup" PlacementTarget="{Binding ElementName=dropdownButton}" Placement="Center"
-               StaysOpen="False" Focusable="True" AllowsTransparency="True" 
-               Width="{Binding ElementName=dropdownButton, Path=ActualWidth}">
+               StaysOpen="False" Focusable="False" AllowsTransparency="True" 
+               Width="{Binding ElementName=dropdownButton, Path=ActualWidth}"
+               Closed="dropDownPopup_Closed">
             <Border CornerRadius="8" Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                     BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" RenderTransformOrigin="0.5,0.5">
                 <Border.RenderTransform>

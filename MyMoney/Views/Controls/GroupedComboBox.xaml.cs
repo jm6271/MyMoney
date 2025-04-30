@@ -163,7 +163,6 @@ namespace MyMoney.Views.Controls
             var closeAnimation = (Storyboard)FindResource("CloseAnimation");
             closeAnimation.Completed += (s, e) => dropDownPopup.IsOpen = false;
             closeAnimation.Begin((FrameworkElement)dropDownPopup.Child);
-
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -188,6 +187,15 @@ namespace MyMoney.Views.Controls
                 SelectedIndex++;
                 e.Handled = true;
             }
+        }
+
+        private void dropDownPopup_Closed(object sender, EventArgs e)
+        {
+            // Delay focus just enough to allow animation to complete
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                dropdownButton.Focus();
+            }), System.Windows.Threading.DispatcherPriority.Input);
         }
     }
 }

@@ -121,5 +121,18 @@ namespace MyMoney.Views.ContentDialogs
         {
             CategoryBorder.BorderBrush = Brushes.Transparent;
         }
+
+        private void cmbCategory_LostFocus(object sender, RoutedEventArgs e)
+        {
+            // Validate
+            if (cmbCategory.SelectedIndex == -1)
+            {
+                CategoryBorder.BorderBrush = Brushes.Red;
+            }
+            else
+            {
+                CategoryBorder.BorderBrush = Brushes.Transparent;
+            }
+        }
     }
 }
