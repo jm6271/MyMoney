@@ -62,7 +62,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             _mockExpenseGroupDialogService.Setup(x => x.GetViewModel()).Returns(viewModel);
             _mockExpenseGroupDialogService.Setup(x => x.ShowDialogAsync(
                 _mockContentDialogService.Object, 
-                "Edit Group Name"))
+                "Edit Group Name",
+                It.IsAny<string>()))
                 .ReturnsAsync(ContentDialogResult.Primary);
 
             // Act
@@ -72,7 +73,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             Assert.AreEqual(newName, parameter.CategoryName);
             _mockExpenseGroupDialogService.Verify(x => x.ShowDialogAsync(
                 _mockContentDialogService.Object, 
-                "Edit Group Name"), 
+                "Edit Group Name",
+                "Edit"), 
                 Times.Once);
         }
 
@@ -85,7 +87,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
 
             _mockExpenseGroupDialogService.Setup(x => x.ShowDialogAsync(
                 _mockContentDialogService.Object, 
-                "Edit Group Name"))
+                "Edit Group Name", It.IsAny<string>()))
                 .ReturnsAsync(ContentDialogResult.Secondary);
 
             // Act
@@ -108,7 +110,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             // Assert
             _mockExpenseGroupDialogService.Verify(x => x.ShowDialogAsync(
                 It.IsAny<IContentDialogService>(), 
-                It.IsAny<string>()), 
+                It.IsAny<string>(), It.IsAny<string>()), 
                 Times.Never);
         }
 
@@ -125,7 +127,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             // Assert
             _mockExpenseGroupDialogService.Verify(x => x.ShowDialogAsync(
                 It.IsAny<IContentDialogService>(), 
-                It.IsAny<string>()), 
+                It.IsAny<string>(), It.IsAny<string>()), 
                 Times.Never);
         }
     }

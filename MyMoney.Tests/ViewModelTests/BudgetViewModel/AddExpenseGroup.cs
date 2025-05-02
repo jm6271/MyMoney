@@ -58,6 +58,7 @@ public class AddExpenseGroupTests
             .Returns(dialogViewModel);
         _mockNewExpenseGroupDialogService.Setup(x => x.ShowDialogAsync(
             It.IsAny<IContentDialogService>(), 
+            It.IsAny<string>(),
             It.IsAny<string>()))
             .ReturnsAsync(ContentDialogResult.Primary);
 
@@ -87,7 +88,7 @@ public class AddExpenseGroupTests
 
         // Assert
         _mockNewExpenseGroupDialogService.Verify(
-            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()), 
+            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>(), It.IsAny<string>()), 
             Times.Never);
     }
 
@@ -112,7 +113,7 @@ public class AddExpenseGroupTests
 
         // Assert
         _mockNewExpenseGroupDialogService.Verify(
-            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()), 
+            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>(), It.IsAny<string>()), 
             Times.Never);
     }
 }

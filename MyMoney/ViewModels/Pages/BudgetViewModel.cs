@@ -349,7 +349,7 @@ namespace MyMoney.ViewModels.Pages
 
             var viewModel = new NewExpenseGroupDialogViewModel();
             _newExpenseGroupDialogService.SetViewModel(viewModel);
-            var result = await _newExpenseGroupDialogService.ShowDialogAsync(_contentDialogService, "New Expense Group");
+            var result = await _newExpenseGroupDialogService.ShowDialogAsync(_contentDialogService, "New Expense Group", "Add");
             viewModel = _newExpenseGroupDialogService.GetViewModel();
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
@@ -488,7 +488,7 @@ namespace MyMoney.ViewModels.Pages
             };
 
             _newExpenseGroupDialogService.SetViewModel(viewModel);
-            var result = await _newExpenseGroupDialogService.ShowDialogAsync(_contentDialogService, "Edit Group Name");
+            var result = await _newExpenseGroupDialogService.ShowDialogAsync(_contentDialogService, "Edit Group Name", "Edit");
             viewModel = _newExpenseGroupDialogService.GetViewModel();
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)

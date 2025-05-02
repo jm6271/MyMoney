@@ -14,7 +14,7 @@ namespace MyMoney.Services.ContentDialogs
     {
         public void SetViewModel(NewExpenseGroupDialogViewModel viewModel);
         public NewExpenseGroupDialogViewModel GetViewModel();
-        public Task<ContentDialogResult> ShowDialogAsync(IContentDialogService dialogService, string dialogTitle);
+        public Task<ContentDialogResult> ShowDialogAsync(IContentDialogService dialogService, string dialogTitle, string acceptButtonText);
     }
     public class NewExpenseGroupDialogService : INewExpenseGroupDialogService
     {
@@ -29,7 +29,7 @@ namespace MyMoney.Services.ContentDialogs
             _viewModel = viewModel;
         }
 
-        public async Task<ContentDialogResult> ShowDialogAsync(IContentDialogService dialogService, string dialogTitle)
+        public async Task<ContentDialogResult> ShowDialogAsync(IContentDialogService dialogService, string dialogTitle, string acceptButtonText)
         {
             var host = dialogService.GetDialogHost();
             if (host == null)
@@ -37,7 +37,7 @@ namespace MyMoney.Services.ContentDialogs
 
             NewExpenseGroupDialog newExpenseGroupDialog = new(host, _viewModel)
             {
-                PrimaryButtonText = "Add",
+                PrimaryButtonText = acceptButtonText,
                 CloseButtonText = "Cancel",
                 Title = dialogTitle
             };
