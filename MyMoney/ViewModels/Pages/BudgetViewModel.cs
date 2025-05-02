@@ -427,7 +427,8 @@ namespace MyMoney.ViewModels.Pages
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
                 // Make sure the category name of the edited item doesn't already exist
-                if (DoesIncomeItemExist(viewModel.BudgetCategory))
+                if (DoesIncomeItemExist(viewModel.BudgetCategory) && 
+                    CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex].Category != viewModel.BudgetCategory)
                 {
                     await _messageBoxService.ShowInfoAsync(
                         "Category Already Exists", "A category called \"" + viewModel.BudgetCategory + "\" already exists", "OK");
@@ -493,7 +494,7 @@ namespace MyMoney.ViewModels.Pages
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
                 // Make sure a group with this name doesn't already exist
-                if (DoesExpenseGroupExist(viewModel.GroupName))
+                if (DoesExpenseGroupExist(viewModel.GroupName) && parameter.CategoryName != viewModel.GroupName)
                 {
                     await _messageBoxService.ShowInfoAsync(
                         "Group Already Exists", "A group called \"" + viewModel.GroupName + "\" already exists", "OK");
@@ -523,7 +524,8 @@ namespace MyMoney.ViewModels.Pages
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
                 // Make sure an item with this name doesn't already exist
-                if (DoesExpenseItemExist(viewModel.BudgetCategory))
+                if (DoesExpenseItemExist(viewModel.BudgetCategory) && 
+                    parameter.SubItems[parameter.SelectedSubItemIndex].Category != viewModel.BudgetCategory)
                 {
                     await _messageBoxService.ShowInfoAsync(
                         "Category Already Exists", "A category called \"" + viewModel.BudgetCategory + "\" already exists", "OK");
