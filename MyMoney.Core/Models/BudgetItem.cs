@@ -17,5 +17,8 @@ namespace MyMoney.Core.Models
 
         [ObservableProperty]
         private Currency _amount = new(0m);
+
+        [ObservableProperty]
+        private Currency _actual = new(0m);
     }
 }

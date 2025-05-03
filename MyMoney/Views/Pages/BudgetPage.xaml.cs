@@ -22,5 +22,16 @@ namespace MyMoney.Views.Pages
         {
             ViewModel.OnPageNavigatedTo();
         }
+
+        private void ListView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            // Change the width of the first column of the expense listview whose size has changed
+            if (sender is Wpf.Ui.Controls.ListView listView)
+            {
+                int w = (int)(listView.ActualWidth - 280); // width of other columns plus some extra for padding
+                if (w < 100) w = 100;
+                ((Wpf.Ui.Controls.GridView)listView.View).Columns[0].Width = w;
+            }
+        }
     }
 }

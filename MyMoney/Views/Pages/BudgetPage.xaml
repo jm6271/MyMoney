@@ -88,7 +88,21 @@
 
 
             <ui:Card Margin="0,4,0,8">
-                <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetIncomeItems}" SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}">
+                <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetIncomeItems}" 
+                             SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}"
+                             SizeChanged="ListView_SizeChanged" SelectionMode="Single">
+                    <ui:ListView.Resources>
+                        <DataTemplate x:Key="CategoryItemTemplate">
+                            <ui:TextBlock Text="{Binding Category}" Margin="0,5,0,5"/>
+                        </DataTemplate>
+                        <DataTemplate x:Key="BudgetedItemTemplate">
+                            <ui:TextBlock Text="{Binding Amount}" Margin="0,5,0,5"/>
+                        </DataTemplate>
+                        <DataTemplate x:Key="ActualItemTemplate">
+                            <ui:TextBlock Text="{Binding Actual}" Margin="0,5,5,5"/>
+                        </DataTemplate>
+                    </ui:ListView.Resources>
+
                     <ui:ListView.ContextMenu>
                         <ContextMenu IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                             <MenuItem Header="Edit" Command="{Binding ViewModel.EditIncomeItemCommand}"/>
@@ -101,19 +115,13 @@
                             Key="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
                     </ui:ListView.InputBindings>
 
-                    <ui:ListView.ItemTemplate>
-                        <DataTemplate DataType="{x:Type models:BudgetItem}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <TextBlock Text="{Binding Category}" Grid.Column="0" Margin="5,5,0,5"/>
-                                <TextBlock Text="{Binding Amount}" Grid.Column="1" Margin="0,5,5,5"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ui:ListView.ItemTemplate>
+                    <ui:ListView.View>
+                        <ui:GridView>
+                            <ui:GridViewColumn Header="Category" CellTemplate="{StaticResource CategoryItemTemplate}"/>
+                            <ui:GridViewColumn Header="Budgeted" CellTemplate="{StaticResource BudgetedItemTemplate}" Width="125"/>
+                            <ui:GridViewColumn Header="Actual" CellTemplate="{StaticResource ActualItemTemplate}" Width="125"/>
+                        </ui:GridView>
+                    </ui:ListView.View>
                 </ui:ListView>
             </ui:Card>
 
@@ -172,7 +180,19 @@
                             </ui:CardExpander.Header>
                             <StackPanel>
                                 <ui:ListView ItemsSource="{Binding SubItems}" SelectedIndex="{Binding SelectedSubItemIndex}"
-                                             Tag="{Binding DataContext.ViewModel, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">
+                                             Tag="{Binding DataContext.ViewModel, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                             SelectionMode="Single" MinHeight="50" Margin="0,0,0,8" SizeChanged="ListView_SizeChanged">
+                                    <ui:ListView.Resources>
+                                        <DataTemplate x:Key="CategoryItemTemplate">
+                                            <ui:TextBlock Text="{Binding Category}" Margin="0,5,0,5"/>
+                                        </DataTemplate>
+                                        <DataTemplate x:Key="BudgetedItemTemplate">
+                                            <ui:TextBlock Text="{Binding Amount}" Margin="0,5,0,5"/>
+                                        </DataTemplate>
+                                        <DataTemplate x:Key="ActualItemTemplate">
+                                            <ui:TextBlock Text="{Binding Actual}" Margin="0,5,5,5"/>
+                                        </DataTemplate>
+                                    </ui:ListView.Resources>
                                     <ui:ListView.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Header="Edit" Command="{Binding PlacementTarget.Tag.EditExpenseItemCommand,
@@ -183,19 +203,14 @@
                                                                             CommandParameter="{Binding}"/>
                                         </ContextMenu>
                                     </ui:ListView.ContextMenu>
-                                    <ui:ListView.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition/>
-                                                    <ColumnDefinition Width="Auto"/>
-                                                </Grid.ColumnDefinitions>
-
-                                                <TextBlock Text="{Binding Category}" Grid.Column="0" Margin="5,5,0,5"/>
-                                                <TextBlock Text="{Binding Amount}" Grid.Column="1" Margin="0,5,5,5"/>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ui:ListView.ItemTemplate>
+                                    
+                                    <ui:ListView.View>
+                                        <ui:GridView>
+                                            <ui:GridViewColumn Header="Category" CellTemplate="{StaticResource CategoryItemTemplate}"/>
+                                            <ui:GridViewColumn Header="Budgeted" CellTemplate="{StaticResource BudgetedItemTemplate}" Width="125"/>
+                                            <ui:GridViewColumn Header="Actual" CellTemplate="{StaticResource ActualItemTemplate}" Width="125"/>
+                                        </ui:GridView>
+                                    </ui:ListView.View>
                                 </ui:ListView>
 
                                 <ui:Button Command="{Binding DataContext.ViewModel.AddExpenseItemCommand, 

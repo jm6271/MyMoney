@@ -13,6 +13,8 @@ using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui;
 using MyMoney.Services.ContentDialogs;
 using System.Linq.Expressions;
+using MyMoney.Core.Reports;
+using System.Linq;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -87,6 +89,7 @@ namespace MyMoney.ViewModels.Pages
         private readonly INewBudgetDialogService _newBudgetDialogService;
         private readonly IBudgetCategoryDialogService _budgetCategoryDialogService;
         private readonly INewExpenseGroupDialogService _newExpenseGroupDialogService;
+        private readonly IDatabaseReader _databaseReader;
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
@@ -148,8 +151,9 @@ namespace MyMoney.ViewModels.Pages
             _newBudgetDialogService = newBudgetDialogService;
             _budgetCategoryDialogService = budgetCategoryDialogService;
             _newExpenseGroupDialogService = newExpenseGroupDialogService;
+            _databaseReader = databaseReader;
 
-            var budgetCollection = databaseReader.GetCollection<Budget>("Budgets");
+            var budgetCollection = _databaseReader.GetCollection<Budget>("Budgets");
 
             foreach (var budget in budgetCollection.OfType<Budget>())
             {
@@ -690,6 +694,8 @@ namespace MyMoney.ViewModels.Pages
 
             IsEditingEnabled = CurrentBudget.BudgetDate > DateTime.Now.AddMonths(-1);
 
+            AddActualSpentToCurrentBudget();
+
             UpdateCharts();
         }
 
@@ -743,6 +749,34 @@ namespace MyMoney.ViewModels.Pages
                 }
             }
             return false;
+        }
+
+        private void AddActualSpentToCurrentBudget()
+        {
+            if (CurrentBudget == null) return;
+
+            // get a budget report for the month of the current budget
+            var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(CurrentBudget.BudgetDate, _databaseReader);
+            var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(CurrentBudget.BudgetDate, _databaseReader);
+
+            // go through the report items and set the equivalent budget items' actual amount
+            for (int i = 0; i < incomeItems.Count; i++)
+            {
+                CurrentBudget.BudgetIncomeItems[i].Actual = incomeItems[i].Actual;
+            }
+
+            foreach (var expenseGroup in CurrentBudget.BudgetExpenseItems)
+            {
+                foreach (var subItem in expenseGroup.SubItems)
+                {
+                    var matchingItem = expenseItems.FirstOrDefault(item => item.Category == subItem.Category);
+                    if (matchingItem != null)
+                    {
+                        subItem.Actual = matchingItem.Actual;
+                    }
+                }
+            }
+
         }
     }
 }
