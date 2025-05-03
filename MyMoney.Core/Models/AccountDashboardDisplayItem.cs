@@ -23,7 +23,7 @@ namespace MyMoney.Core.Models
             return displayItem;
         }
 
-        public AccountDashboardDisplayItem FromInitializers(string accountName, Currency total)
+        public static AccountDashboardDisplayItem FromInitializers(string accountName, Currency total)
         {
             var displayItem = new AccountDashboardDisplayItem();
             displayItem.AccountName = accountName;

@@ -77,7 +77,8 @@ public class DeleteTransactionTest
         // Arrange
         _viewModel = CreateViewModel();
         var account = new Account { AccountName = "Test", Total = new Currency(1000m) };
-        var transaction = new Transaction(DateTime.Today, "Test", "Category", new Currency(100m), "Memo");
+        var transaction = new Transaction(DateTime.Today, "Test", 
+            new() { Name = "Category", Group = "Income" }, new Currency(100m), "Memo");
         account.Transactions.Add(transaction);
         _viewModel.Accounts.Add(account);
         _viewModel.SelectedAccount = account;
@@ -101,7 +102,8 @@ public class DeleteTransactionTest
         // Arrange
         _viewModel = CreateViewModel();
         var account = new Account { AccountName = "Test", Total = new Currency(1000m) };
-        var transaction = new Transaction(DateTime.Today, "Test", "Category", new Currency(100m), "Memo");
+        var transaction = new Transaction(DateTime.Today, "Test", 
+            new() { Name = "Category", Group = "Income" }, new Currency(100m), "Memo");
         account.Transactions.Add(transaction);
         _viewModel.Accounts.Add(account);
         _viewModel.SelectedAccount = account;
@@ -125,7 +127,8 @@ public class DeleteTransactionTest
         // Arrange
         _viewModel = CreateViewModel();
         var account = new Account { AccountName = "Test", Total = new Currency(1000m) };
-        var transaction = new Transaction(DateTime.Today, "Test", "Category", new Currency(-100m), "Memo");
+        var transaction = new Transaction(DateTime.Today, "Test", 
+            new() { Name = "Category", Group = "Income" }, new Currency(-100m), "Memo");
         account.Transactions.Add(transaction);
         _viewModel.Accounts.Add(account);
         _viewModel.SelectedAccount = account;

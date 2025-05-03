@@ -17,6 +17,7 @@ public class EditIncomeItemTests
     private Mock<IMessageBoxService> _mockMessageBoxService = null!;
     private Mock<INewBudgetDialogService> _mockNewBudgetDialogService = null!;
     private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService = null!;
+    private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService = null!;
     private ViewModels.Pages.BudgetViewModel _viewModel = null!;
 
     [TestInitialize]
@@ -27,6 +28,7 @@ public class EditIncomeItemTests
         _mockMessageBoxService = new Mock<IMessageBoxService>();
         _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
         _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
+        _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
 
         // Setup mock database with a test budget
         var testBudget = new Budget
@@ -47,7 +49,8 @@ public class EditIncomeItemTests
             _mockDatabaseReader.Object,
             _mockMessageBoxService.Object,
             _mockNewBudgetDialogService.Object,
-            _mockBudgetCategoryDialogService.Object
+            _mockBudgetCategoryDialogService.Object,
+            _mockExpenseGroupDialogService.Object
         );
     }
 

@@ -80,7 +80,7 @@ public class NewTransactionTests
                 NewTransactionAmount = new Currency(500),
                 NewTransactionIsExpense = true,
                 NewTransactionDate = DateTime.Today,
-                NewTransactionCategory = "Test Category",
+                NewTransactionCategory = new() { Name = "Test Category", Group = "Income" },
                 NewTransactionMemo = "Test Memo"
             });
 
@@ -129,7 +129,7 @@ public class NewTransactionTests
                 NewTransactionAmount = new Currency(500),
                 NewTransactionIsExpense = true,
                 NewTransactionDate = DateTime.Today,
-                NewTransactionCategory = "Test Category",
+                NewTransactionCategory = new() { Name = "Test Category", Group = "Income" },
                 NewTransactionMemo = "Test Memo"
             });
         _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee())
@@ -144,7 +144,8 @@ public class NewTransactionTests
         
         var transaction = account.Transactions[0];
         Assert.AreEqual("Test Payee", transaction.Payee);
-        Assert.AreEqual("Test Category", transaction.Category);
+        Assert.AreEqual("Test Category", transaction.Category.Name);
+        Assert.AreEqual("Income", transaction.Category.Group);
         Assert.AreEqual("Test Memo", transaction.Memo);
         Assert.AreEqual(-500, transaction.Amount.Value);
         Assert.AreEqual(DateTime.Today, transaction.Date);
@@ -167,7 +168,7 @@ public class NewTransactionTests
                 NewTransactionAmount = new Currency(500),
                 NewTransactionIsExpense = false,
                 NewTransactionDate = DateTime.Today,
-                NewTransactionCategory = "Income",
+                NewTransactionCategory = new() { Name = "Income", Group = "Income" },
                 NewTransactionMemo = "Salary"
             });
         _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee())
@@ -182,7 +183,8 @@ public class NewTransactionTests
         
         var transaction = account.Transactions[0];
         Assert.AreEqual("Employer", transaction.Payee);
-        Assert.AreEqual("Income", transaction.Category);
+        Assert.AreEqual("Income", transaction.Category.Name);
+        Assert.AreEqual("Income", transaction.Category.Group);
         Assert.AreEqual("Salary", transaction.Memo);
         Assert.AreEqual(500, transaction.Amount.Value);
         Assert.AreEqual(DateTime.Today, transaction.Date);

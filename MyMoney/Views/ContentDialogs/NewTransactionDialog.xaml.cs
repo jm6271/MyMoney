@@ -1,4 +1,5 @@
-﻿using MyMoney.ViewModels.ContentDialogs;
+﻿using MyMoney.Core.Models;
+using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.ViewModels.Pages;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ namespace MyMoney.Views.ContentDialogs
             InitializeComponent();
             DataContext = viewModel;
             txtPayee.Text = viewModel.NewTransactionPayee;
+            cmbCategory.ItemsSource = viewModel.CategoryNames;
         }
 
         private void ContentDialog_Loaded(object sender, RoutedEventArgs e)
@@ -41,6 +43,14 @@ namespace MyMoney.Views.ContentDialogs
             get
             {
                 return txtPayee.Text;
+            }
+        }
+
+        public Category SelectedCategory
+        {
+            get
+            {
+                return new() { Name = cmbCategory.SelectedItem?.Item.ToString() ?? "", Group = cmbCategory.SelectedItem?.Group ?? ""};
             }
         }
 
@@ -84,7 +94,7 @@ namespace MyMoney.Views.ContentDialogs
             var amountValidationErrors = Validation.GetErrors(txtAmount);
             var dateValidationErrors = Validation.GetErrors(txtDate);
             var invalidPayee = txtPayee.Text == "";
-            var invalidCategory = cmbCategory.Text == "";
+            var invalidCategory = cmbCategory.SelectedIndex == -1;
 
             // Clear the red border from custom validated controls
             CategoryBorder.BorderBrush = Brushes.Transparent;
@@ -102,14 +112,27 @@ namespace MyMoney.Views.ContentDialogs
                 PayeeBorder.BorderBrush = Brushes.Red;
         }
 
-        private void cmbCategory_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void TxtPayee_OnLostFocus(object sender, RoutedEventArgs e)
+        {
+            PayeeBorder.BorderBrush = string.IsNullOrEmpty(txtPayee.Text) ? Brushes.Red : Brushes.Transparent;
+        }
+
+        private void cmbCategory_SelectionChanged_1(object sender, RoutedEventArgs e)
         {
             CategoryBorder.BorderBrush = Brushes.Transparent;
         }
 
-        private void TxtPayee_OnLostFocus(object sender, RoutedEventArgs e)
+        private void cmbCategory_LostFocus(object sender, RoutedEventArgs e)
         {
-            PayeeBorder.BorderBrush = string.IsNullOrEmpty(txtPayee.Text) ? Brushes.Red : Brushes.Transparent;
+            // Validate
+            if (cmbCategory.SelectedIndex == -1)
+            {
+                CategoryBorder.BorderBrush = Brushes.Red;
+            }
+            else
+            {
+                CategoryBorder.BorderBrush = Brushes.Transparent;
+            }
         }
     }
 }

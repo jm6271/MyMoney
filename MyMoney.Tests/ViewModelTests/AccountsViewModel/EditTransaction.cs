@@ -80,7 +80,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         {
             // Arrange
             var account = new Account { AccountName = "Test", Total = new Currency(1000) };
-            var transaction = new Transaction(DateTime.Today, "Test", "Category", new Currency(-100), "Memo");
+            var transaction = new Transaction(DateTime.Today, "Test", new() { Name = "Category", Group = "Income" }, new Currency(-100), "Memo");
             account.Transactions.Add(transaction);
             
             _viewModel.Accounts.Add(account);
@@ -104,7 +104,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         {
             // Arrange
             var account = new Account { AccountName = "Test", Total = new Currency(1000) };
-            var oldTransaction = new Transaction(DateTime.Today, "Test", "Category", new Currency(-100), "Memo");
+            var oldTransaction = new Transaction(DateTime.Today, "Test", new() { Name = "Category", Group = "Income" }, new Currency(-100), "Memo");
             account.Transactions.Add(oldTransaction);
             
             _viewModel.Accounts.Add(account);
@@ -121,7 +121,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
                     NewTransactionAmount = new Currency(200),
                     NewTransactionIsExpense = true,
                     NewTransactionDate = DateTime.Today,
-                    NewTransactionCategory = "Category",
+                    NewTransactionCategory = new() { Name = "Category", Group = "Income" },
                     NewTransactionMemo = "Updated memo"
                 });
             _transactionDialogService

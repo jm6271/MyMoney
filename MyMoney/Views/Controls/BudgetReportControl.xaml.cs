@@ -1,27 +1,16 @@
 ﻿using MyMoney.Core.Models;
-using System;
-using System.CodeDom;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MyMoney.Views.Controls
 {
     /// <summary>
     /// Interaction logic for BudgetReportControl.xaml
     /// </summary>
-    public partial class BudgetReportControl : UserControl
+    public partial class BudgetReportControl : UserControl, INotifyPropertyChanged
     {
         public BudgetReportControl()
         {
@@ -54,7 +43,8 @@ namespace MyMoney.Views.Controls
 
         public static readonly DependencyProperty ExpenseItemsProperty = DependencyProperty.Register("ExpenseItems",
             typeof(ObservableCollection<BudgetReportItem>), typeof(BudgetReportControl),
-            new PropertyMetadata(new ObservableCollection<BudgetReportItem>()));
+            new FrameworkPropertyMetadata(new ObservableCollection<BudgetReportItem>(),
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnExpenseItemsChanged));
 
         /// <summary>
         /// The report's expense items
@@ -63,6 +53,44 @@ namespace MyMoney.Views.Controls
         {
             get { return (ObservableCollection<BudgetReportItem>)GetValue(ExpenseItemsProperty); }
             set { SetValue(ExpenseItemsProperty, value); }
+        }
+
+
+        // This gets called when the entire collection is replaced
+        private static void OnExpenseItemsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (BudgetReportControl)d;
+
+            // Unsubscribe from old collection events (if any)
+            if (e.OldValue is ObservableCollection<BudgetReportItem> oldCollection)
+            {
+                oldCollection.CollectionChanged -= control.UpdateGroupedExpenseItems;
+            }
+
+            // Subscribe to new collection events
+            if (e.NewValue is ObservableCollection<BudgetReportItem> newCollection)
+            {
+                newCollection.CollectionChanged += control.UpdateGroupedExpenseItems;
+            }
+        }
+
+
+        // This gets called when items are added/removed/replaced
+        private void UpdateGroupedExpenseItems(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(GroupedExpenseItems));
+        }
+
+
+        // grouped items to display in the ListView
+        public ListCollectionView GroupedExpenseItems
+        {
+            get
+            {
+                ListCollectionView listCollectionView = new(ExpenseItems);
+                listCollectionView.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+                return listCollectionView;
+            }
         }
 
         public static readonly DependencyProperty ReportTotalProperty = DependencyProperty.Register("ReportTotal",
@@ -113,6 +141,11 @@ namespace MyMoney.Views.Controls
 
         public static readonly DependencyProperty RemainingColumnWidthProperty = DependencyProperty.Register("RemainingColumnWidth",
             typeof(int), typeof(BudgetReportControl), new PropertyMetadata(100));
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged(string name) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
         /// <summary>
         /// The width of the remaining column

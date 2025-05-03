@@ -61,7 +61,7 @@ namespace MyMoney.Core.Reports
         private static decimal GetIncome(List<Transaction> transactions)
         {
             return (from transaction in transactions 
-                where !string.IsNullOrWhiteSpace(transaction.Category) 
+                where !string.IsNullOrWhiteSpace(transaction.Category.Name) 
                 where transaction.Amount.Value > 0 
                 select transaction.Amount.Value).Sum();
         }
@@ -70,7 +70,7 @@ namespace MyMoney.Core.Reports
         {
             var expenses = 
                 (from transaction in transactions 
-                    where !string.IsNullOrWhiteSpace(transaction.Category) 
+                    where !string.IsNullOrWhiteSpace(transaction.Category.Name) 
                     where transaction.Amount.Value < 0 
                     select transaction.Amount.Value).Sum();
 

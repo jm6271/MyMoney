@@ -37,7 +37,7 @@ namespace MyMoney.Core.Reports
                 {
                     Category = item.Category,
                     Budgeted = item.Amount,
-                    Actual = CalculateTotalForCategory(item.Category, budgetMonth, databaseReader),
+                    Actual = CalculateTotalForCategory(new() { Group = "Income", Name = item.Category }, budgetMonth, databaseReader),
                 };
 
                 budgetReportItem.Remaining = new(
@@ -83,19 +83,24 @@ namespace MyMoney.Core.Reports
             // Create a list of budget report items
             List<BudgetReportItem> budgetReportItems = [];
 
-            // loop through the incomeItems and create the budget report items
+            // loop through the expense items and create the budget report items
             foreach (var item in expenseItems)
             {
-                BudgetReportItem budgetReportItem = new()
+                foreach (var subItem in item.SubItems)
                 {
-                    Category = item.Category,
-                    Budgeted = item.Amount,
-                    Actual = new(Math.Abs(CalculateTotalForCategory(item.Category, budgetMonth, databaseReader).Value)),
-                };
 
-                budgetReportItem.Remaining = budgetReportItem.Budgeted - budgetReportItem.Actual;
+                    BudgetReportItem budgetReportItem = new()
+                    {
+                        Category = subItem.Category,
+                        Group = item.CategoryName,
+                        Budgeted = subItem.Amount,
+                        Actual = new(Math.Abs(CalculateTotalForCategory(new() { Group = item.CategoryName, Name = subItem.Category}, budgetMonth, databaseReader).Value)),
+                    };
 
-                budgetReportItems.Add(budgetReportItem);
+                    budgetReportItem.Remaining = budgetReportItem.Budgeted - budgetReportItem.Actual;
+
+                    budgetReportItems.Add(budgetReportItem);
+                }
             }
 
             return budgetReportItems;
@@ -110,19 +115,23 @@ namespace MyMoney.Core.Reports
             return CalculateExpenseReportItems(DateTime.Today, databaseReader);
         }
 
-        private static Currency CalculateTotalForCategory(string categoryName, DateTime month, IDatabaseReader databaseReader)
+        private static Currency CalculateTotalForCategory(Category category, DateTime month, IDatabaseReader databaseReader)
         {
             // Read the accounts from the database
             var accounts = databaseReader.GetCollection<Account>("Accounts");
 
             // search through each account for transactions in this category that happened in the specified month
-
-            // Total for this category so far
-            var actual = 
-                (from account in accounts 
-                    from transaction in account.Transactions 
-                    where transaction.Category == categoryName && IsDateInCurrentMonth(transaction.Date, month) 
-                    select transaction.Amount.Value).Sum();
+            var actual = 0m;
+            foreach (var account in accounts)
+            {
+                foreach (var transaction in account.Transactions)
+                {
+                    if (transaction.Category.Name == category.Name && IsDateInCurrentMonth(transaction.Date, month))
+                    {
+                        actual += transaction.Amount.Value;
+                    }
+                }
+            }
 
             return new Currency(actual);
         }

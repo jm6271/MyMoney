@@ -1,0 +1,86 @@
+﻿<UserControl x:Class="MyMoney.Views.Controls.GroupedComboBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:local="clr-namespace:MyMoney.Views.Controls"
+             mc:Ignorable="d" 
+             d:DesignHeight="60" d:DesignWidth="200"
+             KeyDown="UserControl_KeyDown">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <SineEase x:Key="SmoothEase" EasingMode="EaseInOut"/>
+
+            <Storyboard x:Key="OpenAnimation">
+                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                     From="0" To="1"
+                     Duration="0:0:0.15"
+                     EasingFunction="{StaticResource SmoothEase}"/>
+                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                     From="0" To="1"
+                     Duration="0:0:0.15"/>
+            </Storyboard>
+
+            <Storyboard x:Key="CloseAnimation">
+                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                     From="1" To="0"
+                     Duration="0:0:0.15"
+                     EasingFunction="{StaticResource SmoothEase}"/>
+                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                     From="1" To="0"
+                     Duration="0:0:0.15"/>
+            </Storyboard>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <ui:Button x:Name="dropdownButton" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="10,7"
+                   HorizontalContentAlignment="Stretch" Click="dropdownButton_Click">
+            <ui:TextBlock HorizontalAlignment="Stretch" Text="{Binding Text,
+                            RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+        </ui:Button>
+
+        <Popup x:Name="dropDownPopup" PlacementTarget="{Binding ElementName=dropdownButton}" Placement="Center"
+               StaysOpen="False" Focusable="False" AllowsTransparency="True" 
+               Width="{Binding ElementName=dropdownButton, Path=ActualWidth}"
+               Closed="dropDownPopup_Closed">
+            <Border CornerRadius="8" Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
+                    BorderThickness="1" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                    <ScaleTransform ScaleY="1"/>
+                </Border.RenderTransform>
+
+                <Border.Effect>
+                    <DropShadowEffect Color="Black"
+                          BlurRadius="20"
+                          Direction="270"
+                          ShadowDepth="4"
+                          Opacity="0.5"/>
+                </Border.Effect>
+
+                <ui:ListView Margin="8,12" MaxHeight="300"
+                             ItemsSource="{Binding GroupedItems, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                             SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                             SelectedIndex="{Binding SelectedIndex, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                             SelectionChanged="ListView_SelectionChanged">
+                    <ui:ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <ui:TextBlock Margin="4,0,4,0" FontWeight="Bold" Text="{Binding Name}" Foreground="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ui:ListView.GroupStyle>
+                    <ui:ListView.ItemTemplate>
+                        <DataTemplate>
+                            <ui:TextBlock Margin="4" Text="{Binding Item}"/>
+                        </DataTemplate>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
+            </Border>
+        </Popup>
+    </Grid>
+
+</UserControl>

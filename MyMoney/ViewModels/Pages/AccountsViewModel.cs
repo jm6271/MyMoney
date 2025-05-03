@@ -6,6 +6,7 @@ using MyMoney.Views.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Core.Database;
 using MyMoney.Services.ContentDialogs;
+using MyMoney.Views.Controls;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -14,7 +15,7 @@ namespace MyMoney.ViewModels.Pages
         public ObservableCollection<Account> Accounts { get; } = [];
         public ObservableCollection<Transaction> SelectedAccountTransactions => SelectedAccount?.Transactions ?? new ObservableCollection<Transaction>();
 
-        public ObservableCollection<string> CategoryNames { get; } = [];
+        public ObservableCollection<GroupedComboBox.GroupedComboBoxItem> CategoryNames { get; } = [];
 
         [ObservableProperty]
         private Account? _selectedAccount;
@@ -83,12 +84,24 @@ namespace MyMoney.ViewModels.Pages
 
             foreach (var item in incomeLst)
             {
-                CategoryNames.Add(item.Category);
+                GroupedComboBox.GroupedComboBoxItem cmbItem = new()
+                {
+                    Group = "Income",
+                    Item = item.Category
+                };
+
+                CategoryNames.Add(cmbItem);
             }
 
             foreach (var item in expenseLst)
             {
-                CategoryNames.Add(item.Category);
+                foreach (var subItem in item.SubItems)
+                {
+                    GroupedComboBox.GroupedComboBoxItem cmbItem = new();
+                    cmbItem.Group = item.CategoryName;
+                    cmbItem.Item = subItem.Category;
+                    CategoryNames.Add(cmbItem);
+                }
             }
 
         }
@@ -243,10 +256,10 @@ namespace MyMoney.ViewModels.Pages
                 // create a new transaction in each of the accounts
 
                 // create FROM transaction
-                Transaction from = new(DateTime.Today, "Transfer to " + viewModel.TransferTo, "", new(-viewModel.Amount.Value), "Transfer");
+                Transaction from = new(DateTime.Today, "Transfer to " + viewModel.TransferTo, new(), new(-viewModel.Amount.Value), "Transfer");
 
                 // Create TO transaction
-                Transaction to = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, "", viewModel.Amount, "Transfer");
+                Transaction to = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, new(), viewModel.Amount, "Transfer");
 
                 // Add the transactions to their accounts
                 foreach (var t in Accounts)
