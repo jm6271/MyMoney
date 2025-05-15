@@ -100,7 +100,9 @@ namespace MyMoney.ViewModels.Pages
                 {
                     Name = "Amount",
                     LabelsPaint = new SolidColorPaint(ChartTextColor),
+                    Labeler = Labelers.Currency,
                     NamePaint = new SolidColorPaint(ChartTextColor),
+                    MinLimit = 0,
                 }
             ];
 

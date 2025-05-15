@@ -64,7 +64,8 @@ namespace MyMoney.ViewModels.Pages
         [
             new ()
             {
-                Name = "Amount"
+                Name = "Amount",
+                Labeler = Labelers.Currency,
             }
         ];
 
