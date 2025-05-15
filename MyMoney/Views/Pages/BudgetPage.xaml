@@ -8,6 +8,7 @@
       xmlns:local="clr-namespace:MyMoney.Views.Pages" 
       xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
       xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+      xmlns:helpers="clr-namespace:MyMoney.Helpers"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Accounts"
@@ -18,6 +19,12 @@
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
       Loaded="Page_Loaded">
+
+    <Page.Resources>
+        <helpers:LeftToBudgetTextConverter x:Key="LeftToBudgetTextConverter"/>
+        <helpers:CurrencyAbsoluteValueConverter x:Key="CurrencyAbsoluteValueConverter"/>
+        <helpers:NegativeCurrencyToRedColorConverter x:Key="NegativeCurrencyToRedColorConverter"/>
+    </Page.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -59,7 +66,7 @@
 
         <StackPanel Grid.Column="1" Margin="24,0,24,24">
 
-            <ui:Card Margin="0,0,0,24">
+            <ui:Card Margin="0,0,0,12">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
@@ -76,7 +83,14 @@
                 </Grid>
             </ui:Card>
 
-            <StackPanel Orientation="Horizontal">
+            <ui:Card Margin="0,12,0,12">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold" Text="{Binding ViewModel.LeftToBudget, Converter={StaticResource CurrencyAbsoluteValueConverter}}" Foreground="{Binding ViewModel.LeftToBudget, Converter={StaticResource NegativeCurrencyToRedColorConverter}}"/>
+                    <TextBlock VerticalAlignment="Center" Text="{Binding ViewModel.LeftToBudget, Converter={StaticResource LeftToBudgetTextConverter}}"/>
+                </StackPanel>
+            </ui:Card>
+
+            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
                 <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                     <ui:SymbolIcon Symbol="Add24"/>
@@ -125,18 +139,6 @@
                 </ui:ListView>
             </ui:Card>
 
-            <ui:Card Margin="0,8,0,8">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <ui:TextBlock FontWeight="SemiBold">Total</ui:TextBlock>
-                    <ui:TextBlock FontWeight="SemiBold" Text="{Binding ViewModel.IncomeTotal}" Grid.Column="1"/>
-                </Grid>
-            </ui:Card>
-
             <StackPanel Orientation="Horizontal">
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
                 <ui:Button Margin="8,0,0,0" IsEnabled="{Binding ViewModel.IsEditingEnabled}" Command="{Binding ViewModel.AddExpenseGroupCommand}">
@@ -176,7 +178,7 @@
                                         </ui:Button.ToolTip>
                                     </ui:Button>
                                 </Grid>
-                                
+
                             </ui:CardExpander.Header>
                             <StackPanel>
                                 <ui:ListView ItemsSource="{Binding SubItems}" SelectedIndex="{Binding SelectedSubItemIndex}"
@@ -203,7 +205,7 @@
                                                                             CommandParameter="{Binding}"/>
                                         </ContextMenu>
                                     </ui:ListView.ContextMenu>
-                                    
+
                                     <ui:ListView.View>
                                         <ui:GridView>
                                             <ui:GridViewColumn Header="Category" CellTemplate="{StaticResource CategoryItemTemplate}"/>
@@ -222,18 +224,6 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            
-            <ui:Card Margin="0,8,0,8">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <ui:TextBlock FontWeight="SemiBold">Total</ui:TextBlock>
-                    <ui:TextBlock FontWeight="SemiBold" Text="{Binding ViewModel.ExpenseTotal}" Grid.Column="2"/>
-                </Grid>
-            </ui:Card>
 
         </StackPanel>
 

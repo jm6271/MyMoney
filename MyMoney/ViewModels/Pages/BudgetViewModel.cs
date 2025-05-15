@@ -78,6 +78,9 @@ namespace MyMoney.ViewModels.Pages
         private Currency _expenseTotal = new(0m);
 
         [ObservableProperty]
+        private Currency _leftToBudget = new(0m);
+
+        [ObservableProperty]
         private decimal _expensePercentTotal;
 
         [ObservableProperty]
@@ -188,6 +191,7 @@ namespace MyMoney.ViewModels.Pages
         {
             UpdateCharts();
             UpdateBudgetLists();
+            UpdateListViewTotals();
 
             // Select the current budget
             if (CurrentBudgets.Count == 1)
@@ -262,6 +266,10 @@ namespace MyMoney.ViewModels.Pages
 
             // Update the charts
             UpdateCharts();
+
+            // Update the left to budget value
+            LeftToBudget = new(0m); // trigger an on property changed event to update theme
+            LeftToBudget = IncomeTotal - ExpenseTotal;
         }
 
         private void UpdateCharts()
@@ -697,6 +705,7 @@ namespace MyMoney.ViewModels.Pages
             AddActualSpentToCurrentBudget();
 
             UpdateCharts();
+            UpdateListViewTotals();
         }
 
         private int FindBudgetIndex(string budgetName)
