@@ -700,7 +700,7 @@ namespace MyMoney.ViewModels.Pages
             // Load into current budget
             CurrentBudget = Budgets[index];
 
-            IsEditingEnabled = CurrentBudget.BudgetDate > DateTime.Now.AddMonths(-1);
+            IsEditingEnabled = true;
 
             AddActualSpentToCurrentBudget();
 
