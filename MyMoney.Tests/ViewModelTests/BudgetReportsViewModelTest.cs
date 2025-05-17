@@ -21,10 +21,14 @@ namespace MyMoney.Tests.ViewModelTests
                         new BudgetItem { Category = "Income 2", Amount = new Currency(500) }
                         ],
                     BudgetExpenseItems = [
-                        new BudgetItem { Category = "Expense 1", Amount = new Currency(150) },
-                        new BudgetItem { Category = "Expense 2", Amount = new Currency(750) },
-                        new BudgetItem { Category = "Expense 3", Amount = new Currency(250) },
-                        new BudgetItem { Category = "Expense 4", Amount = new Currency(350) }
+                        new BudgetExpenseCategory { CategoryName = "Category 1", SubItems = [
+                            new () { Category = "Expense 1", Amount = new(105) },
+                            new () { Category = "Expense 2", Amount = new(750) }
+                            ]},
+                        new BudgetExpenseCategory { CategoryName = "Category 2", SubItems = [
+                            new () { Category = "Expense 3", Amount = new(250) },
+                            new () { Category = "Expense 4", Amount = new(350) }
+                            ]},
                         ]
                 }
             ]);
@@ -35,13 +39,13 @@ namespace MyMoney.Tests.ViewModelTests
                         AccountName = "Account",
                         Total = new Currency(1000m),
                         Transactions = [
-                            new Transaction(DateTime.Now.AddMonths(-2), "Job", "Income 1", new Currency(330), "Paycheck"), // old income transaction
-                            new Transaction(DateTime.Now.AddMonths(-1), "Fast Food, Inc.", "Expense 1", new Currency(-15), "Lunch"), // old expense transaction
-                            new Transaction(DateTime.Now, "Side Job", "Income 2", new Currency(100), "Side Job"), // current income transaction
-                            new Transaction(DateTime.Now, "Job", "Income 1", new Currency(330), "Paycheck"), // another current income transaction
-                            new Transaction(DateTime.Now, "Fast Food, Inc.", "Expense 1", new Currency(-15), "Lunch"), // current expense transaction
-                            new Transaction(DateTime.Now, "Gas Station, Inc.", "Expense 4", new Currency(-70), "Fill up car"), // current expense transaction
-                            new Transaction(DateTime.Now, "Store, Inc.", "Expense 1", new Currency(-100), "Groceries"), // current expense transaction
+                            new Transaction(DateTime.Now.AddMonths(-2), "Job", new() { Name = "Income 1", Group = "Income" }, new Currency(330), "Paycheck"), // old income transaction
+                            new Transaction(DateTime.Now.AddMonths(-1), "Fast Food, Inc.", new() { Name = "Expense 1", Group = "Food" }, new Currency(-15), "Lunch"), // old expense transaction
+                            new Transaction(DateTime.Now, "Side Job", new() { Name = "Income 2", Group = "Income" }, new Currency(100), "Side Job"), // current income transaction
+                            new Transaction(DateTime.Now, "Job", new() { Name = "Income 1", Group = "Income" }, new Currency(330), "Paycheck"), // another current income transaction
+                            new Transaction(DateTime.Now, "Fast Food, Inc.", new() { Name = "Expense 1", Group = "Food" }, new Currency(-15), "Lunch"), // current expense transaction
+                            new Transaction(DateTime.Now, "Gas Station, Inc.", new() { Name = "Expense 4", Group = "Auto" }, new Currency(-70), "Fill up car"), // current expense transaction
+                            new Transaction(DateTime.Now, "Store, Inc.", new() { Name = "Expense 1", Group = "Food" }, new Currency(-100), "Groceries"), // current expense transaction
                             ]
                     }
                 ]);

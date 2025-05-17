@@ -58,7 +58,10 @@ namespace MyMoney.Services.ContentDialogs
                 Title = _title
             };
             var result =  await dialogService.ShowAsync(newTransactionDialog, CancellationToken.None);
+            if (result != ContentDialogResult.Primary) return result;
+
             _selectedPayee = newTransactionDialog.SelectedPayee;
+
             return result;
         }
     }

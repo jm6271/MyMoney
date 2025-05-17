@@ -10,12 +10,15 @@ namespace MyMoney.Core.Models
     public partial class BudgetItem : ObservableObject
     {
         [ObservableProperty]
-        private int _id;
+        private int _id = 0;
 
         [ObservableProperty]
-        private string _category;
+        private string _category = "";
 
         [ObservableProperty]
-        private Currency _amount;
+        private Currency _amount = new(0m);
+
+        [ObservableProperty]
+        private Currency _actual = new(0m);
     }
 }

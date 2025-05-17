@@ -1,18 +1,25 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using System;
+using System.ComponentModel;
 
 namespace MyMoney.Core.Models;
 
-public class Transaction(DateTime date, string payee, string category, Currency amount, string memo)
+public partial class Transaction(DateTime date, string payee, Category category, Currency amount, string memo) : ObservableObject
 {
-    public string Payee { get; set; } = payee;
+    [ObservableProperty]
+    private string _payee = payee;
 
-    public string Category { get; set; } = category;
+    [ObservableProperty]
+    private Category _category = category;
 
-    public Currency Amount { get; set; } = amount;
+    [ObservableProperty]
+    private Currency _amount = amount;
 
-    public string Memo { get; set; } = memo;
+    [ObservableProperty]
+    private string _memo = memo;
 
-    public DateTime Date { get; set; } = date;
+    [ObservableProperty]
+    private DateTime _date = date;
 
     public string DateFormatted
     {
@@ -31,7 +38,7 @@ public class Transaction(DateTime date, string payee, string category, Currency 
             if (Amount.Value > 0m)
                 return "+" + Amount.ToString();
             else if (Amount.Value < 0m)
-                return "-" + Math.Abs(Amount.Value).ToString();
+                return "-" + new Currency(Math.Abs(Amount.Value)).ToString();
             else
                 return "$0.00";
         }
