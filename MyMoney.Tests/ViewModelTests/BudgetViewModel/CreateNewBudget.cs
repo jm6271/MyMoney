@@ -66,10 +66,10 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.AreEqual(1, _viewModel.FutureBudgets.Count);
-            Assert.AreEqual(budgetTitle, _viewModel.FutureBudgets[0].BudgetTitle);
-            Assert.AreEqual(0, _viewModel.FutureBudgets[0].BudgetIncomeItems.Count);
-            Assert.AreEqual(0, _viewModel.FutureBudgets[0].BudgetExpenseItems.Count);
+            Assert.AreEqual(1, _viewModel.Budgets.Count);
+            Assert.AreEqual(budgetTitle, _viewModel.Budgets[0].BudgetTitle);
+            Assert.AreEqual(0, _viewModel.Budgets[0].BudgetIncomeItems.Count);
+            Assert.AreEqual(0, _viewModel.Budgets[0].BudgetExpenseItems.Count);
         }
 
         [TestMethod]
@@ -155,11 +155,11 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.AreEqual(1, _viewModel.FutureBudgets.Count);
-            Assert.AreEqual(1, _viewModel.FutureBudgets[0].BudgetIncomeItems.Count);
-            Assert.AreEqual(1, _viewModel.FutureBudgets[0].BudgetExpenseItems.Count);
-            Assert.AreEqual("Income", _viewModel.FutureBudgets[0].BudgetIncomeItems[0].Category);
-            Assert.AreEqual("Expense", _viewModel.FutureBudgets[0].BudgetExpenseItems[0].CategoryName);
+            Assert.AreEqual(2, _viewModel.Budgets.Count);
+            Assert.AreEqual(1, _viewModel.Budgets[0].BudgetIncomeItems.Count);
+            Assert.AreEqual(1, _viewModel.Budgets[0].BudgetExpenseItems.Count);
+            Assert.AreEqual("Income", _viewModel.Budgets[0].BudgetIncomeItems[0].Category);
+            Assert.AreEqual("Expense", _viewModel.Budgets[0].BudgetExpenseItems[0].CategoryName);
         }
 
         [TestMethod]
@@ -173,7 +173,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.AreEqual(0, _viewModel.FutureBudgets.Count);
+            Assert.AreEqual(0, _viewModel.Budgets.Count);
         }
     }
 }
