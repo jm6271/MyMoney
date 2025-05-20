@@ -36,32 +36,25 @@
         <ui:Card Grid.Column="0" VerticalAlignment="Top">
             <StackPanel>
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,24">Budgets</ui:TextBlock>
-                <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Current Budget</ui:TextBlock>
-                <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudgets}" SelectedIndex="{Binding ViewModel.CurrentBudgetsSelectedIndex}" Margin="0,0,0,20">
+                <ui:ListView ItemsSource="{Binding ViewModel.GroupedBudgets}" SelectedItem="{Binding ViewModel.SelectedGroupedBudget}"
+                             SelectedIndex="{Binding ViewModel.SelectedGroupedBudgetIndex}">
+                    <ui:ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <ui:TextBlock Margin="4,0,4,0" FontWeight="Bold" Text="{Binding Name}"/>
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ui:ListView.GroupStyle>
+
                     <ui:ListView.ItemTemplate>
                         <DataTemplate>
-                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="4"/>
-                        </DataTemplate>
-                    </ui:ListView.ItemTemplate>
-                </ui:ListView>
-                <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Future Budgets</ui:TextBlock>
-                <ui:ListView ItemsSource="{Binding ViewModel.FutureBudgets}" SelectedIndex="{Binding ViewModel.FutureBudgetsSelectedIndex}" Margin="0,0,0,20">
-                    <ui:ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="4"/>
-                        </DataTemplate>
-                    </ui:ListView.ItemTemplate>
-                </ui:ListView>
-                <ui:TextBlock FontWeight="SemiBold" Margin="0,0,0,8">Older Budgets</ui:TextBlock>
-                <ui:ListView ItemsSource="{Binding ViewModel.OldBudgets}" SelectedIndex="{Binding ViewModel.OldBudgetsSelectedIndex}">
-                    <ui:ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ui:TextBlock Text="{Binding BudgetTitle}" Margin="4"/>
+                            <ui:TextBlock Text="{Binding Budget.BudgetTitle}" Margin="5"/>
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
                 </ui:ListView>
             </StackPanel>
-
         </ui:Card>
 
         <StackPanel Grid.Column="1" Margin="24,0,24,24">
