@@ -15,26 +15,22 @@ using MyMoney.Services.ContentDialogs;
 using System.Linq.Expressions;
 using MyMoney.Core.Reports;
 using System.Linq;
+using System.Windows.Data;
 
 namespace MyMoney.ViewModels.Pages
 {
     public partial class BudgetViewModel : ObservableObject
     {
-        private ObservableCollection<Budget> Budgets { get; } = [];
-
-        // Collections for different groups of budgets
-        public ObservableCollection<Budget> OldBudgets { get; } = [];
-        public ObservableCollection<Budget> CurrentBudgets { get; } = [];
-        public ObservableCollection<Budget> FutureBudgets { get; } = [];
+        public ObservableCollection<Budget> Budgets { get; } = [];
 
         [ObservableProperty]
-        private int _oldBudgetsSelectedIndex = -1;
+        private ListCollectionView _groupedBudgets = new(new List<GroupedBudget>());
 
         [ObservableProperty]
-        private int _currentBudgetsSelectedIndex = -1;
+        private GroupedBudget? _selectedGroupedBudget;
 
         [ObservableProperty]
-        private int _futureBudgetsSelectedIndex = -1;
+        private int _selectedGroupedBudgetIndex;
 
         [ObservableProperty]
         private Budget? _currentBudget;
@@ -86,6 +82,41 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private bool _isEditingEnabled = true;
 
+        public class GroupedBudget
+        {
+            public string Group { get; set; } = "";
+            public Budget Budget { get; set; } = new();
+        }
+
+        public class GroupComparer : System.Collections.IComparer
+        {
+            private readonly Dictionary<string, int> _groupOrder = new()
+            {
+                { "Current", 0 },
+                { "Future", 1 },
+                { "Past", 2 }
+            };
+
+            public int Compare(object? x, object? y)
+            {
+                if (x is not GroupedBudget group1 || y is not GroupedBudget group2)
+                    return 0;
+
+                string name1 = group1.Group;
+                string name2 = group2.Group;
+
+                // If the group names are in our dictionary, use the custom order
+                if (_groupOrder.TryGetValue(name1, out int value) && _groupOrder.TryGetValue(name2, out int value2))
+                {
+                    return value.CompareTo(value2);
+                }
+
+                // Fall back to alphabetical sorting for any other groups
+                return string.Compare(name1, name2);
+            }
+        }
+
+
         // Content dialog service
         private readonly IContentDialogService _contentDialogService;
         private readonly IMessageBoxService _messageBoxService;
@@ -93,57 +124,6 @@ namespace MyMoney.ViewModels.Pages
         private readonly IBudgetCategoryDialogService _budgetCategoryDialogService;
         private readonly INewExpenseGroupDialogService _newExpenseGroupDialogService;
         private readonly IDatabaseReader _databaseReader;
-
-        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
-        {
-            base.OnPropertyChanged(e);
-
-            switch (e.PropertyName)
-            {
-                case nameof(OldBudgetsSelectedIndex) when OldBudgetsSelectedIndex != -1:
-                    {
-                        CurrentBudgetsSelectedIndex = -1;
-                        FutureBudgetsSelectedIndex = -1;
-
-                        // Find this budget in the budgets collection and load it
-                        var index = FindBudgetIndex(OldBudgets[OldBudgetsSelectedIndex].BudgetTitle);
-                        if (index != -1)
-                        {
-                            LoadBudget(index);
-                        }
-
-                        break;
-                    }
-                case nameof(CurrentBudgetsSelectedIndex) when CurrentBudgetsSelectedIndex != -1:
-                    {
-                        OldBudgetsSelectedIndex = -1;
-                        FutureBudgetsSelectedIndex = -1;
-
-                        // Find this budget in the budgets collection and load it
-                        var index = FindBudgetIndex(CurrentBudgets[CurrentBudgetsSelectedIndex].BudgetTitle);
-                        if (index != -1)
-                        {
-                            LoadBudget(index);
-                        }
-
-                        break;
-                    }
-                case nameof(FutureBudgetsSelectedIndex) when FutureBudgetsSelectedIndex != -1:
-                    {
-                        OldBudgetsSelectedIndex = -1;
-                        CurrentBudgetsSelectedIndex = -1;
-
-                        // Find this budget in the budgets collection and load it
-                        var index = FindBudgetIndex(FutureBudgets[FutureBudgetsSelectedIndex].BudgetTitle);
-                        if (index != -1)
-                        {
-                            LoadBudget(index);
-                        }
-
-                        break;
-                    }
-            }
-        }
 
         public BudgetViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader,
             IMessageBoxService messageBoxService, INewBudgetDialogService newBudgetDialogService,
@@ -194,27 +174,25 @@ namespace MyMoney.ViewModels.Pages
             UpdateListViewTotals();
 
             // Select the current budget
-            if (CurrentBudgets.Count == 1)
+            if (Budgets.Count > 0)
             {
-                CurrentBudgetsSelectedIndex = 0;
+                SelectedGroupedBudgetIndex = 0;
             }
         }
 
         private void UpdateBudgetLists()
         {
-            CurrentBudgets.Clear();
-            OldBudgets.Clear();
-            FutureBudgets.Clear();
+            List<GroupedBudget> groupedBudgets = [];
 
             foreach (var budget in Budgets)
             {
                 if (budget.BudgetDate.Month == DateTime.Now.Month && budget.BudgetDate.Year == DateTime.Now.Year)
                 {
-                    CurrentBudgets.Add(budget);
+                    groupedBudgets.Add(new GroupedBudget() { Group = "Current", Budget = budget });
                 }
                 else if (budget.BudgetDate > DateTime.Now)
                 {
-                    FutureBudgets.Add(budget);
+                    groupedBudgets.Add(new GroupedBudget() { Group = "Future", Budget = budget });
                 }
                 else
                 {
@@ -222,8 +200,36 @@ namespace MyMoney.ViewModels.Pages
                     if (budget.BudgetDate < DateTime.Now.AddYears(-1))
                         continue;
 
-                    OldBudgets.Add(budget);
+                    groupedBudgets.Add(new GroupedBudget() { Group = "Old", Budget = budget });
                 }
+            }
+
+            GroupedBudgets = new(groupedBudgets);
+            GroupedBudgets.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+            GroupedBudgets.CustomSort = new GroupComparer();
+        }
+
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            switch (e.PropertyName)
+            {
+                case nameof(SelectedGroupedBudget):
+
+                    // Find this budget in the budgets collection and load it
+                    if (SelectedGroupedBudget != null)
+                    {
+                        var index = FindBudgetIndex(SelectedGroupedBudget.Budget.BudgetTitle);
+                        if (index != -1)
+                        {
+                            LoadBudget(index);
+                        }
+                    }
+
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -654,31 +660,7 @@ namespace MyMoney.ViewModels.Pages
                 UpdateBudgetLists();
 
                 // Set as current budget
-                SetCurrentBudget(budgetTitle);
-            }
-        }
-
-        private void SetCurrentBudget(string budgetTitle)
-        {
-            foreach (var item in Budgets)
-            {
-                if (item.BudgetTitle != budgetTitle) continue;
-                CurrentBudget = item;
-
-                // Select listview item for this budget item
-                if (item.BudgetDate.Month == DateTime.Now.Month)
-                {
-                    CurrentBudgetsSelectedIndex = 0;
-                    OldBudgetsSelectedIndex = -1;
-                    FutureBudgetsSelectedIndex = -1;
-                }
-                else
-                {
-                    CurrentBudgetsSelectedIndex = -1;
-                    OldBudgetsSelectedIndex = -1;
-                    FutureBudgetsSelectedIndex = 0;
-                }
-                break;
+                LoadBudget(FindBudgetIndex(budgetTitle));
             }
         }
 
@@ -699,6 +681,15 @@ namespace MyMoney.ViewModels.Pages
         {
             // Load into current budget
             CurrentBudget = Budgets[index];
+            
+            // Select the item in the listview
+            foreach (var item in GroupedBudgets)
+            {
+                if (item is GroupedBudget budget && budget.Budget == CurrentBudget)
+                {
+                    SelectedGroupedBudgetIndex = GroupedBudgets.IndexOf(item);
+                }
+            }
 
             IsEditingEnabled = true;
 
