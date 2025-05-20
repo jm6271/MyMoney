@@ -681,6 +681,15 @@ namespace MyMoney.ViewModels.Pages
         {
             // Load into current budget
             CurrentBudget = Budgets[index];
+            
+            // Select the item in the listview
+            foreach (var item in GroupedBudgets)
+            {
+                if (item is GroupedBudget budget && budget.Budget == CurrentBudget)
+                {
+                    SelectedGroupedBudgetIndex = GroupedBudgets.IndexOf(item);
+                }
+            }
 
             IsEditingEnabled = true;
 
