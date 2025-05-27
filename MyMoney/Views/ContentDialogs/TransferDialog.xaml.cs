@@ -1,5 +1,6 @@
 ﻿using MyMoney.ViewModels.ContentDialogs;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -33,6 +34,46 @@ namespace MyMoney.Views.ContentDialogs
         private void txtAmount_GotMouseCapture(object sender, System.Windows.Input.MouseEventArgs e)
         {
             txtAmount.SelectAll();
+        }
+
+        private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
+        {
+            if (args.Result != ContentDialogResult.Primary) return;
+
+            // validate the user data, and if it is invalid, prevent the dialog from closing
+
+            // get validation errors for all the required fields
+            var amountValidationErrors = Validation.GetErrors(txtAmount);
+            var fromHasErrors = cmbFrom.Text == "" || cmbFrom.Text == cmbTo.Text;
+            var toHasErrors = cmbTo.Text == "" || cmbFrom.Text == cmbTo.Text;
+
+            // Clear the red border from custom validated controls
+            cmbFromBorder.BorderBrush = Brushes.Transparent;
+            cmbToBorder.BorderBrush = Brushes.Transparent;
+
+            // validate
+            if (!fromHasErrors && !toHasErrors
+                              && amountValidationErrors is not { Count: > 0 }) return;
+
+            // Errors, prevent the dialog from cancelling
+            args.Cancel = true;
+
+            if (fromHasErrors)
+                cmbFromBorder.BorderBrush = Brushes.Red;
+            if (toHasErrors)
+                cmbToBorder.BorderBrush = Brushes.Red;
+        }
+
+        private void cmbTo_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (cmbTo.IsDropDownOpen) return;
+            cmbToBorder.BorderBrush = string.IsNullOrEmpty(cmbTo.Text) || cmbFrom.Text == cmbTo.Text ? Brushes.Red : Brushes.Transparent;
+        }
+
+        private void cmbFrom_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (cmbFrom.IsDropDownOpen) return;
+            cmbFromBorder.BorderBrush = string.IsNullOrEmpty(cmbFrom.Text) || cmbFrom.Text == cmbTo.Text ? Brushes.Red : Brushes.Transparent;
         }
     }
 }
