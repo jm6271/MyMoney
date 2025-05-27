@@ -273,7 +273,7 @@ namespace MyMoney.ViewModels.Pages
                 Transaction from = new(DateTime.Today, "Transfer to " + viewModel.TransferTo, new(), new(-viewModel.Amount.Value), "Transfer");
 
                 // Create TO transaction
-                Transaction to = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, new(), viewModel.Amount, "Transfer");
+                Transaction to = new(DateTime.Today, "Transfer from " + viewModel.TransferFrom, new(), viewModel.Amount, "Transfer");
 
                 // Add the transactions to their accounts
                 foreach (var t in Accounts)
@@ -304,6 +304,8 @@ namespace MyMoney.ViewModels.Pages
                     }
                 }
             }
+
+            SaveAccountsToDatabase();
         }
 
         partial void OnSelectedAccountChanged(Account? value)
