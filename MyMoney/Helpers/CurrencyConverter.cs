@@ -26,7 +26,11 @@ namespace MyMoney.Helpers
                 }
 
                 if (decimal.TryParse(amount, out decimal result))
-                    return new Currency(result);
+                {
+                    if (result >= 0)
+                        return new Currency(result);
+                }
+                    
             }
             return DependencyProperty.UnsetValue;
         }

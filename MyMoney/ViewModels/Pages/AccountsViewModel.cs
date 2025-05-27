@@ -34,7 +34,7 @@ namespace MyMoney.ViewModels.Pages
 
         [ObservableProperty]
         private bool _transactionsEnabled;
-        
+
         [ObservableProperty]
         private bool _isInputEnabled;
 
@@ -46,7 +46,7 @@ namespace MyMoney.ViewModels.Pages
         private readonly IRenameAccountDialogService _renameAccountDialogService;
         private readonly IMessageBoxService _messageBoxService;
 
-        public AccountsViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader, 
+        public AccountsViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader,
             INewAccountDialogService newAccountDialogService, ITransferDialogService transferDialogService,
             ITransactionDialogService transactionDialogService, IRenameAccountDialogService renameAccountDialogService,
             IMessageBoxService messageBoxService)
@@ -162,8 +162,16 @@ namespace MyMoney.ViewModels.Pages
             var amount = viewModel.NewTransactionAmount;
             if (viewModel.NewTransactionIsExpense) amount = new(-amount.Value);
 
-            var transaction = new Transaction(viewModel.NewTransactionDate, _transactionDialogService.GetSelectedPayee(), 
+            var transaction = new Transaction(viewModel.NewTransactionDate, _transactionDialogService.GetSelectedPayee(),
             viewModel.NewTransactionCategory, amount, viewModel.NewTransactionMemo);
+
+            // make sure there's enough money in the account for this transaction
+            if (viewModel.NewTransactionIsExpense && Math.Abs(transaction.Amount.Value) > SelectedAccount?.Total.Value)
+            {
+                await _messageBoxService.ShowInfoAsync("Error",
+                    "The amount of this transaction is greater than the balance of the selected account.", "OK");
+                return (false, null);
+            }
 
             return (true, transaction);
         }
@@ -197,7 +205,7 @@ namespace MyMoney.ViewModels.Pages
             SelectedAccountIndex = viewModel.SelectedAccountIndex;
             SelectedAccount.Total += transaction.Amount;
             SelectedAccountTransactions.Add(transaction);
-            
+
             SortTransactions();
             SaveAccountsToDatabase();
         }
@@ -252,6 +260,20 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == ContentDialogResult.Primary)
             {
+                // Make sure that the amount being transfered does not exceed the balance
+                // of the account that it is comming from.
+
+                foreach (var t in Accounts)
+                {
+                    if (t.AccountName == viewModel.TransferFrom && viewModel.Amount.Value > t.Total.Value)
+                    {
+                        await _messageBoxService.ShowInfoAsync("Error",
+                            "The amount being transfered exceeds the balance of the account it is from.",
+                            "OK");
+                        return;
+                    }
+                }
+
                 // Transfer the money
                 // create a new transaction in each of the accounts
 
@@ -259,13 +281,23 @@ namespace MyMoney.ViewModels.Pages
                 Transaction from = new(DateTime.Today, "Transfer to " + viewModel.TransferTo, new(), new(-viewModel.Amount.Value), "Transfer");
 
                 // Create TO transaction
-                Transaction to = new(DateTime.Today, "Transfer TO " + viewModel.TransferTo, new(), viewModel.Amount, "Transfer");
+                Transaction to = new(DateTime.Today, "Transfer from " + viewModel.TransferFrom, new(), viewModel.Amount, "Transfer");
 
                 // Add the transactions to their accounts
                 foreach (var t in Accounts)
                 {
                     if (t.AccountName == viewModel.TransferFrom)
                     {
+                        // Make sure that the amount being transfered does not exceed the balance
+                        // of the account that it is comming from.
+                        if (Math.Abs(from.Amount.Value) > t.Total.Value)
+                        {
+                            await _messageBoxService.ShowInfoAsync("Error",
+                                "The amount being transfered exceeds the balance of the account it is from.",
+                                "OK");
+                            return;
+                        }
+
                         t.Transactions.Add(from);
 
                         // Update ending balance
@@ -280,6 +312,8 @@ namespace MyMoney.ViewModels.Pages
                     }
                 }
             }
+
+            SaveAccountsToDatabase();
         }
 
         partial void OnSelectedAccountChanged(Account? value)
@@ -302,7 +336,7 @@ namespace MyMoney.ViewModels.Pages
             // Make sure a transaction is selected
             if (SelectedAccount == null) return;
             if (SelectedTransactionIndex < 0) return;
-            
+
             var result = await _messageBoxService.ShowAsync(
                 "Delete Transaction?",
                 "Are you sure you want to delete the selected transaction?",

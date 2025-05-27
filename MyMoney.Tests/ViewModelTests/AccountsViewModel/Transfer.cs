@@ -92,7 +92,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             // Verify TO transaction details
             var toTransaction = account2.Transactions[0];
             Assert.AreEqual(100m, toTransaction.Amount.Value);
-            Assert.AreEqual("Transfer TO Savings", toTransaction.Payee);
+            Assert.AreEqual("Transfer from Checking", toTransaction.Payee);
             Assert.AreEqual("Transfer", toTransaction.Memo);
         }
 
