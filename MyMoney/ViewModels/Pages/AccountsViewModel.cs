@@ -165,6 +165,14 @@ namespace MyMoney.ViewModels.Pages
             var transaction = new Transaction(viewModel.NewTransactionDate, _transactionDialogService.GetSelectedPayee(),
             viewModel.NewTransactionCategory, amount, viewModel.NewTransactionMemo);
 
+            // make sure there's enough money in the account for this transaction
+            if (viewModel.NewTransactionIsExpense && Math.Abs(transaction.Amount.Value) > SelectedAccount?.Total.Value)
+            {
+                await _messageBoxService.ShowInfoAsync("Error",
+                    "The amount of this transaction is greater than the balance of the selected account.", "OK");
+                return (false, null);
+            }
+
             return (true, transaction);
         }
 
