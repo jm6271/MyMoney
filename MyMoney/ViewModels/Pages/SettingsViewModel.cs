@@ -1,9 +1,11 @@
-﻿using Wpf.Ui.Appearance;
-using Wpf.Ui.Abstractions.Controls;
+﻿using Microsoft.Win32;
 using MyMoney.Core.Database;
 using MyMoney.Helpers.RadioButtonConverters;
-using Microsoft.Win32;
-using System.IO;
+using MyMoney.Services.ContentDialogs;
+using System.Diagnostics;
+using System.Reflection;
+using Wpf.Ui.Abstractions.Controls;
+using Wpf.Ui.Appearance;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -48,6 +50,13 @@ namespace MyMoney.ViewModels.Pages
 
         [ObservableProperty]
         private BackupStorageDuration _backupDuration = BackupStorageDuration.OneWeek;
+
+        private readonly IMessageBoxService _messageBoxService;
+
+        public SettingsViewModel(IMessageBoxService messageBoxService)
+        {
+            _messageBoxService = messageBoxService;
+        }
 
         private void InitializeViewModel()
         {
@@ -126,11 +135,32 @@ namespace MyMoney.ViewModels.Pages
             SaveFileDialog saveFileDialog = new();
             saveFileDialog.Filter = "MyMoney Databases|*.db";
             saveFileDialog.Title = "Choose backup location...";
+            saveFileDialog.FileName = $"mymoney-backup-{DateTime.Now.Month}-{DateTime.Now.Day}-{DateTime.Now.Year}.db";
             if (saveFileDialog.ShowDialog() == true)
             {
                 DatabaseBackup.WriteDatabaseBackup(saveFileDialog.FileName);
             }
         }
 
+        [RelayCommand]
+        private async Task RestoreFromBackup()
+        {
+            OpenFileDialog openFileDialog = new();
+            openFileDialog.Filter = "MyMoney Databases|*.db";
+            openFileDialog.Title = "Choose backup file to restore from...";
+            if (openFileDialog.ShowDialog() == true && 
+                await _messageBoxService.ShowAsync("Really Backup?", "Are you sure you want to restore the backup?" +
+                    " This will OVERWRITE all of you data and replace it with the data in the backup.",
+                    "Yes", "No") == Wpf.Ui.Controls.MessageBoxResult.Primary)
+            {
+                DatabaseBackup.RestoreDatabaseBackup(openFileDialog.FileName);
+
+                await _messageBoxService.ShowInfoAsync("Restore Successful",
+                    "The backup was restored successfully. The application will now close.",
+                    "Restart");
+
+                Application.Current.Shutdown();
+            }
+        }
     }
 }
