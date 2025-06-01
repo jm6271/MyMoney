@@ -1,11 +1,18 @@
 ﻿using Wpf.Ui.Appearance;
 using Wpf.Ui.Abstractions.Controls;
 using MyMoney.Core.Database;
+using MyMoney.Helpers.RadioButtonConverters;
 
 namespace MyMoney.ViewModels.Pages
 {
     public partial class SettingsViewModel : ObservableObject, INavigationAware
     {
+        [ObservableProperty]
+        private BackupModeRadioButtonGroup backupMode = BackupModeRadioButtonGroup.Manual;
+
+        [ObservableProperty]
+        private string _backupLocation = "";
+
         private bool _isInitialized;
 
         [ObservableProperty]
@@ -13,6 +20,19 @@ namespace MyMoney.ViewModels.Pages
 
         [ObservableProperty]
         private ApplicationTheme _currentTheme = ApplicationTheme.Unknown;
+
+        public enum BackupStorageDuration
+        {
+            FourDays = 0,
+            OneWeek = 1,
+            TwoWeeks = 2,
+            OneMonth = 3,
+            ThreeMonths = 4,
+            Forever = 5,
+        }
+
+        [ObservableProperty]
+        private BackupStorageDuration _backupDuration = BackupStorageDuration.OneWeek;
 
         private void InitializeViewModel()
         {
@@ -83,5 +103,12 @@ namespace MyMoney.ViewModels.Pages
         {
             return Task.CompletedTask;
         }
+
+        [RelayCommand]
+        private void BackupNow()
+        {
+
+        }
+
     }
 }
