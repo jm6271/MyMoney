@@ -2,6 +2,8 @@
 using Wpf.Ui.Abstractions.Controls;
 using MyMoney.Core.Database;
 using MyMoney.Helpers.RadioButtonConverters;
+using Microsoft.Win32;
+using System.IO;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -29,6 +31,19 @@ namespace MyMoney.ViewModels.Pages
             OneMonth = 3,
             ThreeMonths = 4,
             Forever = 5,
+        }
+
+        public int BackupDurationIndex
+        {
+            get
+            {
+                return (int)BackupDuration;
+            }
+            set
+            {
+                BackupDuration = (BackupStorageDuration)value;
+                OnPropertyChanged(nameof(BackupDurationIndex));
+            }
         }
 
         [ObservableProperty]
@@ -107,7 +122,14 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private void BackupNow()
         {
-
+            // Show a save file dialog to get the location of the backup
+            SaveFileDialog saveFileDialog = new();
+            saveFileDialog.Filter = "MyMoney Databases|*.db";
+            saveFileDialog.Title = "Choose backup location...";
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                DatabaseBackup.WriteDatabaseBackup(saveFileDialog.FileName);
+            }
         }
 
     }
