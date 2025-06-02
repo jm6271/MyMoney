@@ -2,6 +2,7 @@
 using MyMoney.Core.Database;
 using MyMoney.Helpers.RadioButtonConverters;
 using MyMoney.Services.ContentDialogs;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 using Wpf.Ui.Abstractions.Controls;
@@ -12,12 +13,14 @@ namespace MyMoney.ViewModels.Pages
     public partial class SettingsViewModel : ObservableObject, INavigationAware
     {
         [ObservableProperty]
-        private BackupModeRadioButtonGroup backupMode = BackupModeRadioButtonGroup.Manual;
+        private BackupModeRadioButtonGroup _backupMode = BackupModeRadioButtonGroup.Manual;
 
         [ObservableProperty]
         private string _backupLocation = "";
 
         private bool _isInitialized;
+
+        private bool _backupSettingsLoaded = false;
 
         [ObservableProperty]
         private string _appVersion = string.Empty;
@@ -61,6 +64,7 @@ namespace MyMoney.ViewModels.Pages
         private void InitializeViewModel()
         {
             CurrentTheme = ApplicationThemeManager.GetAppTheme();
+            LoadBackupSettings();
             AppVersion = $"MyMoney - {GetAssemblyVersion()}";
 
             _isInitialized = true;
@@ -116,6 +120,54 @@ namespace MyMoney.ViewModels.Pages
             DatabaseWriter.WriteSettingsDictionary("ApplicationSettings", settingsDict);
         }
 
+        [RelayCommand]
+        private void SaveBackupSettings()
+        {
+            if (!_backupSettingsLoaded)
+                return;
+            DatabaseReader reader = new();
+            var settingsDict = reader.GetSettingsDictionary("ApplicationSettings");
+
+            // Save the settings
+            settingsDict["BackupMode"] = ((int)BackupMode).ToString();
+            settingsDict["BackupLocation"] = BackupLocation;
+            settingsDict["BackupStorageDuration"] = BackupDurationIndex.ToString();
+
+            // Write to database
+            DatabaseWriter.WriteSettingsDictionary("ApplicationSettings", settingsDict);
+        }
+
+        private void LoadBackupSettings()
+        {
+            DatabaseReader reader = new();
+            var settingsDict = reader.GetSettingsDictionary("ApplicationSettings");
+
+            // Extract the settings values and load them
+            if (settingsDict.TryGetValue("BackupMode", out string? backupMode))
+            {
+                try
+                {
+                    BackupMode = (BackupModeRadioButtonGroup)Convert.ToInt32(backupMode);
+                }
+                catch { /* If we can't load a setting, ignore it */ }
+            }
+
+            if (settingsDict.TryGetValue("BackupLocation", out string? backupLocation))
+            {
+                BackupLocation = backupLocation;
+            }
+
+            if (settingsDict.TryGetValue("BackupStorageDuration", out string? backupStorageDuration))
+            {
+                try
+                {
+                    BackupDurationIndex = Convert.ToInt32(backupStorageDuration);
+                }
+                catch { /* If we can't load a setting, ignore it */ }
+            }
+            _backupSettingsLoaded = true;
+        }
+
         public Task OnNavigatedToAsync()
         {
             if (!_isInitialized)
@@ -148,7 +200,7 @@ namespace MyMoney.ViewModels.Pages
             OpenFileDialog openFileDialog = new();
             openFileDialog.Filter = "MyMoney Databases|*.db";
             openFileDialog.Title = "Choose backup file to restore from...";
-            if (openFileDialog.ShowDialog() == true && 
+            if (openFileDialog.ShowDialog() == true &&
                 await _messageBoxService.ShowAsync("Really Backup?", "Are you sure you want to restore the backup?" +
                     " This will OVERWRITE all of you data and replace it with the data in the backup.",
                     "Yes", "No") == Wpf.Ui.Controls.MessageBoxResult.Primary)
@@ -160,6 +212,17 @@ namespace MyMoney.ViewModels.Pages
                     "Restart");
 
                 Application.Current.Shutdown();
+            }
+        }
+
+        [RelayCommand]
+        private void ChooseAutomaticBackupLocation()
+        {
+            OpenFolderDialog openFolderDialog = new();
+            if (openFolderDialog.ShowDialog() == true)
+            {
+                BackupLocation = openFolderDialog.FolderName;
+                SaveBackupSettings();
             }
         }
     }

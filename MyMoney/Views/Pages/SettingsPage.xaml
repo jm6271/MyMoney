@@ -52,21 +52,24 @@
             Margin="0,12,0,0"
             GroupName="BackupMode"
             Content="Manual" 
+            Command="{Binding ViewModel.SaveBackupSettingsCommand}"
             IsChecked="{Binding ViewModel.BackupMode, Converter={StaticResource RadioButtonEnumToBooleanConverter}, ConverterParameter={x:Static rbhelpers:BackupModeRadioButtonGroup.Manual}}"/>
         <RadioButton
             Margin="0,8,0,0"
             GroupName="BackupMode"
             Content="Automatic"
+            Command="{Binding ViewModel.SaveBackupSettingsCommand}"
             IsChecked="{Binding ViewModel.BackupMode, Converter={StaticResource RadioButtonEnumToBooleanConverter}, ConverterParameter={x:Static rbhelpers:BackupModeRadioButtonGroup.Automatic}}"/>
         <StackPanel IsEnabled="{Binding ViewModel.BackupMode, Converter={StaticResource RadioButtonEnumToBooleanConverter}, ConverterParameter={x:Static rbhelpers:BackupModeRadioButtonGroup.Automatic}}">
             <TextBlock Margin="0,12,0,0" Text="Backup location:"/>
             <WrapPanel Margin="0,8,0,0">
-                <ui:TextBox Width="400" Text="{Binding ViewModel.BackupLocation}"/>
-                <ui:Button Margin="4,0,0,0" Content="..." VerticalAlignment="Stretch"/>
+                <ui:TextBox Width="400" Text="{Binding ViewModel.BackupLocation}" IsReadOnly="True"/>
+                <ui:Button Margin="4,0,0,0" Content="..." VerticalAlignment="Stretch" Command="{Binding ViewModel.ChooseAutomaticBackupLocationCommand}"/>
             </WrapPanel>
 
             <TextBlock Margin="0,12,0,0" Text="Keep automatic backups for:"/>
-            <ComboBox Margin="0,8,0,0" HorizontalAlignment="Left" SelectedIndex="{Binding ViewModel.BackupDurationIndex}">
+            <ComboBox Margin="0,8,0,0" HorizontalAlignment="Left" SelectedIndex="{Binding ViewModel.BackupDurationIndex}"
+                      SelectionChanged="ComboBox_SelectionChanged">
                 <ComboBoxItem Content="4 days"/>
                 <ComboBoxItem Content="1 week" IsSelected="True"/>
                 <ComboBoxItem Content="2 weeks"/>
