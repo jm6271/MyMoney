@@ -23,7 +23,8 @@
     mc:Ignorable="d" WindowState="Normal"
     MinWidth="1000"
     MinHeight="500"
-    Loaded="FluentWindow_Loaded">
+    Loaded="FluentWindow_Loaded"
+    Closing="FluentWindow_Closing">
     <ui:FluentWindow.InputBindings>
         <KeyBinding
             Key="F"
