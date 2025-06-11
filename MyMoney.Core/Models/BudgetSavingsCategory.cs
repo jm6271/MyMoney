@@ -20,5 +20,8 @@ namespace MyMoney.Core.Models
 
         [ObservableProperty]
         private Currency _budgetedAmount = new(0m);
+
+        [ObservableProperty]
+        private Currency _spent = new(0m);
     }
 }
