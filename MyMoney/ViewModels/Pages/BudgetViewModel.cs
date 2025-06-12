@@ -123,17 +123,20 @@ namespace MyMoney.ViewModels.Pages
         private readonly INewBudgetDialogService _newBudgetDialogService;
         private readonly IBudgetCategoryDialogService _budgetCategoryDialogService;
         private readonly INewExpenseGroupDialogService _newExpenseGroupDialogService;
+        private readonly ISavingsCategoryDialogService _savingsCategoryDialogService;
         private readonly IDatabaseReader _databaseReader;
 
         public BudgetViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader,
             IMessageBoxService messageBoxService, INewBudgetDialogService newBudgetDialogService,
-            IBudgetCategoryDialogService budgetCategoryDialogService, INewExpenseGroupDialogService newExpenseGroupDialogService)
+            IBudgetCategoryDialogService budgetCategoryDialogService, INewExpenseGroupDialogService newExpenseGroupDialogService,
+            ISavingsCategoryDialogService savingsCategoryDialogService)
         {
             _contentDialogService = contentDialogService;
             _messageBoxService = messageBoxService;
             _newBudgetDialogService = newBudgetDialogService;
             _budgetCategoryDialogService = budgetCategoryDialogService;
             _newExpenseGroupDialogService = newExpenseGroupDialogService;
+            _savingsCategoryDialogService = savingsCategoryDialogService;
             _databaseReader = databaseReader;
 
             var budgetCollection = _databaseReader.GetCollection<Budget>("Budgets");
@@ -267,6 +270,12 @@ namespace MyMoney.ViewModels.Pages
                 ExpenseTotal += item.CategoryTotal;
             }
 
+            // Add savings items as expenses
+            foreach (var item in CurrentBudget.BudgetSavingsCategories)
+            {
+                ExpenseTotal += item.BudgetedAmount;
+            }
+
             // write the items to the database
             WriteToDatabase();
 
@@ -302,6 +311,14 @@ namespace MyMoney.ViewModels.Pages
             {
                 expenseTotals.Add(item.CategoryName, (double)item.CategoryTotal.Value);
             }
+
+            // Add Savings categories as expenses
+            double savingsTotal = 0.0;
+            foreach (var item in CurrentBudget.BudgetSavingsCategories)
+            {
+                savingsTotal += (double)item.BudgetedAmount.Value;
+            }
+            expenseTotals.Add("Savings", savingsTotal);
 
             ExpensePercentagesSeries = new ISeries[expenseTotals.Count];
             i = 0;
@@ -355,6 +372,43 @@ namespace MyMoney.ViewModels.Pages
                 CurrentBudget.BudgetIncomeItems.Add(item);
 
                 // Recalculate the total of the income items
+                UpdateListViewTotals();
+            }
+        }
+
+        [RelayCommand]
+        private async Task AddSavingsCategory()
+        {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
+            var viewModel = new SavingsCategoryDialogViewModel();
+            _savingsCategoryDialogService.SetViewModel(viewModel);
+            var result = await _savingsCategoryDialogService.ShowDialogAsync(_contentDialogService, "New Savings Category");
+            viewModel = _savingsCategoryDialogService.GetViewModel();
+
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
+            {
+                // Make sure item doesn't exist
+                if (DoesSavingsCategoryExist(viewModel.Category))
+                {
+                    await _messageBoxService.ShowInfoAsync(
+                        "Category Already Exists", "A category called \"" + viewModel.Category + "\" already exists", "OK");
+                    return;
+                }
+
+                // Create a new savings category with the results from the dialog
+                BudgetSavingsCategory category = new()
+                {
+                    CategoryName = viewModel.Category,
+                    BudgetedAmount = viewModel.Planned,
+                    CurrentBalance = viewModel.CurrentBalance,
+                };
+
+                // Add the category to the list of savings categories
+                CurrentBudget.BudgetSavingsCategories.Add(category);
+
+                // Recalculate the totals for the budget
                 UpdateListViewTotals();
             }
         }
@@ -724,9 +778,21 @@ namespace MyMoney.ViewModels.Pages
             return false;
         }
 
+        private bool DoesSavingsCategoryExist(string category)
+        {
+            if (CurrentBudget == null) return false;
+            foreach (var savingsCategory in CurrentBudget.BudgetSavingsCategories)
+            {
+                if (savingsCategory.CategoryName == category)
+                    return true;
+            }
+            return false;
+        }
+
         private bool DoesExpenseGroupExist(string groupName)
         {
             if (CurrentBudget == null) return false;
+            if (groupName == "Savings" || groupName == "Income") return true;
 
             foreach (var expenseGroup in CurrentBudget.BudgetExpenseItems)
             {

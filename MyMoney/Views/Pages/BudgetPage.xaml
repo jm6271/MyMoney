@@ -142,7 +142,8 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,12,0,4">Savings</ui:TextBlock>
-                <ui:Button Grid.Column="1" Margin="8,0,0,0" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
+                <ui:Button Grid.Column="1" Margin="8,0,0,0" IsEnabled="{Binding ViewModel.IsEditingEnabled}" 
+                           Command="{Binding ViewModel.AddSavingsCategoryCommand}">
                     <ui:SymbolIcon Symbol="Add24"/>
                     <ui:Button.ToolTip>
                         <ToolTip Content="Add savings category"/>

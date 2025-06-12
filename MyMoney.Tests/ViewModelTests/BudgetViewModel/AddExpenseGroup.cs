@@ -20,6 +20,7 @@ public class AddExpenseGroupTests
     private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
     private Mock<INewExpenseGroupDialogService> _mockNewExpenseGroupDialogService;
     private Mock<Core.Database.IDatabaseReader> _mockDatabaseReader;
+    private Mock<ISavingsCategoryDialogService> _savingsCategoryDialogService;
 
     [TestInitialize]
     public void Setup()
@@ -29,6 +30,7 @@ public class AddExpenseGroupTests
         _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
         _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
         _mockNewExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
+        _savingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
         _mockDatabaseReader = new Mock<Core.Database.IDatabaseReader>();
         
         _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
@@ -45,7 +47,8 @@ public class AddExpenseGroupTests
             _mockMessageBoxService.Object,
             _mockNewBudgetDialogService.Object,
             _mockBudgetCategoryDialogService.Object,
-            _mockNewExpenseGroupDialogService.Object
+            _mockNewExpenseGroupDialogService.Object,
+            _savingsCategoryDialogService.Object
         );
 
         viewModel.CurrentBudget = new Budget 
@@ -80,7 +83,8 @@ public class AddExpenseGroupTests
             _mockMessageBoxService.Object,
             _mockNewBudgetDialogService.Object,
             _mockBudgetCategoryDialogService.Object,
-            _mockNewExpenseGroupDialogService.Object
+            _mockNewExpenseGroupDialogService.Object,
+            _savingsCategoryDialogService.Object
         );
 
         // Act
@@ -102,7 +106,8 @@ public class AddExpenseGroupTests
             _mockMessageBoxService.Object,
             _mockNewBudgetDialogService.Object,
             _mockBudgetCategoryDialogService.Object,
-            _mockNewExpenseGroupDialogService.Object
+            _mockNewExpenseGroupDialogService.Object,
+            _savingsCategoryDialogService.Object
         );
 
         viewModel.CurrentBudget = new Budget();

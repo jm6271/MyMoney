@@ -19,6 +19,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
         private Mock<INewBudgetDialogService> _mockNewBudgetDialogService = null!;
         private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService = null!;
         private Mock<INewExpenseGroupDialogService> _mockNewExpenseDialogService = null!;
+        private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService = null!;
         private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel = null!;
 
         [TestInitialize]
@@ -30,6 +31,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
             _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
             _mockNewExpenseDialogService = new Mock<INewExpenseGroupDialogService>();
+            _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
 
             _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
                 .Returns(new List<Budget>());
@@ -40,7 +42,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockMessageBoxService.Object,
                 _mockNewBudgetDialogService.Object,
                 _mockBudgetCategoryDialogService.Object,
-                _mockNewExpenseDialogService.Object
+                _mockNewExpenseDialogService.Object,
+                _mockSavingsCategoryDialogService.Object
             );
         }
 
@@ -102,7 +105,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockMessageBoxService.Object,
                 _mockNewBudgetDialogService.Object,
                 _mockBudgetCategoryDialogService.Object,
-                _mockNewExpenseDialogService.Object
+                _mockNewExpenseDialogService.Object,
+                _mockSavingsCategoryDialogService.Object
             );
 
             // Act
@@ -148,7 +152,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockMessageBoxService.Object,
                 _mockNewBudgetDialogService.Object,
                 _mockBudgetCategoryDialogService.Object,
-                _mockNewExpenseDialogService.Object
+                _mockNewExpenseDialogService.Object,
+                _mockSavingsCategoryDialogService.Object
             );
 
             // Act
