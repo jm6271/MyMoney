@@ -65,6 +65,9 @@ namespace MyMoney.ViewModels.Pages
         private int _incomeItemsSelectedIndex;
 
         [ObservableProperty]
+        private int _savingsCategoriesSelectedIndex;
+
+        [ObservableProperty]
         private int _expenseItemsSelectedIndex;
 
         [ObservableProperty]
@@ -543,6 +546,76 @@ namespace MyMoney.ViewModels.Pages
             for (var i = 0; i < CurrentBudget.BudgetIncomeItems.Count; i++)
             {
                 CurrentBudget.BudgetIncomeItems[i].Id = i + 1;
+            }
+
+            UpdateListViewTotals();
+        }
+
+        [RelayCommand]
+        private async Task EditSavingsCategory()
+        {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
+            var viewModel = new SavingsCategoryDialogViewModel
+            {
+                Category = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].CategoryName,
+                Planned = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].BudgetedAmount,
+                CurrentBalance = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].CurrentBalance,
+            };
+
+            _savingsCategoryDialogService.SetViewModel(viewModel);
+            var result = await _savingsCategoryDialogService.ShowDialogAsync(_contentDialogService, "Edit Savings Category");
+            viewModel = _savingsCategoryDialogService.GetViewModel();
+
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
+            {
+                // Make sure the category name of the edited item doesn't already exist
+                if (DoesSavingsCategoryExist(viewModel.Category) &&
+                    CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].CategoryName != viewModel.Category)
+                {
+                    await _messageBoxService.ShowInfoAsync(
+                        "Category Already Exists", "A category called \"" + viewModel.Category + "\" already exists", "OK");
+                    return;
+                }
+
+                // modify the item at the selected index
+                BudgetSavingsCategory savingsCategory = new()
+                {
+                    CategoryName = viewModel.Category,
+                    BudgetedAmount = viewModel.Planned,
+                    CurrentBalance = viewModel.CurrentBalance,
+                };
+
+                // assign the selected index of the list with the new item
+                CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex] = savingsCategory;
+
+                // Recalculate the total of the income items
+                UpdateListViewTotals();
+            }
+        }
+
+        [RelayCommand]
+        private async Task DeleteSavingsCategory()
+        {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
+
+            // Show message box asking user if they really want to delete the category
+            var result = await _messageBoxService.ShowAsync("Delete Category?",
+                                                "Are you sure you want to delete the selected category?",
+                                                "Yes",
+                                                "No");
+
+            if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
+
+            CurrentBudget.BudgetSavingsCategories.RemoveAt(SavingsCategoriesSelectedIndex);
+
+            // replace the id property of the remaining elements so the IDs are in a consecutive order (We have all kinds of problems when we don't do this)
+            for (var i = 0; i < CurrentBudget.BudgetSavingsCategories.Count; i++)
+            {
+                CurrentBudget.BudgetSavingsCategories[i].Id = i + 1;
             }
 
             UpdateListViewTotals();

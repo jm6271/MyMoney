@@ -153,7 +153,7 @@
 
             <ui:Card Margin="0,4,0,12">
                 <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetSavingsCategories}" 
-                             SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}"
+                             SelectedIndex="{Binding ViewModel.SavingsCategoriesSelectedIndex}"
                              SizeChanged="ListView_SizeChanged" SelectionMode="Single">
                     <ui:ListView.Resources>
                         <DataTemplate x:Key="CategoryItemTemplate">
@@ -169,15 +169,15 @@
 
                     <ui:ListView.ContextMenu>
                         <ContextMenu IsEnabled="{Binding ViewModel.IsEditingEnabled}">
-                            <MenuItem Header="Edit" />
-                            <MenuItem Header="Delete" />
+                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditSavingsCategoryCommand}"/>
+                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteSavingsCategoryCommand}"/>
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
 
-                    <!--ui:ListView.InputBindings>
+                    <ui:ListView.InputBindings>
                         <KeyBinding 
-                            Key="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
-                    </ui:ListView.InputBindings-->
+                            Key="Delete" Command="{Binding ViewModel.DeleteSavingsCategoryCommand}"/>
+                    </ui:ListView.InputBindings>
 
                     <ui:ListView.View>
                         <ui:GridView>
