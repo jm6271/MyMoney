@@ -175,6 +175,7 @@ namespace MyMoney.ViewModels.Pages
 
         public void OnPageNavigatedTo()
         {
+            LoadBudgetCollection();
             UpdateCharts();
             UpdateBudgetLists();
             UpdateListViewTotals();
@@ -183,6 +184,18 @@ namespace MyMoney.ViewModels.Pages
             if (Budgets.Count > 0)
             {
                 SelectedGroupedBudgetIndex = 0;
+            }
+        }
+
+        private void LoadBudgetCollection()
+        {
+            Budgets.Clear();
+
+            var budgetCollection = _databaseReader.GetCollection<Budget>("Budgets");
+
+            foreach (var budget in budgetCollection.OfType<Budget>())
+            {
+                Budgets.Add(budget);
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,5 +24,8 @@ namespace MyMoney.Core.Models
 
         [ObservableProperty]
         private Currency _spent = new(0m);
+
+        [ObservableProperty]
+        private ObservableCollection<Transaction> _transactions = [];
     }
 }

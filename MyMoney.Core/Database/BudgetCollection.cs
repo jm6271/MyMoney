@@ -14,7 +14,7 @@ namespace MyMoney.Core.Database
         /// <summary>
         /// A list of the budgets currently in the database
         /// </summary>
-        public List<Budget> Budgets { get; } = [];
+        public List<Budget> Budgets { get; set; } = [];
 
         public BudgetCollection(IDatabaseReader databaseReader)
         {
@@ -42,6 +42,14 @@ namespace MyMoney.Core.Database
         }
 
         /// <summary>
+        /// Save the budgets collection to the database
+        /// </summary>
+        public void SaveBudgetCollection()
+        {
+            DatabaseWriter.WriteCollection(BudgetCollectionName, Budgets);
+        }
+
+        /// <summary>
         /// Get the budget for the current month
         /// </summary>
         /// <returns>A Budget for the current month</returns>
@@ -56,6 +64,27 @@ namespace MyMoney.Core.Database
             var budget = Budgets.FirstOrDefault(budget => budget.BudgetTitle == GetCurrentBudgetName());
             return budget ?? throw new BudgetNotFoundException("No budget exists for current month");
 
+        }
+
+        /// <summary>
+        /// Get the index of the budget for the current month
+        /// </summary>
+        /// <returns>The index of the budget for the current month</returns>
+        /// <exception cref="BudgetNotFoundException">Throws this when no budget for this month is found</exception>
+        public int GetCurrentBudgetIndex()
+        {
+            if (!DoesCurrentBudgetExist())
+            {
+                throw new BudgetNotFoundException("No budget exists for current month");
+            }
+
+            for (int i = 0; i < Budgets.Count; i++)
+            {
+                if (Budgets[i].BudgetTitle == GetCurrentBudgetName())
+                    return i;
+            }
+
+            throw new BudgetNotFoundException("No budget exists for the current month");
         }
 
         /// <summary>

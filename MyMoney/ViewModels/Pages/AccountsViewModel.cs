@@ -81,6 +81,7 @@ namespace MyMoney.ViewModels.Pages
 
             var incomeLst = budgetCollection.GetCurrentBudget().BudgetIncomeItems;
             var expenseLst = budgetCollection.GetCurrentBudget().BudgetExpenseItems;
+            var savingsLst = budgetCollection.GetCurrentBudget().BudgetSavingsCategories;
 
             foreach (var item in incomeLst)
             {
@@ -88,6 +89,17 @@ namespace MyMoney.ViewModels.Pages
                 {
                     Group = "Income",
                     Item = item.Category
+                };
+
+                CategoryNames.Add(cmbItem);
+            }
+
+            foreach (var item in savingsLst)
+            {
+                GroupedComboBox.GroupedComboBoxItem cmbItem = new()
+                {
+                    Group = "Savings",
+                    Item = item.CategoryName,
                 };
 
                 CategoryNames.Add(cmbItem);
@@ -205,6 +217,9 @@ namespace MyMoney.ViewModels.Pages
             SelectedAccountIndex = viewModel.SelectedAccountIndex;
             SelectedAccount.Total += transaction.Amount;
             SelectedAccountTransactions.Add(transaction);
+
+            // If the category is a savings category, then apply the transaction to the savings category balance as well
+            AddTransactionToSavingsCategory(transaction);
 
             SortTransactions();
             SaveAccountsToDatabase();
@@ -431,6 +446,38 @@ namespace MyMoney.ViewModels.Pages
             }
 
             return payees;
+        }
+
+        /// <summary>
+        /// Check to see if a transaction is part of a savings category and apply it if it is
+        /// </summary>
+        /// <param name="transaction"></param>
+        private void AddTransactionToSavingsCategory(Transaction transaction)
+        {
+            // Check to see if the transaction's category is a savings category
+            BudgetCollection budgetCollection = new(_databaseReader);
+            if (!budgetCollection.DoesCurrentBudgetExist()) return;
+
+            var currentBudgetIndex = budgetCollection.GetCurrentBudgetIndex();
+
+            for (int i = 0; i < budgetCollection.Budgets[currentBudgetIndex].BudgetSavingsCategories.Count; i++)
+            {
+                if (transaction.Category.Name == budgetCollection.Budgets[currentBudgetIndex].BudgetSavingsCategories[i].CategoryName
+                    && transaction.Category.Group == "Savings")
+                {
+                    // Add the transaction
+                    budgetCollection.Budgets[currentBudgetIndex].BudgetSavingsCategories[i].Transactions.Add(transaction);
+
+                    // Adjust the balance
+                    budgetCollection.Budgets[currentBudgetIndex].BudgetSavingsCategories[i].CurrentBalance += transaction.Amount;
+
+                    // Save the budget collection to the database
+                    budgetCollection.SaveBudgetCollection();
+
+                    break;
+                }
+            }
+            
         }
     }
 }
