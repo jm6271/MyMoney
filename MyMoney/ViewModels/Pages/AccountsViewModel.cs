@@ -364,6 +364,9 @@ namespace MyMoney.ViewModels.Pages
             var amount = SelectedAccountTransactions[SelectedTransactionIndex].Amount;
             SelectedAccount.Total -= amount;
 
+            // If this is a savings category, remove the transaction from the category and change the balance
+            DeleteTransactionFromSavingsCategory(SelectedAccountTransactions[SelectedTransactionIndex]);
+
             // Delete the selected transaction
             SelectedAccountTransactions.RemoveAt(SelectedTransactionIndex);
 
@@ -477,7 +480,40 @@ namespace MyMoney.ViewModels.Pages
                     break;
                 }
             }
-            
+        }
+
+        private void DeleteTransactionFromSavingsCategory(Transaction transaction)
+        {
+            // Check to see if the transaction's category is a savings category
+            BudgetCollection budgetCollection = new(_databaseReader);
+            if (!budgetCollection.DoesCurrentBudgetExist()) return;
+
+            var currentBudgetIndex = budgetCollection.GetCurrentBudgetIndex();
+
+            for (int i = 0; i < budgetCollection.Budgets[currentBudgetIndex].BudgetSavingsCategories.Count; i++)
+            {
+                if (transaction.Category.Name == budgetCollection.Budgets[currentBudgetIndex].BudgetSavingsCategories[i].CategoryName
+                    && transaction.Category.Group == "Savings" )
+                {
+                    for (int j = 0; j < budgetCollection.Budgets[currentBudgetIndex].BudgetSavingsCategories[i].Transactions.Count; j++)
+                    {
+                        // See if the hash matches
+                        if (budgetCollection.Budgets[currentBudgetIndex].BudgetSavingsCategories[i].Transactions[j].TransactionHash ==
+                            transaction.TransactionHash)
+                        {
+                            // Subtract the amount from the balance
+                            budgetCollection.Budgets[currentBudgetIndex].BudgetSavingsCategories[i].CurrentBalance -= transaction.Amount;
+
+                            // Remove the transaction
+                            budgetCollection.Budgets[currentBudgetIndex].BudgetSavingsCategories[i].Transactions.RemoveAt(j);
+
+                            // Save the budget collection
+                            budgetCollection.SaveBudgetCollection();
+                            return;
+                        }
+                    }
+                }
+            }
         }
     }
 }
