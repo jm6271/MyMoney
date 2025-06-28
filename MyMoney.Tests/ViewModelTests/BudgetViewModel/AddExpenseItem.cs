@@ -21,6 +21,7 @@ public class AddExpenseItemTests
     private Mock<INewBudgetDialogService> _mockNewBudgetDialogService;
     private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
     private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
+    private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
 
     [TestInitialize]
@@ -32,6 +33,7 @@ public class AddExpenseItemTests
         _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
         _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
         _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
+        _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
 
         // Setup database reader to return empty collection
         _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
@@ -43,7 +45,8 @@ public class AddExpenseItemTests
             _mockMessageBoxService.Object,
             _mockNewBudgetDialogService.Object,
             _mockBudgetCategoryDialogService.Object,
-            _mockExpenseGroupDialogService.Object
+            _mockExpenseGroupDialogService.Object,
+            _mockSavingsCategoryDialogService.Object
         );
     }
 

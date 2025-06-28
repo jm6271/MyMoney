@@ -59,6 +59,48 @@ namespace MyMoney.Core.Reports
         }
 
         /// <summary>
+        /// Calculate the savings category items for the specified month
+        /// </summary>
+        /// <param name="budgetMonth">The month of the budget to generate a report on</param>
+        /// <param name="databaseReader">The database reader to use to get the information for the report</param>
+        /// <returns>A list of report items, for each savings category</returns>
+        public static List<SavingsCategoryReportItem> CalculateSavingsReportItems(DateTime budgetMonth, IDatabaseReader databaseReader)
+        {
+            // read the budget from the database
+            BudgetCollection budgetCollection = new(databaseReader);
+
+            // Make sure the specified budget exists
+            var budget = budgetCollection.Budgets.FirstOrDefault(b => b.BudgetDate.Month == budgetMonth.Month && b.BudgetDate.Year == budgetMonth.Year);
+
+            if (budget == null)
+            {
+                // No budget for this month
+                return [];
+            }
+
+            var savingsItems = budget.BudgetSavingsCategories;
+
+            // Create a list of budget report items
+            List<SavingsCategoryReportItem> budgetReportItems = [];
+
+            // loop through the incomeItems and create the budget report items
+            foreach (var item in savingsItems)
+            {
+                SavingsCategoryReportItem budgetReportItem = new()
+                {
+                    Category = item.CategoryName,
+                    Saved = item.BudgetedAmount,
+                    Spent = new(-CalculateTotalForCategory(new() { Group = "Savings", Name = item.CategoryName }, budgetMonth, databaseReader).Value),
+                    Balance = item.CurrentBalance,
+                };
+
+                budgetReportItems.Add(budgetReportItem);
+            }
+
+            return budgetReportItems;
+        }
+
+        /// <summary>
         /// Calculate an expense items report for all expenses in the specified month
         /// </summary>
         /// <param name="budgetMonth">The month of the budget to generate a report on</param>

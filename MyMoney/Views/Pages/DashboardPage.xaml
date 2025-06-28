@@ -46,6 +46,7 @@
 
             <Controls:BudgetReportControl   Grid.Column="0" Margin="0,0,8,24"
                                             IncomeItems="{Binding ViewModel.BudgetReportIncomeItems}"
+                                            SavingsItems="{Binding ViewModel.BudgetReportSavingsItems}"
                                             ExpenseItems="{Binding ViewModel.BudgetReportExpenseItems}"
                                             ReportTotal="{Binding ViewModel.DifferenceTotal}"/>
 

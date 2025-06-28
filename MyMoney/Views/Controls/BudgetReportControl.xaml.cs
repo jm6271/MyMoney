@@ -41,6 +41,19 @@ namespace MyMoney.Views.Controls
             set { SetValue(IncomeItemsProperty, value); }
         }
 
+        public static readonly DependencyProperty SavingsItemsProperty =
+            DependencyProperty.Register("SavingsItems", typeof(ObservableCollection<SavingsCategoryReportItem>),
+                typeof(BudgetReportControl), new PropertyMetadata(new ObservableCollection<SavingsCategoryReportItem>()));
+
+        /// <summary>
+        /// The report's savings items
+        /// </summary>
+        public ObservableCollection<SavingsCategoryReportItem> SavingsItems
+        {
+            get { return (ObservableCollection<SavingsCategoryReportItem>)GetValue(SavingsItemsProperty); }
+            set { SetValue(SavingsItemsProperty, value); }
+        }
+
         public static readonly DependencyProperty ExpenseItemsProperty = DependencyProperty.Register("ExpenseItems",
             typeof(ObservableCollection<BudgetReportItem>), typeof(BudgetReportControl),
             new FrameworkPropertyMetadata(new ObservableCollection<BudgetReportItem>(),
