@@ -172,10 +172,16 @@ namespace MyMoney.ViewModels.Pages
 
         private ISeries[] UpdateChartSeries()
         {
+            var past12MonthsIncome = IncomeExpense12MonthCalculator.GetPast12MonthsIncome();
+            var past12MonthsExpenses = IncomeExpense12MonthCalculator.GetPast12MonthsExpenses();
+
+            var incomeTotal = past12MonthsIncome.Count > 0 ? past12MonthsIncome[^1] : 0.0;
+            var expenseTotal = past12MonthsExpenses.Count > 0 ? past12MonthsExpenses[^1] : 0.0;
+
             var accentColor = ApplicationAccentColorManager.GetColorizationColor();
             ISeries[] s = [new ColumnSeries<double>()
             {
-                Values = [Income, Expenses],
+                Values = [incomeTotal, expenseTotal],
                 Fill = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B)),
                 Stroke = null,
             }];
