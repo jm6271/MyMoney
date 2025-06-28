@@ -910,11 +910,17 @@ namespace MyMoney.ViewModels.Pages
             // get a budget report for the month of the current budget
             var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(CurrentBudget.BudgetDate, _databaseReader);
             var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(CurrentBudget.BudgetDate, _databaseReader);
+            var savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(CurrentBudget.BudgetDate, _databaseReader);
 
             // go through the report items and set the equivalent budget items' actual amount
             for (int i = 0; i < incomeItems.Count; i++)
             {
                 CurrentBudget.BudgetIncomeItems[i].Actual = incomeItems[i].Actual;
+            }
+
+            for (int i = 0; i < savingsItems.Count; i++)
+            {
+                CurrentBudget.BudgetSavingsCategories[i].Spent = savingsItems[i].Spent;
             }
 
             foreach (var expenseGroup in CurrentBudget.BudgetExpenseItems)
