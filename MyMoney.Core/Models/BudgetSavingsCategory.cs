@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MyMoney.Core.Models
 {
-    public partial class BudgetSavingsCategory : ObservableObject
+    public partial class BudgetSavingsCategory : ObservableObject, ICloneable
     {
         [ObservableProperty]
         private int _id = 0;
@@ -27,5 +27,18 @@ namespace MyMoney.Core.Models
 
         [ObservableProperty]
         private ObservableCollection<Transaction> _transactions = [];
+
+        public object Clone()
+        {
+            return new BudgetSavingsCategory
+            {
+                CategoryName = this.CategoryName,
+                CurrentBalance = new Currency(this.CurrentBalance.Value),
+                Spent = new Currency(0.0m),
+                BudgetedAmount = new(this.BudgetedAmount.Value),
+                Transactions = []
+            };
+        }
+
     }
 }

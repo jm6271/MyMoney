@@ -418,8 +418,16 @@ namespace MyMoney.ViewModels.Pages
                 {
                     CategoryName = viewModel.Category,
                     BudgetedAmount = viewModel.Planned,
-                    CurrentBalance = viewModel.CurrentBalance,
+                    CurrentBalance = viewModel.CurrentBalance + viewModel.Planned,
                 };
+
+                // Add a transaction that applies the budgeted amount to the savings category
+                Transaction appliedBudgetedAmount = new(CurrentBudget.BudgetDate, "", 
+                    new Category() { Group = "Savings", Name = category.CategoryName },
+                    category.BudgetedAmount, "Planned This Month");
+                appliedBudgetedAmount.TransactionDetail = "Planned This Month";
+
+                category.Transactions.Add(appliedBudgetedAmount);
 
                 // Add the category to the list of savings categories
                 CurrentBudget.BudgetSavingsCategories.Add(category);
@@ -599,6 +607,7 @@ namespace MyMoney.ViewModels.Pages
                     CategoryName = viewModel.Category,
                     BudgetedAmount = viewModel.Planned,
                     CurrentBalance = viewModel.CurrentBalance,
+                    Transactions = viewModel.RecentTransactions,
                 };
 
                 // assign the selected index of the list with the new item
@@ -794,10 +803,7 @@ namespace MyMoney.ViewModels.Pages
                     foreach (var item in CurrentBudget.BudgetSavingsCategories)
                     {
                         // We have to modify the item before copying it over
-                        var newSavingsCategory = item;
-
-                        // Remove all the transactions
-                        newSavingsCategory.Transactions.Clear();
+                        BudgetSavingsCategory newSavingsCategory = (BudgetSavingsCategory)item.Clone();
 
                         // Add a new transaction that carries the balance forward
                         Transaction balanceCarriedForward = new(newBudget.BudgetDate, "", 
@@ -807,6 +813,16 @@ namespace MyMoney.ViewModels.Pages
                             TransactionDetail = CurrentBudget.BudgetDate.ToString("MMM") + " balance"
                         };
                         newSavingsCategory.Transactions.Add(balanceCarriedForward);
+
+                        // Add a transaction that applies the budgeted amount to the total balance
+                        Transaction appliedBudgetedAmount = new(newBudget.BudgetDate, "",
+                            new Category() { Group = "Savings", Name = item.CategoryName },
+                            item.BudgetedAmount, "Planned This Month");
+                        appliedBudgetedAmount.TransactionDetail = "Planned This Month";
+
+                        newSavingsCategory.Transactions.Add(appliedBudgetedAmount);
+
+                        newSavingsCategory.CurrentBalance += newSavingsCategory.BudgetedAmount;
 
                         newBudget.BudgetSavingsCategories.Add(newSavingsCategory);
                     }
