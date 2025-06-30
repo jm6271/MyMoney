@@ -575,6 +575,7 @@ namespace MyMoney.ViewModels.Pages
                 Category = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].CategoryName,
                 Planned = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].BudgetedAmount,
                 CurrentBalance = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].CurrentBalance,
+                RecentTransactions = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].Transactions,
             };
 
             _savingsCategoryDialogService.SetViewModel(viewModel);
@@ -782,9 +783,32 @@ namespace MyMoney.ViewModels.Pages
                 // Copy over categories if box is checked
                 if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
                 {
+                    // Select the most recent budget before attempting to copy over the items
+                    LoadBudget(FindMostRecentBudgetIndex());
+
                     foreach (var item in CurrentBudget.BudgetIncomeItems)
                     {
                         newBudget.BudgetIncomeItems.Add(item);
+                    }
+
+                    foreach (var item in CurrentBudget.BudgetSavingsCategories)
+                    {
+                        // We have to modify the item before copying it over
+                        var newSavingsCategory = item;
+
+                        // Remove all the transactions
+                        newSavingsCategory.Transactions.Clear();
+
+                        // Add a new transaction that carries the balance forward
+                        Transaction balanceCarriedForward = new(newBudget.BudgetDate, "", 
+                            new Category() { Group = "Savings", Name = item.CategoryName },
+                            item.CurrentBalance, "Balance carried forward")
+                        {
+                            TransactionDetail = CurrentBudget.BudgetDate.ToString("MMM") + " balance"
+                        };
+                        newSavingsCategory.Transactions.Add(balanceCarriedForward);
+
+                        newBudget.BudgetSavingsCategories.Add(newSavingsCategory);
                     }
 
                     foreach (var item in CurrentBudget.BudgetExpenseItems)
@@ -819,6 +843,8 @@ namespace MyMoney.ViewModels.Pages
 
         private void LoadBudget(int index)
         {
+            if (index == -1) return;
+
             // Load into current budget
             CurrentBudget = Budgets[index];
             
@@ -850,6 +876,30 @@ namespace MyMoney.ViewModels.Pages
             }
 
             return -1;
+        }
+
+        private int FindMostRecentBudgetIndex()
+        {
+            DateTime? mostRecent = null;
+            int mostRecentIndex = -1;
+
+            for (int i = 0; i < Budgets.Count; i++)
+            {
+                if (mostRecent == null)
+                {
+                    mostRecent = Budgets[i].BudgetDate;
+                    mostRecentIndex = i;
+                    continue;
+                }
+                
+                if (Budgets[i].BudgetDate > mostRecent)
+                {
+                    mostRecent = Budgets[i].BudgetDate;
+                    mostRecentIndex = i;
+                }
+            }
+
+            return mostRecentIndex;
         }
 
         private bool DoesIncomeItemExist(string item)

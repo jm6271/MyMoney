@@ -1,4 +1,5 @@
 ﻿using MyMoney.Core.Models;
+using System.Collections.ObjectModel;
 
 namespace MyMoney.ViewModels.ContentDialogs
 {
@@ -12,5 +13,8 @@ namespace MyMoney.ViewModels.ContentDialogs
 
         [ObservableProperty]
         private Currency _currentBalance = new(0m);
+
+        [ObservableProperty]
+        private ObservableCollection<Transaction> _recentTransactions = [];
     }
 }

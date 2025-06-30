@@ -6,36 +6,86 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:MyMoney.Views.ContentDialogs"
       xmlns:helpers="clr-namespace:MyMoney.Helpers" 
-      xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs" 
-      d:DataContext="{d:DesignInstance Type=contentdialogs:SavingsCategoryDialogViewModel}"
+      xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs" xmlns:Controls="clr-namespace:MyMoney.Views.Controls" xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
+                  d:DataContext="{d:DesignInstance Type=contentdialogs:SavingsCategoryDialogViewModel}"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="450" d:DesignWidth="600"
       Title="SavingsCategoryDialog"
-      Closing="ContentDialog_Closing">
+      Closing="ContentDialog_Closing"
+      DialogMaxWidth="600">
     <ui:ContentDialog.Resources>
         <helpers:CurrencyConverter x:Key="CurrencyConverter"/>
+        <helpers:StartsWithPlusConverter x:Key="StartsWithPlusConverter"/>
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:SavingsCategoryDialog}" />
     </ui:ContentDialog.Resources>
-    <StackPanel>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
         <ui:TextBlock>Category</ui:TextBlock>
-        <Border BorderThickness="1" BorderBrush="Transparent" x:Name="TxtCategoryBorder" Margin="0,8,0,0">
-             <ui:TextBox x:Name="TxtCategory" Text="{Binding Category, UpdateSourceTrigger=PropertyChanged}" MinWidth="300" 
+        <Border Grid.Row="1" BorderThickness="1" BorderBrush="Transparent" x:Name="TxtCategoryBorder" Margin="0,8,0,0">
+            <ui:TextBox x:Name="TxtCategory" Text="{Binding Category, UpdateSourceTrigger=PropertyChanged}"
                         GotKeyboardFocus="TxtCategory_GotKeyboardFocus"
                         GotMouseCapture="TxtCategory_GotMouseCapture"
-                        LostFocus="TxtCategory_LostFocus"/>           
+                        LostFocus="TxtCategory_LostFocus"/>
         </Border>
 
 
-        <ui:TextBlock Margin="0,12,0,0">Planned for this month</ui:TextBlock>
-        <ui:TextBox x:Name="TxtPlanned" Text="{Binding Planned, Converter={StaticResource CurrencyConverter}, 
+        <ui:TextBlock Grid.Row="2" Margin="0,12,0,0">Planned for this month</ui:TextBlock>
+        <ui:TextBox Grid.Row="3" x:Name="TxtPlanned" Text="{Binding Planned, Converter={StaticResource CurrencyConverter}, 
             UpdateSourceTrigger=PropertyChanged}" Margin="1,8,1,0"
                     GotKeyboardFocus="TxtPlanned_GotKeyboardFocus"
                     GotMouseCapture="TxtPlanned_GotMouseCapture"/>
 
-        <ui:TextBlock Margin="0,12,0,0">Current balance</ui:TextBlock>
-        <ui:TextBox x:Name="TxtBalance" Text="{Binding CurrentBalance, Converter={StaticResource CurrencyConverter}, 
+        <ui:TextBlock Grid.Row="4" Margin="0,12,0,0">Current balance</ui:TextBlock>
+        <ui:TextBox Grid.Row="5" x:Name="TxtBalance" Text="{Binding CurrentBalance, Converter={StaticResource CurrencyConverter}, 
             UpdateSourceTrigger=PropertyChanged}" 
                     Margin="1,8,1,0" GotKeyboardFocus="TxtBalance_GotKeyboardFocus"
                     GotMouseCapture="TxtBalance_GotMouseCapture"/>
-    </StackPanel>
+        <ui:TextBlock Margin="24,0,0,0" Grid.Column="1">Recent activity</ui:TextBlock>
+        <Border Grid.Column="1" Grid.Row="1" Grid.RowSpan="5" BorderThickness="1" BorderBrush="#828790" Margin="24,12,0,0"
+                MinWidth="300">
+            <ui:ListView ItemsSource="{Binding RecentTransactions}" Margin="0,0,0,0">
+                <ui:ListView.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:Transaction}">
+                        <Grid Margin="0,2,0,2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="3*"/>
+                                <ColumnDefinition Width="1*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Controls:MonthDayControl Day="{Binding Path=Date.Day}" Month="{Binding Path=MonthAbbreviated}" 
+                                                      HorizontalAlignment="Left" Margin="8,0,0,0" DayFontSize="16"/>
+
+                            <TextBlock Grid.Column="1" Text="{Binding TransactionDetail}" VerticalAlignment="Center"/>
+
+                            <TextBlock Grid.Column="2" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"
+                                                  Text="{Binding AmountFormatted}" HorizontalAlignment="Right" Margin="0,0,8,0">
+                                <TextBlock.Style>
+                                    <Style TargetType="TextBlock">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding AmountFormatted, Converter={StaticResource StartsWithPlusConverter} }" Value="True">
+                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </Grid>
+                    </DataTemplate>
+                </ui:ListView.ItemTemplate>
+            </ui:ListView>
+        </Border>
+    </Grid>
 </ui:ContentDialog>
