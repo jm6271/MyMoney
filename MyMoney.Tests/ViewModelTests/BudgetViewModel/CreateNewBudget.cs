@@ -135,6 +135,9 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
                 .Returns(new List<Budget> { currentBudget });
 
+            _mockDatabaseReader.Setup(x => x.GetCollection<Account>("Accounts"))
+                .Returns([]);
+
             var dialogViewModel = new NewBudgetDialogViewModel
             {
                 SelectedDate = DateTime.Now.AddMonths(1).ToString("MMMM, yyyy", System.Globalization.CultureInfo.InvariantCulture),
