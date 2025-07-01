@@ -398,7 +398,10 @@ namespace MyMoney.ViewModels.Pages
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
 
-            var viewModel = new SavingsCategoryDialogViewModel();
+            var viewModel = new SavingsCategoryDialogViewModel()
+            {
+                RecentTransactionsVisibility = Visibility.Collapsed,
+            };
             _savingsCategoryDialogService.SetViewModel(viewModel);
             var result = await _savingsCategoryDialogService.ShowDialogAsync(_contentDialogService, "New Savings Category");
             viewModel = _savingsCategoryDialogService.GetViewModel();

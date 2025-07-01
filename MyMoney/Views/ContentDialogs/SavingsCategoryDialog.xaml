@@ -21,8 +21,8 @@
     </ui:ContentDialog.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="{Binding EditColumnWidth}"/>
+            <ColumnDefinition Width="{Binding RecentTransactionsColumnWidth}"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -54,9 +54,9 @@
             UpdateSourceTrigger=PropertyChanged}" 
                     Margin="1,8,1,0" GotKeyboardFocus="TxtBalance_GotKeyboardFocus"
                     GotMouseCapture="TxtBalance_GotMouseCapture"/>
-        <ui:TextBlock Margin="24,0,0,0" Grid.Column="1">Recent activity</ui:TextBlock>
+        <ui:TextBlock Margin="24,0,0,0" Grid.Column="1" Visibility="{Binding RecentTransactionsVisibility}">Recent activity</ui:TextBlock>
         <Border Grid.Column="1" Grid.Row="1" Grid.RowSpan="6" BorderThickness="1" BorderBrush="#828790" Margin="24,12,0,0"
-                MinWidth="300">
+                MinWidth="300" Visibility="{Binding RecentTransactionsVisibility}">
             <ui:ListView ItemsSource="{Binding RecentTransactions}" Margin="0,0,0,0">
                 <ui:ListView.ItemTemplate>
                     <DataTemplate DataType="{x:Type models:Transaction}">
