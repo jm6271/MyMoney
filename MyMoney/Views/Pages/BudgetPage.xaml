@@ -163,7 +163,7 @@
                             <ui:TextBlock Text="{Binding BudgetedAmount}" Margin="0,5,0,5"/>
                         </DataTemplate>
                         <DataTemplate x:Key="ActualItemTemplate">
-                            <ui:TextBlock Text="{Binding Spent}" Margin="0,5,5,5"/>
+                            <ui:TextBlock Text="{Binding CurrentBalance}" Margin="0,5,5,5"/>
                         </DataTemplate>
                     </ui:ListView.Resources>
 
@@ -183,7 +183,7 @@
                         <ui:GridView>
                             <ui:GridViewColumn Header="Category" CellTemplate="{StaticResource CategoryItemTemplate}"/>
                             <ui:GridViewColumn Header="Saved" CellTemplate="{StaticResource BudgetedItemTemplate}" Width="125"/>
-                            <ui:GridViewColumn Header="Spent" CellTemplate="{StaticResource ActualItemTemplate}" Width="125"/>
+                            <ui:GridViewColumn Header="Balance" CellTemplate="{StaticResource ActualItemTemplate}" Width="125"/>
                         </ui:GridView>
                     </ui:ListView.View>
                 </ui:ListView>
