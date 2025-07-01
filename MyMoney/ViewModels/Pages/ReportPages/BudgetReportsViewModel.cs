@@ -202,6 +202,13 @@ namespace MyMoney.ViewModels.Pages.ReportPages
                 expenseTotals.Add(ExpenseItems[j].Category, (double)ExpenseItems[j].Actual.Value);
             }
 
+            for (var k = 0; k < SavingsItems.Count; k++)
+            {
+                if (SavingsItems[k].Saved.Value == 0m) continue;
+
+                expenseTotals.Add(SavingsItems[k].Category, (double)SavingsItems[k].Saved.Value);
+            }
+
             ActualExpenseSeries = new ISeries[expenseTotals.Count];
             var i = 0;
             foreach (var item in expenseTotals)
