@@ -36,7 +36,7 @@
 
         <ui:TextBlock>Category</ui:TextBlock>
         <Border Grid.Row="1" BorderThickness="1" BorderBrush="Transparent" x:Name="TxtCategoryBorder" Margin="0,8,0,0">
-            <ui:TextBox x:Name="TxtCategory" Text="{Binding Category, UpdateSourceTrigger=PropertyChanged}"
+            <ui:TextBox x:Name="TxtCategory" Text="{Binding Category}"
                         GotKeyboardFocus="TxtCategory_GotKeyboardFocus"
                         GotMouseCapture="TxtCategory_GotMouseCapture"
                         LostFocus="TxtCategory_LostFocus"/>
@@ -44,14 +44,13 @@
 
 
         <ui:TextBlock Grid.Row="2" Margin="0,12,0,0">Planned for this month</ui:TextBlock>
-        <ui:TextBox Grid.Row="3" x:Name="TxtPlanned" Text="{Binding Planned, Converter={StaticResource CurrencyConverter}, 
-            UpdateSourceTrigger=PropertyChanged}" Margin="1,8,1,0"
+        <ui:TextBox Grid.Row="3" x:Name="TxtPlanned" Text="{Binding Planned, Converter={StaticResource CurrencyConverter}}" 
+                    Margin="1,8,1,0"
                     GotKeyboardFocus="TxtPlanned_GotKeyboardFocus"
                     GotMouseCapture="TxtPlanned_GotMouseCapture"/>
 
         <ui:TextBlock Grid.Row="4" Margin="0,12,0,0">Current balance</ui:TextBlock>
-        <ui:TextBox Grid.Row="5" x:Name="TxtBalance" Text="{Binding CurrentBalance, Converter={StaticResource CurrencyConverter}, 
-            UpdateSourceTrigger=PropertyChanged}" 
+        <ui:TextBox Grid.Row="5" x:Name="TxtBalance" Text="{Binding CurrentBalance, Converter={StaticResource CurrencyConverter}}" 
                     Margin="1,8,1,0" GotKeyboardFocus="TxtBalance_GotKeyboardFocus"
                     GotMouseCapture="TxtBalance_GotMouseCapture"/>
         <ui:TextBlock Margin="24,0,0,0" Grid.Column="1" Visibility="{Binding RecentTransactionsVisibility}">Recent activity</ui:TextBlock>
