@@ -40,7 +40,7 @@ namespace MyMoney.Views.ContentDialogs
 
         private void TxtBalance_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            TxtPlanned.SelectAll();
+            TxtBalance.SelectAll();
         }
 
         private void TxtBalance_GotMouseCapture(object sender, MouseEventArgs e)
