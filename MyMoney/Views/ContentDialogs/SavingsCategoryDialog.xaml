@@ -12,7 +12,8 @@
       d:DesignHeight="450" d:DesignWidth="600"
       Title="SavingsCategoryDialog"
       Closing="ContentDialog_Closing"
-      DialogMaxWidth="600">
+      DialogMaxWidth="600"
+      DialogMaxHeight="500">
     <ui:ContentDialog.Resources>
         <helpers:CurrencyConverter x:Key="CurrencyConverter"/>
         <helpers:StartsWithPlusConverter x:Key="StartsWithPlusConverter"/>
@@ -30,6 +31,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <ui:TextBlock>Category</ui:TextBlock>
@@ -53,7 +55,7 @@
                     Margin="1,8,1,0" GotKeyboardFocus="TxtBalance_GotKeyboardFocus"
                     GotMouseCapture="TxtBalance_GotMouseCapture"/>
         <ui:TextBlock Margin="24,0,0,0" Grid.Column="1">Recent activity</ui:TextBlock>
-        <Border Grid.Column="1" Grid.Row="1" Grid.RowSpan="5" BorderThickness="1" BorderBrush="#828790" Margin="24,12,0,0"
+        <Border Grid.Column="1" Grid.Row="1" Grid.RowSpan="6" BorderThickness="1" BorderBrush="#828790" Margin="24,12,0,0"
                 MinWidth="300">
             <ui:ListView ItemsSource="{Binding RecentTransactions}" Margin="0,0,0,0">
                 <ui:ListView.ItemTemplate>
