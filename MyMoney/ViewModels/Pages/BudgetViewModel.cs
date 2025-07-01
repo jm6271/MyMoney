@@ -428,6 +428,7 @@ namespace MyMoney.ViewModels.Pages
                 appliedBudgetedAmount.TransactionDetail = "Planned This Month";
 
                 category.Transactions.Add(appliedBudgetedAmount);
+                category.PlannedTransactionHash = appliedBudgetedAmount.TransactionHash;
 
                 // Add the category to the list of savings categories
                 CurrentBudget.BudgetSavingsCategories.Add(category);
@@ -602,16 +603,47 @@ namespace MyMoney.ViewModels.Pages
                 }
 
                 // modify the item at the selected index
-                BudgetSavingsCategory savingsCategory = new()
+                BudgetSavingsCategory editedSavingsCategory = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex];
+                editedSavingsCategory.CategoryName = viewModel.Category;
+
+                // Adjust the balance if it has changed
+                if (editedSavingsCategory.CurrentBalance != viewModel.CurrentBalance)
                 {
-                    CategoryName = viewModel.Category,
-                    BudgetedAmount = viewModel.Planned,
-                    CurrentBalance = viewModel.CurrentBalance,
-                    Transactions = viewModel.RecentTransactions,
-                };
+                    // Add a transaction to show that the balance was updated
+                    Transaction updatedTransaction = new(DateTime.Today, "",
+                        new Category() { Group = "Savings", Name = editedSavingsCategory.CategoryName },
+                        new(viewModel.CurrentBalance.Value - editedSavingsCategory.CurrentBalance.Value),
+                        "Updated Balance");
+                    updatedTransaction.TransactionDetail = "Updated Balance";
+                    editedSavingsCategory.Transactions.Add(updatedTransaction);
+                    
+                    // UPdate the balance
+                    editedSavingsCategory.CurrentBalance = viewModel.CurrentBalance;
+                }
+                
+                // Update the planned amount if it has changed
+                if (editedSavingsCategory.BudgetedAmount != viewModel.Planned)
+                {
+                    for (int i = 0; i < editedSavingsCategory.Transactions.Count; i++)
+                    {
+                        if (editedSavingsCategory.Transactions[i].TransactionHash == editedSavingsCategory.PlannedTransactionHash)
+                        {
+                            // Remove the amount of this transaction from the balance
+                            editedSavingsCategory.CurrentBalance -= editedSavingsCategory.BudgetedAmount;
+
+                            // Apply the new amount
+                            editedSavingsCategory.CurrentBalance += viewModel.Planned;
+                            editedSavingsCategory.BudgetedAmount = viewModel.Planned;
+
+                            // Modify the transaction
+                            editedSavingsCategory.Transactions[i].Amount = editedSavingsCategory.BudgetedAmount;
+                        }
+                    }
+                }
+
 
                 // assign the selected index of the list with the new item
-                CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex] = savingsCategory;
+                CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex] = editedSavingsCategory;
 
                 // Recalculate the total of the income items
                 UpdateListViewTotals();
@@ -821,6 +853,7 @@ namespace MyMoney.ViewModels.Pages
                         appliedBudgetedAmount.TransactionDetail = "Planned This Month";
 
                         newSavingsCategory.Transactions.Add(appliedBudgetedAmount);
+                        newSavingsCategory.PlannedTransactionHash = appliedBudgetedAmount.TransactionHash;
 
                         newSavingsCategory.CurrentBalance += newSavingsCategory.BudgetedAmount;
 

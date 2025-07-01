@@ -26,6 +26,9 @@ namespace MyMoney.Core.Models
         private Currency _spent = new(0m);
 
         [ObservableProperty]
+        private string _plannedTransactionHash = string.Empty;
+
+        [ObservableProperty]
         private ObservableCollection<Transaction> _transactions = [];
 
         public object Clone()
