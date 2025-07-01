@@ -23,6 +23,9 @@ namespace MyMoney.ViewModels.Pages.ReportPages
         private ObservableCollection<BudgetReportItem> _expenseItems = [];
 
         [ObservableProperty]
+        private ObservableCollection<SavingsCategoryReportItem> _savingsItems = [];
+
+        [ObservableProperty]
         private Currency _reportTotal = new(0m);
 
         [ObservableProperty]
@@ -106,9 +109,11 @@ namespace MyMoney.ViewModels.Pages.ReportPages
             // clear the current report
             IncomeItems.Clear();
             ExpenseItems.Clear();
+            SavingsItems.Clear();
 
             var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(date, databaseReader);
             var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(date, databaseReader);
+            var savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(date, databaseReader);
 
             foreach (var item in incomeItems)
             {
@@ -118,6 +123,11 @@ namespace MyMoney.ViewModels.Pages.ReportPages
             foreach (var item in expenseItems)
             {
                 ExpenseItems.Add(item);
+            }
+
+            foreach (var item in savingsItems)
+            {
+                SavingsItems.Add(item);
             }
 
             // Add an item to the income list showing the total income
@@ -190,6 +200,13 @@ namespace MyMoney.ViewModels.Pages.ReportPages
                 if (ExpenseItems[j].Actual.Value == 0m) continue;
 
                 expenseTotals.Add(ExpenseItems[j].Category, (double)ExpenseItems[j].Actual.Value);
+            }
+
+            for (var k = 0; k < SavingsItems.Count; k++)
+            {
+                if (SavingsItems[k].Saved.Value == 0m) continue;
+
+                expenseTotals.Add(SavingsItems[k].Category, (double)SavingsItems[k].Saved.Value);
             }
 
             ActualExpenseSeries = new ISeries[expenseTotals.Count];

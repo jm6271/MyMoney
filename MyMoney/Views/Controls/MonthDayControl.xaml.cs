@@ -52,5 +52,21 @@ namespace MyMoney.Views.Controls
             }
         }
         public static readonly DependencyProperty DayProperty = DependencyProperty.Register("Day", typeof(int), typeof(MonthDayControl), new PropertyMetadata(0));
+
+
+        public int DayFontSize
+        {
+            get
+            {
+                return (int)GetValue(DayFontSizeProperty);
+            }
+            set
+            {
+                SetValue(DayFontSizeProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty DayFontSizeProperty = DependencyProperty.Register(
+            "DayFontSize", typeof(int), typeof(MonthDayControl), new PropertyMetadata(18));
     }
 }

@@ -20,6 +20,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
         private Mock<INewBudgetDialogService> _mockNewBudgetDialogService;
         private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
         private Mock<INewExpenseGroupDialogService> _mockNewExpenseGroupDialogService;
+        private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService;
         private ViewModels.Pages.BudgetViewModel _viewModel;
 
         [TestInitialize]
@@ -31,6 +32,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
             _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
             _mockNewExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
+            _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
 
             // Setup mock database with a test budget
             var testBudget = new Budget
@@ -48,7 +50,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockMessageBoxService.Object,
                 _mockNewBudgetDialogService.Object,
                 _mockBudgetCategoryDialogService.Object,
-                _mockNewExpenseGroupDialogService.Object
+                _mockNewExpenseGroupDialogService.Object,
+                _mockSavingsCategoryDialogService.Object
             );
         }
 

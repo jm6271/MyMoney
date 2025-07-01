@@ -41,7 +41,8 @@
 
         <Controls:BudgetReportControl Grid.Column="1" Grid.ColumnSpan="2"
                 Title="{Binding ViewModel.ReportTitle}" IncomeItems="{Binding ViewModel.IncomeItems}"
-                ExpenseItems="{Binding ViewModel.ExpenseItems}" ReportTotal="{Binding ViewModel.ReportTotal}" Margin="8,0,0,8"/>
+                ExpenseItems="{Binding ViewModel.ExpenseItems}" ReportTotal="{Binding ViewModel.ReportTotal}" Margin="8,0,0,8"
+                SavingsItems="{Binding ViewModel.SavingsItems}"/>
 
         <ui:Card Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" Margin="8,8,8,24">
             <lvc:PieChart Height="300" Series="{Binding ViewModel.ActualIncomeSeries}"

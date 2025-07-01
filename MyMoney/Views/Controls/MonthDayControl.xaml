@@ -14,7 +14,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <ui:TextBlock Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Text="{Binding Day,
-            RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="18" FontWeight="SemiBold"/>
+            RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="{Binding DayFontSize,
+            RelativeSource={RelativeSource AncestorType=UserControl}}" FontWeight="SemiBold"/>
         <ui:TextBlock Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" Text="{Binding Month,
             RelativeSource={RelativeSource AncestorType=UserControl}}"/>
     </Grid>

@@ -4,22 +4,43 @@ using System.ComponentModel;
 
 namespace MyMoney.Core.Models;
 
-public partial class Transaction(DateTime date, string payee, Category category, Currency amount, string memo) : ObservableObject
+public partial class Transaction : ObservableObject
 {
-    [ObservableProperty]
-    private string _payee = payee;
+    public Transaction(DateTime date, string payee, Category category, Currency amount, string memo)
+    {
+        Payee = payee;
+        Category = category;
+        Amount = amount;
+        Memo = memo;
+        Date = date;
+
+        if (TransactionHash != "")
+        {
+            // Generate a hash for this transaction
+            TransactionHash = Guid.NewGuid().ToString();
+        }
+ 
+    }
+
+    public string TransactionHash { get; private set; }
 
     [ObservableProperty]
-    private Category _category = category;
+    private string _payee;
 
     [ObservableProperty]
-    private Currency _amount = amount;
+    private Category _category;
 
     [ObservableProperty]
-    private string _memo = memo;
+    private Currency _amount;
 
     [ObservableProperty]
-    private DateTime _date = date;
+    private string _memo;
+
+    [ObservableProperty]
+    private string _transactionDetail;
+
+    [ObservableProperty]
+    private DateTime _date;
 
     public string DateFormatted
     {

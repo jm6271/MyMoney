@@ -65,6 +65,9 @@ namespace MyMoney.ViewModels.Pages
         private int _incomeItemsSelectedIndex;
 
         [ObservableProperty]
+        private int _savingsCategoriesSelectedIndex;
+
+        [ObservableProperty]
         private int _expenseItemsSelectedIndex;
 
         [ObservableProperty]
@@ -123,17 +126,20 @@ namespace MyMoney.ViewModels.Pages
         private readonly INewBudgetDialogService _newBudgetDialogService;
         private readonly IBudgetCategoryDialogService _budgetCategoryDialogService;
         private readonly INewExpenseGroupDialogService _newExpenseGroupDialogService;
+        private readonly ISavingsCategoryDialogService _savingsCategoryDialogService;
         private readonly IDatabaseReader _databaseReader;
 
         public BudgetViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader,
             IMessageBoxService messageBoxService, INewBudgetDialogService newBudgetDialogService,
-            IBudgetCategoryDialogService budgetCategoryDialogService, INewExpenseGroupDialogService newExpenseGroupDialogService)
+            IBudgetCategoryDialogService budgetCategoryDialogService, INewExpenseGroupDialogService newExpenseGroupDialogService,
+            ISavingsCategoryDialogService savingsCategoryDialogService)
         {
             _contentDialogService = contentDialogService;
             _messageBoxService = messageBoxService;
             _newBudgetDialogService = newBudgetDialogService;
             _budgetCategoryDialogService = budgetCategoryDialogService;
             _newExpenseGroupDialogService = newExpenseGroupDialogService;
+            _savingsCategoryDialogService = savingsCategoryDialogService;
             _databaseReader = databaseReader;
 
             var budgetCollection = _databaseReader.GetCollection<Budget>("Budgets");
@@ -169,6 +175,7 @@ namespace MyMoney.ViewModels.Pages
 
         public void OnPageNavigatedTo()
         {
+            LoadBudgetCollection();
             UpdateCharts();
             UpdateBudgetLists();
             UpdateListViewTotals();
@@ -177,6 +184,18 @@ namespace MyMoney.ViewModels.Pages
             if (Budgets.Count > 0)
             {
                 SelectedGroupedBudgetIndex = 0;
+            }
+        }
+
+        private void LoadBudgetCollection()
+        {
+            Budgets.Clear();
+
+            var budgetCollection = _databaseReader.GetCollection<Budget>("Budgets");
+
+            foreach (var budget in budgetCollection.OfType<Budget>())
+            {
+                Budgets.Add(budget);
             }
         }
 
@@ -267,6 +286,12 @@ namespace MyMoney.ViewModels.Pages
                 ExpenseTotal += item.CategoryTotal;
             }
 
+            // Add savings items as expenses
+            foreach (var item in CurrentBudget.BudgetSavingsCategories)
+            {
+                ExpenseTotal += item.BudgetedAmount;
+            }
+
             // write the items to the database
             WriteToDatabase();
 
@@ -302,6 +327,14 @@ namespace MyMoney.ViewModels.Pages
             {
                 expenseTotals.Add(item.CategoryName, (double)item.CategoryTotal.Value);
             }
+
+            // Add Savings categories as expenses
+            double savingsTotal = 0.0;
+            foreach (var item in CurrentBudget.BudgetSavingsCategories)
+            {
+                savingsTotal += (double)item.BudgetedAmount.Value;
+            }
+            expenseTotals.Add("Savings", savingsTotal);
 
             ExpensePercentagesSeries = new ISeries[expenseTotals.Count];
             i = 0;
@@ -355,6 +388,55 @@ namespace MyMoney.ViewModels.Pages
                 CurrentBudget.BudgetIncomeItems.Add(item);
 
                 // Recalculate the total of the income items
+                UpdateListViewTotals();
+            }
+        }
+
+        [RelayCommand]
+        private async Task AddSavingsCategory()
+        {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
+            var viewModel = new SavingsCategoryDialogViewModel()
+            {
+                RecentTransactionsVisibility = Visibility.Collapsed,
+            };
+            _savingsCategoryDialogService.SetViewModel(viewModel);
+            var result = await _savingsCategoryDialogService.ShowDialogAsync(_contentDialogService, "New Savings Category");
+            viewModel = _savingsCategoryDialogService.GetViewModel();
+
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
+            {
+                // Make sure item doesn't exist
+                if (DoesSavingsCategoryExist(viewModel.Category))
+                {
+                    await _messageBoxService.ShowInfoAsync(
+                        "Category Already Exists", "A category called \"" + viewModel.Category + "\" already exists", "OK");
+                    return;
+                }
+
+                // Create a new savings category with the results from the dialog
+                BudgetSavingsCategory category = new()
+                {
+                    CategoryName = viewModel.Category,
+                    BudgetedAmount = viewModel.Planned,
+                    CurrentBalance = viewModel.CurrentBalance + viewModel.Planned,
+                };
+
+                // Add a transaction that applies the budgeted amount to the savings category
+                Transaction appliedBudgetedAmount = new(CurrentBudget.BudgetDate, "", 
+                    new Category() { Group = "Savings", Name = category.CategoryName },
+                    category.BudgetedAmount, "Planned This Month");
+                appliedBudgetedAmount.TransactionDetail = "Planned This Month";
+
+                category.Transactions.Add(appliedBudgetedAmount);
+                category.PlannedTransactionHash = appliedBudgetedAmount.TransactionHash;
+
+                // Add the category to the list of savings categories
+                CurrentBudget.BudgetSavingsCategories.Add(category);
+
+                // Recalculate the totals for the budget
                 UpdateListViewTotals();
             }
         }
@@ -489,6 +571,109 @@ namespace MyMoney.ViewModels.Pages
             for (var i = 0; i < CurrentBudget.BudgetIncomeItems.Count; i++)
             {
                 CurrentBudget.BudgetIncomeItems[i].Id = i + 1;
+            }
+
+            UpdateListViewTotals();
+        }
+
+        [RelayCommand]
+        private async Task EditSavingsCategory()
+        {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
+            var viewModel = new SavingsCategoryDialogViewModel
+            {
+                Category = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].CategoryName,
+                Planned = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].BudgetedAmount,
+                CurrentBalance = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].CurrentBalance,
+                RecentTransactions = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].Transactions,
+            };
+
+            _savingsCategoryDialogService.SetViewModel(viewModel);
+            var result = await _savingsCategoryDialogService.ShowDialogAsync(_contentDialogService, "Edit Savings Category");
+            viewModel = _savingsCategoryDialogService.GetViewModel();
+
+            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
+            {
+                // Make sure the category name of the edited item doesn't already exist
+                if (DoesSavingsCategoryExist(viewModel.Category) &&
+                    CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].CategoryName != viewModel.Category)
+                {
+                    await _messageBoxService.ShowInfoAsync(
+                        "Category Already Exists", "A category called \"" + viewModel.Category + "\" already exists", "OK");
+                    return;
+                }
+
+                // modify the item at the selected index
+                BudgetSavingsCategory editedSavingsCategory = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex];
+                editedSavingsCategory.CategoryName = viewModel.Category;
+
+                // Adjust the balance if it has changed
+                if (editedSavingsCategory.CurrentBalance != viewModel.CurrentBalance)
+                {
+                    // Add a transaction to show that the balance was updated
+                    Transaction updatedTransaction = new(DateTime.Today, "",
+                        new Category() { Group = "Savings", Name = editedSavingsCategory.CategoryName },
+                        new(viewModel.CurrentBalance.Value - editedSavingsCategory.CurrentBalance.Value),
+                        "Updated Balance");
+                    updatedTransaction.TransactionDetail = "Updated Balance";
+                    editedSavingsCategory.Transactions.Add(updatedTransaction);
+                    
+                    // UPdate the balance
+                    editedSavingsCategory.CurrentBalance = viewModel.CurrentBalance;
+                }
+                
+                // Update the planned amount if it has changed
+                if (editedSavingsCategory.BudgetedAmount != viewModel.Planned)
+                {
+                    for (int i = 0; i < editedSavingsCategory.Transactions.Count; i++)
+                    {
+                        if (editedSavingsCategory.Transactions[i].TransactionHash == editedSavingsCategory.PlannedTransactionHash)
+                        {
+                            // Remove the amount of this transaction from the balance
+                            editedSavingsCategory.CurrentBalance -= editedSavingsCategory.BudgetedAmount;
+
+                            // Apply the new amount
+                            editedSavingsCategory.CurrentBalance += viewModel.Planned;
+                            editedSavingsCategory.BudgetedAmount = viewModel.Planned;
+
+                            // Modify the transaction
+                            editedSavingsCategory.Transactions[i].Amount = editedSavingsCategory.BudgetedAmount;
+                        }
+                    }
+                }
+
+
+                // assign the selected index of the list with the new item
+                CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex] = editedSavingsCategory;
+
+                // Recalculate the total of the income items
+                UpdateListViewTotals();
+            }
+        }
+
+        [RelayCommand]
+        private async Task DeleteSavingsCategory()
+        {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+
+
+            // Show message box asking user if they really want to delete the category
+            var result = await _messageBoxService.ShowAsync("Delete Category?",
+                                                "Are you sure you want to delete the selected category?",
+                                                "Yes",
+                                                "No");
+
+            if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
+
+            CurrentBudget.BudgetSavingsCategories.RemoveAt(SavingsCategoriesSelectedIndex);
+
+            // replace the id property of the remaining elements so the IDs are in a consecutive order (We have all kinds of problems when we don't do this)
+            for (var i = 0; i < CurrentBudget.BudgetSavingsCategories.Count; i++)
+            {
+                CurrentBudget.BudgetSavingsCategories[i].Id = i + 1;
             }
 
             UpdateListViewTotals();
@@ -642,9 +827,40 @@ namespace MyMoney.ViewModels.Pages
                 // Copy over categories if box is checked
                 if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
                 {
+                    // Select the most recent budget before attempting to copy over the items
+                    LoadBudget(FindMostRecentBudgetIndex());
+
                     foreach (var item in CurrentBudget.BudgetIncomeItems)
                     {
                         newBudget.BudgetIncomeItems.Add(item);
+                    }
+
+                    foreach (var item in CurrentBudget.BudgetSavingsCategories)
+                    {
+                        // We have to modify the item before copying it over
+                        BudgetSavingsCategory newSavingsCategory = (BudgetSavingsCategory)item.Clone();
+
+                        // Add a new transaction that carries the balance forward
+                        Transaction balanceCarriedForward = new(newBudget.BudgetDate, "", 
+                            new Category() { Group = "Savings", Name = item.CategoryName },
+                            item.CurrentBalance, "Balance carried forward")
+                        {
+                            TransactionDetail = CurrentBudget.BudgetDate.ToString("MMM") + " balance"
+                        };
+                        newSavingsCategory.Transactions.Add(balanceCarriedForward);
+
+                        // Add a transaction that applies the budgeted amount to the total balance
+                        Transaction appliedBudgetedAmount = new(newBudget.BudgetDate, "",
+                            new Category() { Group = "Savings", Name = item.CategoryName },
+                            item.BudgetedAmount, "Planned This Month");
+                        appliedBudgetedAmount.TransactionDetail = "Planned This Month";
+
+                        newSavingsCategory.Transactions.Add(appliedBudgetedAmount);
+                        newSavingsCategory.PlannedTransactionHash = appliedBudgetedAmount.TransactionHash;
+
+                        newSavingsCategory.CurrentBalance += newSavingsCategory.BudgetedAmount;
+
+                        newBudget.BudgetSavingsCategories.Add(newSavingsCategory);
                     }
 
                     foreach (var item in CurrentBudget.BudgetExpenseItems)
@@ -679,6 +895,8 @@ namespace MyMoney.ViewModels.Pages
 
         private void LoadBudget(int index)
         {
+            if (index == -1) return;
+
             // Load into current budget
             CurrentBudget = Budgets[index];
             
@@ -712,6 +930,30 @@ namespace MyMoney.ViewModels.Pages
             return -1;
         }
 
+        private int FindMostRecentBudgetIndex()
+        {
+            DateTime? mostRecent = null;
+            int mostRecentIndex = -1;
+
+            for (int i = 0; i < Budgets.Count; i++)
+            {
+                if (mostRecent == null)
+                {
+                    mostRecent = Budgets[i].BudgetDate;
+                    mostRecentIndex = i;
+                    continue;
+                }
+                
+                if (Budgets[i].BudgetDate > mostRecent)
+                {
+                    mostRecent = Budgets[i].BudgetDate;
+                    mostRecentIndex = i;
+                }
+            }
+
+            return mostRecentIndex;
+        }
+
         private bool DoesIncomeItemExist(string item)
         {
             if (CurrentBudget == null) return false;
@@ -724,9 +966,21 @@ namespace MyMoney.ViewModels.Pages
             return false;
         }
 
+        private bool DoesSavingsCategoryExist(string category)
+        {
+            if (CurrentBudget == null) return false;
+            foreach (var savingsCategory in CurrentBudget.BudgetSavingsCategories)
+            {
+                if (savingsCategory.CategoryName == category)
+                    return true;
+            }
+            return false;
+        }
+
         private bool DoesExpenseGroupExist(string groupName)
         {
             if (CurrentBudget == null) return false;
+            if (groupName == "Savings" || groupName == "Income") return true;
 
             foreach (var expenseGroup in CurrentBudget.BudgetExpenseItems)
             {
@@ -758,11 +1012,17 @@ namespace MyMoney.ViewModels.Pages
             // get a budget report for the month of the current budget
             var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(CurrentBudget.BudgetDate, _databaseReader);
             var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(CurrentBudget.BudgetDate, _databaseReader);
+            var savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(CurrentBudget.BudgetDate, _databaseReader);
 
             // go through the report items and set the equivalent budget items' actual amount
             for (int i = 0; i < incomeItems.Count; i++)
             {
                 CurrentBudget.BudgetIncomeItems[i].Actual = incomeItems[i].Actual;
+            }
+
+            for (int i = 0; i < savingsItems.Count; i++)
+            {
+                CurrentBudget.BudgetSavingsCategories[i].Spent = savingsItems[i].Spent;
             }
 
             foreach (var expenseGroup in CurrentBudget.BudgetExpenseItems)

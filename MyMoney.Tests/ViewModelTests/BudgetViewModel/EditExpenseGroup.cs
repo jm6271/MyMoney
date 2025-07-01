@@ -20,6 +20,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
         private Mock<INewBudgetDialogService> _mockNewBudgetDialogService;
         private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
         private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
+        private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService;
         private Mock<IDatabaseReader> _mockDatabaseReader;
         private ViewModels.Pages.BudgetViewModel _viewModel;
 
@@ -31,6 +32,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
             _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
             _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
+            _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
             _mockDatabaseReader = new Mock<IDatabaseReader>();
 
             _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
@@ -47,7 +49,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockMessageBoxService.Object,
                 _mockNewBudgetDialogService.Object,
                 _mockBudgetCategoryDialogService.Object,
-                _mockExpenseGroupDialogService.Object
+                _mockExpenseGroupDialogService.Object,
+                _mockSavingsCategoryDialogService.Object
             );
         }
 

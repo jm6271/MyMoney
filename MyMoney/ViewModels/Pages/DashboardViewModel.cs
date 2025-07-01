@@ -16,6 +16,7 @@ namespace MyMoney.ViewModels.Pages
         public ObservableCollection<AccountDashboardDisplayItem> Accounts { get; set; } = [];
         public ObservableCollection<BudgetReportItem> BudgetReportIncomeItems { get; set; } = [];
         public ObservableCollection<BudgetReportItem> BudgetReportExpenseItems { get; set; } = [];
+        public ObservableCollection<SavingsCategoryReportItem> BudgetReportSavingsItems { get; set; } = [];
 
         [ObservableProperty]
         private double _income;
@@ -96,9 +97,11 @@ namespace MyMoney.ViewModels.Pages
             // clear the current report
             BudgetReportIncomeItems.Clear();
             BudgetReportExpenseItems.Clear();
+            BudgetReportSavingsItems.Clear();
 
             var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(_databaseReader);
             var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(_databaseReader);
+            var savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(DateTime.Today, _databaseReader);
 
             foreach (var item in incomeItems)
             {
@@ -108,6 +111,11 @@ namespace MyMoney.ViewModels.Pages
             foreach (var item in expenseItems)
             {
                 BudgetReportExpenseItems.Add(item);
+            }
+
+            foreach (var item in savingsItems)
+            {
+                BudgetReportSavingsItems.Add(item);
             }
 
             // Add an item to the income list showing the total income
@@ -164,10 +172,16 @@ namespace MyMoney.ViewModels.Pages
 
         private ISeries[] UpdateChartSeries()
         {
+            var past12MonthsIncome = IncomeExpense12MonthCalculator.GetPast12MonthsIncome();
+            var past12MonthsExpenses = IncomeExpense12MonthCalculator.GetPast12MonthsExpenses();
+
+            var incomeTotal = past12MonthsIncome.Count > 0 ? past12MonthsIncome[^1] : 0.0;
+            var expenseTotal = past12MonthsExpenses.Count > 0 ? past12MonthsExpenses[^1] : 0.0;
+
             var accentColor = ApplicationAccentColorManager.GetColorizationColor();
             ISeries[] s = [new ColumnSeries<double>()
             {
-                Values = [Income, Expenses],
+                Values = [incomeTotal, expenseTotal],
                 Fill = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B)),
                 Stroke = null,
             }];

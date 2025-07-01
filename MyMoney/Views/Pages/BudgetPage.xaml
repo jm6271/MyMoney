@@ -10,7 +10,7 @@
       xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
       xmlns:helpers="clr-namespace:MyMoney.Helpers"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="600" d:DesignWidth="800"
       Title="Accounts"
       d:DataContext="{d:DesignInstance local:BudgetPage,
                                  IsDesignTimeCreatable=False}"
@@ -83,18 +83,22 @@
                 </StackPanel>
             </ui:Card>
 
-            <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+            <Grid Margin="0,12,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
-                <ui:Button Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
+                <ui:Button Grid.Column="1" Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                     <ui:SymbolIcon Symbol="Add24"/>
                     <ui:Button.ToolTip>
                         <ToolTip Content="Add income item"/>
                     </ui:Button.ToolTip>
                 </ui:Button>
-            </StackPanel>
+            </Grid>
 
 
-            <ui:Card Margin="0,4,0,8">
+            <ui:Card Margin="0,4,0,12">
                 <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetIncomeItems}" 
                              SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}"
                              SizeChanged="ListView_SizeChanged" SelectionMode="Single">
@@ -132,15 +136,72 @@
                 </ui:ListView>
             </ui:Card>
 
-            <StackPanel Orientation="Horizontal">
-                <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
-                <ui:Button Margin="8,0,0,0" IsEnabled="{Binding ViewModel.IsEditingEnabled}" Command="{Binding ViewModel.AddExpenseGroupCommand}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ui:TextBlock FontTypography="Subtitle" Margin="0,12,0,4">Savings</ui:TextBlock>
+                <ui:Button Grid.Column="1" Margin="8,0,0,0" IsEnabled="{Binding ViewModel.IsEditingEnabled}" 
+                           Command="{Binding ViewModel.AddSavingsCategoryCommand}">
+                    <ui:SymbolIcon Symbol="Add24"/>
+                    <ui:Button.ToolTip>
+                        <ToolTip Content="Add savings category"/>
+                    </ui:Button.ToolTip>
+                </ui:Button>
+            </Grid>
+
+            <ui:Card Margin="0,4,0,12">
+                <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetSavingsCategories}" 
+                             SelectedIndex="{Binding ViewModel.SavingsCategoriesSelectedIndex}"
+                             SizeChanged="ListView_SizeChanged" SelectionMode="Single">
+                    <ui:ListView.Resources>
+                        <DataTemplate x:Key="CategoryItemTemplate">
+                            <ui:TextBlock Text="{Binding CategoryName}" Margin="0,5,0,5"/>
+                        </DataTemplate>
+                        <DataTemplate x:Key="BudgetedItemTemplate">
+                            <ui:TextBlock Text="{Binding BudgetedAmount}" Margin="0,5,0,5"/>
+                        </DataTemplate>
+                        <DataTemplate x:Key="ActualItemTemplate">
+                            <ui:TextBlock Text="{Binding CurrentBalance}" Margin="0,5,5,5"/>
+                        </DataTemplate>
+                    </ui:ListView.Resources>
+
+                    <ui:ListView.ContextMenu>
+                        <ContextMenu IsEnabled="{Binding ViewModel.IsEditingEnabled}">
+                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditSavingsCategoryCommand}"/>
+                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteSavingsCategoryCommand}"/>
+                        </ContextMenu>
+                    </ui:ListView.ContextMenu>
+
+                    <ui:ListView.InputBindings>
+                        <KeyBinding 
+                            Key="Delete" Command="{Binding ViewModel.DeleteSavingsCategoryCommand}"/>
+                    </ui:ListView.InputBindings>
+
+                    <ui:ListView.View>
+                        <ui:GridView>
+                            <ui:GridViewColumn Header="Category" CellTemplate="{StaticResource CategoryItemTemplate}"/>
+                            <ui:GridViewColumn Header="Saved" CellTemplate="{StaticResource BudgetedItemTemplate}" Width="125"/>
+                            <ui:GridViewColumn Header="Balance" CellTemplate="{StaticResource ActualItemTemplate}" Width="125"/>
+                        </ui:GridView>
+                    </ui:ListView.View>
+                </ui:ListView>
+            </ui:Card>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <ui:TextBlock Grid.Column="0" FontTypography="Subtitle" Margin="0,12,0,4">Expenses</ui:TextBlock>
+                <ui:Button Grid.Column="1" Margin="8,0,0,0" IsEnabled="{Binding ViewModel.IsEditingEnabled}" Command="{Binding ViewModel.AddExpenseGroupCommand}">
                     <ui:SymbolIcon Symbol="Add24"/>
                     <ui:Button.ToolTip>
                         <ToolTip Content="Add expense group"/>
                     </ui:Button.ToolTip>
                 </ui:Button>
-            </StackPanel>
+            </Grid>
 
             <ItemsControl ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}">
                 <ItemsControl.ItemTemplate>
