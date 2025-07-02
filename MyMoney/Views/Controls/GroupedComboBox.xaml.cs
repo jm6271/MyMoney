@@ -130,13 +130,49 @@ namespace MyMoney.Views.Controls
             typeof(ObservableCollection<GroupedComboBoxItem>), typeof(GroupedComboBox), 
             new PropertyMetadata(new ObservableCollection<GroupedComboBoxItem>()));
 
-        
 
-        public class GroupedComboBoxItem
+
+        public class GroupedComboBoxItem : IEquatable<GroupedComboBoxItem>
         {
             public string Group { get; set; } = "";
             public object Item { get; set; } = "";
+
+            public static bool operator ==(GroupedComboBoxItem x, GroupedComboBoxItem y)
+            {
+                return EqualityComparer<GroupedComboBoxItem>.Default.Equals(x, y);
+            }
+
+            public static bool operator !=(GroupedComboBoxItem x, GroupedComboBoxItem y)
+            {
+                return !(x == y);
+            }
+
+            // IEquatable<T> implementation
+            public bool Equals(GroupedComboBoxItem? other)
+            {
+                if (other is null) return false;
+                if (ReferenceEquals(this, other)) return true;
+                // Compare Group and Item (using default equality for Item)
+                return string.Equals(Group, other.Group, StringComparison.Ordinal)
+                    && EqualityComparer<object?>.Default.Equals(Item, other.Item);
+            }
+
+            // Override of object.Equals
+            public override bool Equals(object? obj)
+            {
+                if (obj is null) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != GetType()) return false;
+                return Equals((GroupedComboBoxItem)obj);
+            }
+
+            // Override of object.GetHashCode
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(Group, Item);
+            }
         }
+
 
         private void dropdownButton_Click(object sender, RoutedEventArgs e)
         {

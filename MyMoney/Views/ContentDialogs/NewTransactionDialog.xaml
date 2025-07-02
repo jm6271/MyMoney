@@ -64,6 +64,7 @@
             <controls:GroupedComboBox x:Name="cmbCategory" ItemsSource="{Binding CategoryNames}" 
                                       SelectedItem="{Binding NewTransactionCategory, 
                                         Converter={StaticResource CategoryToGroupedItemConverter}}"
+                                      SelectedIndex="{Binding NewTransactionCategorySelectedIndex}"
                                       SelectionChanged="cmbCategory_SelectionChanged_1"
                                       LostFocus="cmbCategory_LostFocus">
                 
