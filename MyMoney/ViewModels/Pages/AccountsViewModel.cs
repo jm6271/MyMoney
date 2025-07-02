@@ -235,7 +235,7 @@ namespace MyMoney.ViewModels.Pages
             var oldTransaction = SelectedAccountTransactions[SelectedTransactionIndex];
             viewModel.NewTransactionDate = oldTransaction.Date;
             viewModel.NewTransactionAmount = new(Math.Abs(oldTransaction.Amount.Value));
-            viewModel.NewTransactionCategory = oldTransaction.Category;
+            viewModel.NewTransactionCategorySelectedIndex = GetCategoryIndex(oldTransaction.Category);
             viewModel.NewTransactionIsExpense = oldTransaction.Amount.Value < 0m;
             viewModel.NewTransactionIsIncome = !viewModel.NewTransactionIsExpense;
             viewModel.NewTransactionMemo = oldTransaction.Memo;
@@ -569,6 +569,17 @@ namespace MyMoney.ViewModels.Pages
                     }
                 }
             }
+        }
+
+        private int GetCategoryIndex(Category category)
+        {
+            for (int i = 0; i < CategoryNames.Count; i++)
+            {
+                if (CategoryNames[i].Group == category.Group && CategoryNames[i].Item.ToString() == category.Name)
+                    return i;
+            }
+
+            return -1;
         }
     }
 }

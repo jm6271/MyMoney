@@ -21,6 +21,9 @@ namespace MyMoney.ViewModels.ContentDialogs
         private Category _newTransactionCategory = new();
 
         [ObservableProperty]
+        private int _newTransactionCategorySelectedIndex = -1;
+
+        [ObservableProperty]
         private string _newTransactionMemo = "";
 
         [ObservableProperty]
