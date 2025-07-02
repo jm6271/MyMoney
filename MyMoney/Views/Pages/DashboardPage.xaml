@@ -7,6 +7,7 @@
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
     xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core" xmlns:Controls="clr-namespace:MyMoney.Views.Controls"
+    xmlns:helpers="clr-namespace:MyMoney.Helpers"
     x:Class="MyMoney.Views.Pages.DashboardPage"
     Title="DashboardPage"
     d:DataContext="{d:DesignInstance {x:Type local:DashboardPage}, IsDesignTimeCreatable=False}"
@@ -17,7 +18,9 @@
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d"
     Loaded="Page_Loaded">
-
+    <Page.Resources>
+        <helpers:IsLastItemConverter x:Key="IsLastItemConverter"/>
+    </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="200"/>
@@ -56,7 +59,25 @@
                         <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,16">
                             <Run Text="Accounts"/>
                         </ui:TextBlock>
-                        <ui:ListView ItemsSource="{Binding ViewModel.Accounts}">
+                        <ui:ListView x:Name="AccountsListView" ItemsSource="{Binding ViewModel.Accounts}">
+                            <ui:ListView.Resources>
+                                <Style x:Key="LastItemTextBlockStyle" TargetType="TextBlock">
+                                    <Style.Triggers>
+                                        <DataTrigger Value="True">
+                                            <DataTrigger.Binding>
+                                                <MultiBinding Converter="{StaticResource IsLastItemConverter}">
+                                                    <!-- current item -->
+                                                    <Binding />
+                                                    <!-- the ItemsSource on the nearest ListView -->
+                                                    <Binding Path="ItemsSource" 
+                                                        ElementName="AccountsListView"/>
+                                                </MultiBinding>
+                                            </DataTrigger.Binding>
+                                            <Setter Property="FontWeight" Value="Bold"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ui:ListView.Resources>
                             <ui:ListView.ItemTemplate>
                                 <DataTemplate DataType="{x:Type models:AccountDashboardDisplayItem}">
                                     <Grid>
@@ -65,8 +86,8 @@
                                             <ColumnDefinition Width="Auto"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Text="{Binding AccountName}" Margin="5,5,0,5" Grid.Column="0"/>
-                                        <TextBlock Text="{Binding Total}" Margin="0,5,5,5" Grid.Column="1"/>
+                                        <TextBlock Style="{StaticResource LastItemTextBlockStyle}" Text="{Binding AccountName}" Margin="5,5,0,5" Grid.Column="0"/>
+                                        <TextBlock Style="{StaticResource LastItemTextBlockStyle}" Text="{Binding Total}" Margin="0,5,5,5" Grid.Column="1"/>
                                     </Grid>
                                 </DataTemplate>
                             </ui:ListView.ItemTemplate>
