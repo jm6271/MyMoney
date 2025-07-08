@@ -52,8 +52,10 @@ namespace MyMoney.Views.ContentDialogs
         {
             if (args.Result != ContentDialogResult.Primary) return;
 
-            sender?.MoveFocus(
+            TxtCategory.Focus();
+            TxtCategory.MoveFocus(
                 new TraversalRequest(FocusNavigationDirection.Next));
+            
 
             // validate the user data, and if it is invalid, prevent the dialog from closing
 

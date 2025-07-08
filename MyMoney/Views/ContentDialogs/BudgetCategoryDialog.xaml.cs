@@ -46,5 +46,12 @@ namespace MyMoney.Views.ContentDialogs
         {
             TxtCategory.SelectAll();
         }
+
+        private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
+        {
+            TxtCategory.Focus();
+            TxtCategory.MoveFocus(
+                new TraversalRequest(FocusNavigationDirection.Next));
+        }
     }
 }
