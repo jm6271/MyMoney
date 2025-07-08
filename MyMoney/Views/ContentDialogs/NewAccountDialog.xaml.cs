@@ -1,5 +1,6 @@
 ﻿using MyMoney.ViewModels.ContentDialogs;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -46,6 +47,13 @@ namespace MyMoney.Views.ContentDialogs
         private void txtStartingBalance_GotMouseCapture(object sender, System.Windows.Input.MouseEventArgs e)
         {
             txtStartingBalance.SelectAll();
+        }
+
+        private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
+        {
+            TxtAccountName.Focus();
+            TxtAccountName.MoveFocus(
+                new TraversalRequest(FocusNavigationDirection.Next));
         }
     }
 }
