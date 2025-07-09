@@ -9,6 +9,7 @@
       xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
       xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
       xmlns:helpers="clr-namespace:MyMoney.Helpers"
+      xmlns:dd="urn:gong-wpf-dragdrop"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="800"
       Title="Accounts"
@@ -203,7 +204,11 @@
                 </ui:Button>
             </Grid>
 
-            <ItemsControl ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}">
+            <ItemsControl ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}"
+                          dd:DragDrop.IsDragSource="True"
+                          dd:DragDrop.IsDropTarget="True"
+                          dd:DragDrop.DropHandler="{Binding ViewModel}"
+                          dd:DragDrop.DragHandler="{Binding ViewModel}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <ui:CardExpander Margin="0,8,0,8" IsExpanded="True">
