@@ -90,6 +90,7 @@ namespace MyMoney.ViewModels.Pages
         // Drop handlers for drag/drop operations
         public BudgetExpenseGroupReorderHandler ExpenseGroupsReorderHandler { get; private set; }
         public BudgetSavingsCategoryReorderHandler SavingsCategoryReorderHandler { get; private set; }
+        public BudgetIncomeItemReorderHandler IncomeItemsReorderHandler { get; private set; }
 
         public class GroupedBudget
         {
@@ -151,6 +152,7 @@ namespace MyMoney.ViewModels.Pages
             // Set up drop handlers
             ExpenseGroupsReorderHandler = new(this);
             SavingsCategoryReorderHandler = new(this);
+            IncomeItemsReorderHandler = new(this);
 
             var budgetCollection = _databaseReader.GetCollection<Budget>("Budgets");
 

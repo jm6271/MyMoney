@@ -102,7 +102,11 @@
             <ui:Card Margin="0,4,0,12">
                 <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetIncomeItems}" 
                              SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}"
-                             SizeChanged="ListView_SizeChanged" SelectionMode="Single">
+                             SizeChanged="ListView_SizeChanged" SelectionMode="Single"
+                             dd:DragDrop.IsDragSource="True"
+                             dd:DragDrop.IsDropTarget="True"
+                             dd:DragDrop.DropHandler="{Binding ViewModel.IncomeItemsReorderHandler}"
+                             dd:DragDrop.DragHandler="{Binding ViewModel.IncomeItemsReorderHandler}">
                     <ui:ListView.Resources>
                         <DataTemplate x:Key="CategoryItemTemplate">
                             <ui:TextBlock Text="{Binding Category}" Margin="0,5,0,5"/>
