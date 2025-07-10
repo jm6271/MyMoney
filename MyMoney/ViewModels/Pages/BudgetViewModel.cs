@@ -91,6 +91,7 @@ namespace MyMoney.ViewModels.Pages
         public BudgetExpenseGroupReorderHandler ExpenseGroupsReorderHandler { get; private set; }
         public BudgetSavingsCategoryReorderHandler SavingsCategoryReorderHandler { get; private set; }
         public BudgetIncomeItemReorderHandler IncomeItemsReorderHandler { get; private set; }
+        public BudgetExpenseItemMoveAndReorderHandler ExpenseItemsMoveAndReorderHandler { get; private set; }
 
         public class GroupedBudget
         {
@@ -153,6 +154,7 @@ namespace MyMoney.ViewModels.Pages
             ExpenseGroupsReorderHandler = new(this);
             SavingsCategoryReorderHandler = new(this);
             IncomeItemsReorderHandler = new(this);
+            ExpenseItemsMoveAndReorderHandler = new(this);
 
             var budgetCollection = _databaseReader.GetCollection<Budget>("Budgets");
 
