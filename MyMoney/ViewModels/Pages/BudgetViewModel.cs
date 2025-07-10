@@ -17,10 +17,11 @@ using MyMoney.Core.Reports;
 using System.Linq;
 using System.Windows.Data;
 using GongSolutions.Wpf.DragDrop;
+using MyMoney.Helpers.DropHandlers;
 
 namespace MyMoney.ViewModels.Pages
 {
-    public partial class BudgetViewModel : ObservableObject, IDropTarget
+    public partial class BudgetViewModel : ObservableObject
     {
         public ObservableCollection<Budget> Budgets { get; } = [];
 
@@ -86,6 +87,9 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private bool _isEditingEnabled = true;
 
+        // Drop handlers for drag/drop operations
+        public BudgetExpenseGroupReorderHandler ExpenseGroupsReorderHandler { get; private set; }
+
         public class GroupedBudget
         {
             public string Group { get; set; } = "";
@@ -142,6 +146,9 @@ namespace MyMoney.ViewModels.Pages
             _newExpenseGroupDialogService = newExpenseGroupDialogService;
             _savingsCategoryDialogService = savingsCategoryDialogService;
             _databaseReader = databaseReader;
+
+            // Set up drop handlers
+            ExpenseGroupsReorderHandler = new(this);
 
             var budgetCollection = _databaseReader.GetCollection<Budget>("Budgets");
 
@@ -253,7 +260,7 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        private void WriteToDatabase()
+        public void WriteToDatabase()
         {
             if (CurrentBudget == null) return;
 
@@ -1038,44 +1045,6 @@ namespace MyMoney.ViewModels.Pages
                 }
             }
 
-        }
-
-        public void DragOver(IDropInfo dropInfo)
-        {
-            // Only allow moves within the same collection
-            if (ReferenceEquals(dropInfo.DragInfo.SourceCollection, dropInfo.TargetCollection))
-            {
-                dropInfo.Effects = DragDropEffects.Move;
-                dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-            }
-            else
-            {
-                dropInfo.Effects = DragDropEffects.None;
-            }
-        }
-
-        public void Drop(IDropInfo dropInfo)
-        {
-            if (!ReferenceEquals(dropInfo.DragInfo.SourceCollection, dropInfo.TargetCollection))
-                return;
-
-            var sourceList = dropInfo.DragInfo.SourceCollection as IList<BudgetExpenseCategory>;
-            var targetList = dropInfo.TargetCollection as IList<BudgetExpenseCategory>;
-            var item = dropInfo.Data as BudgetExpenseCategory;
-            if (sourceList == null || targetList == null || item == null)
-                return;
-
-            int oldIndex = sourceList.IndexOf(item);
-            int newIndex = dropInfo.InsertIndex;
-
-            // If dragging downward in the same list, the removal shifts the target index down by one
-            if (oldIndex < newIndex) newIndex--;
-
-            sourceList.RemoveAt(oldIndex);
-            targetList.Insert(newIndex, item);
-
-            // Save
-            WriteToDatabase();
         }
     }
 }

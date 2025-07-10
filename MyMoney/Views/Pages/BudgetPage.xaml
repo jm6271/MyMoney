@@ -207,8 +207,8 @@
             <ItemsControl ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}"
                           dd:DragDrop.IsDragSource="True"
                           dd:DragDrop.IsDropTarget="True"
-                          dd:DragDrop.DropHandler="{Binding ViewModel}"
-                          dd:DragDrop.DragHandler="{Binding ViewModel}">
+                          dd:DragDrop.DropHandler="{Binding ViewModel.ExpenseGroupsReorderHandler}"
+                          dd:DragDrop.DragHandler="{Binding ViewModel.ExpenseGroupsReorderHandler}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <ui:CardExpander Margin="0,8,0,8" IsExpanded="True">
