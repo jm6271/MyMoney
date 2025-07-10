@@ -59,6 +59,11 @@
         "resolved": "8.4.0",
         "contentHash": "tqVU8yc/ADO9oiTRyTnwhFN68hCwvkliMierptWOudIAvWY1mWCh5VFh+guwHJmpMwfg0J0rY+yyd5Oy7ty9Uw=="
       },
+      "gong-wpf-dragdrop": {
+        "type": "Transitive",
+        "resolved": "4.0.0",
+        "contentHash": "nDj86v1XHhgmQR8PPo/uDDp/xdLDxcqZdvIwSxWAHQPiRX/GBXK13FYY0C2xQow9RSl6j5FKLk8xoYrdb52vqg=="
+      },
       "HarfBuzzSharp": {
         "type": "Transitive",
         "resolved": "8.3.0.1",
@@ -585,7 +590,8 @@
           "LiveChartsCore.SkiaSharpView.WPF": "[2.0.0-rc5.4, )",
           "Microsoft.Extensions.Hosting": "[9.0.6, )",
           "MyMoney.Core": "[1.0.0, )",
-          "WPF-UI": "[4.0.3, )"
+          "WPF-UI": "[4.0.3, )",
+          "gong-wpf-dragdrop": "[4.0.0, )"
         }
       },
       "mymoney.core": {

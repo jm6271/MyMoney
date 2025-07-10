@@ -9,6 +9,7 @@
       xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
       xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
       xmlns:helpers="clr-namespace:MyMoney.Helpers"
+      xmlns:dd="urn:gong-wpf-dragdrop"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="800"
       Title="Accounts"
@@ -101,7 +102,11 @@
             <ui:Card Margin="0,4,0,12">
                 <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetIncomeItems}" 
                              SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}"
-                             SizeChanged="ListView_SizeChanged" SelectionMode="Single">
+                             SizeChanged="ListView_SizeChanged" SelectionMode="Single"
+                             dd:DragDrop.IsDragSource="True"
+                             dd:DragDrop.IsDropTarget="True"
+                             dd:DragDrop.DropHandler="{Binding ViewModel.IncomeItemsReorderHandler}"
+                             dd:DragDrop.DragHandler="{Binding ViewModel.IncomeItemsReorderHandler}">
                     <ui:ListView.Resources>
                         <DataTemplate x:Key="CategoryItemTemplate">
                             <ui:TextBlock Text="{Binding Category}" Margin="0,5,0,5"/>
@@ -154,7 +159,11 @@
             <ui:Card Margin="0,4,0,12">
                 <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetSavingsCategories}" 
                              SelectedIndex="{Binding ViewModel.SavingsCategoriesSelectedIndex}"
-                             SizeChanged="ListView_SizeChanged" SelectionMode="Single">
+                             SizeChanged="ListView_SizeChanged" SelectionMode="Single"
+                             dd:DragDrop.IsDragSource="True"
+                             dd:DragDrop.IsDropTarget="True"
+                             dd:DragDrop.DropHandler="{Binding ViewModel.SavingsCategoryReorderHandler}"
+                             dd:DragDrop.DragHandler="{Binding ViewModel.SavingsCategoryReorderHandler}">
                     <ui:ListView.Resources>
                         <DataTemplate x:Key="CategoryItemTemplate">
                             <ui:TextBlock Text="{Binding CategoryName}" Margin="0,5,0,5"/>
@@ -203,7 +212,11 @@
                 </ui:Button>
             </Grid>
 
-            <ItemsControl ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}">
+            <ItemsControl ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}"
+                          dd:DragDrop.IsDragSource="True"
+                          dd:DragDrop.IsDropTarget="True"
+                          dd:DragDrop.DropHandler="{Binding ViewModel.ExpenseGroupsReorderHandler}"
+                          dd:DragDrop.DragHandler="{Binding ViewModel.ExpenseGroupsReorderHandler}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <ui:CardExpander Margin="0,8,0,8" IsExpanded="True">
@@ -237,7 +250,13 @@
                             <StackPanel>
                                 <ui:ListView ItemsSource="{Binding SubItems}" SelectedIndex="{Binding SelectedSubItemIndex}"
                                              Tag="{Binding DataContext.ViewModel, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                             SelectionMode="Single" MinHeight="50" Margin="0,0,0,8" SizeChanged="ListView_SizeChanged">
+                                             SelectionMode="Single" MinHeight="50" Margin="0,0,0,8" SizeChanged="ListView_SizeChanged"
+                                             dd:DragDrop.IsDragSource="True"
+                                             dd:DragDrop.IsDropTarget="True"
+                                             dd:DragDrop.DropHandler="{Binding DataContext.ViewModel.ExpenseItemsMoveAndReorderHandler,
+                                                                        RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                             dd:DragDrop.DragHandler="{Binding DataContext.ViewModel.ExpenseItemsMoveAndReorderHandler,
+                                                                        RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">
                                     <ui:ListView.Resources>
                                         <DataTemplate x:Key="CategoryItemTemplate">
                                             <ui:TextBlock Text="{Binding Category}" Margin="0,5,0,5"/>

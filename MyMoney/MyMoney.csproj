@@ -16,6 +16,7 @@
     <Content Include="MyMoney-icon.ico" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="gong-wpf-dragdrop" Version="4.0.0" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-rc5.4" />
     <PackageReference Include="WPF-UI" Version="4.0.3" />

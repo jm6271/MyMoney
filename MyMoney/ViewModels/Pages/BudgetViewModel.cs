@@ -16,6 +16,8 @@ using System.Linq.Expressions;
 using MyMoney.Core.Reports;
 using System.Linq;
 using System.Windows.Data;
+using GongSolutions.Wpf.DragDrop;
+using MyMoney.Helpers.DropHandlers;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -85,6 +87,12 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private bool _isEditingEnabled = true;
 
+        // Drop handlers for drag/drop operations
+        public BudgetExpenseGroupReorderHandler ExpenseGroupsReorderHandler { get; private set; }
+        public BudgetSavingsCategoryReorderHandler SavingsCategoryReorderHandler { get; private set; }
+        public BudgetIncomeItemReorderHandler IncomeItemsReorderHandler { get; private set; }
+        public BudgetExpenseItemMoveAndReorderHandler ExpenseItemsMoveAndReorderHandler { get; private set; }
+
         public class GroupedBudget
         {
             public string Group { get; set; } = "";
@@ -141,6 +149,12 @@ namespace MyMoney.ViewModels.Pages
             _newExpenseGroupDialogService = newExpenseGroupDialogService;
             _savingsCategoryDialogService = savingsCategoryDialogService;
             _databaseReader = databaseReader;
+
+            // Set up drop handlers
+            ExpenseGroupsReorderHandler = new(this);
+            SavingsCategoryReorderHandler = new(this);
+            IncomeItemsReorderHandler = new(this);
+            ExpenseItemsMoveAndReorderHandler = new(this);
 
             var budgetCollection = _databaseReader.GetCollection<Budget>("Budgets");
 
@@ -252,7 +266,7 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        private void WriteToDatabase()
+        public void WriteToDatabase()
         {
             if (CurrentBudget == null) return;
 
