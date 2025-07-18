@@ -26,7 +26,7 @@ namespace MyMoney.ViewModels.Pages
         public ObservableCollection<Budget> Budgets { get; } = [];
 
         [ObservableProperty]
-        private ListCollectionView _groupedBudgets = new(new List<GroupedBudget>());
+        private ListCollectionView? _groupedBudgets;
 
         [ObservableProperty]
         private GroupedBudget? _selectedGroupedBudget;
@@ -162,6 +162,8 @@ namespace MyMoney.ViewModels.Pages
             {
                 Budgets.Add(budget);
             }
+
+            UpdateBudgetLists();
 
             // figure out which budget is there for the current month and display it
             // Budgets are stored with a key that is the month name, followed by the year
