@@ -158,28 +158,6 @@ namespace MyMoney.ViewModels.Pages
             SavingsCategoryReorderHandler = new(this);
             IncomeItemsReorderHandler = new(this);
             ExpenseItemsMoveAndReorderHandler = new(this);
-
-            var budgetCollection = _databaseReader.GetCollection<Budget>("Budgets");
-
-            foreach (var budget in budgetCollection.OfType<Budget>())
-            {
-                Budgets.Add(budget);
-            }
-
-            // figure out which budget is there for the current month and display it
-            // Budgets are stored with a key that is the month name, followed by the year
-
-            // look for current month
-            var dt = DateTime.Now;
-            var key = dt.ToString("MMMM, yyyy", CultureInfo.InvariantCulture);
-
-            foreach (var budget in Budgets)
-            {
-                if (budget.BudgetTitle == key)
-                {
-                    CurrentBudget = budget;
-                }
-            }
         }
 
         public void OnPageNavigatedTo()
