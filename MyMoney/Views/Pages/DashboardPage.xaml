@@ -17,7 +17,8 @@
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d"
-    Loaded="Page_Loaded">
+    Loaded="Page_Loaded"
+    SizeChanged="Page_SizeChanged">
     <Page.Resources>
         <helpers:IsLastItemConverter x:Key="IsLastItemConverter"/>
     </Page.Resources>
@@ -38,22 +39,22 @@
 
         <Grid Margin="0,24,0,0" Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition/>
+                <ColumnDefinition x:Name="Col0" Width="2*"/>
+                <ColumnDefinition x:Name="Col1"/>
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="1*"/>
+                <RowDefinition x:Name="Row0" Height="Auto"/>
+                <RowDefinition x:Name="Row1" Height="1*"/>
             </Grid.RowDefinitions>
 
-            <Controls:BudgetReportControl   Grid.Column="0" Margin="0,0,8,24"
+            <Controls:BudgetReportControl   Grid.Column="0" Margin="0,0,8,24" x:Name="BudgetReport"
                                             IncomeItems="{Binding ViewModel.BudgetReportIncomeItems}"
                                             SavingsItems="{Binding ViewModel.BudgetReportSavingsItems}"
                                             ExpenseItems="{Binding ViewModel.BudgetReportExpenseItems}"
                                             ReportTotal="{Binding ViewModel.DifferenceTotal}"/>
 
-            <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="8,0,0,0">
+            <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="8,0,0,0" x:Name="RightPanel">
                 <ui:Card Margin="0,0,0,8">
                     <StackPanel>
                         <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,16">

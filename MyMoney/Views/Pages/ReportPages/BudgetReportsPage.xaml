@@ -14,22 +14,24 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="BudgetReportsPage"
-      Loaded="Page_Loaded">
+      Loaded="Page_Loaded"
+      SizeChanged="Page_SizeChanged">
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition x:Name="Col0" Width="200"/>
             <ColumnDefinition Width="1*"/>
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition x:Name="Row0" Height="Auto"/>
+            <RowDefinition x:Name="Row1" Height="1*"/>
+            <RowDefinition x:Name="Row2" Height="0"/>
         </Grid.RowDefinitions>
 
-        <ui:Card Grid.Column="0" Grid.RowSpan="2" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,0,8,24">
-            <ui:ListView ItemsSource="{Binding ViewModel.Budgets}" SelectedItem="{Binding ViewModel.SelectedBudget}"
+        <ui:Card x:Name="BudgetsCard" Grid.Column="0" Grid.RowSpan="2" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,0,8,24">
+            <ui:ListView x:Name="BudgetsListView" ItemsSource="{Binding ViewModel.Budgets}" SelectedItem="{Binding ViewModel.SelectedBudget}"
                          SelectedIndex="{Binding ViewModel.SelectedBudgetIndex}">
                 <ui:ListView.ItemTemplate>
                     <DataTemplate>
@@ -39,17 +41,17 @@
             </ui:ListView>
         </ui:Card>
 
-        <Controls:BudgetReportControl Grid.Column="1" Grid.ColumnSpan="2"
+        <Controls:BudgetReportControl Grid.Column="1" Grid.ColumnSpan="2" x:Name="BudgetReport"
                 Title="{Binding ViewModel.ReportTitle}" IncomeItems="{Binding ViewModel.IncomeItems}"
                 ExpenseItems="{Binding ViewModel.ExpenseItems}" ReportTotal="{Binding ViewModel.ReportTotal}" Margin="8,0,0,8"
                 SavingsItems="{Binding ViewModel.SavingsItems}"/>
 
-        <ui:Card Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" Margin="8,8,8,24">
+        <ui:Card x:Name="IncomeChart" Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" Margin="8,8,8,24">
             <lvc:PieChart Height="300" Series="{Binding ViewModel.ActualIncomeSeries}"
                           Title="{Binding ViewModel.ActualIncomeTitle}"/>
         </ui:Card>
 
-        <ui:Card Grid.Column="2" Grid.Row="1" VerticalAlignment="Stretch" Margin="8,8,0,24">
+        <ui:Card x:Name="ExpenseChart" Grid.Column="2" Grid.Row="1" VerticalAlignment="Stretch" Margin="8,8,0,24">
             <lvc:PieChart Height="300" Series="{Binding ViewModel.ActualExpenseSeries}"
                           Title="{Binding ViewModel.ActualExpensesTitle}"/>
         </ui:Card>

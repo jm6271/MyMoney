@@ -17,6 +17,7 @@
       ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       Loaded="Page_Loaded"
+      SizeChanged="MainWindow_SizeChanged"
       >
     <Page.Resources>
         <ResourceDictionary>
@@ -30,12 +31,17 @@
     </Page.Resources>
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition x:Name="Row1" Height="Auto"/>
+        </Grid.RowDefinitions>
+        
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition x:Name="Col0" Width="275"/>
+            <ColumnDefinition x:Name="Col1" Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <ui:Card Grid.Column="0" VerticalAlignment="Top" Margin="0,0,12,0">
+        <ui:Card x:Name="AccountsCard" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" Margin="0,0,12,24">
             <StackPanel Grid.Column="0">
                 <ui:ListView MaxHeight="200" ItemsSource="{Binding ViewModel.Accounts}" 
                                    SelectedIndex="{Binding ViewModel.SelectedAccountIndex}"
@@ -67,13 +73,13 @@
             </StackPanel>
         </ui:Card>
 
-        <Grid Grid.Column="1">
+        <Grid x:Name="TransactionsGrid" Grid.Column="1" Grid.Row="0" Margin="12,0,0,24">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
 
-            <ui:Card x:Name="TransactionsCard" Grid.Row="1" Margin="12,0,0,24" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
+            <ui:Card x:Name="TransactionsCard" Grid.Row="1" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
 
                 <ui:ListView x:Name="TransactionsList" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" 
                                   SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}"
@@ -84,7 +90,7 @@
                             <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
-                    
+
                     <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:Transaction}">
                             <Grid Margin="0,2,0,2">

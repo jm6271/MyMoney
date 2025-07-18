@@ -19,7 +19,8 @@
       ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
-      Loaded="Page_Loaded">
+      Loaded="Page_Loaded"
+      SizeChanged="Page_SizeChanged">
 
     <Page.Resources>
         <helpers:LeftToBudgetTextConverter x:Key="LeftToBudgetTextConverter"/>
@@ -29,16 +30,22 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*" MaxWidth="200" MinWidth="150"/>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="1*" MaxWidth="250" MinWidth="200"/>
+            <ColumnDefinition x:Name="Col0" Width="1*"/>
+            <ColumnDefinition x:Name="Col1" Width="3*"/>
+            <ColumnDefinition x:Name="Col2" Width="1*"/>
         </Grid.ColumnDefinitions>
 
-        <ui:Card Grid.Column="0" VerticalAlignment="Top">
+        <Grid.RowDefinitions>
+            <RowDefinition x:Name="Row0" Height="*"/>
+            <RowDefinition x:Name="Row1" Height="0"/>
+            <RowDefinition x:Name="Row2" Height="0"/>
+        </Grid.RowDefinitions>
+
+        <ui:Card Grid.Column="0" VerticalAlignment="Top" x:Name="BudgetsCard" Margin="0,0,0,24">
             <StackPanel>
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,24">Budgets</ui:TextBlock>
                 <ui:ListView ItemsSource="{Binding ViewModel.GroupedBudgets}" SelectedItem="{Binding ViewModel.SelectedGroupedBudget}"
-                             SelectedIndex="{Binding ViewModel.SelectedGroupedBudgetIndex}">
+                             SelectedIndex="{Binding ViewModel.SelectedGroupedBudgetIndex}" x:Name="BudgetsListView">
                     <ui:ListView.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.HeaderTemplate>
@@ -58,9 +65,9 @@
             </StackPanel>
         </ui:Card>
 
-        <StackPanel Grid.Column="1" Margin="24,0,24,24">
+        <StackPanel Grid.Column="1" Margin="24,0,24,24" x:Name="BudgetPanel">
 
-            <ui:Card Margin="0,0,0,12">
+            <ui:Card Margin="0,0,0,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1*"/>
@@ -77,14 +84,14 @@
                 </Grid>
             </ui:Card>
 
-            <ui:Card Margin="0,12,0,12">
+            <ui:Card Margin="0,8,0,8">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold" Text="{Binding ViewModel.LeftToBudget, Converter={StaticResource CurrencyAbsoluteValueConverter}}" Foreground="{Binding ViewModel.LeftToBudget, Converter={StaticResource NegativeCurrencyToRedColorConverter}}"/>
                     <TextBlock VerticalAlignment="Center" Text="{Binding ViewModel.LeftToBudget, Converter={StaticResource LeftToBudgetTextConverter}}"/>
                 </StackPanel>
             </ui:Card>
 
-            <Grid Margin="0,12,0,0">
+            <Grid Margin="0,8,0,0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -99,7 +106,7 @@
             </Grid>
 
 
-            <ui:Card Margin="0,4,0,12">
+            <ui:Card Margin="0,4,0,8">
                 <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetIncomeItems}" 
                              SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}"
                              SizeChanged="ListView_SizeChanged" SelectionMode="Single"
@@ -146,7 +153,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <ui:TextBlock FontTypography="Subtitle" Margin="0,12,0,4">Savings</ui:TextBlock>
+                <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Savings</ui:TextBlock>
                 <ui:Button Grid.Column="1" Margin="8,0,0,0" IsEnabled="{Binding ViewModel.IsEditingEnabled}" 
                            Command="{Binding ViewModel.AddSavingsCategoryCommand}">
                     <ui:SymbolIcon Symbol="Add24"/>
@@ -156,7 +163,7 @@
                 </ui:Button>
             </Grid>
 
-            <ui:Card Margin="0,4,0,12">
+            <ui:Card Margin="0,4,0,8">
                 <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetSavingsCategories}" 
                              SelectedIndex="{Binding ViewModel.SavingsCategoriesSelectedIndex}"
                              SizeChanged="ListView_SizeChanged" SelectionMode="Single"
@@ -203,7 +210,7 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <ui:TextBlock Grid.Column="0" FontTypography="Subtitle" Margin="0,12,0,4">Expenses</ui:TextBlock>
+                <ui:TextBlock Grid.Column="0" FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
                 <ui:Button Grid.Column="1" Margin="8,0,0,0" IsEnabled="{Binding ViewModel.IsEditingEnabled}" Command="{Binding ViewModel.AddExpenseGroupCommand}">
                     <ui:SymbolIcon Symbol="Add24"/>
                     <ui:Button.ToolTip>
@@ -300,20 +307,31 @@
 
         </StackPanel>
 
-        <StackPanel Grid.Column="2" Margin="0,0,0,24">
+        <Grid Grid.Column="2" Margin="0,0,0,24" x:Name="ChartsPanel">
+            <Grid.RowDefinitions>
+                <RowDefinition x:Name="ChartRow0" Height="Auto"/>
+                <RowDefinition x:Name="ChartRow1" Height="Auto"/>
+            </Grid.RowDefinitions>
 
-            <ui:Card Margin="0,0,0,8" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition x:Name="ChartCol0" Width="*"/>
+                <ColumnDefinition x:Name="ChartCol1" Width="0"/>
+            </Grid.ColumnDefinitions>
+            
+            <ui:Card Margin="0,0,0,8" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.Row="0"
+                     x:Name="IncomeChart">
                 <lvc:PieChart Series="{Binding ViewModel.IncomePercentagesSeries}"
                         Title="{Binding ViewModel.IncomePercentagesTitle}"
                         Height="300"/>
             </ui:Card>
 
-            <ui:Card VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,8,0,0">
+            <ui:Card VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,8,0,0" Grid.Row="1"
+                     x:Name="ExpenseChart">
                 <lvc:PieChart Series="{Binding ViewModel.ExpensePercentagesSeries}"
                     Title="{Binding ViewModel.ExpensePercentagesTitle}"
-                    Height="300"/>
+                    Height="300" />
             </ui:Card>
 
-        </StackPanel>
+        </Grid>
     </Grid>
 </Page>
