@@ -127,6 +127,9 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
+        // Lock for the database
+        private readonly object _databaseLockObject = new();
+
 
         // Content dialog service
         private readonly IContentDialogService _contentDialogService;
@@ -155,38 +158,6 @@ namespace MyMoney.ViewModels.Pages
             SavingsCategoryReorderHandler = new(this);
             IncomeItemsReorderHandler = new(this);
             ExpenseItemsMoveAndReorderHandler = new(this);
-
-            var budgetCollection = _databaseReader.GetCollection<Budget>("Budgets");
-
-            foreach (var budget in budgetCollection.OfType<Budget>())
-            {
-                Budgets.Add(budget);
-            }
-
-            UpdateBudgetLists();
-
-            // figure out which budget is there for the current month and display it
-            // Budgets are stored with a key that is the month name, followed by the year
-
-            // look for current month
-            var dt = DateTime.Now;
-            var key = dt.ToString("MMMM, yyyy", CultureInfo.InvariantCulture);
-
-            foreach (var budget in Budgets)
-            {
-                if (budget.BudgetTitle == key)
-                {
-                    CurrentBudget = budget;
-                }
-            }
-
-            if (CurrentBudget == null)
-            {
-                // No budget for the current month
-                return;
-            }
-
-            UpdateListViewTotals();
         }
 
         public void OnPageNavigatedTo()
@@ -207,7 +178,10 @@ namespace MyMoney.ViewModels.Pages
         {
             Budgets.Clear();
 
-            var budgetCollection = _databaseReader.GetCollection<Budget>("Budgets");
+            List<Budget> budgetCollection;
+            
+            lock(_databaseLockObject)
+                budgetCollection = _databaseReader.GetCollection<Budget>("Budgets");
 
             foreach (var budget in budgetCollection.OfType<Budget>())
             {
@@ -271,8 +245,9 @@ namespace MyMoney.ViewModels.Pages
         public void WriteToDatabase()
         {
             if (CurrentBudget == null) return;
-
-            DatabaseWriter.WriteCollection("Budgets", Budgets.ToList());
+            
+            lock (_databaseLockObject)
+                DatabaseWriter.WriteCollection("Budgets", Budgets.ToList());
         }
 
         public void UpdateListViewTotals()
@@ -927,10 +902,10 @@ namespace MyMoney.ViewModels.Pages
 
             IsEditingEnabled = true;
 
-            AddActualSpentToCurrentBudget();
-
             UpdateCharts();
             UpdateListViewTotals();
+
+            _ = Task.Run(() => AddActualSpentToCurrentBudget());
         }
 
         private int FindBudgetIndex(string budgetName)
@@ -1026,9 +1001,16 @@ namespace MyMoney.ViewModels.Pages
             if (CurrentBudget == null) return;
 
             // get a budget report for the month of the current budget
-            var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(CurrentBudget.BudgetDate, _databaseReader);
-            var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(CurrentBudget.BudgetDate, _databaseReader);
-            var savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(CurrentBudget.BudgetDate, _databaseReader);
+            List<BudgetReportItem> incomeItems;
+            List<BudgetReportItem> expenseItems;
+            List<SavingsCategoryReportItem> savingsItems;
+
+            lock (_databaseLockObject)
+            {
+                incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(CurrentBudget.BudgetDate, _databaseReader);
+                expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(CurrentBudget.BudgetDate, _databaseReader);
+                savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(CurrentBudget.BudgetDate, _databaseReader);
+            }
 
             // go through the report items and set the equivalent budget items' actual amount
             for (int i = 0; i < incomeItems.Count; i++)

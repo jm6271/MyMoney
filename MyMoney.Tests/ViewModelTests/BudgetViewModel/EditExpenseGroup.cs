@@ -52,6 +52,9 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockExpenseGroupDialogService.Object,
                 _mockSavingsCategoryDialogService.Object
             );
+
+            _viewModel.OnPageNavigatedTo();
+            _viewModel.CurrentBudget = _viewModel.Budgets[0];
         }
 
         [TestMethod]
