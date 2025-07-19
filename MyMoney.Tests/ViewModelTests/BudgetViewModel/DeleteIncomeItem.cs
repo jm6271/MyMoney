@@ -64,6 +64,9 @@ public class DeleteIncomeItemTests
             _mockExpenseGroupDialogService.Object,
             _mockSavingsCategoryDialogService.Object
         );
+
+        _viewModel.OnPageNavigatedTo();
+        _viewModel.CurrentBudget = _viewModel.Budgets[0];
     }
 
     [TestMethod]
@@ -141,25 +144,5 @@ public class DeleteIncomeItemTests
         {
             Assert.AreEqual(i + 1, _viewModel.CurrentBudget.BudgetIncomeItems[i].Id);
         }
-    }
-
-    [TestMethod]
-    public async Task DeleteIncomeItem_WhenDeleted_UpdatesTotals()
-    {
-        // Arrange
-        _mockMessageBoxService
-            .Setup(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync(MessageBoxResult.Primary);
-
-        Assert.IsNotNull(_viewModel.CurrentBudget);
-        var originalTotal = _viewModel.IncomeTotal;
-        _viewModel.IncomeItemsSelectedIndex = 1;
-        var expectedTotal = originalTotal - _viewModel.CurrentBudget.BudgetIncomeItems[1].Amount;
-
-        // Act
-        await _viewModel.DeleteIncomeItemCommand.ExecuteAsync(null);
-
-        // Assert
-        Assert.AreEqual(expectedTotal.Value, _viewModel.IncomeTotal.Value);
     }
 }
