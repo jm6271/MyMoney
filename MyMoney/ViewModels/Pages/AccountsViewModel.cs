@@ -420,6 +420,8 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private async Task RenameAccount(object content)
         {
+            if (SelectedAccountIndex < 0) return;
+
             RenameAccountViewModel renameViewModel = new()
             {
                 NewName = Accounts[SelectedAccountIndex].AccountName

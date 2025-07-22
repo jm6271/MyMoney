@@ -504,6 +504,7 @@ namespace MyMoney.ViewModels.Pages
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
+            if (IncomeItemsSelectedIndex < 0) return;
 
             var viewModel = new BudgetCategoryDialogViewModel
             {
@@ -546,6 +547,7 @@ namespace MyMoney.ViewModels.Pages
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
+            if (IncomeItemsSelectedIndex < 0) return;
 
 
             // Show message box asking user if they really want to delete the category
@@ -572,6 +574,7 @@ namespace MyMoney.ViewModels.Pages
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
+            if (SavingsCategoriesSelectedIndex < 0) return;
 
             var viewModel = new SavingsCategoryDialogViewModel
             {
@@ -649,6 +652,7 @@ namespace MyMoney.ViewModels.Pages
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
+            if (SavingsCategoriesSelectedIndex < 0) return;
 
 
             // Show message box asking user if they really want to delete the category
@@ -704,6 +708,7 @@ namespace MyMoney.ViewModels.Pages
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
+            if (parameter.SelectedSubItemIndex < 0 || parameter.SelectedSubItemIndex > parameter.SubItems.Count - 1) return;
 
             var viewModel = new BudgetCategoryDialogViewModel
             {
@@ -767,6 +772,7 @@ namespace MyMoney.ViewModels.Pages
         {
             if (CurrentBudget == null) return;
             if (!IsEditingEnabled) return;
+            if (parameter.SelectedSubItemIndex < 0 || parameter.SelectedSubItemIndex > parameter.SubItems.Count - 1) return;
 
             // Show message box asking user if they really want to delete the category
             var result = await _messageBoxService.ShowAsync("Delete Category?",
