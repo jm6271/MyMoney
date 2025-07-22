@@ -108,7 +108,7 @@ public class DeleteExpenseItemTests
             .ReturnsAsync(MessageBoxResult.Secondary);
 
         // Act
-        await _viewModel.DeleteExpenseItemCommand.ExecuteAsync(null);
+        await _viewModel.DeleteExpenseItemCommand.ExecuteAsync(new BudgetExpenseCategory());
 
         // Assert
         Assert.AreEqual(1, budget.BudgetExpenseItems.Count);
