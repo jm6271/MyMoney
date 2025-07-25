@@ -23,6 +23,9 @@ namespace MyMoney.ViewModels.Pages
 {
     public partial class BudgetViewModel : ObservableObject
     {
+        /// <summary>
+        /// Collection of all budgets in the system
+        /// </summary>
         public ObservableCollection<Budget> Budgets { get; } = [];
 
         [ObservableProperty]
@@ -88,10 +91,10 @@ namespace MyMoney.ViewModels.Pages
         private bool _isEditingEnabled = true;
 
         // Drop handlers for drag/drop operations
-        public BudgetExpenseGroupReorderHandler ExpenseGroupsReorderHandler { get; private set; }
-        public BudgetSavingsCategoryReorderHandler SavingsCategoryReorderHandler { get; private set; }
-        public BudgetIncomeItemReorderHandler IncomeItemsReorderHandler { get; private set; }
-        public BudgetExpenseItemMoveAndReorderHandler ExpenseItemsMoveAndReorderHandler { get; private set; }
+        public BudgetExpenseGroupReorderHandler ExpenseGroupsReorderHandler { get; }
+        public BudgetSavingsCategoryReorderHandler SavingsCategoryReorderHandler { get; }
+        public BudgetIncomeItemReorderHandler IncomeItemsReorderHandler { get; }
+        public BudgetExpenseItemMoveAndReorderHandler ExpenseItemsMoveAndReorderHandler { get; }
 
         public class GroupedBudget
         {
@@ -252,47 +255,48 @@ namespace MyMoney.ViewModels.Pages
                 DatabaseWriter.WriteCollection("Budgets", Budgets.ToList());
         }
 
-        public void UpdateListViewTotals()
+        private void UpdateListViewTotals()
         {
             if (CurrentBudget == null)
             {
-                // set to zero
-                IncomeTotal = new(0m);
-                ExpenseTotal = new(0m);
-
+                ResetTotals();
                 return;
             }
 
-            // calculate the total income items
-            IncomeTotal = new(0m);
-
-            foreach (var item in CurrentBudget.BudgetIncomeItems)
-            {
-                IncomeTotal += item.Amount;
-            }
-
-            // Calculate the total expense items
-            ExpenseTotal = new(0m);
-
-            foreach (var item in CurrentBudget.BudgetExpenseItems)
-            {
-                ExpenseTotal += item.CategoryTotal;
-            }
-
-            // Add savings items as expenses
-            foreach (var item in CurrentBudget.BudgetSavingsCategories)
-            {
-                ExpenseTotal += item.BudgetedAmount;
-            }
-
-            // write the items to the database
+            UpdateIncomeTotals();
+            UpdateExpenseTotals();
             WriteToDatabase();
-
-            // Update the charts
             UpdateCharts();
+            UpdateLeftToBudget();
+        }
 
-            // Update the left to budget value
-            LeftToBudget = new(0m); // trigger an on property changed event to update theme
+        private void ResetTotals()
+        {
+            IncomeTotal = new(0m);
+            ExpenseTotal = new(0m);
+            LeftToBudget = new(0m);
+        }
+
+        private void UpdateIncomeTotals()
+        {
+            if (CurrentBudget == null) return;
+
+            IncomeTotal = new(CurrentBudget.BudgetIncomeItems.Sum(item => item.Amount.Value));
+        }
+
+        private void UpdateExpenseTotals()
+        {
+            if (CurrentBudget == null) return;
+
+            var expenseSum = CurrentBudget.BudgetExpenseItems.Sum(item => item.CategoryTotal.Value);
+            var savingsSum = CurrentBudget.BudgetSavingsCategories.Sum(item => item.BudgetedAmount.Value);
+            
+            ExpenseTotal = new(expenseSum + savingsSum);
+        }
+
+        private void UpdateLeftToBudget()
+        {
+            LeftToBudget = new(0m); // Trigger property changed
             LeftToBudget = IncomeTotal - ExpenseTotal;
         }
 
@@ -1018,43 +1022,68 @@ namespace MyMoney.ViewModels.Pages
         {
             if (CurrentBudget == null) return;
 
-            // get a budget report for the month of the current budget
+            var budget = CurrentBudget;
+            var budgetDate = budget.BudgetDate;
+
             List<BudgetReportItem> incomeItems;
             List<BudgetReportItem> expenseItems;
             List<SavingsCategoryReportItem> savingsItems;
 
             lock (_databaseLockObject)
             {
-                incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(CurrentBudget.BudgetDate, _databaseReader);
-                expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(CurrentBudget.BudgetDate, _databaseReader);
-                savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(CurrentBudget.BudgetDate, _databaseReader);
+                incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(budgetDate, _databaseReader);
+                expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(budgetDate, _databaseReader);
+                savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(budgetDate, _databaseReader);
             }
 
-            // go through the report items and set the equivalent budget items' actual amount
             Application.Current.Dispatcher.BeginInvoke(() =>
             {
-                for (int i = 0; i < incomeItems.Count; i++)
-                {
-                    CurrentBudget.BudgetIncomeItems[i].Actual = incomeItems[i].Actual;
-                }
+                if (CurrentBudget == null || CurrentBudget != budget) return; // Ensure budget hasn't changed
 
-                for (int i = 0; i < savingsItems.Count; i++)
-                {
-                    CurrentBudget.BudgetSavingsCategories[i].Spent = savingsItems[i].Spent;
-                }
+                UpdateIncomeActuals(incomeItems);
+                UpdateSavingsActuals(savingsItems);
+                UpdateExpenseActuals(expenseItems);
+            });
+        }
 
-                foreach (var expenseGroup in CurrentBudget.BudgetExpenseItems)
+        private void UpdateIncomeActuals(List<BudgetReportItem> incomeItems)
+        {
+            if (CurrentBudget == null) return;
+
+            for (int i = 0; i < Math.Min(incomeItems.Count, CurrentBudget.BudgetIncomeItems.Count); i++)
+            {
+                CurrentBudget.BudgetIncomeItems[i].Actual = incomeItems[i].Actual;
+            }
+        }
+
+        private void UpdateSavingsActuals(List<SavingsCategoryReportItem> savingsItems)
+        {
+            if (CurrentBudget == null) return;
+
+            for (int i = 0; i < Math.Min(savingsItems.Count, CurrentBudget.BudgetSavingsCategories.Count); i++)
+            {
+                CurrentBudget.BudgetSavingsCategories[i].Spent = savingsItems[i].Spent;
+            }
+        }
+
+        private void UpdateExpenseActuals(List<BudgetReportItem> expenseItems)
+        {
+            if (CurrentBudget == null) return;
+
+            foreach (var expenseGroup in CurrentBudget.BudgetExpenseItems)
+            {
+                foreach (var subItem in expenseGroup.SubItems)
                 {
-                    foreach (var subItem in expenseGroup.SubItems)
+                    var matchingItem = expenseItems.FirstOrDefault(item => 
+                        item.Category == subItem.Category && 
+                        item.Group == expenseGroup.CategoryName);
+
+                    if (matchingItem != null)
                     {
-                        var matchingItem = expenseItems.FirstOrDefault(item => item.Category == subItem.Category);
-                        if (matchingItem != null)
-                        {
-                            subItem.Actual = matchingItem.Actual;
-                        }
+                        subItem.Actual = matchingItem.Actual;
                     }
                 }
-            });
+            }
         }
     }
 }
