@@ -11,35 +11,78 @@ using Wpf.Ui.Appearance;
 
 namespace MyMoney.ViewModels.Pages.ReportPages
 {
-    public partial class BudgetReportsViewModel(IDatabaseReader databaseReader) : ObservableObject
+    /// <summary>
+    /// ViewModel for the budget reports page, displaying detailed budget analysis and charts
+    /// </summary>
+    public partial class BudgetReportsViewModel : ObservableObject
     {
+        #region Report Data
+
+        /// <summary>
+        /// Title of the current report
+        /// </summary>
         [ObservableProperty]
         private string _reportTitle = "Budget Report";
 
+        /// <summary>
+        /// Collection of income items in the report
+        /// </summary>
         [ObservableProperty]
         private ObservableCollection<BudgetReportItem> _incomeItems = [];
 
+        /// <summary>
+        /// Collection of expense items in the report
+        /// </summary>
         [ObservableProperty]
         private ObservableCollection<BudgetReportItem> _expenseItems = [];
 
+        /// <summary>
+        /// Collection of savings items in the report
+        /// </summary>
         [ObservableProperty]
         private ObservableCollection<SavingsCategoryReportItem> _savingsItems = [];
 
+        /// <summary>
+        /// Total amount for the current report
+        /// </summary>
         [ObservableProperty]
         private Currency _reportTotal = new(0m);
 
+        #endregion
+
+        #region Budget Selection
+
+        /// <summary>
+        /// Available budgets for report generation
+        /// </summary>
         [ObservableProperty]
         private ObservableCollection<Budget> _budgets = [];
 
+        /// <summary>
+        /// Currently selected budget
+        /// </summary>
         [ObservableProperty]
         private Budget? _selectedBudget;
 
+        /// <summary>
+        /// Index of the selected budget in the budgets collection
+        /// </summary>
         [ObservableProperty]
         private int _selectedBudgetIndex;
 
+        #endregion
+
+        #region Chart Properties
+
+        /// <summary>
+        /// Series data for the income chart
+        /// </summary>
         [ObservableProperty]
         private ISeries[] _actualIncomeSeries = [];
 
+        /// <summary>
+        /// Title for the income chart
+        /// </summary>
         [ObservableProperty]
         private LabelVisual _actualIncomeTitle = new()
         {
@@ -48,9 +91,15 @@ namespace MyMoney.ViewModels.Pages.ReportPages
             Padding = new LiveChartsCore.Drawing.Padding(15)
         };
 
+        /// <summary>
+        /// Series data for the expense chart
+        /// </summary>
         [ObservableProperty]
         private ISeries[] _actualExpenseSeries = [];
 
+        /// <summary>
+        /// Title for the expense chart
+        /// </summary>
         [ObservableProperty]
         private LabelVisual _actualExpensesTitle = new()
         {
@@ -59,23 +108,70 @@ namespace MyMoney.ViewModels.Pages.ReportPages
             Padding = new LiveChartsCore.Drawing.Padding(15)
         };
 
-        // Colors for chart text (changes in light and dark modes)
+        /// <summary>
+        /// Current text color for charts, changes with theme
+        /// </summary>
         [ObservableProperty]
-        private SKColor _chartTextColor = new(0x33, 0x33, 0x33);
+        private SKColor _chartTextColor = DefaultTextColor;
 
+        #endregion
+
+        #region Constants
+
+        private static readonly SKColor DefaultTextColor = new(0x33, 0x33, 0x33);
+        private static readonly SKColor LightTextColor = new(0x33, 0x33, 0x33);
+        private static readonly SKColor DarkTextColor = new(0xff, 0xff, 0xff);
+
+        #endregion
+
+        #region Fields
+
+        private readonly IDatabaseReader _databaseReader;
+
+        #endregion
+
+        #region Constructor
+
+        public BudgetReportsViewModel(IDatabaseReader databaseReader)
+        {
+            _databaseReader = databaseReader ?? throw new ArgumentNullException(nameof(databaseReader));
+        }
+
+        #endregion
+
+        #region Public Methods
+
+        /// <summary>
+        /// Initializes the page content when navigating to it
+        /// </summary>
         public void OnPageNavigatedTo()
         {
             LoadBudgets();
             UpdateCharts();
 
             if (SelectedBudget != null)
+            {
                 CalculateReport(SelectedBudget.BudgetDate);
+            }
         }
+
+        /// <summary>
+        /// Calculates the budget report for a specific date
+        /// </summary>
+        public void CalculateReport(DateTime date)
+        {
+            ClearReports();
+            var reportData = LoadReportData(date);
+            UpdateReportCollections(reportData);
+            CalculateReportTotals();
+        }
+
+        #endregion
+
+        #region Event Handlers
 
         partial void OnSelectedBudgetChanged(Budget? value)
         {
-            // Load the new budget report
-            // Make sure a budget is selected
             if (value == null)
             {
                 ReportTitle = "Budget Report";
@@ -83,85 +179,88 @@ namespace MyMoney.ViewModels.Pages.ReportPages
             }
 
             CalculateReport(value.BudgetDate);
-
-            // Set the report title
             ReportTitle = value.BudgetTitle;
-
-            // Update the charts
             UpdateCharts();
         }
 
+        #endregion
+
+        #region Private Methods
+
         private void LoadBudgets()
         {
-            // Read all the budgets from the database
-            BudgetCollection budgetCollection = new(databaseReader);
-            ObservableCollection<Budget> unsortedBudgets = [.. budgetCollection.Budgets];
-
-            // Sort the budgets
-            Budgets = [.. unsortedBudgets.OrderByDescending(o => o.BudgetDate)];
+            var budgetCollection = new BudgetCollection(_databaseReader);
+            var unsortedBudgets = new ObservableCollection<Budget>(budgetCollection.Budgets);
+            Budgets = new ObservableCollection<Budget>(unsortedBudgets.OrderByDescending(o => o.BudgetDate));
 
             if (Budgets.Count > 0)
+            {
                 SelectedBudgetIndex = 0;
+            }
         }
 
-        public void CalculateReport(DateTime date)
+        private void ClearReports()
         {
-            // clear the current report
             IncomeItems.Clear();
             ExpenseItems.Clear();
             SavingsItems.Clear();
+        }
 
-            var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(date, databaseReader);
-            var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(date, databaseReader);
-            var savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(date, databaseReader);
+        private (List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) LoadReportData(DateTime date)
+        {
+            return (
+                BudgetReportCalculator.CalculateIncomeReportItems(date, _databaseReader),
+                BudgetReportCalculator.CalculateExpenseReportItems(date, _databaseReader),
+                BudgetReportCalculator.CalculateSavingsReportItems(date, _databaseReader)
+            );
+        }
 
-            foreach (var item in incomeItems)
-            {
+        private void UpdateReportCollections((List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) data)
+        {
+            foreach (var item in data.income)
                 IncomeItems.Add(item);
-            }
 
-            foreach (var item in expenseItems)
-            {
+            foreach (var item in data.expense)
                 ExpenseItems.Add(item);
-            }
 
-            foreach (var item in savingsItems)
-            {
+            foreach (var item in data.savings)
                 SavingsItems.Add(item);
-            }
+        }
 
-            // Add an item to the income list showing the total income
-            BudgetReportItem incomeTotal = new();
-
-            foreach (var item in IncomeItems)
-            {
-                incomeTotal.Actual += item.Actual;
-                incomeTotal.Budgeted += item.Budgeted;
-                incomeTotal.Remaining += item.Remaining;
-            }
+        private void CalculateReportTotals()
+        {
+            var incomeTotal = CalculateTotal(IncomeItems);
+            var expenseTotal = CalculateTotal(ExpenseItems);
 
             incomeTotal.Category = "Total";
-            IncomeItems.Add(incomeTotal);
-
-            // Add an item to the expense list showing the total expenses
-            BudgetReportItem expenseTotal = new();
-
-            foreach (var item in ExpenseItems)
-            {
-                expenseTotal.Actual += item.Actual;
-                expenseTotal.Budgeted += item.Budgeted;
-                expenseTotal.Remaining += item.Remaining;
-            }
-
             expenseTotal.Category = "Total";
+
+            IncomeItems.Add(incomeTotal);
             ExpenseItems.Add(expenseTotal);
 
-            // Calculate budget report overall total
             ReportTotal = incomeTotal.Actual - expenseTotal.Actual;
         }
 
+        private static BudgetReportItem CalculateTotal(IEnumerable<BudgetReportItem> items)
+        {
+            var total = new BudgetReportItem();
+            foreach (var item in items)
+            {
+                total.Actual += item.Actual;
+                total.Budgeted += item.Budgeted;
+                total.Remaining += item.Remaining;
+            }
+            return total;
+        }
+
+        #endregion
+
+        #region Chart Management
+
         private void UpdateCharts()
         {
+            if (SelectedBudget == null) return;
+
             UpdateActualIncomeChart();
             UpdateActualExpensesChart();
             UpdateChartsTheme();
@@ -169,63 +268,69 @@ namespace MyMoney.ViewModels.Pages.ReportPages
 
         private void UpdateActualIncomeChart()
         {
-            if (SelectedBudget == null)
-                return;
+            if (SelectedBudget == null) return;
 
-            Dictionary<string, double> incomeTotals = [];
-            for (var j = 0; j < IncomeItems.Count - 1; j++)
-            {
-                if (IncomeItems[j].Actual.Value == 0m) continue;
+            var incomeTotals = GetNonZeroTotals(
+                IncomeItems.Take(IncomeItems.Count - 1),
+                item => item.Actual.Value,
+                item => item.Category);
 
-                incomeTotals.Add(IncomeItems[j].Category, (double)IncomeItems[j].Actual.Value);
-            }
-
-            ActualIncomeSeries = new ISeries[incomeTotals.Count];
-            var i = 0;
-            foreach (var item in incomeTotals)
-            {
-                ActualIncomeSeries[i] = new PieSeries<double> { Values = [item.Value], Name = item.Key };
-                i++;
-            }
+            ActualIncomeSeries = CreatePieSeries(incomeTotals);
         }
 
         private void UpdateActualExpensesChart()
         {
-            if (SelectedBudget == null)
-                return;
+            if (SelectedBudget == null) return;
 
-            Dictionary<string, double> expenseTotals = [];
-            for (var j = 0; j < ExpenseItems.Count - 1; j++)
-            {
-                if (ExpenseItems[j].Actual.Value == 0m) continue;
+            var expenseTotals = GetNonZeroTotals(
+                ExpenseItems.Take(ExpenseItems.Count - 1),
+                item => item.Actual.Value,
+                item => item.Category);
 
-                expenseTotals.Add(ExpenseItems[j].Category, (double)ExpenseItems[j].Actual.Value);
-            }
+            var savingsTotals = GetNonZeroTotals(
+                SavingsItems,
+                item => item.Saved.Value,
+                item => item.Category);
 
-            for (var k = 0; k < SavingsItems.Count; k++)
-            {
-                if (SavingsItems[k].Saved.Value == 0m) continue;
+            var combinedTotals = expenseTotals.Concat(savingsTotals)
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-                expenseTotals.Add(SavingsItems[k].Category, (double)SavingsItems[k].Saved.Value);
-            }
+            ActualExpenseSeries = CreatePieSeries(combinedTotals);
+        }
 
-            ActualExpenseSeries = new ISeries[expenseTotals.Count];
-            var i = 0;
-            foreach (var item in expenseTotals)
-            {
-                ActualExpenseSeries[i] = new PieSeries<double> { Values = [item.Value], Name = item.Key };
-                i++;
-            }
+        private static Dictionary<string, double> GetNonZeroTotals<T>(
+            IEnumerable<T> items,
+            Func<T, decimal> valueSelector,
+            Func<T, string> categorySelector)
+        {
+            return items
+                .Where(item => valueSelector(item) != 0m)
+                .ToDictionary(
+                    item => categorySelector(item),
+                    item => (double)valueSelector(item));
+        }
+
+        private static ISeries[] CreatePieSeries(Dictionary<string, double> totals)
+        {
+            return totals.Select(item => 
+                new PieSeries<double> 
+                { 
+                    Values = [item.Value], 
+                    Name = item.Key 
+                }).ToArray();
         }
 
         private void UpdateChartsTheme()
         {
             ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light 
-                ? new SKColor(0x33, 0x33, 0x33) 
-                : new SKColor(0xff, 0xff, 0xff);
+                ? LightTextColor 
+                : DarkTextColor;
 
-            ActualIncomeTitle.Paint = new SolidColorPaint(ChartTextColor);
-            ActualExpensesTitle.Paint = new SolidColorPaint(ChartTextColor);
+            var textPaint = new SolidColorPaint(ChartTextColor);
+            ActualIncomeTitle.Paint = textPaint;
+            ActualExpensesTitle.Paint = textPaint;
         }
+
+        #endregion
     }
 }

@@ -49,10 +49,10 @@
             </Grid.RowDefinitions>
 
             <Controls:BudgetReportControl   Grid.Column="0" Margin="0,0,8,24" x:Name="BudgetReport"
-                                            IncomeItems="{Binding ViewModel.BudgetReportIncomeItems}"
-                                            SavingsItems="{Binding ViewModel.BudgetReportSavingsItems}"
-                                            ExpenseItems="{Binding ViewModel.BudgetReportExpenseItems}"
-                                            ReportTotal="{Binding ViewModel.DifferenceTotal}"/>
+                                            IncomeItems="{Binding ViewModel.BudgetReportIncomeItems, Mode=OneWay}"
+                                            SavingsItems="{Binding ViewModel.BudgetReportSavingsItems, Mode=OneWay}"
+                                            ExpenseItems="{Binding ViewModel.BudgetReportExpenseItems, Mode=OneWay}"
+                                            ReportTotal="{Binding ViewModel.DifferenceTotal, Mode=OneWay}"/>
 
             <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="8,0,0,0" x:Name="RightPanel">
                 <ui:Card Margin="0,0,0,8">
