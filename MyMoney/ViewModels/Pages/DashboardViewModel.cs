@@ -11,12 +11,36 @@ using LiveChartsCore.SkiaSharpView.VisualElements;
 
 namespace MyMoney.ViewModels.Pages
 {
+    /// <summary>
+    /// ViewModel for the dashboard page, displaying account summaries and budget reports
+    /// </summary>
     public partial class DashboardViewModel : ObservableObject
     {
-        public ObservableCollection<AccountDashboardDisplayItem> Accounts { get; set; } = [];
-        public ObservableCollection<BudgetReportItem> BudgetReportIncomeItems { get; set; } = [];
-        public ObservableCollection<BudgetReportItem> BudgetReportExpenseItems { get; set; } = [];
-        public ObservableCollection<SavingsCategoryReportItem> BudgetReportSavingsItems { get; set; } = [];
+        #region Collections
+
+        /// <summary>
+        /// Collection of account summaries to display on the dashboard
+        /// </summary>
+        public ObservableCollection<AccountDashboardDisplayItem> Accounts { get; } = [];
+
+        /// <summary>
+        /// Collection of income items from the budget report
+        /// </summary>
+        public ObservableCollection<BudgetReportItem> BudgetReportIncomeItems { get; } = [];
+
+        /// <summary>
+        /// Collection of expense items from the budget report
+        /// </summary>
+        public ObservableCollection<BudgetReportItem> BudgetReportExpenseItems { get; } = [];
+
+        /// <summary>
+        /// Collection of savings category items from the budget report
+        /// </summary>
+        public ObservableCollection<SavingsCategoryReportItem> BudgetReportSavingsItems { get; } = [];
+
+        #endregion
+
+        #region Budget Summary Properties
 
         [ObservableProperty]
         private double _income;
@@ -25,9 +49,53 @@ namespace MyMoney.ViewModels.Pages
         private double _expenses;
 
         [ObservableProperty]
-        private ISeries[] _series;
+        private Currency _differenceTotal = new(0m);
 
-        // Widths for budget report gridview columns
+        #endregion
+
+        #region Chart Properties
+
+        [ObservableProperty]
+        private ISeries[] _series = [];
+
+        [ObservableProperty]
+        private SKColor _chartTextColor = new(0x33, 0x33, 0x33);
+
+        [ObservableProperty]
+        private LabelVisual _chartTitle = new()
+        {
+            Text = "Income vs. Expenses",
+            TextSize = 25,
+            Padding = new LiveChartsCore.Drawing.Padding(15)
+        };
+
+        [ObservableProperty]
+        private Axis[] _xAxes =
+        [
+            new()
+            {
+                Labels = ["Income", "Expenses"],
+                LabelsRotation = 0,
+                TicksAtCenter = true,
+                ForceStepToMin = true,
+                MinStep = 1
+            }
+        ];
+
+        [ObservableProperty]
+        private Axis[] _yAxes =
+        [
+            new()
+            {
+                Name = "Amount",
+                Labeler = Labelers.Currency,
+            }
+        ];
+
+        #endregion
+
+        #region Grid Properties
+
         [ObservableProperty]
         private int _categoryColumnWidth = 200;
 
@@ -40,134 +108,98 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private int _differenceColumnWidth = 100;
 
-        [ObservableProperty]
-        private Currency _differenceTotal = new(0m);
+        #endregion
 
-        // Axis for the chart
-        [ObservableProperty]
-        private Axis[] _xAxes  =
-        [
-        new ()
-        {
-            Labels = ["Income", "Expenses"],
-            LabelsRotation = 0,
-            TicksAtCenter = true,
-            // By default, the axis tries to optimize the number of 
-            // labels to fit the available space, 
-            // when you need to force the axis to show all the labels then you must: 
-            ForceStepToMin = true,
-            MinStep = 1
-        }
-        ];
-
-        [ObservableProperty]
-        private Axis[] _yAxes =
-        [
-            new ()
-            {
-                Name = "Amount",
-                Labeler = Labelers.Currency,
-            }
-        ];
-
-        // Chart title
-        [ObservableProperty]
-        private LabelVisual _chartTitle = new()
-        {
-            Text = "Income vs. Expenses",
-            TextSize = 25,
-            Padding = new LiveChartsCore.Drawing.Padding(15)
-        };
-
-        // Colors for text (changes in light and dark modes)
-        [ObservableProperty]
-        private SKColor _chartTextColor = new(0x33, 0x33, 0x33);
-
-        // Service for reading from the database
-        readonly IDatabaseReader _databaseReader;
+        private readonly IDatabaseReader _databaseReader;
+        private readonly object _databaseLockObject = new();
 
         public DashboardViewModel(IDatabaseReader databaseReader)
         {
+            _databaseReader = databaseReader ?? throw new ArgumentNullException(nameof(databaseReader));
             Series = UpdateChartSeries();
-            _databaseReader = databaseReader;
         }
 
         private void CalculateBudgetReport()
         {
-            // clear the current report
+            ClearReports();
+            var reportItems = LoadReportItems();
+            UpdateReportCollections(reportItems);
+            CalculateTotals();
+            UpdateChartDisplay();
+        }
+
+        private void ClearReports()
+        {
             BudgetReportIncomeItems.Clear();
             BudgetReportExpenseItems.Clear();
             BudgetReportSavingsItems.Clear();
-
-            var incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(_databaseReader);
-            var expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(_databaseReader);
-            var savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(DateTime.Today, _databaseReader);
-
-            foreach (var item in incomeItems)
-            {
-                BudgetReportIncomeItems.Add(item);
-            }
-
-            foreach (var item in expenseItems)
-            {
-                BudgetReportExpenseItems.Add(item);
-            }
-
-            foreach (var item in savingsItems)
-            {
-                BudgetReportSavingsItems.Add(item);
-            }
-
-            // Add an item to the income list showing the total income
-            BudgetReportItem incomeTotal = new();
-
-            foreach (var item in BudgetReportIncomeItems)
-            {
-                incomeTotal.Actual += item.Actual;
-                incomeTotal.Budgeted += item.Budgeted;
-                incomeTotal.Remaining += item.Remaining;
-            }
-
-            incomeTotal.Category = "Total";
-            BudgetReportIncomeItems.Add(incomeTotal);
-            Income = (double)incomeTotal.Actual.Value;
-
-            // Add an item to the expense list showing the total expenses
-            BudgetReportItem expenseTotal = new();
-
-            foreach (var item in BudgetReportExpenseItems)
-            {
-                expenseTotal.Actual += item.Actual;
-                expenseTotal.Budgeted += item.Budgeted;
-                expenseTotal.Remaining += item.Remaining;
-            }
-
-            expenseTotal.Category = "Total";
-            BudgetReportExpenseItems.Add(expenseTotal);
-            Expenses = (double)expenseTotal.Actual.Value;
-
-            // Calculate budget report overall total
-            DifferenceTotal = incomeTotal.Actual - expenseTotal.Actual;
-
-
-            // update the chart series
-            Series = UpdateChartSeries();
-
-            // Update the chart theme
-            UpdateChartTheme();
-
         }
 
-        private void UpdateChartTheme()
+        private (List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) LoadReportItems()
         {
-            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light 
-                ? new SKColor(0x33, 0x33, 0x33) 
-                : new SKColor(0xff, 0xff, 0xff);
+            lock (_databaseLockObject)
+            {
+                return (
+                    BudgetReportCalculator.CalculateIncomeReportItems(_databaseReader),
+                    BudgetReportCalculator.CalculateExpenseReportItems(_databaseReader),
+                    BudgetReportCalculator.CalculateSavingsReportItems(DateTime.Today, _databaseReader)
+                );
+            }
+        }
 
-            XAxes[0].LabelsPaint = new SolidColorPaint(ChartTextColor);
-            YAxes[0].LabelsPaint = new SolidColorPaint(ChartTextColor);
-            YAxes[0].NamePaint = new SolidColorPaint(ChartTextColor);
-            ChartTitle.Paint = new SolidColorPaint(ChartTextColor);
+        private void UpdateReportCollections((List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) items)
+        {
+            foreach (var item in items.income)
+                BudgetReportIncomeItems.Add(item);
+
+            foreach (var item in items.expense)
+                BudgetReportExpenseItems.Add(item);
+
+            foreach (var item in items.savings)
+                BudgetReportSavingsItems.Add(item);
+        }
+
+        private void CalculateTotals()
+        {
+            var incomeTotal = CalculateIncomeTotal();
+            var expenseTotal = CalculateExpenseTotal();
+
+            BudgetReportIncomeItems.Add(incomeTotal);
+            BudgetReportExpenseItems.Add(expenseTotal);
+
+            Income = (double)incomeTotal.Actual.Value;
+            Expenses = (double)expenseTotal.Actual.Value;
+            DifferenceTotal = incomeTotal.Actual - expenseTotal.Actual;
+        }
+
+        private BudgetReportItem CalculateIncomeTotal()
+        {
+            var total = new BudgetReportItem { Category = "Total" };
+            foreach (var item in BudgetReportIncomeItems)
+            {
+                total.Actual += item.Actual;
+                total.Budgeted += item.Budgeted;
+                total.Remaining += item.Remaining;
+            }
+            return total;
+        }
+
+        private BudgetReportItem CalculateExpenseTotal()
+        {
+            var total = new BudgetReportItem { Category = "Total" };
+            foreach (var item in BudgetReportExpenseItems)
+            {
+                total.Actual += item.Actual;
+                total.Budgeted += item.Budgeted;
+                total.Remaining += item.Remaining;
+            }
+            return total;
+        }
+
+        private void UpdateChartDisplay()
+        {
+            Series = UpdateChartSeries();
+            UpdateChartTheme();
         }
 
         private ISeries[] UpdateChartSeries()
@@ -179,40 +211,67 @@ namespace MyMoney.ViewModels.Pages
             var expenseTotal = past12MonthsExpenses.Count > 0 ? past12MonthsExpenses[^1] : 0.0;
 
             var accentColor = ApplicationAccentColorManager.GetColorizationColor();
-            ISeries[] s = [new ColumnSeries<double>()
+            return [new ColumnSeries<double>
             {
                 Values = [incomeTotal, expenseTotal],
                 Fill = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B)),
                 Stroke = null,
             }];
-            return s;
         }
 
+        private void UpdateChartTheme()
+        {
+            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light 
+                ? new SKColor(0x33, 0x33, 0x33) 
+                : new SKColor(0xff, 0xff, 0xff);
+
+            var textPaint = new SolidColorPaint(ChartTextColor);
+            XAxes[0].LabelsPaint = textPaint;
+            YAxes[0].LabelsPaint = textPaint;
+            YAxes[0].NamePaint = textPaint;
+            ChartTitle.Paint = textPaint;
+        }
+
+        /// <summary>
+        /// Loads account information and updates the dashboard when navigating to the page
+        /// </summary>
         public void OnPageNavigatedTo()
         {
-            // Reload information from the database
+            LoadAccounts();
+            CalculateBudgetReport();
+        }
+
+        private void LoadAccounts()
+        {
             Accounts.Clear();
 
-            var lst = _databaseReader.GetCollection<Account>("Accounts");
-
-            foreach (var accountDisplayItem in lst.Select(AccountDashboardDisplayItem.FromAccount))
+            List<Account> accounts;
+            lock (_databaseLockObject)
             {
-                Accounts.Add(accountDisplayItem);
+                accounts = _databaseReader.GetCollection<Account>("Accounts");
             }
 
-            // add an item displaying the total as the last item in the list
-            AccountDashboardDisplayItem totalItem = new()
+            foreach (var account in accounts)
+            {
+                Accounts.Add(AccountDashboardDisplayItem.FromAccount(account));
+            }
+
+            AddAccountTotalItem();
+        }
+
+        private void AddAccountTotalItem()
+        {
+            var totalItem = new AccountDashboardDisplayItem
             {
                 AccountName = "Total"
             };
+
             foreach (var account in Accounts)
             {
                 totalItem.Total += account.Total;
             }
 
             Accounts.Add(totalItem);
-
-            CalculateBudgetReport();
         }
     }
 }
