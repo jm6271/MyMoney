@@ -172,6 +172,8 @@ namespace MyMoney.ViewModels.Pages
             {
                 SelectedGroupedBudgetIndex = 0;
             }
+
+            _ = Task.Run(() => AddActualSpentToCurrentBudget());
         }
 
         private void LoadBudgetCollection()
@@ -537,6 +539,10 @@ namespace MyMoney.ViewModels.Pages
                 // assign the selected index of the list with the new item
                 CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex] = incomeItem;
 
+                // Recalulate the spent properties of all the items in the budget
+                _ = Task.Run(() => AddActualSpentToCurrentBudget());
+                
+
                 // Recalculate the total of the income items
                 UpdateListViewTotals();
             }
@@ -642,6 +648,9 @@ namespace MyMoney.ViewModels.Pages
                 // assign the selected index of the list with the new item
                 CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex] = editedSavingsCategory;
 
+                // Recalulate the spent properties of all the items in the budget
+                _ = Task.Run(() => AddActualSpentToCurrentBudget());
+
                 // Recalculate the total of the income items
                 UpdateListViewTotals();
             }
@@ -740,6 +749,9 @@ namespace MyMoney.ViewModels.Pages
 
                 // assign the selected index of the list with the new item
                 parameter.SubItems[parameter.SelectedSubItemIndex] = expenseItem;
+
+                // Recalulate the spent properties of all the items in the budget
+                _ = Task.Run(() => AddActualSpentToCurrentBudget());
 
                 // Recalculate the total of the expense items
                 UpdateListViewTotals();
@@ -1019,28 +1031,30 @@ namespace MyMoney.ViewModels.Pages
             }
 
             // go through the report items and set the equivalent budget items' actual amount
-            for (int i = 0; i < incomeItems.Count; i++)
+            Application.Current.Dispatcher.BeginInvoke(() =>
             {
-                CurrentBudget.BudgetIncomeItems[i].Actual = incomeItems[i].Actual;
-            }
-
-            for (int i = 0; i < savingsItems.Count; i++)
-            {
-                CurrentBudget.BudgetSavingsCategories[i].Spent = savingsItems[i].Spent;
-            }
-
-            foreach (var expenseGroup in CurrentBudget.BudgetExpenseItems)
-            {
-                foreach (var subItem in expenseGroup.SubItems)
+                for (int i = 0; i < incomeItems.Count; i++)
                 {
-                    var matchingItem = expenseItems.FirstOrDefault(item => item.Category == subItem.Category);
-                    if (matchingItem != null)
+                    CurrentBudget.BudgetIncomeItems[i].Actual = incomeItems[i].Actual;
+                }
+
+                for (int i = 0; i < savingsItems.Count; i++)
+                {
+                    CurrentBudget.BudgetSavingsCategories[i].Spent = savingsItems[i].Spent;
+                }
+
+                foreach (var expenseGroup in CurrentBudget.BudgetExpenseItems)
+                {
+                    foreach (var subItem in expenseGroup.SubItems)
                     {
-                        subItem.Actual = matchingItem.Actual;
+                        var matchingItem = expenseItems.FirstOrDefault(item => item.Category == subItem.Category);
+                        if (matchingItem != null)
+                        {
+                            subItem.Actual = matchingItem.Actual;
+                        }
                     }
                 }
-            }
-
+            });
         }
     }
 }
