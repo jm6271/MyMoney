@@ -10,7 +10,7 @@
       d:DataContext="{d:DesignInstance Type=contentdialogs:TransferDialogViewModel}"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="TransferDialog"
+      Title="Transfer"
       Closing="ContentDialog_Closing">
     <ui:ContentDialog.Resources>
         <helpers:CurrencyConverter x:Key="CurrencyConverter"/>

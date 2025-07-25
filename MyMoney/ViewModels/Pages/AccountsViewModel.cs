@@ -176,7 +176,7 @@ namespace MyMoney.ViewModels.Pages
             return true;
         }
 
-        private void UpdateAccountBalance(Account account, Transaction? oldTransaction, Transaction? newTransaction = null)
+        private static void UpdateAccountBalance(Account account, Transaction? oldTransaction, Transaction? newTransaction = null)
         {
             if (oldTransaction != null)
             {
@@ -187,17 +187,6 @@ namespace MyMoney.ViewModels.Pages
             {
                 account.Total += newTransaction.Amount;
             }
-        }
-
-        private async Task<bool> ConfirmAccountDeletion()
-        {
-            var result = await _messageBoxService.ShowAsync(
-                "Delete Account?",
-                "Are you sure you want to delete the selected Account?\nTHIS CANNOT BE UNDONE!",
-                "Yes",
-                "No");
-
-            return result == Wpf.Ui.Controls.MessageBoxResult.Primary;
         }
 
         private void UpdateAccountIds()
@@ -405,7 +394,7 @@ namespace MyMoney.ViewModels.Pages
             SaveAccountsToDatabase();
         }
 
-        private void ExecuteTransfer(Account fromAccount, Account toAccount, Currency amount)
+        private static void ExecuteTransfer(Account fromAccount, Account toAccount, Currency amount)
         {
             var fromTransaction = new Transaction(DateTime.Today, 
                 "Transfer to " + toAccount.AccountName, 
