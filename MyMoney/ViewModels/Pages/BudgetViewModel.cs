@@ -537,6 +537,10 @@ namespace MyMoney.ViewModels.Pages
                 // assign the selected index of the list with the new item
                 CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex] = incomeItem;
 
+                // Recalulate the spent properties of all the items in the budget
+                _ = Task.Run(() => AddActualSpentToCurrentBudget());
+                
+
                 // Recalculate the total of the income items
                 UpdateListViewTotals();
             }
@@ -642,6 +646,9 @@ namespace MyMoney.ViewModels.Pages
                 // assign the selected index of the list with the new item
                 CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex] = editedSavingsCategory;
 
+                // Recalulate the spent properties of all the items in the budget
+                _ = Task.Run(() => AddActualSpentToCurrentBudget());
+
                 // Recalculate the total of the income items
                 UpdateListViewTotals();
             }
@@ -740,6 +747,9 @@ namespace MyMoney.ViewModels.Pages
 
                 // assign the selected index of the list with the new item
                 parameter.SubItems[parameter.SelectedSubItemIndex] = expenseItem;
+
+                // Recalulate the spent properties of all the items in the budget
+                _ = Task.Run(() => AddActualSpentToCurrentBudget());
 
                 // Recalculate the total of the expense items
                 UpdateListViewTotals();
