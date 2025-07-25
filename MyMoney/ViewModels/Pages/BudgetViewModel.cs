@@ -766,7 +766,7 @@ namespace MyMoney.ViewModels.Pages
 
             // as user if they really want to delete the group
             var result = await _messageBoxService.ShowAsync("Delete Group?",
-                "Are you sure you want to delete the selected category?",
+                "Are you sure you want to delete this group?",
                 "Yes",
                 "No");
 
