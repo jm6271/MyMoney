@@ -14,7 +14,7 @@ public partial class Transaction : ObservableObject
         Memo = memo;
         Date = date;
 
-        if (TransactionHash != "")
+        if (TransactionHash == "")
         {
             // Generate a hash for this transaction
             TransactionHash = Guid.NewGuid().ToString();
@@ -22,7 +22,7 @@ public partial class Transaction : ObservableObject
  
     }
 
-    public string TransactionHash { get; private set; }
+    public string TransactionHash { get; private set; } = "";
 
     [ObservableProperty]
     private string _payee;
