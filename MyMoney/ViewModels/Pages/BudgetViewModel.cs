@@ -610,6 +610,7 @@ namespace MyMoney.ViewModels.Pages
                 }
 
                 // modify the item at the selected index
+                BudgetSavingsCategory originalSavingsCategory = (BudgetSavingsCategory)CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].Clone();
                 BudgetSavingsCategory editedSavingsCategory = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex];
                 editedSavingsCategory.CategoryName = viewModel.Category;
 
@@ -624,7 +625,7 @@ namespace MyMoney.ViewModels.Pages
                     updatedTransaction.TransactionDetail = "Updated Balance";
                     editedSavingsCategory.Transactions.Add(updatedTransaction);
                     
-                    // UPdate the balance
+                    // Update the balance
                     editedSavingsCategory.CurrentBalance = viewModel.CurrentBalance;
                 }
                 
@@ -651,6 +652,9 @@ namespace MyMoney.ViewModels.Pages
 
                 // assign the selected index of the list with the new item
                 CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex] = editedSavingsCategory;
+
+                // Update the category in any future budgets
+                UpdateFutureSavingsCategories(originalSavingsCategory, editedSavingsCategory);
 
                 // Recalulate the spent properties of all the items in the budget
                 _ = Task.Run(() => AddActualSpentToCurrentBudget());
@@ -870,6 +874,7 @@ namespace MyMoney.ViewModels.Pages
 
                         newSavingsCategory.Transactions.Add(appliedBudgetedAmount);
                         newSavingsCategory.PlannedTransactionHash = appliedBudgetedAmount.TransactionHash;
+                        newSavingsCategory.BalanceTransactionHash = balanceCarriedForward.TransactionHash;
 
                         newSavingsCategory.CurrentBalance += newSavingsCategory.BudgetedAmount;
 
@@ -1081,6 +1086,40 @@ namespace MyMoney.ViewModels.Pages
                     if (matchingItem != null)
                     {
                         subItem.Actual = matchingItem.Actual;
+                    }
+                }
+            }
+        }
+
+        private void UpdateFutureSavingsCategories(BudgetSavingsCategory originalSavingsCategory, BudgetSavingsCategory modifiedSavingsCategory)
+        {
+            if (CurrentBudget == null) return;
+
+            // Loop through future budgets, beginning with the nearest in date and going to the most distant
+            for (int i = Budgets.IndexOf(CurrentBudget) + 1; i < Budgets.Count; i++)
+            {
+                // Find the savings category in this budget
+                for (int j = 0; j < Budgets[i].BudgetSavingsCategories.Count; j++)
+                {
+                    var currentSavingsCategory = Budgets[i].BudgetSavingsCategories[j];
+
+                    if (currentSavingsCategory.CategoryHash == modifiedSavingsCategory.CategoryHash // Same category
+                        && currentSavingsCategory.Transactions.Count != 0) // There must be some transactions 
+                    {
+                        // Amount to update by
+                        var balanceDifference = modifiedSavingsCategory.CurrentBalance - originalSavingsCategory.CurrentBalance;
+
+                        // Update begining balance
+                        foreach (var transaction in
+                            from Transaction transaction in currentSavingsCategory.Transactions
+                                where transaction.TransactionHash == currentSavingsCategory.BalanceTransactionHash
+                                    select transaction)
+                        {
+                            transaction.Amount += balanceDifference;
+                        }
+
+                        // Update balance
+                        currentSavingsCategory.CurrentBalance += balanceDifference;
                     }
                 }
             }

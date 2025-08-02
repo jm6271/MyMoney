@@ -29,7 +29,21 @@ namespace MyMoney.Core.Models
         private string _plannedTransactionHash = string.Empty;
 
         [ObservableProperty]
+        private string _balanceTransactionHash = string.Empty;
+
+        [ObservableProperty]
         private ObservableCollection<Transaction> _transactions = [];
+
+        public string CategoryHash { get; private set; } = "";
+
+        public BudgetSavingsCategory()
+        {
+            if (CategoryHash == "")
+            {
+                // Generate a hash for this category
+                CategoryHash = Guid.NewGuid().ToString();
+            }
+        }
 
         public object Clone()
         {
@@ -39,7 +53,8 @@ namespace MyMoney.Core.Models
                 CurrentBalance = new Currency(this.CurrentBalance.Value),
                 Spent = new Currency(0.0m),
                 BudgetedAmount = new(this.BudgetedAmount.Value),
-                Transactions = []
+                Transactions = [],
+                CategoryHash = this.CategoryHash
             };
         }
 
