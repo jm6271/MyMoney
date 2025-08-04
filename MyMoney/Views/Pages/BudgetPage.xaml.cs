@@ -109,5 +109,15 @@ namespace MyMoney.Views.Pages
                 ExpenseChart.Margin = _expenseChartWideMargin;
             }
         }
+
+        private void CardExpander_Expanded(object sender, RoutedEventArgs e)
+        {
+            ViewModel.WriteToDatabase();
+        }
+
+        private void CardExpander_Collapsed(object sender, RoutedEventArgs e)
+        {
+            ViewModel.WriteToDatabase();
+        }
     }
 }

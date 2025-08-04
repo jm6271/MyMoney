@@ -226,7 +226,8 @@
                           dd:DragDrop.DragHandler="{Binding ViewModel.ExpenseGroupsReorderHandler}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <ui:CardExpander Margin="0,8,0,8" IsExpanded="True">
+                        <ui:CardExpander Margin="0,8,0,8" Expanded="CardExpander_Expanded" Collapsed="CardExpander_Collapsed"
+                                         helpers:CardExpanderStateHelper.SyncedIsExpanded="{Binding IsExpanded, Mode=TwoWay}">
                             <ui:CardExpander.Header>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
