@@ -192,6 +192,12 @@ namespace MyMoney.ViewModels.Pages
             {
                 Budgets.Add(budget);
             }
+
+            // Sort according to date
+            var sortedBudgets = Budgets.OrderByDescending(x => x.BudgetDate).ToList();
+            Budgets.Clear();
+            foreach (var item in sortedBudgets)
+                Budgets.Add(item);
         }
 
         private void UpdateBudgetLists()
