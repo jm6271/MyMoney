@@ -593,6 +593,7 @@ namespace MyMoney.ViewModels.Pages
                 CurrentBalance = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].CurrentBalance,
                 RecentTransactions = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].Transactions,
             };
+            viewModel.SortTransactions();
 
             _savingsCategoryDialogService.SetViewModel(viewModel);
             var result = await _savingsCategoryDialogService.ShowDialogAsync(_contentDialogService, "Edit Savings Category");
