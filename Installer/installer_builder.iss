@@ -19,6 +19,7 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
+UninstallDisplayIcon={app}\{#MyAppExeName}
 DisableProgramGroupPage=yes
 LicenseFile=..\LICENSE.txt
 ; Remove the following line to run in administrative install mode (install for all users.)
