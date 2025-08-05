@@ -27,6 +27,15 @@ namespace MyMoney.ViewModels.ContentDialogs
         [ObservableProperty]
         private GridLength _editColumnWidth = new(200, GridUnitType.Pixel);
 
+        public void SortTransactions()
+        {
+            // Sort the transactions
+            var sortedTransactions = RecentTransactions.OrderByDescending(x => x.Date).ToList();
+            RecentTransactions.Clear();
+            foreach (var transaction in sortedTransactions)
+                RecentTransactions.Add(transaction);
+        }
+
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
