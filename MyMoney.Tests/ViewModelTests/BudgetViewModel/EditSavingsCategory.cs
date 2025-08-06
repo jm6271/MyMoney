@@ -174,7 +174,7 @@ public class EditSavingsCategoryTests
         // Assert
         Assert.AreEqual(600m, _viewModel.CurrentBudget.BudgetSavingsCategories[0].CurrentBalance.Value);
         Assert.IsTrue(_viewModel.CurrentBudget.BudgetSavingsCategories[0].Transactions.Any(t => 
-            t.TransactionDetail == "Updated Balance" && 
+            t.TransactionDetail == "Updated balance" && 
             t.Amount.Value == 100m)); // Should add transaction for 100m difference
     }
 
