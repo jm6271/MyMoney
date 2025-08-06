@@ -430,8 +430,8 @@ namespace MyMoney.ViewModels.Pages
                 // Add a transaction that applies the budgeted amount to the savings category
                 Transaction appliedBudgetedAmount = new(CurrentBudget.BudgetDate, "", 
                     new Category() { Group = "Savings", Name = category.CategoryName },
-                    category.BudgetedAmount, "Planned This Month");
-                appliedBudgetedAmount.TransactionDetail = "Planned This Month";
+                    category.BudgetedAmount, "Planned this month");
+                appliedBudgetedAmount.TransactionDetail = "Planned this month";
 
                 category.Transactions.Add(appliedBudgetedAmount);
                 category.PlannedTransactionHash = appliedBudgetedAmount.TransactionHash;
@@ -628,8 +628,8 @@ namespace MyMoney.ViewModels.Pages
                     Transaction updatedTransaction = new(DateTime.Today, "",
                         new Category() { Group = "Savings", Name = editedSavingsCategory.CategoryName },
                         new(viewModel.CurrentBalance.Value - editedSavingsCategory.CurrentBalance.Value),
-                        "Updated Balance");
-                    updatedTransaction.TransactionDetail = "Updated Balance";
+                        "Updated balance");
+                    updatedTransaction.TransactionDetail = "Updated balance";
                     editedSavingsCategory.Transactions.Add(updatedTransaction);
                     
                     // Update the balance

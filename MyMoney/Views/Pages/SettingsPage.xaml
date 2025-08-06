@@ -78,8 +78,8 @@
                 <ComboBoxItem Content="Forever"/>
             </ComboBox>
         </StackPanel>
-        <ui:Button Margin="0,12,0,0" Content="Backup Now..." Command="{Binding ViewModel.BackupNowCommand}"/>
-        <ui:Button Margin="0,12,0,0" Content="Restore From Backup..." Command="{Binding ViewModel.RestoreFromBackupCommand}"/>
+        <ui:Button Margin="0,12,0,0" Content="Backup now..." Command="{Binding ViewModel.BackupNowCommand}"/>
+        <ui:Button Margin="0,12,0,0" Content="Restore from backup..." Command="{Binding ViewModel.RestoreFromBackupCommand}"/>
 
         <TextBlock
             Margin="0,24,0,0"
