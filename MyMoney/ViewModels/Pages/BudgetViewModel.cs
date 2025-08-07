@@ -18,6 +18,7 @@ using System.Linq;
 using System.Windows.Data;
 using GongSolutions.Wpf.DragDrop;
 using MyMoney.Helpers.DropHandlers;
+using Wpf.Ui.Abstractions.Controls;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -173,7 +174,10 @@ namespace MyMoney.ViewModels.Pages
             // Select the current budget
             if (Budgets.Count > 0)
             {
-                SelectedGroupedBudgetIndex = 0;
+                Application.Current.Dispatcher.Invoke(() => {
+                    SelectedGroupedBudgetIndex = 0;
+                    SelectedGroupedBudget = GroupedBudgets?.GetItemAt(0) as GroupedBudget;
+                });
             }
 
             _ = Task.Run(() => AddActualSpentToCurrentBudget());
