@@ -39,7 +39,6 @@ namespace MyMoney.Views.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            //_ = Task.Run(() => ViewModel.OnPageNavigatedTo());
         }
 
         private void ListView_SizeChanged(object sender, SizeChangedEventArgs e)
