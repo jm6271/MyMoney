@@ -1,12 +1,13 @@
 ﻿using MyMoney.ViewModels.Pages;
 using System.Windows.Controls;
+using Wpf.Ui.Abstractions.Controls;
 
 namespace MyMoney.Views.Pages
 {
     /// <summary>
     /// Interaction logic for BudgetPage.xaml
     /// </summary>
-    public partial class BudgetPage : Page
+    public partial class BudgetPage : INavigableView<BudgetViewModel>
     {
         private Thickness _budgetsListWideMargin;
         private Thickness _budgetsPanelWideMargin;
@@ -38,7 +39,6 @@ namespace MyMoney.Views.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            _ = Task.Run(() => ViewModel.OnPageNavigatedTo());
         }
 
         private void ListView_SizeChanged(object sender, SizeChangedEventArgs e)
