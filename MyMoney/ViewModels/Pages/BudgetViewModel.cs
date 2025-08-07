@@ -19,10 +19,11 @@ using System.Windows.Data;
 using GongSolutions.Wpf.DragDrop;
 using MyMoney.Helpers.DropHandlers;
 using Wpf.Ui.Abstractions.Controls;
+using System.Diagnostics;
 
 namespace MyMoney.ViewModels.Pages
 {
-    public partial class BudgetViewModel : ObservableObject
+    public partial class BudgetViewModel : ObservableObject, INavigationAware
     {
         /// <summary>
         /// Collection of all budgets in the system
@@ -164,23 +165,33 @@ namespace MyMoney.ViewModels.Pages
             ExpenseItemsMoveAndReorderHandler = new(this);
         }
 
-        public void OnPageNavigatedTo()
+        public async Task OnPageNavigatedTo()
         {
             LoadBudgetCollection();
             UpdateCharts();
             UpdateBudgetLists();
             UpdateListViewTotals();
 
-            // Select the current budget
             if (Budgets.Count > 0)
             {
-                Application.Current.Dispatcher.Invoke(() => {
+                await Application.Current.Dispatcher.InvokeAsync(() => {
                     SelectedGroupedBudgetIndex = 0;
                     SelectedGroupedBudget = GroupedBudgets?.GetItemAt(0) as GroupedBudget;
                 });
             }
 
-            _ = Task.Run(() => AddActualSpentToCurrentBudget());
+            AddActualSpentToCurrentBudget();
+        }
+
+        public Task OnNavigatedToAsync()
+        {
+            _ = Task.Run(OnPageNavigatedTo);
+            return Task.CompletedTask;
+        }
+
+        public Task OnNavigatedFromAsync()
+        {
+            return Task.CompletedTask;
         }
 
         private void LoadBudgetCollection()
