@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace MyMoney.Views.Pages.ReportPages
+namespace MyMoney.Views.Pages
 {
     /// <summary>
     /// Interaction logic for BudgetReportsPage.xaml

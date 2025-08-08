@@ -8,7 +8,6 @@ using MyMoney.ViewModels.Pages;
 using MyMoney.ViewModels.Pages.ReportPages;
 using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Pages;
-using MyMoney.Views.Pages.ReportPages;
 using MyMoney.Views.Windows;
 using System.IO;
 using System.Reflection;
