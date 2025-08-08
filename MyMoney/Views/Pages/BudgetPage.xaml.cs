@@ -1,6 +1,9 @@
-﻿using MyMoney.ViewModels.Pages;
+﻿using MyMoney.Core.Models;
+using MyMoney.Helpers;
+using MyMoney.ViewModels.Pages;
 using System.Windows.Controls;
 using Wpf.Ui.Abstractions.Controls;
+using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.Pages
 {
@@ -35,10 +38,6 @@ namespace MyMoney.Views.Pages
             _chartPanelWideMargin = ChartsPanel.Margin;
             _incomeChartWideMargin = IncomeChart.Margin;
             _expenseChartWideMargin= ExpenseChart.Margin;
-        }
-
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
         }
 
         private void ListView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -111,11 +110,6 @@ namespace MyMoney.Views.Pages
         }
 
         private void CardExpander_Expanded(object sender, RoutedEventArgs e)
-        {
-            ViewModel.WriteToDatabase();
-        }
-
-        private void CardExpander_Collapsed(object sender, RoutedEventArgs e)
         {
             ViewModel.WriteToDatabase();
         }

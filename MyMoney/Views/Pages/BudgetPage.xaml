@@ -19,7 +19,6 @@
       ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
-      Loaded="Page_Loaded"
       SizeChanged="Page_SizeChanged">
 
     <Page.Resources>
@@ -219,15 +218,15 @@
                 </ui:Button>
             </Grid>
 
-            <ItemsControl ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}"
+            <ItemsControl x:Name="ExpensesItemsControl" ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}"
                           dd:DragDrop.IsDragSource="True"
                           dd:DragDrop.IsDropTarget="True"
                           dd:DragDrop.DropHandler="{Binding ViewModel.ExpenseGroupsReorderHandler}"
                           dd:DragDrop.DragHandler="{Binding ViewModel.ExpenseGroupsReorderHandler}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <ui:CardExpander Margin="0,8,0,8" Expanded="CardExpander_Expanded" Collapsed="CardExpander_Collapsed"
-                                         helpers:CardExpanderStateHelper.SyncedIsExpanded="{Binding IsExpanded, Mode=TwoWay}">
+                        <ui:CardExpander Margin="0,8,0,8" Expanded="CardExpander_Expanded" Collapsed="CardExpander_Expanded"
+                                         IsExpanded="{Binding IsExpanded, UpdateSourceTrigger=PropertyChanged}">
                             <ui:CardExpander.Header>
                                 <Grid>
                                     <Grid.ColumnDefinitions>

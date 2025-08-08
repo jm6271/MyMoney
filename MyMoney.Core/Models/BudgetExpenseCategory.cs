@@ -23,7 +23,7 @@ namespace MyMoney.Core.Models
         private int _selectedSubItemIndex = 1;
 
         [ObservableProperty]
-        private bool _isExpanded;
+        private bool _isExpanded = true;
 
         public Currency CategoryTotal
         {
