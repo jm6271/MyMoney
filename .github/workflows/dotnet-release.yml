@@ -41,12 +41,18 @@ jobs:
     - name: Build solution
       run: |
         dotnet restore --use-lock-file
+        dotnet publish -c Release -r win-arm64 --self-contained /p:PublishReadyToRun=true MyMoney/MyMoney.csproj
         dotnet publish -c Release -r win-x64 --self-contained /p:PublishReadyToRun=true MyMoney/MyMoney.csproj
       
-    - name: Compile the Inno Setup script
+    - name: Compile the Inno Setup script for x64
       uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
       with:
         path: Installer/installer_builder.iss
+
+    - name: Compile the Inno Setup script for arm64
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+      with:
+        path: Installer/installer_builder_arm64.iss
 
     - name: Zip installer
       run: |
@@ -54,7 +60,7 @@ jobs:
         ls Installer/
         ls
         
-    - name: Upload release asset
+    - name: Upload release assets
       uses: softprops/action-gh-release@v2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
