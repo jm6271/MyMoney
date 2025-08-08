@@ -174,13 +174,22 @@ namespace MyMoney.ViewModels.Pages
 
             if (Budgets.Count > 0)
             {
-                await Application.Current.Dispatcher.InvokeAsync(() => {
+                await SelectCurrentBudget();
+            }
+
+            AddActualSpentToCurrentBudget();
+        }
+
+        private async Task SelectCurrentBudget()
+        {
+            if (Application.Current != null)
+            {
+                await Application.Current.Dispatcher.InvokeAsync(() =>
+                {
                     SelectedGroupedBudgetIndex = 0;
                     SelectedGroupedBudget = GroupedBudgets?.GetItemAt(0) as GroupedBudget;
                 });
             }
-
-            AddActualSpentToCurrentBudget();
         }
 
         public Task OnNavigatedToAsync()
@@ -936,6 +945,7 @@ namespace MyMoney.ViewModels.Pages
         private void LoadBudget(int index)
         {
             if (index == -1) return;
+            if (GroupedBudgets == null) return;
 
             // Load into current budget
             CurrentBudget = Budgets[index];
