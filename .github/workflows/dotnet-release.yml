@@ -41,7 +41,7 @@ jobs:
     - name: Build solution
       run: |
         dotnet restore --use-lock-file
-        dotnet publish -c Release -r win-x64 --self-contained MyMoney/MyMoney.csproj
+        dotnet publish -c Release -r win-x64 --self-contained /p:PublishReadyToRun=true MyMoney/MyMoney.csproj
       
     - name: Compile the Inno Setup script
       uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
