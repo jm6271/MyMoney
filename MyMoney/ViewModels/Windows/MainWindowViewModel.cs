@@ -33,27 +33,21 @@ namespace MyMoney.ViewModels.Windows
                 TargetPageType = typeof(Views.Pages.BudgetPage)
             },
 
+            new NavigationViewItemSeparator(),
+
             new NavigationViewItem()
             {
-                Content = "Reports",
-                Icon = new SymbolIcon { Symbol = SymbolRegular.AlignBottom24 },
-                MenuItemsSource = new ObservableCollection<NavigationViewItem>()
-                {
-                    new()
-                    {
-                        Content = "Overview",
-                        Icon = new SymbolIcon { Symbol = SymbolRegular.ChartMultiple24 },
-                        TargetPageType = typeof(Views.Pages.ReportsPage),
-                    },
-                    new()
-                    {
-                        Content = "Budget Reports",
-                        Icon = new SymbolIcon { Symbol = SymbolRegular.BookCoins24 },
-                        TargetPageType = typeof(Views.Pages.ReportPages.BudgetReportsPage),
-                    }
-                }
-            }
+                 Content = "Charts",
+                 Icon = new SymbolIcon { Symbol = SymbolRegular.ChartMultiple24 },
+                 TargetPageType = typeof(Views.Pages.ReportsPage),
+            },
 
+            new NavigationViewItem()
+            {
+                Content = "Budget Reports",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.BookCoins24 },
+                TargetPageType = typeof(Views.Pages.BudgetReportsPage),
+            },
         ];
 
         [ObservableProperty]
