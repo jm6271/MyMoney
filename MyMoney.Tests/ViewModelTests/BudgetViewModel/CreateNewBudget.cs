@@ -112,7 +112,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockSavingsCategoryDialogService.Object
             );
 
-            await _viewModel.OnPageNavigatedTo();
+            await _viewModel.OnNavigatedToAsync();
             _viewModel.CurrentBudget = _viewModel.Budgets[0];
 
             // Act
@@ -192,7 +192,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockSavingsCategoryDialogService.Object
             );
 
-            await _viewModel.OnPageNavigatedTo();
+            await _viewModel.OnNavigatedToAsync();
             _viewModel.CurrentBudget = _viewModel.Budgets[0];
 
             // Act

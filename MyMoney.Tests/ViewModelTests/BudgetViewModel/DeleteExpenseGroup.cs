@@ -24,7 +24,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
         private ViewModels.Pages.BudgetViewModel _viewModel;
 
         [TestInitialize]
-        public void Setup()
+        public async Task Setup()
         {
             _mockContentDialogService = new Mock<IContentDialogService>();
             _mockDatabaseReader = new Mock<IDatabaseReader>();
@@ -54,7 +54,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockSavingsCategoryDialogService.Object
             );
 
-            _viewModel.OnPageNavigatedTo();
+            await _viewModel.OnNavigatedToAsync();
             _viewModel.CurrentBudget = _viewModel.Budgets[0];
         }
 

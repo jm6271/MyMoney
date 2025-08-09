@@ -165,21 +165,6 @@ namespace MyMoney.ViewModels.Pages
             ExpenseItemsMoveAndReorderHandler = new(this);
         }
 
-        public async Task OnPageNavigatedTo()
-        {
-            LoadBudgetCollection();
-            UpdateCharts();
-            UpdateBudgetLists();
-            UpdateListViewTotals();
-
-            if (Budgets.Count > 0)
-            {
-                await SelectCurrentBudget();
-            }
-
-            AddActualSpentToCurrentBudget();
-        }
-
         private async Task SelectCurrentBudget()
         {
             if (Application.Current != null)
@@ -192,10 +177,17 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        public Task OnNavigatedToAsync()
+        public async Task OnNavigatedToAsync()
         {
-            _ = Task.Run(OnPageNavigatedTo);
-            return Task.CompletedTask;
+            await Task.Run(LoadBudgetCollection);
+            await Task.Run(UpdateCharts);
+            await Task.Run(UpdateBudgetLists);
+            await Task.Run(UpdateListViewTotals);
+
+            if (Budgets.Count > 0)
+                await SelectCurrentBudget();
+
+            await Task.Run(AddActualSpentToCurrentBudget);
         }
 
         public Task OnNavigatedFromAsync()

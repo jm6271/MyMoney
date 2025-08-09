@@ -22,7 +22,7 @@ public class EditIncomeItemTests
     private ViewModels.Pages.BudgetViewModel _viewModel = null!;
 
     [TestInitialize]
-    public void Setup()
+    public async Task Setup()
     {
         _mockContentDialogService = new Mock<IContentDialogService>();
         _mockDatabaseReader = new Mock<IDatabaseReader>();
@@ -56,7 +56,7 @@ public class EditIncomeItemTests
             _mockSavingsCategoryDialogService.Object
         );
 
-        _viewModel.OnPageNavigatedTo();
+        await _viewModel.OnNavigatedToAsync();
         _viewModel.CurrentBudget = _viewModel.Budgets[0];
     }
 

@@ -27,7 +27,7 @@ public class DeleteIncomeItemTests
     private int _originalNumberOfIncomeItems;
 
     [TestInitialize]
-    public void Setup()
+    public async Task Setup()
     {
         _mockContentDialogService = new Mock<IContentDialogService>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
@@ -65,7 +65,7 @@ public class DeleteIncomeItemTests
             _mockSavingsCategoryDialogService.Object
         );
 
-        _viewModel.OnPageNavigatedTo();
+        await _viewModel.OnNavigatedToAsync();
         _viewModel.CurrentBudget = _viewModel.Budgets[0];
     }
 
