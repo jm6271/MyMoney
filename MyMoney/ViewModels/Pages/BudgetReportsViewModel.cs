@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
 
-namespace MyMoney.ViewModels.Pages.ReportPages
+namespace MyMoney.ViewModels.Pages
 {
     /// <summary>
     /// ViewModel for the budget reports page, displaying detailed budget analysis and charts

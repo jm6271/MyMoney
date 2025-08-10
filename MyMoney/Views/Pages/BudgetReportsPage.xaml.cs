@@ -1,4 +1,4 @@
-﻿using MyMoney.ViewModels.Pages.ReportPages;
+﻿using MyMoney.ViewModels.Pages;
 using System;
 using System.Collections.Generic;
 using System.Linq;

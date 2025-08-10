@@ -5,7 +5,6 @@ using MyMoney.Core.Database;
 using MyMoney.Services;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.Pages;
-using MyMoney.ViewModels.Pages.ReportPages;
 using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Pages;
 using MyMoney.Views.Windows;
