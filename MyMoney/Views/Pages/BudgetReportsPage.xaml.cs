@@ -13,13 +13,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Wpf.Ui.Abstractions.Controls;
 
 namespace MyMoney.Views.Pages
 {
     /// <summary>
     /// Interaction logic for BudgetReportsPage.xaml
     /// </summary>
-    public partial class BudgetReportsPage : Page
+    public partial class BudgetReportsPage : INavigableView<BudgetReportsViewModel>
     {
         public BudgetReportsViewModel ViewModel { get; private set; }
 
@@ -41,11 +42,6 @@ namespace MyMoney.Views.Pages
             _wideBudgetsMargin = BudgetsCard.Margin;
             _wideReportMargin = BudgetReport.Margin;
             _wideIncomeChartMargin = IncomeChart.Margin;
-        }
-
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            ViewModel.OnPageNavigatedTo();
         }
 
         private void Page_SizeChanged(object sender, SizeChangedEventArgs e)

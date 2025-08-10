@@ -14,7 +14,6 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="BudgetReportsPage"
-      Loaded="Page_Loaded"
       SizeChanged="Page_SizeChanged">
 
     <Grid>

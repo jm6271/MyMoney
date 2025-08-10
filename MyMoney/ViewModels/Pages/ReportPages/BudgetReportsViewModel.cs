@@ -7,6 +7,7 @@ using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
 using SkiaSharp;
 using System.Collections.ObjectModel;
+using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
 
 namespace MyMoney.ViewModels.Pages.ReportPages
@@ -14,7 +15,7 @@ namespace MyMoney.ViewModels.Pages.ReportPages
     /// <summary>
     /// ViewModel for the budget reports page, displaying detailed budget analysis and charts
     /// </summary>
-    public partial class BudgetReportsViewModel : ObservableObject
+    public partial class BudgetReportsViewModel : ObservableObject, INavigationAware
     {
         #region Report Data
 
@@ -127,6 +128,7 @@ namespace MyMoney.ViewModels.Pages.ReportPages
         #region Fields
 
         private readonly IDatabaseReader _databaseReader;
+        private readonly Lock _databaseReaderLock = new();
 
         #endregion
 
@@ -141,10 +143,7 @@ namespace MyMoney.ViewModels.Pages.ReportPages
 
         #region Public Methods
 
-        /// <summary>
-        /// Initializes the page content when navigating to it
-        /// </summary>
-        public void OnPageNavigatedTo()
+        public Task OnNavigatedToAsync()
         {
             LoadBudgets();
             UpdateCharts();
@@ -153,7 +152,10 @@ namespace MyMoney.ViewModels.Pages.ReportPages
             {
                 CalculateReport(SelectedBudget.BudgetDate);
             }
+            return Task.CompletedTask;
         }
+
+        public Task OnNavigatedFromAsync() => Task.CompletedTask;
 
         /// <summary>
         /// Calculates the budget report for a specific date
@@ -189,7 +191,10 @@ namespace MyMoney.ViewModels.Pages.ReportPages
 
         private void LoadBudgets()
         {
-            var budgetCollection = new BudgetCollection(_databaseReader);
+            BudgetCollection budgetCollection;
+            lock (_databaseReaderLock)
+                budgetCollection = new BudgetCollection(_databaseReader);
+
             var unsortedBudgets = new ObservableCollection<Budget>(budgetCollection.Budgets);
             Budgets = new ObservableCollection<Budget>(unsortedBudgets.OrderByDescending(o => o.BudgetDate));
 
@@ -208,11 +213,12 @@ namespace MyMoney.ViewModels.Pages.ReportPages
 
         private (List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) LoadReportData(DateTime date)
         {
-            return (
-                BudgetReportCalculator.CalculateIncomeReportItems(date, _databaseReader),
-                BudgetReportCalculator.CalculateExpenseReportItems(date, _databaseReader),
-                BudgetReportCalculator.CalculateSavingsReportItems(date, _databaseReader)
-            );
+            lock (_databaseReaderLock)
+                return (
+                    BudgetReportCalculator.CalculateIncomeReportItems(date, _databaseReader),
+                    BudgetReportCalculator.CalculateExpenseReportItems(date, _databaseReader),
+                    BudgetReportCalculator.CalculateSavingsReportItems(date, _databaseReader)
+                );
         }
 
         private void UpdateReportCollections((List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) data)
