@@ -8,13 +8,14 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using Wpf.Ui.Appearance;
 using LiveChartsCore.SkiaSharpView.VisualElements;
+using Wpf.Ui.Abstractions.Controls;
 
 namespace MyMoney.ViewModels.Pages
 {
     /// <summary>
     /// ViewModel for the dashboard page, displaying account summaries and budget reports
     /// </summary>
-    public partial class DashboardViewModel : ObservableObject
+    public partial class DashboardViewModel : ObservableObject, INavigationAware
     {
         #region Collections
 
@@ -112,6 +113,9 @@ namespace MyMoney.ViewModels.Pages
 
         private readonly IDatabaseReader _databaseReader;
         private readonly object _databaseLockObject = new();
+        private readonly Lock _incomeItemsLock = new();
+        private readonly Lock _expenseItemsLock = new();
+        private readonly Lock _savingsItemsLock = new();
 
         public DashboardViewModel(IDatabaseReader databaseReader)
         {
@@ -119,20 +123,23 @@ namespace MyMoney.ViewModels.Pages
             Series = UpdateChartSeries();
         }
 
-        private void CalculateBudgetReport()
+        private async Task CalculateBudgetReport()
         {
             ClearReports();
-            var reportItems = LoadReportItems();
+            var reportItems = await Task.Run(LoadReportItems);
             UpdateReportCollections(reportItems);
-            CalculateTotals();
+            await CalculateTotals();
             UpdateChartDisplay();
         }
 
         private void ClearReports()
         {
-            BudgetReportIncomeItems.Clear();
-            BudgetReportExpenseItems.Clear();
-            BudgetReportSavingsItems.Clear();
+            lock (_expenseItemsLock)
+                BudgetReportExpenseItems.Clear();
+            lock (_incomeItemsLock)
+                BudgetReportIncomeItems.Clear();
+            lock (_savingsItemsLock)
+                BudgetReportSavingsItems.Clear();
         }
 
         private (List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) LoadReportItems()
@@ -149,23 +156,29 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateReportCollections((List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) items)
         {
-            foreach (var item in items.income)
-                BudgetReportIncomeItems.Add(item);
+            lock (_incomeItemsLock)
+                foreach (var item in items.income)
+                    BudgetReportIncomeItems.Add(item);
 
-            foreach (var item in items.expense)
-                BudgetReportExpenseItems.Add(item);
+            lock (_expenseItemsLock)
+                foreach (var item in items.expense)
+                    BudgetReportExpenseItems.Add(item);
 
-            foreach (var item in items.savings)
-                BudgetReportSavingsItems.Add(item);
+            lock (_savingsItemsLock)
+                foreach (var item in items.savings)
+                    BudgetReportSavingsItems.Add(item);
         }
 
-        private void CalculateTotals()
+        private async Task CalculateTotals()
         {
-            var incomeTotal = CalculateIncomeTotal();
-            var expenseTotal = CalculateExpenseTotal();
+            var incomeTotal = await Task.Run(CalculateIncomeTotal);
+            var expenseTotal = await Task.Run(CalculateExpenseTotal);
 
-            BudgetReportIncomeItems.Add(incomeTotal);
-            BudgetReportExpenseItems.Add(expenseTotal);
+            lock (_incomeItemsLock)
+                BudgetReportIncomeItems.Add(incomeTotal);
+
+            lock (_expenseItemsLock)
+                BudgetReportExpenseItems.Add(expenseTotal);
 
             Income = (double)incomeTotal.Actual.Value;
             Expenses = (double)expenseTotal.Actual.Value;
@@ -174,26 +187,32 @@ namespace MyMoney.ViewModels.Pages
 
         private BudgetReportItem CalculateIncomeTotal()
         {
-            var total = new BudgetReportItem { Category = "Total" };
-            foreach (var item in BudgetReportIncomeItems)
+            lock (_incomeItemsLock)
             {
-                total.Actual += item.Actual;
-                total.Budgeted += item.Budgeted;
-                total.Remaining += item.Remaining;
+                var total = new BudgetReportItem { Category = "Total" };
+                foreach (var item in BudgetReportIncomeItems)
+                {
+                    total.Actual += item.Actual;
+                    total.Budgeted += item.Budgeted;
+                    total.Remaining += item.Remaining;
+                }
+                return total;
             }
-            return total;
         }
 
         private BudgetReportItem CalculateExpenseTotal()
         {
-            var total = new BudgetReportItem { Category = "Total" };
-            foreach (var item in BudgetReportExpenseItems)
+            lock (_expenseItemsLock)
             {
-                total.Actual += item.Actual;
-                total.Budgeted += item.Budgeted;
-                total.Remaining += item.Remaining;
+                var total = new BudgetReportItem { Category = "Total" };
+                foreach (var item in BudgetReportExpenseItems)
+                {
+                    total.Actual += item.Actual;
+                    total.Budgeted += item.Budgeted;
+                    total.Remaining += item.Remaining;
+                }
+                return total;
             }
-            return total;
         }
 
         private void UpdateChartDisplay()
@@ -232,13 +251,15 @@ namespace MyMoney.ViewModels.Pages
             ChartTitle.Paint = textPaint;
         }
 
-        /// <summary>
-        /// Loads account information and updates the dashboard when navigating to the page
-        /// </summary>
-        public void OnPageNavigatedTo()
+        public async Task OnNavigatedToAsync()
         {
             LoadAccounts();
-            CalculateBudgetReport();
+            await CalculateBudgetReport();
+        }
+
+        public Task OnNavigatedFromAsync()
+        {
+            return Task.CompletedTask;
         }
 
         private void LoadAccounts()

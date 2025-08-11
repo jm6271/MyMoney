@@ -3,6 +3,8 @@ using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using MyMoney.Core.Reports;
 using SkiaSharp;
+using System.Threading.Tasks;
+using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
 
 namespace MyMoney.ViewModels.Pages
@@ -10,7 +12,7 @@ namespace MyMoney.ViewModels.Pages
     /// <summary>
     /// ViewModel for the reports page, showing various financial reports and charts
     /// </summary>
-    public partial class ReportsViewModel : ObservableObject
+    public partial class ReportsViewModel : ObservableObject, INavigationAware
     {
         #region Chart Properties
 
@@ -55,39 +57,28 @@ namespace MyMoney.ViewModels.Pages
 
         #endregion
 
-        #region Constructor
-
-        public ReportsViewModel()
-        {
-            UpdateCharts();
-        }
-
-        #endregion
-
         #region Public Methods
 
-        /// <summary>
-        /// Updates the page content when navigating to it
-        /// </summary>
-        [RelayCommand]
-        private void OnPageNavigatedTo()
+        public async Task OnNavigatedToAsync()
         {
-            UpdateCharts();
+            await UpdateCharts();
         }
+
+        public Task OnNavigatedFromAsync() => Task.CompletedTask;
 
         #endregion
 
         #region Private Methods
 
-        private void UpdateCharts()
+        private async Task UpdateCharts()
         {
             UpdateTextColor();
-            Update12MonthIncomeExpenseChart();
+            await Update12MonthIncomeExpenseChart();
         }
 
-        private void Update12MonthIncomeExpenseChart()
+        private async Task Update12MonthIncomeExpenseChart()
         {
-            var (incomeSeries, expenseSeries) = GetChartData();
+            var (incomeSeries, expenseSeries) = await Task.Run(GetChartData);
             UpdateChartSeries(incomeSeries, expenseSeries);
             UpdateChartAxes();
             UpdateChartLegend();

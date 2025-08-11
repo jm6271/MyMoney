@@ -25,11 +25,6 @@ namespace MyMoney.Views.Pages
             _wideRightPanelMargin = RightPanel.Margin;
         }
 
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            ViewModel.OnPageNavigatedTo();
-        }
-
         private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
         {
             if (e.NewSize.Width < 875)

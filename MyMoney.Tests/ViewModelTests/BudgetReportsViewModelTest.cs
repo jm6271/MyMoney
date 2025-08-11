@@ -1,4 +1,4 @@
-﻿using MyMoney.ViewModels.Pages.ReportPages;
+﻿using MyMoney.ViewModels.Pages;
 using Moq;
 using MyMoney.Core.Models;
 

@@ -17,7 +17,6 @@
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d"
-    Loaded="Page_Loaded"
     SizeChanged="Page_SizeChanged">
     <Page.Resources>
         <helpers:IsLastItemConverter x:Key="IsLastItemConverter"/>
