@@ -14,8 +14,7 @@
       ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
       ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
       Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
-      Loaded="Page_Loaded">
+      xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core">
 
     <Grid>
         <Grid.RowDefinitions>

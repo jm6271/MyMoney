@@ -1,5 +1,6 @@
 ﻿using MyMoney.ViewModels.Pages;
 using System.Windows.Controls;
+using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
 
 namespace MyMoney.Views.Pages
@@ -7,7 +8,7 @@ namespace MyMoney.Views.Pages
     /// <summary>
     /// Interaction logic for ReportsPage.xaml
     /// </summary>
-    public partial class ReportsPage : Page
+    public partial class ReportsPage : INavigableView<ReportsViewModel>
     {
         public ReportsViewModel ViewModel { get; }
 
@@ -17,11 +18,6 @@ namespace MyMoney.Views.Pages
             DataContext = this;
 
             InitializeComponent();
-        }
-
-        private void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            ViewModel.PageNavigatedToCommand.Execute(this);
         }
     }
 }
