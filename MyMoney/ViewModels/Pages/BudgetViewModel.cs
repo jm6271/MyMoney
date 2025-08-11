@@ -881,7 +881,7 @@ namespace MyMoney.ViewModels.Pages
                         BudgetSavingsCategory newSavingsCategory = (BudgetSavingsCategory)item.Clone();
 
                         // Add a new transaction that carries the balance forward
-                        Transaction balanceCarriedForward = new(newBudget.BudgetDate, "", 
+                        Transaction balanceCarriedForward = new(newBudget.BudgetDate.AddDays(-1), "", 
                             new Category() { Group = "Savings", Name = item.CategoryName },
                             item.CurrentBalance, "Balance carried forward")
                         {
