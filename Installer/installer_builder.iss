@@ -29,6 +29,9 @@ OutputBaseFilename=mymoney-setup-0.9.3-win-x64
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64
+
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
