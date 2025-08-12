@@ -14,7 +14,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
     public class EditTransactionTests
     {
         private Mock<IContentDialogService> _contentDialogService;
-        private Mock<IDatabaseReader> _databaseReader;
+        private Mock<IDatabaseManager> _databaseReader;
         private Mock<INewAccountDialogService> _accountDialogService;
         private Mock<ITransferDialogService> _transferDialogService;
         private Mock<ITransactionDialogService> _transactionDialogService;
@@ -26,7 +26,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         public void Setup()
         {
             _contentDialogService = new Mock<IContentDialogService>();
-            _databaseReader = new Mock<IDatabaseReader>();
+            _databaseReader = new Mock<IDatabaseManager>();
             _accountDialogService = new Mock<INewAccountDialogService>();
             _transferDialogService = new Mock<ITransferDialogService>();
             _transactionDialogService = new Mock<ITransactionDialogService>();

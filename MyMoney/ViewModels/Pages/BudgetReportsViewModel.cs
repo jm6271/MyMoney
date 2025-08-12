@@ -127,14 +127,14 @@ namespace MyMoney.ViewModels.Pages
 
         #region Fields
 
-        private readonly IDatabaseReader _databaseReader;
+        private readonly IDatabaseManager _databaseReader;
         private readonly Lock _databaseReaderLock = new();
 
         #endregion
 
         #region Constructor
 
-        public BudgetReportsViewModel(IDatabaseReader databaseReader)
+        public BudgetReportsViewModel(IDatabaseManager databaseReader)
         {
             _databaseReader = databaseReader ?? throw new ArgumentNullException(nameof(databaseReader));
         }

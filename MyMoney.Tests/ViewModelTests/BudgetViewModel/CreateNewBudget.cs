@@ -16,7 +16,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
     public class CreateNewBudgetTests
     {
         private Mock<IContentDialogService> _mockContentDialogService = null!;
-        private Mock<IDatabaseReader> _mockDatabaseReader = null!;
+        private Mock<IDatabaseManager> _mockDatabaseReader = null!;
         private Mock<IMessageBoxService> _mockMessageBoxService = null!;
         private Mock<INewBudgetDialogService> _mockNewBudgetDialogService = null!;
         private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService = null!;
@@ -28,7 +28,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
         public void Setup()
         {
             _mockContentDialogService = new Mock<IContentDialogService>();
-            _mockDatabaseReader = new Mock<IDatabaseReader>();
+            _mockDatabaseReader = new Mock<IDatabaseManager>();
             _mockMessageBoxService = new Mock<IMessageBoxService>();
             _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
             _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();

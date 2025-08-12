@@ -55,7 +55,7 @@ namespace MyMoney.ViewModels.Pages
 
         // Dependencies
         private readonly IContentDialogService _contentDialogService;
-        private readonly IDatabaseReader _databaseReader;
+        private readonly IDatabaseManager _databaseManager;
         private readonly INewAccountDialogService _newAccountDialogService;
         private readonly ITransferDialogService _transferDialogService;
         private readonly ITransactionDialogService _transactionDialogService;
@@ -69,7 +69,7 @@ namespace MyMoney.ViewModels.Pages
         /// Initializes a new instance of the <see cref="AccountsViewModel"/> class.
         /// </summary>
         /// <param name="contentDialogService">Service for displaying content dialogs</param>
-        /// <param name="databaseReader">Service for reading from the database</param>
+        /// <param name="databaseManager">Service for reading from the database</param>
         /// <param name="newAccountDialogService">Service for the new account dialog</param>
         /// <param name="transferDialogService">Service for the transfer dialog</param>
         /// <param name="transactionDialogService">Service for the transaction dialog</param>
@@ -77,7 +77,7 @@ namespace MyMoney.ViewModels.Pages
         /// <param name="messageBoxService">Service for displaying message boxes</param>
         public AccountsViewModel(
             IContentDialogService contentDialogService,
-            IDatabaseReader databaseReader,
+            IDatabaseManager databaseManager,
             INewAccountDialogService newAccountDialogService,
             ITransferDialogService transferDialogService,
             ITransactionDialogService transactionDialogService,
@@ -85,7 +85,7 @@ namespace MyMoney.ViewModels.Pages
             IMessageBoxService messageBoxService)
         {
             _contentDialogService = contentDialogService ?? throw new ArgumentNullException(nameof(contentDialogService));
-            _databaseReader = databaseReader ?? throw new ArgumentNullException(nameof(databaseReader));
+            _databaseManager = databaseManager ?? throw new ArgumentNullException(nameof(databaseManager));
             _newAccountDialogService = newAccountDialogService ?? throw new ArgumentNullException(nameof(newAccountDialogService));
             _transferDialogService = transferDialogService ?? throw new ArgumentNullException(nameof(transferDialogService));
             _transactionDialogService = transactionDialogService ?? throw new ArgumentNullException(nameof(transactionDialogService));
@@ -100,7 +100,7 @@ namespace MyMoney.ViewModels.Pages
         {
             lock (_databaseLockObject)
             {
-                var accounts = _databaseReader.GetCollection<Account>("Accounts");
+                var accounts = _databaseManager.GetCollection<Account>("Accounts");
                 foreach (var account in accounts)
                 {
                     Accounts.Add(account);
@@ -117,7 +117,7 @@ namespace MyMoney.ViewModels.Pages
             BudgetCollection budgetCollection;
             lock (_databaseLockObject)
             {
-                budgetCollection = new(_databaseReader);
+                budgetCollection = new(_databaseManager);
                 if (!budgetCollection.DoesCurrentBudgetExist())
                     return;
 
@@ -161,7 +161,7 @@ namespace MyMoney.ViewModels.Pages
         {
             lock (_databaseLockObject)
             {
-                DatabaseWriter.WriteCollection("Accounts", [.. Accounts]);
+                _databaseManager.WriteCollection("Accounts", [.. Accounts]);
             }
         }
 
@@ -207,7 +207,7 @@ namespace MyMoney.ViewModels.Pages
             BudgetCollection budgetCollection;
             lock (_databaseLockObject)
             {
-                budgetCollection = new(_databaseReader);
+                budgetCollection = new(_databaseManager);
                 if (!budgetCollection.DoesCurrentBudgetExist()) return;
 
                 var currentBudget = budgetCollection.Budgets[budgetCollection.GetCurrentBudgetIndex()];

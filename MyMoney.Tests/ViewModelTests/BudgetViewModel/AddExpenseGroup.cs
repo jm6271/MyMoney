@@ -19,7 +19,7 @@ public class AddExpenseGroupTests
     private Mock<INewBudgetDialogService> _mockNewBudgetDialogService;
     private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
     private Mock<INewExpenseGroupDialogService> _mockNewExpenseGroupDialogService;
-    private Mock<Core.Database.IDatabaseReader> _mockDatabaseReader;
+    private Mock<Core.Database.IDatabaseManager> _mockDatabaseReader;
     private Mock<ISavingsCategoryDialogService> _savingsCategoryDialogService;
 
     [TestInitialize]
@@ -31,7 +31,7 @@ public class AddExpenseGroupTests
         _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
         _mockNewExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
         _savingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
-        _mockDatabaseReader = new Mock<Core.Database.IDatabaseReader>();
+        _mockDatabaseReader = new Mock<Core.Database.IDatabaseManager>();
         
         _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
             .Returns(new List<Budget>());

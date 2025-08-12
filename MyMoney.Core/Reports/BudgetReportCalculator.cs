@@ -11,7 +11,7 @@ namespace MyMoney.Core.Reports
         /// <param name="budgetMonth">The month of the budget to generate a report on</param>
         /// <param name="databaseReader">The database reader to use to get the information for the report</param>
         /// <returns>A list of income report items that occurred in the specified month</returns>
-        public static List<BudgetReportItem> CalculateIncomeReportItems(DateTime budgetMonth, IDatabaseReader databaseReader)
+        public static List<BudgetReportItem> CalculateIncomeReportItems(DateTime budgetMonth, IDatabaseManager databaseReader)
         {
             // read the budget from the database
             BudgetCollection budgetCollection = new(databaseReader);
@@ -53,7 +53,7 @@ namespace MyMoney.Core.Reports
         /// Calculate the income report items from the beginning of the current month
         /// </summary>
         /// <returns>A list of report items, for each budget category</returns>
-        public static List<BudgetReportItem> CalculateIncomeReportItems(IDatabaseReader databaseReader)
+        public static List<BudgetReportItem> CalculateIncomeReportItems(IDatabaseManager databaseReader)
         {
             return CalculateIncomeReportItems(DateTime.Today, databaseReader);
         }
@@ -64,7 +64,7 @@ namespace MyMoney.Core.Reports
         /// <param name="budgetMonth">The month of the budget to generate a report on</param>
         /// <param name="databaseReader">The database reader to use to get the information for the report</param>
         /// <returns>A list of report items, for each savings category</returns>
-        public static List<SavingsCategoryReportItem> CalculateSavingsReportItems(DateTime budgetMonth, IDatabaseReader databaseReader)
+        public static List<SavingsCategoryReportItem> CalculateSavingsReportItems(DateTime budgetMonth, IDatabaseManager databaseReader)
         {
             // read the budget from the database
             BudgetCollection budgetCollection = new(databaseReader);
@@ -106,7 +106,7 @@ namespace MyMoney.Core.Reports
         /// <param name="budgetMonth">The month of the budget to generate a report on</param>
         /// <param name="databaseReader">The database reader to use to get the information for the report</param>
         /// <returns>A list of expense report items that occurred in the specified month</returns>
-        public static List<BudgetReportItem> CalculateExpenseReportItems(DateTime budgetMonth, IDatabaseReader databaseReader)
+        public static List<BudgetReportItem> CalculateExpenseReportItems(DateTime budgetMonth, IDatabaseManager databaseReader)
         {
             // read the budget from the database
             BudgetCollection budgetCollection = new(databaseReader);
@@ -152,12 +152,12 @@ namespace MyMoney.Core.Reports
         /// Calculate the expense report items from the beginning of the current month
         /// </summary>
         /// <returns>A list of report items, for each budget category</returns>
-        public static List<BudgetReportItem> CalculateExpenseReportItems(IDatabaseReader databaseReader)
+        public static List<BudgetReportItem> CalculateExpenseReportItems(IDatabaseManager databaseReader)
         {
             return CalculateExpenseReportItems(DateTime.Today, databaseReader);
         }
 
-        private static Currency CalculateTotalForCategory(Category category, DateTime month, IDatabaseReader databaseReader)
+        private static Currency CalculateTotalForCategory(Category category, DateTime month, IDatabaseManager databaseReader)
         {
             // Read the accounts from the database
             var accounts = databaseReader.GetCollection<Account>("Accounts");

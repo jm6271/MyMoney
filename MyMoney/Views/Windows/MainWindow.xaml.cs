@@ -36,7 +36,7 @@ namespace MyMoney.Views.Windows
             contentDialogService.SetDialogHost(RootContentDialog);
 
             // Load the theme from settings
-            Core.Database.DatabaseReader dbReader = new();
+            DatabaseManager dbReader = new();
             var SettingsDict = dbReader.GetSettingsDictionary("ApplicationSettings");
 
             if (SettingsDict != null && SettingsDict.Count > 0 && SettingsDict.ContainsKey("AppTheme"))
@@ -102,7 +102,7 @@ namespace MyMoney.Views.Windows
         private void FluentWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             // Check settings to see if we need to do a backup
-            var databaseReader = new DatabaseReader();
+            var databaseReader = new DatabaseManager();
             var settingsDict = databaseReader.GetSettingsDictionary("ApplicationSettings");
 
             BackupModeRadioButtonGroup BackupMode = BackupModeRadioButtonGroup.Manual;

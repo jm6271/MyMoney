@@ -15,7 +15,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
     public class RenameAccount
     {
         private Mock<IContentDialogService> _contentDialogService;
-        private Mock<IDatabaseReader> _databaseReader;
+        private Mock<IDatabaseManager> _databaseReader;
         private Mock<INewAccountDialogService> _newAccountDialogService;
         private Mock<ITransferDialogService> _transferDialogService;
         private Mock<ITransactionDialogService> _transactionDialogService;
@@ -26,7 +26,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         public void Setup()
         {
             _contentDialogService = new Mock<IContentDialogService>();
-            _databaseReader = new Mock<IDatabaseReader>();
+            _databaseReader = new Mock<IDatabaseManager>();
             _databaseReader.Setup(x => x.GetCollection<Account>("Accounts")).Returns(new List<Account>());
             _newAccountDialogService = new Mock<INewAccountDialogService>();
             _transferDialogService = new Mock<ITransferDialogService>();

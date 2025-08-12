@@ -281,13 +281,14 @@ namespace MyMoney.ViewModels.Pages
 
         private static Dictionary<string, string> GetSettings()
         {
-            var reader = new DatabaseReader();
+            var reader = new DatabaseManager();
             return reader.GetSettingsDictionary(SettingsKey);
         }
 
         private static void SaveSettings(Dictionary<string, string> settings)
         {
-            DatabaseWriter.WriteSettingsDictionary(SettingsKey, settings);
+            var writer = new DatabaseManager();
+            writer.WriteSettingsDictionary(SettingsKey, settings);
         }
 
         #endregion

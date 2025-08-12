@@ -9,16 +9,17 @@ namespace MyMoney.Core.Database
     {
         private const string BudgetCollectionName = "Budgets";
 
-        // Load budgets
+        private readonly IDatabaseManager _databaseManager;
 
         /// <summary>
         /// A list of the budgets currently in the database
         /// </summary>
         public List<Budget> Budgets { get; set; } = [];
 
-        public BudgetCollection(IDatabaseReader databaseReader)
+        public BudgetCollection(IDatabaseManager databaseManager)
         {
-            var budgetsInDatabase = databaseReader.GetCollection<Budget>(BudgetCollectionName);
+            _databaseManager = databaseManager;
+            var budgetsInDatabase = _databaseManager.GetCollection<Budget>(BudgetCollectionName);
             if (budgetsInDatabase != null)
             {
                 foreach (var budget in budgetsInDatabase)
@@ -46,7 +47,8 @@ namespace MyMoney.Core.Database
         /// </summary>
         public void SaveBudgetCollection()
         {
-            DatabaseWriter.WriteCollection(BudgetCollectionName, Budgets);
+            
+            _databaseManager.WriteCollection(BudgetCollectionName, Budgets);
         }
 
         /// <summary>

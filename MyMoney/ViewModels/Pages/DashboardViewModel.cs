@@ -111,13 +111,13 @@ namespace MyMoney.ViewModels.Pages
 
         #endregion
 
-        private readonly IDatabaseReader _databaseReader;
+        private readonly IDatabaseManager _databaseReader;
         private readonly object _databaseLockObject = new();
         private readonly Lock _incomeItemsLock = new();
         private readonly Lock _expenseItemsLock = new();
         private readonly Lock _savingsItemsLock = new();
 
-        public DashboardViewModel(IDatabaseReader databaseReader)
+        public DashboardViewModel(IDatabaseManager databaseReader)
         {
             _databaseReader = databaseReader ?? throw new ArgumentNullException(nameof(databaseReader));
             Series = UpdateChartSeries();

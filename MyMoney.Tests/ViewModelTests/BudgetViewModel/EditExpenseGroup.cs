@@ -21,7 +21,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
         private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
         private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
         private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService;
-        private Mock<IDatabaseReader> _mockDatabaseReader;
+        private Mock<IDatabaseManager> _mockDatabaseReader;
         private ViewModels.Pages.BudgetViewModel _viewModel;
 
         [TestInitialize]
@@ -33,7 +33,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
             _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
             _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
-            _mockDatabaseReader = new Mock<IDatabaseReader>();
+            _mockDatabaseReader = new Mock<IDatabaseManager>();
 
             _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
                 .Returns(new List<Budget> { 

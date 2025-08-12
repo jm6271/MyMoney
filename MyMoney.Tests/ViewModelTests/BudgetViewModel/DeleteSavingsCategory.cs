@@ -15,7 +15,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel;
 public class DeleteSavingsCategoryTests
 {
     private Mock<IContentDialogService> _mockContentDialogService;
-    private Mock<IDatabaseReader> _mockDatabaseReader;
+    private Mock<IDatabaseManager> _mockDatabaseReader;
     private Mock<IMessageBoxService> _mockMessageBoxService;
     private Mock<INewBudgetDialogService> _mockNewBudgetDialogService;
     private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
@@ -27,7 +27,7 @@ public class DeleteSavingsCategoryTests
     public void Setup()
     {
         _mockContentDialogService = new Mock<IContentDialogService>();
-        _mockDatabaseReader = new Mock<IDatabaseReader>();
+        _mockDatabaseReader = new Mock<IDatabaseManager>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
         _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
         _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
