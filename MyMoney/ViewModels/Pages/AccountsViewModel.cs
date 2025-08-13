@@ -167,7 +167,7 @@ namespace MyMoney.ViewModels.Pages
 
         private async Task<bool> ValidateTransactionAmount(Currency amount, Account account)
         {
-            if (amount.Value < 0 && Math.Abs(amount.Value) > account.Total.Value)
+            if (amount.Value < 0 || Math.Abs(amount.Value) > account.Total.Value)
             {
                 await _messageBoxService.ShowInfoAsync("Error",
                     "The amount of this transaction is greater than the balance of the selected account.", "OK");

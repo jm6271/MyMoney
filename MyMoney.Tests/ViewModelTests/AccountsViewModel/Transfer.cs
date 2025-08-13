@@ -146,5 +146,40 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             Assert.AreEqual(DateTime.Today, account1.Transactions[0].Date);
             Assert.AreEqual(DateTime.Today, account2.Transactions[0].Date);
         }
+
+        [TestMethod]
+        public void TransferBetweenAccounts_InsufficientFunds()
+        {
+            // Arrange
+            var account1 = new Account { AccountName = "Checking", Total = new Currency(50m) };
+            var account2 = new Account { AccountName = "Savings", Total = new Currency(500m) };
+            _viewModel.Accounts.Add(account1);
+            _viewModel.Accounts.Add(account2);
+
+            var transferViewModel = new TransferDialogViewModel(new ObservableCollection<string> { "Checking", "Savings" })
+            {
+                TransferFrom = "Checking",
+                TransferTo = "Savings",
+                Amount = new Currency(100m) // More than available in Checking
+            };
+
+            _mockTransferDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+                .ReturnsAsync(ContentDialogResult.Primary);
+            _mockTransferDialogService.Setup(x => x.GetViewModel())
+                .Returns(transferViewModel);
+
+            // Act
+            _viewModel.TransferBetweenAccountsCommand.Execute(null);
+
+            // Assert
+            Assert.AreEqual(50m, account1.Total.Value); // Should remain unchanged
+            Assert.AreEqual(500m, account2.Total.Value); // Should remain unchanged
+            Assert.AreEqual(0, account1.Transactions.Count); // No transactions should be created
+            Assert.AreEqual(0, account2.Transactions.Count);
+
+            // Verify message box was shown for insufficient funds
+            _mockMessageBoxService.Verify(x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(),
+            It.IsAny<string>()), Times.Once);
+        }
     }
 }

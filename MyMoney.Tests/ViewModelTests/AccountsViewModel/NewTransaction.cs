@@ -75,8 +75,8 @@ public class NewTransactionTests
         _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee())
             .Returns("Test Payee");
         _transactionDialogServiceMock.Setup(x => x.GetViewModel())
-            .Returns(new NewTransactionDialogViewModel 
-            { 
+            .Returns(new NewTransactionDialogViewModel
+            {
                 NewTransactionAmount = new Currency(500),
                 NewTransactionIsExpense = true,
                 NewTransactionDate = DateTime.Today,
@@ -124,8 +124,8 @@ public class NewTransactionTests
         _transactionDialogServiceMock.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
             .ReturnsAsync(ContentDialogResult.Primary);
         _transactionDialogServiceMock.Setup(x => x.GetViewModel())
-            .Returns(new NewTransactionDialogViewModel 
-            { 
+            .Returns(new NewTransactionDialogViewModel
+            {
                 NewTransactionAmount = new Currency(500),
                 NewTransactionIsExpense = true,
                 NewTransactionDate = DateTime.Today,
@@ -141,7 +141,7 @@ public class NewTransactionTests
         // Assert
         Assert.AreEqual(1, account.Transactions.Count);
         Assert.AreEqual(500, account.Total.Value); // 1000 - 500
-        
+
         var transaction = account.Transactions[0];
         Assert.AreEqual("Test Payee", transaction.Payee);
         Assert.AreEqual("Test Category", transaction.Category.Name);
@@ -163,8 +163,8 @@ public class NewTransactionTests
         _transactionDialogServiceMock.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
             .ReturnsAsync(ContentDialogResult.Primary);
         _transactionDialogServiceMock.Setup(x => x.GetViewModel())
-            .Returns(new NewTransactionDialogViewModel 
-            { 
+            .Returns(new NewTransactionDialogViewModel
+            {
                 NewTransactionAmount = new Currency(500),
                 NewTransactionIsExpense = false,
                 NewTransactionDate = DateTime.Today,
@@ -180,7 +180,7 @@ public class NewTransactionTests
         // Assert
         Assert.AreEqual(1, account.Transactions.Count);
         Assert.AreEqual(1500, account.Total.Value); // 1000 + 500
-        
+
         var transaction = account.Transactions[0];
         Assert.AreEqual("Employer", transaction.Payee);
         Assert.AreEqual("Income", transaction.Category.Name);
@@ -188,5 +188,40 @@ public class NewTransactionTests
         Assert.AreEqual("Salary", transaction.Memo);
         Assert.AreEqual(500, transaction.Amount.Value);
         Assert.AreEqual(DateTime.Today, transaction.Date);
+    }
+
+    [TestMethod]
+    public async Task CreateNewTransaction_AmountMoreThanAccountBalance_DoesNotCreateTransaction()
+    {
+        // Arrange
+        var account = new Account { AccountName = "Test Account", Total = new Currency(1000) };
+        _viewModel.Accounts.Add(account);
+        _viewModel.SelectedAccount = account;
+        _viewModel.SelectedAccountIndex = 0;
+
+        _transactionDialogServiceMock.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+            .ReturnsAsync(ContentDialogResult.Primary);
+        _transactionDialogServiceMock.Setup(x => x.GetViewModel())
+            .Returns(new NewTransactionDialogViewModel
+            {
+                NewTransactionAmount = new Currency(-2000),
+                NewTransactionIsExpense = true,
+                NewTransactionDate = DateTime.Today,
+                NewTransactionCategory = new() { Name = "Expense 1", Group = "Expense" },
+                NewTransactionMemo = ""
+            });
+        _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee())
+            .Returns("Payee");
+
+        // Act
+        await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
+
+        // Assert
+        Assert.IsEmpty(account.Transactions);
+        Assert.AreEqual(1000, account.Total.Value);
+
+        // Verify message box was shown for insufficient funds
+        _messageBoxServiceMock.Verify(x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(),
+            It.IsAny<string>()), Times.Once);
     }
 }
