@@ -3,6 +3,7 @@ using Wpf.Ui;
 using MyMoney.Core.Database;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.Core.Models;
+using Wpf.Ui.Controls;
 
 namespace MyMoney.Tests.ViewModelTests.AccountsViewModel;
 
@@ -253,5 +254,59 @@ public class UpdateSavingsCategoryTests
         Assert.AreEqual(-100m, finalBudgetCollection[0].BudgetSavingsCategories[1].Transactions[0].Amount.Value);
         Assert.AreEqual(500m, finalBudgetCollection[0].BudgetSavingsCategories[0].CurrentBalance.Value);
         Assert.AreEqual(900m, finalBudgetCollection[0].BudgetSavingsCategories[1].CurrentBalance.Value);
+    }
+
+    [TestMethod]
+    public async Task UpdateSavingsCategory_DeleteTransaction_UpdatesSavingsCategory()
+    {
+        // Arrange
+        _viewModel.Accounts.Add(new Account() { AccountName = "Test Account", Total = new(1000) });
+
+        List<Budget> finalBudgetCollection = [];
+
+        var budget = new Budget()
+        {
+            BudgetDate = DateTime.Today,
+            BudgetTitle = DateTime.Today.ToString("MMMM, yyyy"),
+            BudgetSavingsCategories = [
+                new() {
+                    CategoryName = "Test Category",
+                    CurrentBalance = new(500),
+                }
+            ]
+        };
+
+        // Add a transaction to delete
+        Transaction transactionToDelete = new(DateTime.Today, "Payee",
+            new() { Group = "Savings", Name = "Test Category" }, new(-200), "Memo");
+        _viewModel.Accounts[0].Transactions.Add(transactionToDelete);
+        budget.BudgetSavingsCategories[0].Transactions.Add(transactionToDelete);
+
+        _databaseReaderMock.Setup(x => x.GetCollection<Budget>("Budgets")).Returns([budget]);
+
+        _databaseReaderMock.Setup(x => x.WriteCollection("Budgets", It.IsAny<List<Budget>>()))
+            .Callback<string, List<Budget>>((collectionName, collection) =>
+            {
+                finalBudgetCollection = collection;
+            });
+
+        _messageBoxServiceMock.Setup(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(MessageBoxResult.Primary);
+
+        _viewModel.SelectedAccountIndex = 0;
+        _viewModel.SelectedAccount = _viewModel.Accounts[0];
+        _viewModel.SelectedTransactionIndex = 0;
+        _viewModel.SelectedTransaction = _viewModel.Accounts[0].Transactions[0];
+
+        // Act
+        await _viewModel.DeleteTransactionCommand.ExecuteAsync(null);
+
+        // Assert
+        Assert.HasCount(1, _viewModel.Accounts);
+        var account = _viewModel.Accounts[0];
+        Assert.HasCount(0, account.Transactions);
+        Assert.HasCount(1, finalBudgetCollection);
+        Assert.HasCount(0, finalBudgetCollection[0].BudgetSavingsCategories[0].Transactions);
+        Assert.AreEqual(700m, finalBudgetCollection[0].BudgetSavingsCategories[0].CurrentBalance.Value);
     }
 }   
