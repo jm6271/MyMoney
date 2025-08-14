@@ -124,7 +124,7 @@ namespace MyMoney.Core.Reports
         private static List<Transaction> ReadTransactionsWithingDateRange(DateTime startDate, DateTime endDate)
         {
             // Load list of transactions from the database
-            var dbReader = new DatabaseReader();
+            var dbReader = new DatabaseManager();
             var accounts = dbReader.GetCollection<Account>("Accounts");
 
             List<Transaction> allTransactions = [];

@@ -7,19 +7,14 @@ using LiveChartsCore.SkiaSharpView.VisualElements;
 using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Painting;
 using Wpf.Ui.Appearance;
-using System.Globalization;
 using System.ComponentModel;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui;
 using MyMoney.Services.ContentDialogs;
-using System.Linq.Expressions;
 using MyMoney.Core.Reports;
-using System.Linq;
 using System.Windows.Data;
-using GongSolutions.Wpf.DragDrop;
 using MyMoney.Helpers.DropHandlers;
 using Wpf.Ui.Abstractions.Controls;
-using System.Diagnostics;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -143,9 +138,9 @@ namespace MyMoney.ViewModels.Pages
         private readonly IBudgetCategoryDialogService _budgetCategoryDialogService;
         private readonly INewExpenseGroupDialogService _newExpenseGroupDialogService;
         private readonly ISavingsCategoryDialogService _savingsCategoryDialogService;
-        private readonly IDatabaseReader _databaseReader;
+        private readonly IDatabaseManager _databaseManager;
 
-        public BudgetViewModel(IContentDialogService contentDialogService, IDatabaseReader databaseReader,
+        public BudgetViewModel(IContentDialogService contentDialogService, IDatabaseManager databaseManager,
             IMessageBoxService messageBoxService, INewBudgetDialogService newBudgetDialogService,
             IBudgetCategoryDialogService budgetCategoryDialogService, INewExpenseGroupDialogService newExpenseGroupDialogService,
             ISavingsCategoryDialogService savingsCategoryDialogService)
@@ -156,7 +151,7 @@ namespace MyMoney.ViewModels.Pages
             _budgetCategoryDialogService = budgetCategoryDialogService;
             _newExpenseGroupDialogService = newExpenseGroupDialogService;
             _savingsCategoryDialogService = savingsCategoryDialogService;
-            _databaseReader = databaseReader;
+            _databaseManager = databaseManager;
 
             // Set up drop handlers
             ExpenseGroupsReorderHandler = new(this);
@@ -202,7 +197,7 @@ namespace MyMoney.ViewModels.Pages
             List<Budget> budgetCollection;
             
             lock(_databaseLockObject)
-                budgetCollection = _databaseReader.GetCollection<Budget>("Budgets");
+                budgetCollection = _databaseManager.GetCollection<Budget>("Budgets");
 
             foreach (var budget in budgetCollection.OfType<Budget>())
             {
@@ -274,7 +269,7 @@ namespace MyMoney.ViewModels.Pages
             if (CurrentBudget == null) return;
             
             lock (_databaseLockObject)
-                DatabaseWriter.WriteCollection("Budgets", Budgets.ToList());
+                _databaseManager.WriteCollection("Budgets", Budgets.ToList());
         }
 
         private void UpdateListViewTotals()
@@ -1060,9 +1055,9 @@ namespace MyMoney.ViewModels.Pages
 
             lock (_databaseLockObject)
             {
-                incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(budgetDate, _databaseReader);
-                expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(budgetDate, _databaseReader);
-                savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(budgetDate, _databaseReader);
+                incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(budgetDate, _databaseManager);
+                expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(budgetDate, _databaseManager);
+                savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(budgetDate, _databaseManager);
             }
 
             Application.Current.Dispatcher.BeginInvoke(() =>

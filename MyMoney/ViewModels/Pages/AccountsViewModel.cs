@@ -55,7 +55,7 @@ namespace MyMoney.ViewModels.Pages
 
         // Dependencies
         private readonly IContentDialogService _contentDialogService;
-        private readonly IDatabaseReader _databaseReader;
+        private readonly IDatabaseManager _databaseManager;
         private readonly INewAccountDialogService _newAccountDialogService;
         private readonly ITransferDialogService _transferDialogService;
         private readonly ITransactionDialogService _transactionDialogService;
@@ -69,7 +69,7 @@ namespace MyMoney.ViewModels.Pages
         /// Initializes a new instance of the <see cref="AccountsViewModel"/> class.
         /// </summary>
         /// <param name="contentDialogService">Service for displaying content dialogs</param>
-        /// <param name="databaseReader">Service for reading from the database</param>
+        /// <param name="databaseManager">Service for reading from the database</param>
         /// <param name="newAccountDialogService">Service for the new account dialog</param>
         /// <param name="transferDialogService">Service for the transfer dialog</param>
         /// <param name="transactionDialogService">Service for the transaction dialog</param>
@@ -77,7 +77,7 @@ namespace MyMoney.ViewModels.Pages
         /// <param name="messageBoxService">Service for displaying message boxes</param>
         public AccountsViewModel(
             IContentDialogService contentDialogService,
-            IDatabaseReader databaseReader,
+            IDatabaseManager databaseManager,
             INewAccountDialogService newAccountDialogService,
             ITransferDialogService transferDialogService,
             ITransactionDialogService transactionDialogService,
@@ -85,7 +85,7 @@ namespace MyMoney.ViewModels.Pages
             IMessageBoxService messageBoxService)
         {
             _contentDialogService = contentDialogService ?? throw new ArgumentNullException(nameof(contentDialogService));
-            _databaseReader = databaseReader ?? throw new ArgumentNullException(nameof(databaseReader));
+            _databaseManager = databaseManager ?? throw new ArgumentNullException(nameof(databaseManager));
             _newAccountDialogService = newAccountDialogService ?? throw new ArgumentNullException(nameof(newAccountDialogService));
             _transferDialogService = transferDialogService ?? throw new ArgumentNullException(nameof(transferDialogService));
             _transactionDialogService = transactionDialogService ?? throw new ArgumentNullException(nameof(transactionDialogService));
@@ -100,7 +100,7 @@ namespace MyMoney.ViewModels.Pages
         {
             lock (_databaseLockObject)
             {
-                var accounts = _databaseReader.GetCollection<Account>("Accounts");
+                var accounts = _databaseManager.GetCollection<Account>("Accounts");
                 foreach (var account in accounts)
                 {
                     Accounts.Add(account);
@@ -117,7 +117,7 @@ namespace MyMoney.ViewModels.Pages
             BudgetCollection budgetCollection;
             lock (_databaseLockObject)
             {
-                budgetCollection = new(_databaseReader);
+                budgetCollection = new(_databaseManager);
                 if (!budgetCollection.DoesCurrentBudgetExist())
                     return;
 
@@ -161,13 +161,13 @@ namespace MyMoney.ViewModels.Pages
         {
             lock (_databaseLockObject)
             {
-                DatabaseWriter.WriteCollection("Accounts", [.. Accounts]);
+                _databaseManager.WriteCollection("Accounts", [.. Accounts]);
             }
         }
 
         private async Task<bool> ValidateTransactionAmount(Currency amount, Account account)
         {
-            if (amount.Value < 0 && Math.Abs(amount.Value) > account.Total.Value)
+            if (amount.Value < 0 || Math.Abs(amount.Value) > account.Total.Value)
             {
                 await _messageBoxService.ShowInfoAsync("Error",
                     "The amount of this transaction is greater than the balance of the selected account.", "OK");
@@ -202,58 +202,90 @@ namespace MyMoney.ViewModels.Pages
         /// </summary>
         private void UpdateSavingsCategory(Transaction transaction, TransactionOperation operation, Transaction? oldTransaction = null)
         {
-            if (transaction.Category.Group != "Savings") return;
+            if (transaction.Category.Group != "Savings" && 
+                (operation == TransactionOperation.Add || operation == TransactionOperation.Delete)) return;
 
             BudgetCollection budgetCollection;
             lock (_databaseLockObject)
             {
-                budgetCollection = new(_databaseReader);
+                budgetCollection = new(_databaseManager);
                 if (!budgetCollection.DoesCurrentBudgetExist()) return;
 
                 var currentBudget = budgetCollection.Budgets[budgetCollection.GetCurrentBudgetIndex()];
-                var savingsCategory = currentBudget.BudgetSavingsCategories
-                    .FirstOrDefault(x => x.CategoryName == transaction.Category.Name);
-
-                if (savingsCategory == null) return;
 
                 switch (operation)
                 {
                     case TransactionOperation.Add:
+                        var savingsCategory = currentBudget.BudgetSavingsCategories
+                    .       FirstOrDefault(x => x.CategoryName == transaction.Category.Name);
+
+                        if (savingsCategory == null) break;
+
                         savingsCategory.Transactions.Add(transaction);
                         savingsCategory.CurrentBalance += transaction.Amount;
                         break;
 
                     case TransactionOperation.Edit when oldTransaction != null:
-                        var existingTransaction = savingsCategory.Transactions
-                            .FirstOrDefault(x => x.TransactionHash == oldTransaction.TransactionHash);
-                        if (existingTransaction != null)
+                        if (transaction.Category.Name == oldTransaction.Category.Name) // Same category
                         {
-                            savingsCategory.CurrentBalance -= oldTransaction.Amount;
-                            if (transaction.Category.Name == oldTransaction.Category.Name)
+                            if (transaction.Category.Group != "Savings") break;
+
+                            var categoryToUpdate = currentBudget.BudgetSavingsCategories
+                                .FirstOrDefault(x => x.CategoryName == transaction.Category.Name);
+
+                            if (categoryToUpdate == null) break;
+
+                            var transactionToUpdate = categoryToUpdate.Transactions
+                                .FirstOrDefault(x => x.TransactionHash == oldTransaction.TransactionHash);
+                            if (transactionToUpdate == null) break;
+
+                            categoryToUpdate.CurrentBalance -= oldTransaction.Amount;
+                            categoryToUpdate.CurrentBalance += transaction.Amount;
+
+
+                            var index = categoryToUpdate.Transactions.IndexOf(transactionToUpdate);
+                            categoryToUpdate.Transactions[index] = transaction;
+                        }
+                        else // Category was changed
+                        {
+                            var originalCategory = currentBudget.BudgetSavingsCategories
+                                .FirstOrDefault(x => x.CategoryName == oldTransaction.Category.Name);
+                            if (originalCategory == null) break;
+
+                            var transactionInOldCategory = originalCategory.Transactions
+                                .FirstOrDefault(x => x.TransactionHash == oldTransaction.TransactionHash);
+                            if (transactionInOldCategory == null) break;
+
+                            // Remove the transaction from the original savings category
+                            originalCategory.Transactions.Remove(transactionInOldCategory);
+                            originalCategory.CurrentBalance -= oldTransaction.Amount;
+
+                            // Add the new transaction to the other category if it is a savings category
+                            if (transaction.Category.Group == "Savings")
                             {
-                                savingsCategory.CurrentBalance += transaction.Amount;
-                                var index = savingsCategory.Transactions.IndexOf(existingTransaction);
-                                savingsCategory.Transactions[index] = transaction;
-                            }
-                            else
-                            {
-                                savingsCategory.Transactions.Remove(existingTransaction);
-                                // Add to new category if it's still a savings category
-                                if (transaction.Category.Group == "Savings")
-                                {
-                                    UpdateSavingsCategory(transaction, TransactionOperation.Add);
-                                }
+                                var newCategory = currentBudget.BudgetSavingsCategories
+                                    .FirstOrDefault(x => x.CategoryName == transaction.Category.Name);
+
+                                if (newCategory == null) break;
+
+                                newCategory.Transactions.Add(transaction);
+                                newCategory.CurrentBalance += transaction.Amount;
                             }
                         }
                         break;
 
                     case TransactionOperation.Delete:
-                        var transactionToDelete = savingsCategory.Transactions
+                        var containingCategory = currentBudget.BudgetSavingsCategories
+                    .FirstOrDefault(x => x.CategoryName == transaction.Category.Name);
+
+                        if (containingCategory == null) break;
+
+                        var transactionToDelete = containingCategory.Transactions
                             .FirstOrDefault(x => x.TransactionHash == transaction.TransactionHash);
                         if (transactionToDelete != null)
                         {
-                            savingsCategory.CurrentBalance -= transaction.Amount;
-                            savingsCategory.Transactions.Remove(transactionToDelete);
+                            containingCategory.CurrentBalance -= transaction.Amount;
+                            containingCategory.Transactions.Remove(transactionToDelete);
                         }
                         break;
                 }

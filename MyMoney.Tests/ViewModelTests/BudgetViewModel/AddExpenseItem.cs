@@ -16,7 +16,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel;
 public class AddExpenseItemTests
 {
     private Mock<IContentDialogService> _mockContentDialogService;
-    private Mock<IDatabaseReader> _mockDatabaseReader;
+    private Mock<IDatabaseManager> _mockDatabaseReader;
     private Mock<IMessageBoxService> _mockMessageBoxService;
     private Mock<INewBudgetDialogService> _mockNewBudgetDialogService;
     private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
@@ -28,7 +28,7 @@ public class AddExpenseItemTests
     public void Setup()
     {
         _mockContentDialogService = new Mock<IContentDialogService>();
-        _mockDatabaseReader = new Mock<IDatabaseReader>();
+        _mockDatabaseReader = new Mock<IDatabaseManager>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
         _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
         _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
@@ -60,7 +60,7 @@ public class AddExpenseItemTests
         await _viewModel.AddExpenseItemCommand.ExecuteAsync(null);
 
         // Assert
-        _mockBudgetCategoryDialogService.Verify(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
+        _mockBudgetCategoryDialogService.Verify(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(),
             It.IsAny<string>()), Times.Never);
     }
 
@@ -75,7 +75,7 @@ public class AddExpenseItemTests
         await _viewModel.AddExpenseItemCommand.ExecuteAsync(null);
 
         // Assert
-        _mockBudgetCategoryDialogService.Verify(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
+        _mockBudgetCategoryDialogService.Verify(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(),
             It.IsAny<string>()), Times.Never);
     }
 
@@ -86,7 +86,7 @@ public class AddExpenseItemTests
         _viewModel.CurrentBudget = new Budget();
         var dialogViewModel = new BudgetCategoryDialogViewModel();
 
-        _mockBudgetCategoryDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
+        _mockBudgetCategoryDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(),
             It.IsAny<string>())).ReturnsAsync(ContentDialogResult.Secondary);
         _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
 
@@ -112,7 +112,7 @@ public class AddExpenseItemTests
             BudgetAmount = new Currency(100m)
         };
 
-        _mockBudgetCategoryDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
+        _mockBudgetCategoryDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(),
             It.IsAny<string>())).ReturnsAsync(ContentDialogResult.Primary);
         _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
 
@@ -124,5 +124,37 @@ public class AddExpenseItemTests
         Assert.AreEqual(1, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems.Count);
         Assert.AreEqual("Test Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Category);
         Assert.AreEqual(100m, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Amount.Value);
+    }
+
+    [TestMethod]
+    public async Task AddExpenseItem_ItemAlreadyExists_ShowMessage()
+    {
+        // Arrange
+        _viewModel.CurrentBudget = new Budget();
+        BudgetExpenseCategory budgetExpenseCategory = new()
+        {
+            CategoryName = "Test Group",
+            SubItems = [
+                new() { Category = "Test Category", Amount = new(50m) }
+            ]
+        };
+        _viewModel.CurrentBudget.BudgetExpenseItems.Add(budgetExpenseCategory);
+
+        var dialogViewModel = new BudgetCategoryDialogViewModel
+        {
+            BudgetCategory = "Test Category",
+            BudgetAmount = new Currency(100m)
+        };
+
+        _mockBudgetCategoryDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(),
+            It.IsAny<string>())).ReturnsAsync(ContentDialogResult.Primary);
+        _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
+
+        // Act
+        await _viewModel.AddExpenseItemCommand.ExecuteAsync(budgetExpenseCategory);
+
+        // Assert
+        Assert.HasCount(1, _viewModel.CurrentBudget.BudgetExpenseItems);
+        _mockMessageBoxService.Verify(x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
     }
 }

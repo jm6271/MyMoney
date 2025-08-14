@@ -19,7 +19,7 @@ public class EditExpenseItem
     private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
     private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
     private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService;
-    private Mock<Core.Database.IDatabaseReader> _mockDatabaseReader;
+    private Mock<Core.Database.IDatabaseManager> _mockDatabaseReader;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
 
     [TestInitialize]
@@ -31,7 +31,7 @@ public class EditExpenseItem
         _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
         _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
         _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
-        _mockDatabaseReader = new Mock<Core.Database.IDatabaseReader>();
+        _mockDatabaseReader = new Mock<Core.Database.IDatabaseManager>();
 
         _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
             .Returns(new List<Budget>());
@@ -99,7 +99,7 @@ public class EditExpenseItem
                     ], SelectedSubItemIndex = 0 }
             }
         };
-        
+
         _viewModel.CurrentBudget = testBudget;
         _viewModel.ExpenseItemsSelectedIndex = 0;
 
@@ -139,7 +139,7 @@ public class EditExpenseItem
         Assert.AreEqual("Original Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Category);
         Assert.AreEqual(100m, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Amount.Value);
         _mockBudgetCategoryDialogService.Verify(
-            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()), 
+            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()),
             Times.Never);
     }
 
@@ -155,7 +155,49 @@ public class EditExpenseItem
 
         // Assert
         _mockBudgetCategoryDialogService.Verify(
-            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()), 
+            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()),
             Times.Never);
+    }
+
+    [TestMethod]
+    public async Task EditExpenseItem_ItemNameAlreadyExists_ShowMessage()
+    {
+        // Arrange
+        var testBudget = new Budget
+        {
+            BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>
+            {
+                new() { CategoryName = "Group", SubItems = [
+                    new() {Category = "Existing Category", Amount = new(100m) },
+                    new() {Category = "Another Category", Amount = new(150m) }
+                    ], SelectedSubItemIndex = 0 }
+            }
+        };
+        _viewModel.CurrentBudget = testBudget;
+        _viewModel.ExpenseItemsSelectedIndex = 0;
+
+        var dialogViewModel = new BudgetCategoryDialogViewModel
+        {
+            BudgetCategory = "Another Category", // This name already exists
+            BudgetAmount = new Currency(200m)
+        };
+
+        _mockBudgetCategoryDialogService
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+            .ReturnsAsync(ContentDialogResult.Primary);
+
+        _mockBudgetCategoryDialogService
+            .Setup(x => x.GetViewModel())
+            .Returns(dialogViewModel);
+
+        // Act
+        await _viewModel.EditExpenseItemCommand.ExecuteAsync(_viewModel.CurrentBudget.BudgetExpenseItems[0]);
+
+        // Assert
+        _mockMessageBoxService.Verify(
+            x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Once);
+        Assert.AreEqual("Existing Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Category);
+        Assert.AreEqual(100m, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Amount.Value);
     }
 }

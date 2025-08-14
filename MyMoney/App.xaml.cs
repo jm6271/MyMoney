@@ -70,7 +70,7 @@ namespace MyMoney
                 services.AddSingleton<BudgetReportsViewModel>();
 
                 // Database
-                services.AddSingleton<IDatabaseReader, DatabaseReader>();
+                services.AddSingleton<IDatabaseManager, DatabaseManager>();
 
                 // Custom content dialogs
                 services.AddSingleton<INewAccountDialogService, NewAccountDialogService>();

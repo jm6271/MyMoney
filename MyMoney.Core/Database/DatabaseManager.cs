@@ -2,17 +2,14 @@
 
 namespace MyMoney.Core.Database
 {
-    public interface IDatabaseReader
+    public interface IDatabaseManager
     {
+        public void WriteCollection<T>(string collectionName, List<T> collection);
+        public void WriteSettingsDictionary(string collectionName, Dictionary<string, string> collection);
         public List<T> GetCollection<T>(string collectionName);
         public Dictionary<string, string> GetSettingsDictionary(string collectionName);
     }
-
-
-    /// <summary>
-    /// Read from the applications LiteDB database
-    /// </summary>
-    public class DatabaseReader : IDatabaseReader
+    public class DatabaseManager : IDatabaseManager
     {
         /// <summary>
         /// Read a collection from the database
@@ -52,6 +49,40 @@ namespace MyMoney.Core.Database
             }
 
             return dict;
+        }
+
+        public void WriteCollection<T>(string collectionName, List<T> collection)
+        {
+            using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
+
+            var dbCollection = db.GetCollection<T>(collectionName);
+
+            // clear the database collection
+            dbCollection.DeleteAll();
+
+            // add the new items to the database
+            foreach (var item in collection)
+            {
+                dbCollection.Insert(item);
+            }
+        }
+
+        public void WriteSettingsDictionary(string collectionName, Dictionary<string, string> collection)
+        {
+            // Open or create a database file
+            using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
+
+            // Get a list version
+            var dictList = collection.ToList();
+
+            // Clear the old collection
+            if (db.CollectionExists(collectionName))
+                db.DropCollection(collectionName);
+
+            var dbCollection = db.GetCollection<KeyValuePair<string, string>>(collectionName);
+
+            dbCollection.Insert(dictList);
+            dbCollection.EnsureIndex(x => x.Key);
         }
     }
 }

@@ -20,7 +20,7 @@ public class DeleteIncomeItemTests
     private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
     private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
     private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService;
-    private Mock<IDatabaseReader> _mockDatabaseReader;
+    private Mock<IDatabaseManager> _mockDatabaseReader;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
     private Budget _testBudget;
 
@@ -35,7 +35,7 @@ public class DeleteIncomeItemTests
         _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
         _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
         _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
-        _mockDatabaseReader = new Mock<IDatabaseReader>();
+        _mockDatabaseReader = new Mock<IDatabaseManager>();
 
         // Setup test budget with income items
         _testBudget = new Budget

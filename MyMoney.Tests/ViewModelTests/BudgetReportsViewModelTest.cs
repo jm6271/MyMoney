@@ -10,7 +10,7 @@ namespace MyMoney.Tests.ViewModelTests
         [TestMethod]
         public void Test_CalculateBudgetReport()
         {
-            var mockDatabaseService = new Mock<Core.Database.IDatabaseReader>();
+            var mockDatabaseService = new Mock<Core.Database.IDatabaseManager>();
             mockDatabaseService.Setup(service => service.GetCollection<Budget>("Budgets")).Returns(
             [
                 new Budget {

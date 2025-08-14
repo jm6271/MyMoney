@@ -13,7 +13,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel;
 public class EditIncomeItemTests
 {
     private Mock<IContentDialogService> _mockContentDialogService = null!;
-    private Mock<IDatabaseReader> _mockDatabaseReader = null!;
+    private Mock<IDatabaseManager> _mockDatabaseReader = null!;
     private Mock<IMessageBoxService> _mockMessageBoxService = null!;
     private Mock<INewBudgetDialogService> _mockNewBudgetDialogService = null!;
     private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService = null!;
@@ -25,7 +25,7 @@ public class EditIncomeItemTests
     public async Task Setup()
     {
         _mockContentDialogService = new Mock<IContentDialogService>();
-        _mockDatabaseReader = new Mock<IDatabaseReader>();
+        _mockDatabaseReader = new Mock<IDatabaseManager>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
         _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
         _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
@@ -140,5 +140,36 @@ public class EditIncomeItemTests
         // Assert
         Assert.AreEqual(originalCategory, _viewModel.CurrentBudget.BudgetIncomeItems[0].Category);
         Assert.AreEqual(originalAmount, _viewModel.CurrentBudget.BudgetIncomeItems[0].Amount);
+    }
+
+    [TestMethod]
+    public async Task EditIncomeItem_ItemWithSameNameExists_ShowMessage()
+    {
+        // Arrange
+        _viewModel.IncomeItemsSelectedIndex = 0;
+        _viewModel.CurrentBudget?.BudgetIncomeItems.Add(new() { Category = "Test Income 2", Amount = new(1000m) });
+        var newCategory = "Test Income 2";
+        var newAmount = new Currency(2000m);
+
+        var dialogViewModel = new BudgetCategoryDialogViewModel
+        {
+            BudgetCategory = newCategory,
+            BudgetAmount = newAmount
+        };
+
+        _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel())
+            .Returns(dialogViewModel);
+
+        _mockBudgetCategoryDialogService.Setup(x => x.ShowDialogAsync(
+            It.IsAny<IContentDialogService>(),
+            It.IsAny<string>()))
+            .ReturnsAsync(ContentDialogResult.Primary);
+
+        // Act
+        await _viewModel.EditIncomeItemCommand.ExecuteAsync(null);
+
+        // Assert
+        Assert.HasCount(2, _viewModel.CurrentBudget!.BudgetIncomeItems);
+        _mockMessageBoxService.Verify(x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
     }
 }
