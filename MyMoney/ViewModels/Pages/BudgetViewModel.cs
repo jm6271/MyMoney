@@ -7,19 +7,14 @@ using LiveChartsCore.SkiaSharpView.VisualElements;
 using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Painting;
 using Wpf.Ui.Appearance;
-using System.Globalization;
 using System.ComponentModel;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui;
 using MyMoney.Services.ContentDialogs;
-using System.Linq.Expressions;
 using MyMoney.Core.Reports;
-using System.Linq;
 using System.Windows.Data;
-using GongSolutions.Wpf.DragDrop;
 using MyMoney.Helpers.DropHandlers;
 using Wpf.Ui.Abstractions.Controls;
-using System.Diagnostics;
 
 namespace MyMoney.ViewModels.Pages
 {
