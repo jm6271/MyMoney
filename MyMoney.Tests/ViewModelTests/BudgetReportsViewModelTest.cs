@@ -1,6 +1,7 @@
 ﻿using MyMoney.ViewModels.Pages;
 using Moq;
 using MyMoney.Core.Models;
+using System.Threading.Tasks;
 
 namespace MyMoney.Tests.ViewModelTests
 {
@@ -8,7 +9,7 @@ namespace MyMoney.Tests.ViewModelTests
     public class BudgetReportsViewModelTest
     {
         [TestMethod]
-        public void Test_CalculateBudgetReport()
+        public async Task Test_CalculateBudgetReport()
         {
             var mockDatabaseService = new Mock<Core.Database.IDatabaseManager>();
             mockDatabaseService.Setup(service => service.GetCollection<Budget>("Budgets")).Returns(
@@ -33,6 +34,8 @@ namespace MyMoney.Tests.ViewModelTests
                 }
             ]);
 
+            mockDatabaseService.Setup(service => service.ReadDictionary<string, object>("ReportsCache")).Returns([]);
+
             mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts")).Returns(
                 [
                     new Account {
@@ -51,7 +54,8 @@ namespace MyMoney.Tests.ViewModelTests
                 ]);
 
             var viewModel = new BudgetReportsViewModel(mockDatabaseService.Object);
-            viewModel.CalculateReport(DateTime.Now);
+            await viewModel.OnNavigatedToAsync();
+            viewModel.SelectedBudget = viewModel.Budgets[viewModel.SelectedBudgetIndex];
 
             Assert.AreEqual(3, viewModel.IncomeItems.Count);
             Assert.AreEqual(5, viewModel.ExpenseItems.Count);
