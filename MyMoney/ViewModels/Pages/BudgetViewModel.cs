@@ -127,10 +127,6 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        // Lock for the database
-        private readonly object _databaseLockObject = new();
-
-
         // Content dialog service
         private readonly IContentDialogService _contentDialogService;
         private readonly IMessageBoxService _messageBoxService;
@@ -194,10 +190,7 @@ namespace MyMoney.ViewModels.Pages
         {
             Budgets.Clear();
 
-            List<Budget> budgetCollection;
-            
-            lock(_databaseLockObject)
-                budgetCollection = _databaseManager.GetCollection<Budget>("Budgets");
+            List<Budget> budgetCollection = _databaseManager.GetCollection<Budget>("Budgets");
 
             foreach (var budget in budgetCollection.OfType<Budget>())
             {
@@ -267,9 +260,7 @@ namespace MyMoney.ViewModels.Pages
         public void WriteToDatabase()
         {
             if (CurrentBudget == null) return;
-            
-            lock (_databaseLockObject)
-                _databaseManager.WriteCollection("Budgets", Budgets.ToList());
+            _databaseManager.WriteCollection("Budgets", Budgets.ToList());
         }
 
         private void UpdateListViewTotals()
@@ -1053,12 +1044,10 @@ namespace MyMoney.ViewModels.Pages
             List<BudgetReportItem> expenseItems;
             List<SavingsCategoryReportItem> savingsItems;
 
-            lock (_databaseLockObject)
-            {
-                incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(budgetDate, _databaseManager);
-                expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(budgetDate, _databaseManager);
-                savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(budgetDate, _databaseManager);
-            }
+            incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(budgetDate, _databaseManager);
+            expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(budgetDate, _databaseManager);
+            savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(budgetDate, _databaseManager);
+            
 
             Application.Current.Dispatcher.BeginInvoke(() =>
             {

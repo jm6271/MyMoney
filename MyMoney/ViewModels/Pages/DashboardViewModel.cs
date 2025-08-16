@@ -112,7 +112,6 @@ namespace MyMoney.ViewModels.Pages
         #endregion
 
         private readonly IDatabaseManager _databaseReader;
-        private readonly object _databaseLockObject = new();
         private readonly Lock _incomeItemsLock = new();
         private readonly Lock _expenseItemsLock = new();
         private readonly Lock _savingsItemsLock = new();
@@ -144,14 +143,11 @@ namespace MyMoney.ViewModels.Pages
 
         private (List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) LoadReportItems()
         {
-            lock (_databaseLockObject)
-            {
-                return (
-                    BudgetReportCalculator.CalculateIncomeReportItems(_databaseReader),
-                    BudgetReportCalculator.CalculateExpenseReportItems(_databaseReader),
-                    BudgetReportCalculator.CalculateSavingsReportItems(DateTime.Today, _databaseReader)
-                );
-            }
+            return (
+                BudgetReportCalculator.CalculateIncomeReportItems(_databaseReader),
+                BudgetReportCalculator.CalculateExpenseReportItems(_databaseReader),
+                BudgetReportCalculator.CalculateSavingsReportItems(DateTime.Today, _databaseReader)
+            );
         }
 
         private void UpdateReportCollections((List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) items)
@@ -266,11 +262,7 @@ namespace MyMoney.ViewModels.Pages
         {
             Accounts.Clear();
 
-            List<Account> accounts;
-            lock (_databaseLockObject)
-            {
-                accounts = _databaseReader.GetCollection<Account>("Accounts");
-            }
+            List<Account> accounts = _databaseReader.GetCollection<Account>("Accounts");
 
             foreach (var account in accounts)
             {

@@ -128,7 +128,6 @@ namespace MyMoney.ViewModels.Pages
         #region Fields
 
         private readonly IDatabaseManager _databaseReader;
-        private readonly Lock _databaseReaderLock = new();
 
         #endregion
 
@@ -191,9 +190,7 @@ namespace MyMoney.ViewModels.Pages
 
         private void LoadBudgets()
         {
-            BudgetCollection budgetCollection;
-            lock (_databaseReaderLock)
-                budgetCollection = new BudgetCollection(_databaseReader);
+            BudgetCollection budgetCollection = new(_databaseReader);
 
             var unsortedBudgets = new ObservableCollection<Budget>(budgetCollection.Budgets);
             Budgets = new ObservableCollection<Budget>(unsortedBudgets.OrderByDescending(o => o.BudgetDate));
@@ -213,81 +210,79 @@ namespace MyMoney.ViewModels.Pages
 
         private (List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) LoadReportData(DateTime date)
         {
-            lock (_databaseReaderLock)
+            // Check to see if data is cached
+            ReportsCache cache = new(_databaseReader);
+            string key = ReportsCache.GenerateKeyForBudgetReportCache(Budgets[SelectedBudgetIndex].BudgetDate);
+            if (cache.DoesKeyExist(key))
             {
-                // Check to see if data is cached
-                ReportsCache cache = new(_databaseReader);
-                string key = ReportsCache.GenerateKeyForBudgetReportCache(Budgets[SelectedBudgetIndex].BudgetDate);
-                if (cache.DoesKeyExist(key))
+                // Read cache data
+                Dictionary<string, object> cachedReport;
+                cache.RetrieveCachedObject(key, out object? cachedItem);
+                if (cachedItem != null)
                 {
-                    // Read cache data
-                    Dictionary<string, object> cachedReport;
-                    cache.RetrieveCachedObject(key, out object? cachedItem);
-                    if (cachedItem != null)
+                    try
                     {
-                        try
-                        {
-                            cachedReport = (Dictionary<string, object>)cachedItem;
+                        cachedReport = (Dictionary<string, object>)cachedItem;
 
-                            // Ensure the correct items are in the cached report
-                            if (cachedReport.TryGetValue("Income", out object? cachedIncomeObject) && 
-                                cachedReport.TryGetValue("Expenses", out object? cachedExpensesObject) &&
-                                cachedReport.TryGetValue("Savings", out object? cachedSavingsObject))
+                        // Ensure the correct items are in the cached report
+                        if (cachedReport.TryGetValue("Income", out object? cachedIncomeObject) &&
+                            cachedReport.TryGetValue("Expenses", out object? cachedExpensesObject) &&
+                            cachedReport.TryGetValue("Savings", out object? cachedSavingsObject))
+                        {
+                            // convert to arrays of object
+                            var cachedIncomeObjectArray = (object[])cachedIncomeObject;
+                            var cachedExpenseObjectArray = (object[])cachedExpensesObject;
+                            var cachedSavingsObjectArray = (object[])cachedSavingsObject;
+
+                            // Load the cached data and return it
+                            List<BudgetReportItem> cachedIncome = [];
+                            foreach (var item in cachedIncomeObjectArray)
                             {
-                                // convert to arrays of object
-                                var cachedIncomeObjectArray = (object[])cachedIncomeObject;
-                                var cachedExpenseObjectArray = (object[])cachedExpensesObject;
-                                var cachedSavingsObjectArray = (object[])cachedSavingsObject;
-
-                                // Load the cached data and return it
-                                List<BudgetReportItem> cachedIncome = [];
-                                foreach (var item in cachedIncomeObjectArray)
-                                {
-                                    cachedIncome.Add((BudgetReportItem)item);
-                                }
-
-                                List<BudgetReportItem> cachedExpenses = [];
-                                foreach (var item in cachedExpenseObjectArray)
-                                {
-                                    cachedExpenses.Add((BudgetReportItem)item);
-                                }
-
-                                List<SavingsCategoryReportItem> cachedSavings = [];
-                                foreach (var item in cachedSavingsObjectArray)
-                                {
-                                    cachedSavings.Add((SavingsCategoryReportItem)item);
-                                }
-
-                                if (cachedIncome.Count > 0 && cachedExpenses.Count > 0 && cachedSavings.Count > 0)
-                                    return (cachedIncome, cachedExpenses, cachedSavings);                                
+                                cachedIncome.Add((BudgetReportItem)item);
                             }
-                        }
-                        catch (Exception) 
-                        {
-                            // Cache is invalid, calculate report from scratch
-                            cache.UncacheObject(key);
+
+                            List<BudgetReportItem> cachedExpenses = [];
+                            foreach (var item in cachedExpenseObjectArray)
+                            {
+                                cachedExpenses.Add((BudgetReportItem)item);
+                            }
+
+                            List<SavingsCategoryReportItem> cachedSavings = [];
+                            foreach (var item in cachedSavingsObjectArray)
+                            {
+                                cachedSavings.Add((SavingsCategoryReportItem)item);
+                            }
+
+                            if (cachedIncome.Count > 0 && cachedExpenses.Count > 0 && cachedSavings.Count > 0)
+                                return (cachedIncome, cachedExpenses, cachedSavings);
                         }
                     }
+                    catch (Exception)
+                    {
+                        // Cache is invalid, calculate report from scratch
+                        cache.UncacheObject(key);
+                    }
                 }
-
-                // Load data and cache it
-                var calculatedIncomeItems = BudgetReportCalculator.CalculateIncomeReportItems(date, _databaseReader);
-                var calculatedExpenseItems = BudgetReportCalculator.CalculateExpenseReportItems(date, _databaseReader);
-                var calulatedSavingsItems = BudgetReportCalculator.CalculateSavingsReportItems(date, _databaseReader);
-
-                Dictionary<string, object> reportToCache = [];
-                reportToCache["Income"] = calculatedIncomeItems;
-                reportToCache["Expenses"] = calculatedExpenseItems;
-                reportToCache["Savings"] = calulatedSavingsItems;
-
-                cache.CacheObject(key, reportToCache);
-
-                return (
-                    calculatedIncomeItems,
-                    calculatedExpenseItems,
-                    calulatedSavingsItems
-                );
             }
+
+            // Load data and cache it
+            var calculatedIncomeItems = BudgetReportCalculator.CalculateIncomeReportItems(date, _databaseReader);
+            var calculatedExpenseItems = BudgetReportCalculator.CalculateExpenseReportItems(date, _databaseReader);
+            var calulatedSavingsItems = BudgetReportCalculator.CalculateSavingsReportItems(date, _databaseReader);
+
+            Dictionary<string, object> reportToCache = [];
+            reportToCache["Income"] = calculatedIncomeItems;
+            reportToCache["Expenses"] = calculatedExpenseItems;
+            reportToCache["Savings"] = calulatedSavingsItems;
+
+            cache.CacheObject(key, reportToCache);
+
+            return (
+                calculatedIncomeItems,
+                calculatedExpenseItems,
+                calulatedSavingsItems
+            );
+
         }
 
         private void UpdateReportCollections((List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) data)
@@ -387,18 +382,18 @@ namespace MyMoney.ViewModels.Pages
 
         private static ISeries[] CreatePieSeries(Dictionary<string, double> totals)
         {
-            return totals.Select(item => 
-                new PieSeries<double> 
-                { 
-                    Values = [item.Value], 
-                    Name = item.Key 
+            return totals.Select(item =>
+                new PieSeries<double>
+                {
+                    Values = [item.Value],
+                    Name = item.Key
                 }).ToArray();
         }
 
         private void UpdateChartsTheme()
         {
-            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light 
-                ? LightTextColor 
+            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
+                ? LightTextColor
                 : DarkTextColor;
 
             var textPaint = new SolidColorPaint(ChartTextColor);
