@@ -55,7 +55,6 @@ namespace MyMoney.Tests.ViewModelTests
 
             var viewModel = new BudgetReportsViewModel(mockDatabaseService.Object);
             await viewModel.OnNavigatedToAsync();
-            viewModel.SelectedBudget = viewModel.Budgets[viewModel.SelectedBudgetIndex];
 
             Assert.AreEqual(3, viewModel.IncomeItems.Count);
             Assert.AreEqual(5, viewModel.ExpenseItems.Count);
