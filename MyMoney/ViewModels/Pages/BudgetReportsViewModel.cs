@@ -157,9 +157,14 @@ namespace MyMoney.ViewModels.Pages
         public async Task CalculateReport(DateTime date)
         {
             ClearReports();
-            var reportData = await Task.Run(() => LoadReportData(date));
+            var reportData = LoadReportData(date);
+            
+            var (incomeTotal, expenseTotal, reportTotal) = await CalculateReportTotals(reportData.income, reportData.expense);
+            reportData.income.Add(incomeTotal);
+            reportData.expense.Add(expenseTotal);
             UpdateReportCollections(reportData);
-            await CalculateReportTotals();
+
+            ReportTotal = reportTotal;
         }
 
         #endregion
@@ -323,18 +328,18 @@ namespace MyMoney.ViewModels.Pages
                 SavingsItems.Add(item);
         }
 
-        private async Task CalculateReportTotals()
+        private static async Task<(BudgetReportItem income, BudgetReportItem expenses, Currency total)> 
+            CalculateReportTotals(IList<BudgetReportItem> incomeItems, IList<BudgetReportItem> expenseItems)
         {
-            var incomeTotal = await Task.Run(() => CalculateTotal(IncomeItems));
-            var expenseTotal = await Task.Run(() => CalculateTotal(ExpenseItems));
+            var incomeTotal = await Task.Run(() => CalculateTotal(incomeItems));
+            var expenseTotal = await Task.Run(() => CalculateTotal(expenseItems));
 
             incomeTotal.Category = "Total";
             expenseTotal.Category = "Total";
 
-            IncomeItems.Add(incomeTotal);
-            ExpenseItems.Add(expenseTotal);
+            Currency reportTotal = incomeTotal.Actual - expenseTotal.Actual;
 
-            ReportTotal = incomeTotal.Actual - expenseTotal.Actual;
+            return (incomeTotal, expenseTotal, reportTotal);
         }
 
         private static BudgetReportItem CalculateTotal(IEnumerable<BudgetReportItem> items)
