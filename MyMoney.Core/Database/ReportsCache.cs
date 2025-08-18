@@ -64,6 +64,8 @@ namespace MyMoney.Core.Database
                     _cacheObjects.Remove(key);
                 }
             }
+
+            _dbManager.WriteDictionary(DICT_NAME, _cacheObjects);
         }
     }
 }
