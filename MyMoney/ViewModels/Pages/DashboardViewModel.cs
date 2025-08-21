@@ -143,11 +143,7 @@ namespace MyMoney.ViewModels.Pages
 
         private (List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) LoadReportItems()
         {
-            return (
-                BudgetReportCalculator.CalculateIncomeReportItems(_databaseReader),
-                BudgetReportCalculator.CalculateExpenseReportItems(_databaseReader),
-                BudgetReportCalculator.CalculateSavingsReportItems(DateTime.Today, _databaseReader)
-            );
+            return BudgetReportCalculator.CalculateBudgetReport(DateTime.Today, _databaseReader);
         }
 
         private void UpdateReportCollections((List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) items)
