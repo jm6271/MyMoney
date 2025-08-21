@@ -1040,22 +1040,15 @@ namespace MyMoney.ViewModels.Pages
             var budget = CurrentBudget;
             var budgetDate = budget.BudgetDate;
 
-            List<BudgetReportItem> incomeItems;
-            List<BudgetReportItem> expenseItems;
-            List<SavingsCategoryReportItem> savingsItems;
-
-            incomeItems = BudgetReportCalculator.CalculateIncomeReportItems(budgetDate, _databaseManager);
-            expenseItems = BudgetReportCalculator.CalculateExpenseReportItems(budgetDate, _databaseManager);
-            savingsItems = BudgetReportCalculator.CalculateSavingsReportItems(budgetDate, _databaseManager);
-            
+            var (income, expenses, savings) = BudgetReportCalculator.CalculateBudgetReport(budgetDate, _databaseManager);
 
             Application.Current.Dispatcher.BeginInvoke(() =>
             {
                 if (CurrentBudget == null || CurrentBudget != budget) return; // Ensure budget hasn't changed
 
-                UpdateIncomeActuals(incomeItems);
-                UpdateSavingsActuals(savingsItems);
-                UpdateExpenseActuals(expenseItems);
+                UpdateIncomeActuals(income);
+                UpdateSavingsActuals(savings);
+                UpdateExpenseActuals(expenses);
             });
         }
 
