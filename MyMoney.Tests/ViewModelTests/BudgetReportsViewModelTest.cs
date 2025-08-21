@@ -1,6 +1,8 @@
 ﻿using MyMoney.ViewModels.Pages;
 using Moq;
 using MyMoney.Core.Models;
+using System.Threading.Tasks;
+using MyMoney.Core.Database;
 
 namespace MyMoney.Tests.ViewModelTests
 {
@@ -8,7 +10,7 @@ namespace MyMoney.Tests.ViewModelTests
     public class BudgetReportsViewModelTest
     {
         [TestMethod]
-        public void Test_CalculateBudgetReport()
+        public async Task Test_CalculateBudgetReport()
         {
             var mockDatabaseService = new Mock<Core.Database.IDatabaseManager>();
             mockDatabaseService.Setup(service => service.GetCollection<Budget>("Budgets")).Returns(
@@ -33,6 +35,8 @@ namespace MyMoney.Tests.ViewModelTests
                 }
             ]);
 
+            mockDatabaseService.Setup(service => service.ReadDictionary<string, object>("ReportsCache")).Returns([]);
+
             mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts")).Returns(
                 [
                     new Account {
@@ -51,7 +55,7 @@ namespace MyMoney.Tests.ViewModelTests
                 ]);
 
             var viewModel = new BudgetReportsViewModel(mockDatabaseService.Object);
-            viewModel.CalculateReport(DateTime.Now);
+            await viewModel.OnNavigatedToAsync();
 
             Assert.AreEqual(3, viewModel.IncomeItems.Count);
             Assert.AreEqual(5, viewModel.ExpenseItems.Count);
@@ -70,6 +74,78 @@ namespace MyMoney.Tests.ViewModelTests
 
             // Make sure total is correct
             Assert.AreEqual(245m, viewModel.ReportTotal.Value);
+        }
+
+        [TestMethod]
+        public async Task Test_LoadReportData_Caching()
+        {
+            var mockDatabaseService = new Mock<Core.Database.IDatabaseManager>();
+
+            // Mock the ReportsCache to simulate cached data
+            var cachedData = new Dictionary<string, object>
+            {
+                {
+                    ReportsCache.GenerateKeyForBudgetReportCache(DateTime.Today),
+                    new Dictionary<string, object>
+                    {
+                        {
+                            "Income",
+                            new object[]
+                            {
+                                new BudgetReportItem
+                                {
+                                    Category = "Income 1",
+                                    Budgeted = new(500m),
+                                    Actual = new(300m),
+                                    Remaining = new(-200m)
+                                }
+                            }
+                        },
+                        {
+                            "Expenses",
+                            new object[]
+                            {
+                                new BudgetReportItem
+                                {
+                                    Category = "Expense 1",
+                                    Budgeted = new(400m),
+                                    Actual = new(450m),
+                                    Remaining = new(-50m)
+                                }
+                            }
+                        },
+                        {
+                            "Savings",
+                            new object[]
+                            {
+                                new SavingsCategoryReportItem
+                                {
+                                    Category = "Savings",
+                                    Saved = new(200m),
+                                    Balance = new(200m),
+                                    Spent = new(0m),
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+            mockDatabaseService.Setup(service => service.ReadDictionary<string, object>("ReportsCache")).Returns(cachedData);
+
+            // Mock other required database calls
+            mockDatabaseService.Setup(service => service.GetCollection<Budget>("Budgets")).Returns([ new Budget() {BudgetDate = DateTime.Today, BudgetTitle = BudgetCollection.GetCurrentBudgetName()}]);
+            mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts")).Returns([]);
+
+            var viewModel = new BudgetReportsViewModel(mockDatabaseService.Object);
+            await viewModel.OnNavigatedToAsync();
+
+            // Verify that cached data is loaded correctly
+            Assert.HasCount(2, viewModel.IncomeItems); // One item plus the total item
+            Assert.AreEqual("Income 1", viewModel.IncomeItems[0].Category);
+            Assert.HasCount(2, viewModel.ExpenseItems); // One item plus the total item
+            Assert.AreEqual("Expense 1", viewModel.ExpenseItems[0].Category);
+            Assert.HasCount(1, viewModel.SavingsItems);
+            Assert.AreEqual("Savings", viewModel.SavingsItems[0].Category);
         }
     }
 }

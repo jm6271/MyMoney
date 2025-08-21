@@ -30,7 +30,7 @@
         </Grid.RowDefinitions>
 
         <ui:Card x:Name="BudgetsCard" Grid.Column="0" Grid.RowSpan="2" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,0,8,24">
-            <ui:ListView x:Name="BudgetsListView" ItemsSource="{Binding ViewModel.Budgets}" SelectedItem="{Binding ViewModel.SelectedBudget}"
+            <ui:ListView x:Name="BudgetsListView" ItemsSource="{Binding ViewModel.Budgets}" SelectedItem="{Binding ViewModel.SelectedBudget, Mode=TwoWay}"
                          SelectedIndex="{Binding ViewModel.SelectedBudgetIndex}">
                 <ui:ListView.ItemTemplate>
                     <DataTemplate>

@@ -9,6 +9,7 @@ using SkiaSharp;
 using System.Collections.ObjectModel;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -128,7 +129,6 @@ namespace MyMoney.ViewModels.Pages
         #region Fields
 
         private readonly IDatabaseManager _databaseReader;
-        private readonly Lock _databaseReaderLock = new();
 
         #endregion
 
@@ -143,16 +143,10 @@ namespace MyMoney.ViewModels.Pages
 
         #region Public Methods
 
-        public Task OnNavigatedToAsync()
+        public async Task OnNavigatedToAsync()
         {
-            LoadBudgets();
+            await LoadBudgets();
             UpdateCharts();
-
-            if (SelectedBudget != null)
-            {
-                CalculateReport(SelectedBudget.BudgetDate);
-            }
-            return Task.CompletedTask;
         }
 
         public Task OnNavigatedFromAsync() => Task.CompletedTask;
@@ -160,19 +154,24 @@ namespace MyMoney.ViewModels.Pages
         /// <summary>
         /// Calculates the budget report for a specific date
         /// </summary>
-        public void CalculateReport(DateTime date)
+        public async Task CalculateReport(DateTime date)
         {
             ClearReports();
-            var reportData = LoadReportData(date);
+            var reportData = BudgetReportCalculator.CalculateBudgetReport(date, _databaseReader);
+            
+            var (incomeTotal, expenseTotal, reportTotal) = await CalculateReportTotals(reportData.income, reportData.expenses);
+            reportData.income.Add(incomeTotal);
+            reportData.expenses.Add(expenseTotal);
             UpdateReportCollections(reportData);
-            CalculateReportTotals();
+
+            ReportTotal = reportTotal;
         }
 
         #endregion
 
         #region Event Handlers
 
-        partial void OnSelectedBudgetChanged(Budget? value)
+        async partial void OnSelectedBudgetChanged(Budget? value)
         {
             if (value == null)
             {
@@ -180,7 +179,7 @@ namespace MyMoney.ViewModels.Pages
                 return;
             }
 
-            CalculateReport(value.BudgetDate);
+            await CalculateReport(value.BudgetDate);
             ReportTitle = value.BudgetTitle;
             UpdateCharts();
         }
@@ -189,18 +188,47 @@ namespace MyMoney.ViewModels.Pages
 
         #region Private Methods
 
-        private void LoadBudgets()
+        private async Task LoadBudgets()
         {
-            BudgetCollection budgetCollection;
-            lock (_databaseReaderLock)
-                budgetCollection = new BudgetCollection(_databaseReader);
+            BudgetCollection budgetCollection = new(_databaseReader);
 
             var unsortedBudgets = new ObservableCollection<Budget>(budgetCollection.Budgets);
             Budgets = new ObservableCollection<Budget>(unsortedBudgets.OrderByDescending(o => o.BudgetDate));
 
-            if (Budgets.Count > 0)
+            // Select the current budget
+            bool found = false;
+            foreach (var budget in Budgets)
             {
-                SelectedBudgetIndex = 0;
+                if (budget.BudgetTitle == BudgetCollection.GetCurrentBudgetName())
+                {
+                    int index = Budgets.IndexOf(budget);
+                    if (index != SelectedBudgetIndex)
+                    {
+                        SelectedBudgetIndex = index;
+                    }
+                    else
+                    {
+                        // Current budget is already loaded, refresh it's report
+                        await CalculateReport(budget.BudgetDate);
+                        ReportTitle = budget.BudgetTitle;
+                        UpdateCharts();
+                    }
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found && Budgets.Count > 0) // No current budget, just select the latest
+            {
+                if (SelectedBudgetIndex != 0)
+                    SelectedBudgetIndex = 0;
+                else
+                {
+                    // Latest budget is already loaded, refresh it
+                    await CalculateReport(Budgets[SelectedBudgetIndex].BudgetDate);
+                    ReportTitle = Budgets[SelectedBudgetIndex].BudgetTitle;
+                    UpdateCharts();
+                }
             }
         }
 
@@ -209,16 +237,6 @@ namespace MyMoney.ViewModels.Pages
             IncomeItems.Clear();
             ExpenseItems.Clear();
             SavingsItems.Clear();
-        }
-
-        private (List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) LoadReportData(DateTime date)
-        {
-            lock (_databaseReaderLock)
-                return (
-                    BudgetReportCalculator.CalculateIncomeReportItems(date, _databaseReader),
-                    BudgetReportCalculator.CalculateExpenseReportItems(date, _databaseReader),
-                    BudgetReportCalculator.CalculateSavingsReportItems(date, _databaseReader)
-                );
         }
 
         private void UpdateReportCollections((List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) data)
@@ -233,18 +251,18 @@ namespace MyMoney.ViewModels.Pages
                 SavingsItems.Add(item);
         }
 
-        private void CalculateReportTotals()
+        private static async Task<(BudgetReportItem income, BudgetReportItem expenses, Currency total)> 
+            CalculateReportTotals(IList<BudgetReportItem> incomeItems, IList<BudgetReportItem> expenseItems)
         {
-            var incomeTotal = CalculateTotal(IncomeItems);
-            var expenseTotal = CalculateTotal(ExpenseItems);
+            var incomeTotal = await Task.Run(() => CalculateTotal(incomeItems));
+            var expenseTotal = await Task.Run(() => CalculateTotal(expenseItems));
 
             incomeTotal.Category = "Total";
             expenseTotal.Category = "Total";
 
-            IncomeItems.Add(incomeTotal);
-            ExpenseItems.Add(expenseTotal);
+            Currency reportTotal = incomeTotal.Actual - expenseTotal.Actual;
 
-            ReportTotal = incomeTotal.Actual - expenseTotal.Actual;
+            return (incomeTotal, expenseTotal, reportTotal);
         }
 
         private static BudgetReportItem CalculateTotal(IEnumerable<BudgetReportItem> items)
@@ -318,18 +336,18 @@ namespace MyMoney.ViewModels.Pages
 
         private static ISeries[] CreatePieSeries(Dictionary<string, double> totals)
         {
-            return totals.Select(item => 
-                new PieSeries<double> 
-                { 
-                    Values = [item.Value], 
-                    Name = item.Key 
+            return totals.Select(item =>
+                new PieSeries<double>
+                {
+                    Values = [item.Value],
+                    Name = item.Key
                 }).ToArray();
         }
 
         private void UpdateChartsTheme()
         {
-            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light 
-                ? LightTextColor 
+            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
+                ? LightTextColor
                 : DarkTextColor;
 
             var textPaint = new SolidColorPaint(ChartTextColor);

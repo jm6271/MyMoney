@@ -105,7 +105,7 @@ namespace MyMoney.Core.Database
         /// Get the title for this month's budget. This works even if there is no budget for this month
         /// </summary>
         /// <returns>A string with the title of this month's budget</returns>
-        private static string GetCurrentBudgetName()
+        public static string GetCurrentBudgetName()
         {
             return DateTime.Today.ToString("MMMM, yyyy");
         }

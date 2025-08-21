@@ -15,6 +15,8 @@ namespace MyMoney.Views.Controls
         public BudgetReportControl()
         {
             InitializeComponent();
+
+            ExpenseItems ??= [];   
         }
 
         public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(string), typeof(BudgetReportControl), new PropertyMetadata("Budget Report"));
@@ -56,7 +58,7 @@ namespace MyMoney.Views.Controls
 
         public static readonly DependencyProperty ExpenseItemsProperty = DependencyProperty.Register("ExpenseItems",
             typeof(ObservableCollection<BudgetReportItem>), typeof(BudgetReportControl),
-            new FrameworkPropertyMetadata(new ObservableCollection<BudgetReportItem>(),
+            new FrameworkPropertyMetadata(null,
                 FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnExpenseItemsChanged));
 
         /// <summary>
@@ -100,6 +102,7 @@ namespace MyMoney.Views.Controls
         {
             get
             {
+                ExpenseItems ??= [];
                 ListCollectionView listCollectionView = new(ExpenseItems);
                 listCollectionView.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
                 return listCollectionView;
