@@ -157,11 +157,11 @@ namespace MyMoney.ViewModels.Pages
         public async Task CalculateReport(DateTime date)
         {
             ClearReports();
-            var reportData = LoadReportData(date);
+            var reportData = BudgetReportCalculator.CalculateBudgetReport(date, _databaseReader);
             
-            var (incomeTotal, expenseTotal, reportTotal) = await CalculateReportTotals(reportData.income, reportData.expense);
+            var (incomeTotal, expenseTotal, reportTotal) = await CalculateReportTotals(reportData.income, reportData.expenses);
             reportData.income.Add(incomeTotal);
-            reportData.expense.Add(expenseTotal);
+            reportData.expenses.Add(expenseTotal);
             UpdateReportCollections(reportData);
 
             ReportTotal = reportTotal;
@@ -237,83 +237,6 @@ namespace MyMoney.ViewModels.Pages
             IncomeItems.Clear();
             ExpenseItems.Clear();
             SavingsItems.Clear();
-        }
-
-        private (List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) LoadReportData(DateTime date)
-        {
-            // Check to see if data is cached
-            ReportsCache cache = new(_databaseReader);
-            string key = ReportsCache.GenerateKeyForBudgetReportCache(Budgets[SelectedBudgetIndex].BudgetDate);
-            if (cache.DoesKeyExist(key))
-            {
-                // Read cache data
-                Dictionary<string, object> cachedReport;
-                cache.RetrieveCachedObject(key, out object? cachedItem);
-                if (cachedItem != null)
-                {
-                    try
-                    {
-                        cachedReport = (Dictionary<string, object>)cachedItem;
-
-                        // Ensure the correct items are in the cached report
-                        if (cachedReport.TryGetValue("Income", out object? cachedIncomeObject) &&
-                            cachedReport.TryGetValue("Expenses", out object? cachedExpensesObject) &&
-                            cachedReport.TryGetValue("Savings", out object? cachedSavingsObject))
-                        {
-                            // convert to arrays of object
-                            var cachedIncomeObjectArray = (object[])cachedIncomeObject;
-                            var cachedExpenseObjectArray = (object[])cachedExpensesObject;
-                            var cachedSavingsObjectArray = (object[])cachedSavingsObject;
-
-                            // Load the cached data and return it
-                            List<BudgetReportItem> cachedIncome = [];
-                            foreach (var item in cachedIncomeObjectArray)
-                            {
-                                cachedIncome.Add((BudgetReportItem)item);
-                            }
-
-                            List<BudgetReportItem> cachedExpenses = [];
-                            foreach (var item in cachedExpenseObjectArray)
-                            {
-                                cachedExpenses.Add((BudgetReportItem)item);
-                            }
-
-                            List<SavingsCategoryReportItem> cachedSavings = [];
-                            foreach (var item in cachedSavingsObjectArray)
-                            {
-                                cachedSavings.Add((SavingsCategoryReportItem)item);
-                            }
-
-                            if (cachedIncome.Count > 0 && cachedExpenses.Count > 0 && cachedSavings.Count > 0)
-                                return (cachedIncome, cachedExpenses, cachedSavings);
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        // Cache is invalid, calculate report from scratch
-                        cache.UncacheObject(key);
-                    }
-                }
-            }
-
-            // Load data and cache it
-            var calculatedIncomeItems = BudgetReportCalculator.CalculateIncomeReportItems(date, _databaseReader);
-            var calculatedExpenseItems = BudgetReportCalculator.CalculateExpenseReportItems(date, _databaseReader);
-            var calulatedSavingsItems = BudgetReportCalculator.CalculateSavingsReportItems(date, _databaseReader);
-
-            Dictionary<string, object> reportToCache = [];
-            reportToCache["Income"] = calculatedIncomeItems;
-            reportToCache["Expenses"] = calculatedExpenseItems;
-            reportToCache["Savings"] = calulatedSavingsItems;
-
-            cache.CacheObject(key, reportToCache);
-
-            return (
-                calculatedIncomeItems,
-                calculatedExpenseItems,
-                calulatedSavingsItems
-            );
-
         }
 
         private void UpdateReportCollections((List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) data)

@@ -157,6 +157,88 @@ namespace MyMoney.Core.Reports
             return CalculateExpenseReportItems(DateTime.Today, databaseReader);
         }
 
+        /// <summary>
+        /// Calculates all the items for a budget report, or uses a cached version if available
+        /// </summary>
+        /// <param name="date">The date of the report</param>
+        /// <returns>The income, expenses, and savings report items</returns>
+        public static (List<BudgetReportItem> income, List<BudgetReportItem> expenses, List<SavingsCategoryReportItem> savings)
+            CalculateBudgetReport(DateTime date, IDatabaseManager databaseManager)
+        {
+            // Check to see if data is cached
+            ReportsCache cache = new(databaseManager);
+            string key = ReportsCache.GenerateKeyForBudgetReportCache(date);
+            if (cache.DoesKeyExist(key))
+            {
+                // Read cache data
+                Dictionary<string, object> cachedReport;
+                cache.RetrieveCachedObject(key, out object? cachedItem);
+                if (cachedItem != null)
+                {
+                    try
+                    {
+                        cachedReport = (Dictionary<string, object>)cachedItem;
+
+                        // Ensure the correct items are in the cached report
+                        if (cachedReport.TryGetValue("Income", out object? cachedIncomeObject) &&
+                            cachedReport.TryGetValue("Expenses", out object? cachedExpensesObject) &&
+                            cachedReport.TryGetValue("Savings", out object? cachedSavingsObject))
+                        {
+                            // convert to arrays of object
+                            var cachedIncomeObjectArray = (object[])cachedIncomeObject;
+                            var cachedExpenseObjectArray = (object[])cachedExpensesObject;
+                            var cachedSavingsObjectArray = (object[])cachedSavingsObject;
+
+                            // Load the cached data and return it
+                            List<BudgetReportItem> cachedIncome = [];
+                            foreach (var item in cachedIncomeObjectArray)
+                            {
+                                cachedIncome.Add((BudgetReportItem)item);
+                            }
+
+                            List<BudgetReportItem> cachedExpenses = [];
+                            foreach (var item in cachedExpenseObjectArray)
+                            {
+                                cachedExpenses.Add((BudgetReportItem)item);
+                            }
+
+                            List<SavingsCategoryReportItem> cachedSavings = [];
+                            foreach (var item in cachedSavingsObjectArray)
+                            {
+                                cachedSavings.Add((SavingsCategoryReportItem)item);
+                            }
+
+                            if (cachedIncome.Count > 0 && cachedExpenses.Count > 0 && cachedSavings.Count > 0)
+                                return (cachedIncome, cachedExpenses, cachedSavings);
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        // Cache is invalid, calculate report from scratch
+                        cache.UncacheObject(key);
+                    }
+                }
+            }
+
+            // Load data and cache it
+            var calculatedIncomeItems = CalculateIncomeReportItems(date, databaseManager);
+            var calculatedExpenseItems = CalculateExpenseReportItems(date, databaseManager);
+            var calulatedSavingsItems = CalculateSavingsReportItems(date, databaseManager);
+
+            Dictionary<string, object> reportToCache = [];
+            reportToCache["Income"] = calculatedIncomeItems;
+            reportToCache["Expenses"] = calculatedExpenseItems;
+            reportToCache["Savings"] = calulatedSavingsItems;
+
+            cache.CacheObject(key, reportToCache);
+
+            return (
+                calculatedIncomeItems,
+                calculatedExpenseItems,
+                calulatedSavingsItems
+            );
+        }
+
         private static Currency CalculateTotalForCategory(Category category, DateTime month, IDatabaseManager databaseReader)
         {
             // Read the accounts from the database
