@@ -63,7 +63,8 @@
                     <ui:ListView.ContextMenu>
                         <ContextMenu>
                             <MenuItem Header="Rename" Command="{Binding ViewModel.RenameAccountCommand}" CommandParameter="{StaticResource RenameDialogContent}"/>
-                            <MenuItem Header="Delete Account" Command="{Binding ViewModel.DeleteAccountCommand}"/>
+                            <MenuItem Header="Update balance" Command="{Binding ViewModel.UpdateAccountBalanceCommand}"/>
+                            <MenuItem Header="Delete account" Command="{Binding ViewModel.DeleteAccountCommand}"/>
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
                 </ui:ListView>
