@@ -1,18 +1,17 @@
-﻿using MyMoney.ViewModels.Pages;
 using MyMoney.Core.Models;
+using Moq;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Services.ContentDialogs;
-using Moq;
-using Wpf.Ui.Controls;
-using Wpf.Ui;
 using MyMoney.Core.Database;
+using Wpf.Ui;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
+
 
 namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
 {
     [TestClass]
-    public class RenameAccount
+    public class UpdateAccountBalanceTests
     {
         private Mock<IContentDialogService> _contentDialogService;
         private Mock<IDatabaseManager> _databaseReader;
@@ -22,6 +21,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         private Mock<IRenameAccountDialogService> _renameAccountDialogService;
         private Mock<IMessageBoxService> _messageBoxService;
         private Mock<IUpdateAccountBalanceDialogService> _updateAccountBalanceDialogService;
+
+        private ViewModels.Pages.AccountsViewModel _viewModel;
 
         [TestInitialize]
         public void Setup()
@@ -35,13 +36,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _renameAccountDialogService = new Mock<IRenameAccountDialogService>();
             _messageBoxService = new Mock<IMessageBoxService>();
             _updateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
-        }
 
-        [TestMethod]
-        public async Task RenameAccount_SuccessfulRename_UpdatesAccountName()
-        {
-            // Arrange
-            var viewModel = new MyMoney.ViewModels.Pages.AccountsViewModel(
+            _viewModel = new ViewModels.Pages.AccountsViewModel(
                 _contentDialogService.Object,
                 _databaseReader.Object,
                 _newAccountDialogService.Object,
@@ -51,52 +47,32 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
                 _messageBoxService.Object,
                 _updateAccountBalanceDialogService.Object
             );
-
-            var account = new Account { AccountName = "Old Name" };
-            viewModel.Accounts.Add(account);
-            viewModel.SelectedAccountIndex = 0;
-
-            var renameViewModel = new RenameAccountViewModel { NewName = "New Name" };
-            _renameAccountDialogService.Setup(x => x.GetViewModel()).Returns(renameViewModel);
-            _renameAccountDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
-                .ReturnsAsync(ContentDialogResult.Primary);
-
-            // Act
-            await viewModel.RenameAccountCommand.ExecuteAsync(null);
-
-            // Assert
-            Assert.AreEqual("New Name", viewModel.Accounts[0].AccountName);
         }
 
         [TestMethod]
-        public async Task RenameAccount_CancelRename_MaintainsOriginalName()
+        public async Task UpdateAccountBalance_BalanceChanged_UpdatesBalanceCorrectly()
         {
             // Arrange
-            var viewModel = new MyMoney.ViewModels.Pages.AccountsViewModel(
-                _contentDialogService.Object,
-                _databaseReader.Object,
-                _newAccountDialogService.Object,
-                _transferDialogService.Object,
-                _transactionDialogService.Object,
-                _renameAccountDialogService.Object,
-                _messageBoxService.Object,
-                _updateAccountBalanceDialogService.Object
-            );
+            var account = new Account { Total = new Currency(100) };
+            _viewModel.Accounts.Add(account);
+            _viewModel.SelectedAccountIndex = 0;
+            _viewModel.SelectedAccount = _viewModel.Accounts[0];
 
-            var account = new Account { AccountName = "Original Name" };
-            viewModel.Accounts.Add(account);
-            viewModel.SelectedAccountIndex = 0;
-
-            var renameViewModel = new RenameAccountViewModel { NewName = "New Name" };
-            _renameAccountDialogService.Setup(x => x.GetViewModel()).Returns(renameViewModel);
-            _renameAccountDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
-                .ReturnsAsync(ContentDialogResult.None);
+            _updateAccountBalanceDialogService
+                .Setup(x => x.GetViewModel())
+                .Returns(new UpdateAccountBalanceDialogViewModel
+                {
+                    Balance = new Currency(150),
+                });
+            _updateAccountBalanceDialogService
+                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+                .ReturnsAsync(Wpf.Ui.Controls.ContentDialogResult.Primary);
 
             // Act
-            await viewModel.RenameAccountCommand.ExecuteAsync(null);
+            await _viewModel.UpdateAccountBalanceCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.AreEqual("Original Name", viewModel.Accounts[0].AccountName);
+            Assert.AreEqual(150m, _viewModel.Accounts[0].Total.Value);
         }
     }
 }

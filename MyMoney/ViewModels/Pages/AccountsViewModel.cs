@@ -61,6 +61,7 @@ namespace MyMoney.ViewModels.Pages
         private readonly ITransactionDialogService _transactionDialogService;
         private readonly IRenameAccountDialogService _renameAccountDialogService;
         private readonly IMessageBoxService _messageBoxService;
+        private readonly IUpdateAccountBalanceDialogService _updateAccountBalanceDialogService;
 
         // Database lock object
         private readonly object _databaseLockObject = new();
@@ -82,7 +83,8 @@ namespace MyMoney.ViewModels.Pages
             ITransferDialogService transferDialogService,
             ITransactionDialogService transactionDialogService,
             IRenameAccountDialogService renameAccountDialogService,
-            IMessageBoxService messageBoxService)
+            IMessageBoxService messageBoxService,
+            IUpdateAccountBalanceDialogService updateAccountBalanceDialogService)
         {
             _contentDialogService = contentDialogService ?? throw new ArgumentNullException(nameof(contentDialogService));
             _databaseManager = databaseManager ?? throw new ArgumentNullException(nameof(databaseManager));
@@ -91,6 +93,7 @@ namespace MyMoney.ViewModels.Pages
             _transactionDialogService = transactionDialogService ?? throw new ArgumentNullException(nameof(transactionDialogService));
             _renameAccountDialogService = renameAccountDialogService ?? throw new ArgumentNullException(nameof(renameAccountDialogService));
             _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
+            _updateAccountBalanceDialogService = updateAccountBalanceDialogService ?? throw new ArgumentNullException(nameof(updateAccountBalanceDialogService));
 
             LoadAccounts();
             LoadCategoryNames();
@@ -494,6 +497,37 @@ namespace MyMoney.ViewModels.Pages
             if (result == ContentDialogResult.Primary)
             {
                 Accounts[SelectedAccountIndex].AccountName = viewModel.NewName;
+                SaveAccountsToDatabase();
+            }
+        }
+
+        [RelayCommand]
+        private async Task UpdateAccountBalance()
+        {
+            if (SelectedAccountIndex < 0 || SelectedAccount == null) return;
+
+            var viewModel = new UpdateAccountBalanceDialogViewModel
+            {
+                Balance = SelectedAccount.Total
+            };
+
+            _updateAccountBalanceDialogService.SetViewModel(viewModel);
+            var result = await _updateAccountBalanceDialogService.ShowDialogAsync(_contentDialogService);
+            viewModel = _updateAccountBalanceDialogService.GetViewModel();
+
+            if (result == ContentDialogResult.Primary)
+            {
+                var newBalance = viewModel.Balance;
+
+                // Create a transaction to reflect the balance change
+                var balanceChange = newBalance - SelectedAccount.Total;
+                var balanceTransaction = new Transaction(DateTime.Now, "Balance update",
+                    new(), balanceChange, "Balance update");
+                SelectedAccount.Transactions.Add(balanceTransaction);
+
+                SelectedAccount.Total = newBalance;
+
+                SortTransactions();
                 SaveAccountsToDatabase();
             }
         }
