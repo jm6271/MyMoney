@@ -22,6 +22,7 @@ public class NewAccountTest
     private MyMoney.ViewModels.Pages.AccountsViewModel _viewModel;
     private Mock<ITransferDialogService> _mockTransferDialogService;
     private Mock<IMessageBoxService> _mockMessageBoxService;
+    private Mock<IUpdateAccountBalanceDialogService> _mockUpdateAccountBalanceDialogService;
 
     [TestInitialize]
     public void Setup()
@@ -33,7 +34,8 @@ public class NewAccountTest
         _mockTransactionDialogService = new Mock<ITransactionDialogService>();
         _mockRenameAccountDialogService = new Mock<IRenameAccountDialogService>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
-        
+        _mockUpdateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
+
         _mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts"))
             .Returns([]);
     }
@@ -54,7 +56,7 @@ public class NewAccountTest
         _viewModel = new(_mockContentDialogService.Object, _mockDatabaseService.Object, 
             _mockNewAccountDialogService.Object, _mockTransferDialogService.Object,
             _mockTransactionDialogService.Object, _mockRenameAccountDialogService.Object,
-            _mockMessageBoxService.Object);
+            _mockMessageBoxService.Object, _mockUpdateAccountBalanceDialogService.Object);
         _viewModel.CreateNewAccountCommand.Execute(null);
 
         // Assert
@@ -80,7 +82,7 @@ public class NewAccountTest
         _viewModel = new(_mockContentDialogService.Object, _mockDatabaseService.Object, 
             _mockNewAccountDialogService.Object, _mockTransferDialogService.Object,
             _mockTransactionDialogService.Object, _mockRenameAccountDialogService.Object,
-            _mockMessageBoxService.Object);
+            _mockMessageBoxService.Object, _mockUpdateAccountBalanceDialogService.Object);
         _viewModel.CreateNewAccountCommand.Execute(null);
 
         // Assert
@@ -100,7 +102,7 @@ public class NewAccountTest
         _viewModel = new(_mockContentDialogService.Object, _mockDatabaseService.Object, 
             _mockNewAccountDialogService.Object, _mockTransferDialogService.Object,
             _mockTransactionDialogService.Object, _mockRenameAccountDialogService.Object,
-            _mockMessageBoxService.Object);
+            _mockMessageBoxService.Object, _mockUpdateAccountBalanceDialogService.Object);
         _viewModel.CreateNewAccountCommand.Execute(null);
 
         // Assert
@@ -126,7 +128,7 @@ public class NewAccountTest
         _viewModel = new(_mockContentDialogService.Object, _mockDatabaseService.Object, 
             _mockNewAccountDialogService.Object , _mockTransferDialogService.Object,
             _mockTransactionDialogService.Object, _mockRenameAccountDialogService.Object,
-            _mockMessageBoxService.Object);
+            _mockMessageBoxService.Object, _mockUpdateAccountBalanceDialogService.Object);
 
         // Act - Create first account
         SetupMockDialogSuccess(firstAccount);
@@ -160,7 +162,7 @@ public class NewAccountTest
         _viewModel = new(_mockContentDialogService.Object, _mockDatabaseService.Object, 
             _mockNewAccountDialogService.Object, _mockTransferDialogService.Object,
             _mockTransactionDialogService.Object, _mockRenameAccountDialogService.Object,
-            _mockMessageBoxService.Object);
+            _mockMessageBoxService.Object, _mockUpdateAccountBalanceDialogService.Object);
         Assert.IsFalse(_viewModel.TransactionsEnabled); // Initially disabled
         
         _viewModel.CreateNewAccountCommand.Execute(null);

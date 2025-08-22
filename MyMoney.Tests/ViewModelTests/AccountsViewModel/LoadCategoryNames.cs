@@ -19,6 +19,7 @@ public class LoadCategoryNames
     private Mock<ITransactionDialogService> _transactionDialogService;
     private Mock<IRenameAccountDialogService> _renameDialogService;
     private Mock<IMessageBoxService> _messageBoxService;
+    private Mock<IUpdateAccountBalanceDialogService> _updateAccountBalanceDialogService;
     private ViewModels.Pages.AccountsViewModel _viewModel;
 
     [TestInitialize]
@@ -31,7 +32,8 @@ public class LoadCategoryNames
         _transactionDialogService = new Mock<ITransactionDialogService>();
         _renameDialogService = new Mock<IRenameAccountDialogService>();
         _messageBoxService = new Mock<IMessageBoxService>();
-            
+        _updateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
+
         // Setup empty accounts collection
         _databaseReader.Setup(x => x.GetCollection<Account>("Accounts"))
             .Returns(new List<Account>());
@@ -52,7 +54,8 @@ public class LoadCategoryNames
             _transferDialogService.Object,
             _transactionDialogService.Object,
             _renameDialogService.Object,
-            _messageBoxService.Object);
+            _messageBoxService.Object,
+            _updateAccountBalanceDialogService.Object);
 
         // Assert
         Assert.AreEqual(0, _viewModel.CategoryNames.Count);
@@ -94,7 +97,8 @@ public class LoadCategoryNames
             _transferDialogService.Object,
             _transactionDialogService.Object,
             _renameDialogService.Object,
-            _messageBoxService.Object);
+            _messageBoxService.Object,
+            _updateAccountBalanceDialogService.Object);
 
         // Assert
         Assert.AreEqual(5, _viewModel.CategoryNames.Count);
@@ -127,7 +131,8 @@ public class LoadCategoryNames
             _transferDialogService.Object,
             _transactionDialogService.Object,
             _renameDialogService.Object,
-            _messageBoxService.Object);
+            _messageBoxService.Object,
+            _updateAccountBalanceDialogService.Object);
 
         // Act
         _viewModel.OnPageNavigatedTo(); // This calls LoadCategoryNames again

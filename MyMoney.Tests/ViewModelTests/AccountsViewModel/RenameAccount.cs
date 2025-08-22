@@ -21,6 +21,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         private Mock<ITransactionDialogService> _transactionDialogService;
         private Mock<IRenameAccountDialogService> _renameAccountDialogService;
         private Mock<IMessageBoxService> _messageBoxService;
+        private Mock<IUpdateAccountBalanceDialogService> _updateAccountBalanceDialogService;
 
         [TestInitialize]
         public void Setup()
@@ -33,6 +34,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _transactionDialogService = new Mock<ITransactionDialogService>();
             _renameAccountDialogService = new Mock<IRenameAccountDialogService>();
             _messageBoxService = new Mock<IMessageBoxService>();
+            _updateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
         }
 
         [TestMethod]
@@ -46,7 +48,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
                 _transferDialogService.Object,
                 _transactionDialogService.Object,
                 _renameAccountDialogService.Object,
-                _messageBoxService.Object
+                _messageBoxService.Object,
+                _updateAccountBalanceDialogService.Object
             );
 
             var account = new Account { AccountName = "Old Name" };
@@ -76,7 +79,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
                 _transferDialogService.Object,
                 _transactionDialogService.Object,
                 _renameAccountDialogService.Object,
-                _messageBoxService.Object
+                _messageBoxService.Object,
+                _updateAccountBalanceDialogService.Object
             );
 
             var account = new Account { AccountName = "Original Name" };
