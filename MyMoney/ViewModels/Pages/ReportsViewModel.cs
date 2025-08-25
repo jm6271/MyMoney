@@ -1,8 +1,12 @@
 ﻿using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using MyMoney.Core.Database;
+using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
 using SkiaSharp;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
@@ -46,6 +50,40 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private SKColor _chartTextColor = DefaultTextColor;
 
+
+        [ObservableProperty]
+        private Currency _totalNetWorth = new(0m);
+
+        [ObservableProperty]
+        private ISeries[] _netWorthSeries = [];
+
+        [ObservableProperty]
+        private Axis[] _netWorthYAxes =
+        [
+            new()
+            {
+                Labeler = Labelers.Currency,
+            }
+        ];
+
+        [ObservableProperty]
+        private Axis[] _netWorthXAxes =
+        [
+            new()
+            {
+                LabelsPaint = null
+            }
+        ];
+
+        [ObservableProperty]
+        private string _netWorthStartDate = "";
+
+        [ObservableProperty]
+        private string _netWorthEndDate = "";
+
+        [ObservableProperty]
+        private int _netWorthPeriodIndex = 2; // Last 30 days
+
         #endregion
 
         #region Constants
@@ -54,6 +92,18 @@ namespace MyMoney.ViewModels.Pages
         private static readonly SKColor IncomeFillColor = new(0x21, 0x96, 0xf3);
         private static readonly SKColor ExpenseFillColor = new(0xf4, 0x43, 0x36);
         private const int MaxBarWidth = 25;
+
+
+        private enum NetWorthPeriod
+        {
+            Last7Days,
+            WeekToDate,
+            Last30Days,
+            MonthToDate,
+            Last90Days,
+            Last365Days,
+            YearToDate,
+        }
 
         #endregion
 
@@ -70,9 +120,20 @@ namespace MyMoney.ViewModels.Pages
 
         #region Private Methods
 
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            if (e.PropertyName == nameof(NetWorthPeriodIndex))
+            {
+                _ = UpdateNetWorthChart();
+            }
+        }
+
         private async Task UpdateCharts()
         {
             UpdateTextColor();
+            await UpdateNetWorthChart();
             await Update12MonthIncomeExpenseChart();
         }
 
@@ -82,6 +143,50 @@ namespace MyMoney.ViewModels.Pages
             UpdateChartSeries(incomeSeries, expenseSeries);
             UpdateChartAxes();
             UpdateChartLegend();
+        }
+
+        private async Task UpdateNetWorthChart()
+        {
+            DatabaseManager dbManager = new();
+            var netWorthCalculator = new NetWorthCalculator(dbManager);
+            var netWorthData = await Task.Run(() => 
+                netWorthCalculator.GetNetWorthSinceStartDate(DateTime.Today.AddDays(
+                    -GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex)))
+            );
+
+            TotalNetWorth = new Currency(netWorthData.LastOrDefault());
+            var accentColor = ApplicationAccentColorManager.SecondaryAccent;
+            var lighterAccentColor = ApplicationAccentColorManager.PrimaryAccent;
+            NetWorthSeries =
+            [
+                new LineSeries<decimal>
+                {
+                    Values = netWorthData,
+                    GeometrySize = 0,
+                    Stroke = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B), 4),
+                    Fill = new SolidColorPaint(new SKColor(lighterAccentColor.R, lighterAccentColor.G, lighterAccentColor.B, 175)),
+                }
+            ];
+
+            NetWorthStartDate = DateTime.Today.AddDays(
+                -GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex))
+                .ToString("MMM dd, yyyy");
+            NetWorthEndDate = DateTime.Today.ToString("MMM dd, yyyy");
+        }
+
+        private static int GetNetWorthPeriodNumberOfDays(NetWorthPeriod period)
+        {
+            return period switch
+            {
+                NetWorthPeriod.Last7Days => 7,
+                NetWorthPeriod.WeekToDate => (int)(DateTime.Today.DayOfWeek) + 1,
+                NetWorthPeriod.Last30Days => 30,
+                NetWorthPeriod.MonthToDate => DateTime.Today.Day,
+                NetWorthPeriod.Last90Days => 90,
+                NetWorthPeriod.Last365Days => 365,
+                NetWorthPeriod.YearToDate => DateTime.Today.DayOfYear,
+                _ => 30,
+            };
         }
 
         private static (List<double> income, List<double> expenses) GetChartData()
@@ -118,6 +223,17 @@ namespace MyMoney.ViewModels.Pages
             
             IncomeExpense12MonthXAxes = [CreateMonthAxis(textPaint)];
             IncomeExpense12MonthYAxes = [CreateCurrencyAxis(textPaint)];
+            NetWorthYAxes = [CreateNetWorthYAxis(textPaint)];
+        }
+
+        private static Axis CreateNetWorthYAxis(SolidColorPaint textPaint)
+        {
+            return new Axis
+            {
+                Labeler = Labelers.Currency,
+                LabelsPaint = textPaint,
+                NamePaint = textPaint
+            };
         }
 
         private static Axis CreateMonthAxis(SolidColorPaint textPaint)
@@ -139,7 +255,6 @@ namespace MyMoney.ViewModels.Pages
         {
             return new Axis
             {
-                Name = "Amount",
                 LabelsPaint = textPaint,
                 Labeler = Labelers.Currency,
                 NamePaint = textPaint,
@@ -178,7 +293,6 @@ namespace MyMoney.ViewModels.Pages
         {
             return [new Axis
             {
-                Name = "Amount",
                 LabelsPaint = new SolidColorPaint(DefaultTextColor),
                 Labeler = Labelers.Currency,
                 NamePaint = new SolidColorPaint(DefaultTextColor),
