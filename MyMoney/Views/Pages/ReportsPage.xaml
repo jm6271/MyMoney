@@ -7,7 +7,7 @@
       xmlns:local="clr-namespace:MyMoney.Views.Pages"
       xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="600" d:DesignWidth="800"
       Title="Reports"
       d:DataContext="{d:DesignInstance local:ReportsPage,
                                  IsDesignTimeCreatable=False}"
@@ -19,14 +19,45 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="1*"/>
         </Grid.RowDefinitions>
 
-        <ui:Card Margin="0,0,0,24">
+        <ui:Card Margin="0,0,0,16">
             <lvc:CartesianChart Grid.Row="0" Height="400" Series="{Binding ViewModel.IncomeExpense12MonthSeries}" 
                                 XAxes="{Binding ViewModel.IncomeExpense12MonthXAxes}" LegendPosition="Bottom"
                                 YAxes="{Binding ViewModel.IncomeExpense12MonthYAxes}" LegendTextPaint="{Binding ViewModel.IncomeExpense12MonthLegendPaint}">
             </lvc:CartesianChart>
+        </ui:Card>
+
+        <ui:Card Grid.Row="1" Margin="0,0,0,24">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="250"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Margin="0,0,0,8">
+                    <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,8">Net Worth</ui:TextBlock>
+                    <ui:TextBlock FontTypography="Title" Text="{Binding ViewModel.TotalNetWorth}"/>
+                </StackPanel>
+
+                <ComboBox Grid.Column="1" VerticalAlignment="Top" Width="150"/>
+
+                <lvc:CartesianChart Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch"
+                                    Series="{Binding ViewModel.NetWorthSeries}"
+                                    XAxes="{Binding ViewModel.NetWorthXAxes}"
+                                    YAxes="{Binding ViewModel.NetWorthYAxes}"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding ViewModel.NetWorthStartDate}"/>
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding ViewModel.NetWorthEndDate}" HorizontalAlignment="Right"/>
+            </Grid>
         </ui:Card>
     </Grid>
 </Page>

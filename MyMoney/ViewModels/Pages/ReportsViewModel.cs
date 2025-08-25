@@ -1,6 +1,8 @@
 ﻿using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using MyMoney.Core.Database;
+using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
 using SkiaSharp;
 using System.Threading.Tasks;
@@ -46,6 +48,37 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private SKColor _chartTextColor = DefaultTextColor;
 
+
+        [ObservableProperty]
+        private Currency _totalNetWorth = new(0m);
+
+        [ObservableProperty]
+        private ISeries[] _netWorthSeries = [];
+
+        [ObservableProperty]
+        private Axis[] _netWorthYAxes =
+        [
+            new()
+            {
+                Labeler = Labelers.Currency,
+            }
+        ];
+
+        [ObservableProperty]
+        private Axis[] _netWorthXAxes =
+        [
+            new()
+            {
+                LabelsPaint = null
+            }
+        ];
+
+        [ObservableProperty]
+        private string _netWorthStartDate = "";
+
+        [ObservableProperty]
+        private string _netWorthEndDate = "";
+
         #endregion
 
         #region Constants
@@ -73,6 +106,7 @@ namespace MyMoney.ViewModels.Pages
         private async Task UpdateCharts()
         {
             UpdateTextColor();
+            await UpdateNetWorthChart();
             await Update12MonthIncomeExpenseChart();
         }
 
@@ -82,6 +116,29 @@ namespace MyMoney.ViewModels.Pages
             UpdateChartSeries(incomeSeries, expenseSeries);
             UpdateChartAxes();
             UpdateChartLegend();
+        }
+
+        private async Task UpdateNetWorthChart()
+        {
+            DatabaseManager dbManager = new();
+            var netWorthCalculator = new NetWorthCalculator(dbManager);
+            var netWorthData = await Task.Run(() => netWorthCalculator.GetNetWorthSinceStartDate(DateTime.Today.AddDays(-30)));
+            TotalNetWorth = new Currency(netWorthData.LastOrDefault());
+            var accentColor = ApplicationAccentColorManager.SecondaryAccent;
+            var lighterAccentColor = ApplicationAccentColorManager.PrimaryAccent;
+            NetWorthSeries =
+            [
+                new LineSeries<decimal>
+                {
+                    Values = netWorthData,
+                    GeometrySize = 0,
+                    Stroke = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B), 4),
+                    Fill = new SolidColorPaint(new SKColor(lighterAccentColor.R, lighterAccentColor.G, lighterAccentColor.B, 175)),
+                }
+            ];
+
+            NetWorthStartDate = DateTime.Today.AddDays(-30).ToString("MMM dd, yyyy");
+            NetWorthEndDate = DateTime.Today.ToString("MMM dd, yyyy");
         }
 
         private static (List<double> income, List<double> expenses) GetChartData()
@@ -118,6 +175,17 @@ namespace MyMoney.ViewModels.Pages
             
             IncomeExpense12MonthXAxes = [CreateMonthAxis(textPaint)];
             IncomeExpense12MonthYAxes = [CreateCurrencyAxis(textPaint)];
+            NetWorthYAxes = [CreateNetWorthYAxis(textPaint)];
+        }
+
+        private static Axis CreateNetWorthYAxis(SolidColorPaint textPaint)
+        {
+            return new Axis
+            {
+                Labeler = Labelers.Currency,
+                LabelsPaint = textPaint,
+                NamePaint = textPaint
+            };
         }
 
         private static Axis CreateMonthAxis(SolidColorPaint textPaint)
