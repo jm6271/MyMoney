@@ -255,7 +255,6 @@ namespace MyMoney.ViewModels.Pages
         {
             return new Axis
             {
-                Name = "Amount",
                 LabelsPaint = textPaint,
                 Labeler = Labelers.Currency,
                 NamePaint = textPaint,
@@ -294,7 +293,6 @@ namespace MyMoney.ViewModels.Pages
         {
             return [new Axis
             {
-                Name = "Amount",
                 LabelsPaint = new SolidColorPaint(DefaultTextColor),
                 Labeler = Labelers.Currency,
                 NamePaint = new SolidColorPaint(DefaultTextColor),
