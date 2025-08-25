@@ -5,6 +5,8 @@ using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
 using SkiaSharp;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
@@ -79,6 +81,9 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private string _netWorthEndDate = "";
 
+        [ObservableProperty]
+        private int _netWorthPeriodIndex = 2; // Last 30 days
+
         #endregion
 
         #region Constants
@@ -87,6 +92,18 @@ namespace MyMoney.ViewModels.Pages
         private static readonly SKColor IncomeFillColor = new(0x21, 0x96, 0xf3);
         private static readonly SKColor ExpenseFillColor = new(0xf4, 0x43, 0x36);
         private const int MaxBarWidth = 25;
+
+
+        private enum NetWorthPeriod
+        {
+            Last7Days,
+            WeekToDate,
+            Last30Days,
+            MonthToDate,
+            Last90Days,
+            Last365Days,
+            YearToDate,
+        }
 
         #endregion
 
@@ -102,6 +119,16 @@ namespace MyMoney.ViewModels.Pages
         #endregion
 
         #region Private Methods
+
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            if (e.PropertyName == nameof(NetWorthPeriodIndex))
+            {
+                _ = UpdateNetWorthChart();
+            }
+        }
 
         private async Task UpdateCharts()
         {
@@ -122,7 +149,11 @@ namespace MyMoney.ViewModels.Pages
         {
             DatabaseManager dbManager = new();
             var netWorthCalculator = new NetWorthCalculator(dbManager);
-            var netWorthData = await Task.Run(() => netWorthCalculator.GetNetWorthSinceStartDate(DateTime.Today.AddDays(-30)));
+            var netWorthData = await Task.Run(() => 
+                netWorthCalculator.GetNetWorthSinceStartDate(DateTime.Today.AddDays(
+                    -GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex)))
+            );
+
             TotalNetWorth = new Currency(netWorthData.LastOrDefault());
             var accentColor = ApplicationAccentColorManager.SecondaryAccent;
             var lighterAccentColor = ApplicationAccentColorManager.PrimaryAccent;
@@ -137,8 +168,25 @@ namespace MyMoney.ViewModels.Pages
                 }
             ];
 
-            NetWorthStartDate = DateTime.Today.AddDays(-30).ToString("MMM dd, yyyy");
+            NetWorthStartDate = DateTime.Today.AddDays(
+                -GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex))
+                .ToString("MMM dd, yyyy");
             NetWorthEndDate = DateTime.Today.ToString("MMM dd, yyyy");
+        }
+
+        private static int GetNetWorthPeriodNumberOfDays(NetWorthPeriod period)
+        {
+            return period switch
+            {
+                NetWorthPeriod.Last7Days => 7,
+                NetWorthPeriod.WeekToDate => (int)(DateTime.Today.DayOfWeek) + 1,
+                NetWorthPeriod.Last30Days => 30,
+                NetWorthPeriod.MonthToDate => DateTime.Today.Day,
+                NetWorthPeriod.Last90Days => 90,
+                NetWorthPeriod.Last365Days => 365,
+                NetWorthPeriod.YearToDate => DateTime.Today.DayOfYear,
+                _ => 30,
+            };
         }
 
         private static (List<double> income, List<double> expenses) GetChartData()

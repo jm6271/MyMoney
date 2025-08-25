@@ -48,7 +48,15 @@
                     <ui:TextBlock FontTypography="Title" Text="{Binding ViewModel.TotalNetWorth}"/>
                 </StackPanel>
 
-                <ComboBox Grid.Column="1" VerticalAlignment="Top" Width="150"/>
+                <ComboBox Grid.Column="1" VerticalAlignment="Top" Width="150" SelectedIndex="{Binding ViewModel.NetWorthPeriodIndex}">
+                    <ComboBoxItem Content="7 Days"/>
+                    <ComboBoxItem Content="Week to Date"/>
+                    <ComboBoxItem Content="30 Days"/>
+                    <ComboBoxItem Content="Month to Date"/>
+                    <ComboBoxItem Content="90 Days"/>
+                    <ComboBoxItem Content="365 Days"/>
+                    <ComboBoxItem Content="Year to Date"/>
+                </ComboBox>
 
                 <lvc:CartesianChart Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch"
                                     Series="{Binding ViewModel.NetWorthSeries}"
