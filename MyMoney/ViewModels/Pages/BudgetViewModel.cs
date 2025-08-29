@@ -20,10 +20,8 @@ namespace MyMoney.ViewModels.Pages
 {
     public partial class BudgetViewModel : ObservableObject, INavigationAware
     {
-        /// <summary>
-        /// Collection of all budgets in the system
-        /// </summary>
-        public ObservableCollection<Budget> Budgets { get; } = [];
+        [ObservableProperty]
+        private ObservableCollection<Budget> _budgets = [];
 
         [ObservableProperty]
         private ListCollectionView? _groupedBudgets;
@@ -156,29 +154,27 @@ namespace MyMoney.ViewModels.Pages
             ExpenseItemsMoveAndReorderHandler = new(this);
         }
 
-        private async Task SelectCurrentBudget()
+        private void SelectCurrentBudget()
         {
-            if (Application.Current != null)
+            if (Budgets.Count > 0)
             {
-                await Application.Current.Dispatcher.InvokeAsync(() =>
-                {
-                    SelectedGroupedBudgetIndex = 0;
-                    SelectedGroupedBudget = GroupedBudgets?.GetItemAt(0) as GroupedBudget;
-                });
+                SelectedGroupedBudgetIndex = 0;
             }
         }
 
         public async Task OnNavigatedToAsync()
         {
-            await Task.Run(LoadBudgetCollection);
-            await Task.Run(UpdateCharts);
-            await Task.Run(UpdateBudgetLists);
-            await Task.Run(UpdateListViewTotals);
+            if (Budgets.Count == 0)
+            {
+                var budgets = await Task.Run(() => LoadBudgetCollection());
+                Budgets = budgets;
+                
+                UpdateBudgetLists();
+            }
+            UpdateBudgetTotals();
 
             if (Budgets.Count > 0)
-                await SelectCurrentBudget();
-
-            await Task.Run(AddActualSpentToCurrentBudget);
+                SelectCurrentBudget();
         }
 
         public Task OnNavigatedFromAsync()
@@ -186,22 +182,24 @@ namespace MyMoney.ViewModels.Pages
             return Task.CompletedTask;
         }
 
-        private void LoadBudgetCollection()
+        private ObservableCollection<Budget> LoadBudgetCollection()
         {
-            Budgets.Clear();
+            ObservableCollection<Budget> budgets = [];
 
             List<Budget> budgetCollection = _databaseManager.GetCollection<Budget>("Budgets");
 
             foreach (var budget in budgetCollection.OfType<Budget>())
             {
-                Budgets.Add(budget);
+                budgets.Add(budget);
             }
 
             // Sort according to date
-            var sortedBudgets = Budgets.OrderByDescending(x => x.BudgetDate).ToList();
-            Budgets.Clear();
+            var sortedBudgets = budgets.OrderByDescending(x => x.BudgetDate).ToList();
+            budgets.Clear();
             foreach (var item in sortedBudgets)
-                Budgets.Add(item);
+                budgets.Add(item);
+
+            return budgets;
         }
 
         private void UpdateBudgetLists()
@@ -227,10 +225,13 @@ namespace MyMoney.ViewModels.Pages
                     groupedBudgets.Add(new GroupedBudget() { Group = "Old", Budget = budget });
                 }
             }
-
-            GroupedBudgets = new(groupedBudgets);
-            GroupedBudgets.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
-            GroupedBudgets.CustomSort = new GroupComparer();
+            
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                GroupedBudgets = new(groupedBudgets);
+                GroupedBudgets.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+                GroupedBudgets.CustomSort = new GroupComparer();
+            });
         }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -263,7 +264,7 @@ namespace MyMoney.ViewModels.Pages
             _databaseManager.WriteCollection("Budgets", Budgets.ToList());
         }
 
-        private void UpdateListViewTotals()
+        private void UpdateBudgetTotals()
         {
             if (CurrentBudget == null)
             {
@@ -393,7 +394,7 @@ namespace MyMoney.ViewModels.Pages
                 CurrentBudget.BudgetIncomeItems.Add(item);
 
                 // Recalculate the total of the income items
-                UpdateListViewTotals();
+                UpdateBudgetTotals();
             }
         }
 
@@ -442,7 +443,7 @@ namespace MyMoney.ViewModels.Pages
                 CurrentBudget.BudgetSavingsCategories.Add(category);
 
                 // Recalculate the totals for the budget
-                UpdateListViewTotals();
+                UpdateBudgetTotals();
             }
         }
 
@@ -473,7 +474,7 @@ namespace MyMoney.ViewModels.Pages
                 CurrentBudget.BudgetExpenseItems.Add(expenseGroup);
 
                 // Update totals and write to database
-                UpdateListViewTotals();
+                UpdateBudgetTotals();
             }
         }
 
@@ -509,7 +510,7 @@ namespace MyMoney.ViewModels.Pages
                 parameter.SubItems.Add(item);
 
                 // Recalculate the total of the expense items
-                UpdateListViewTotals();
+                UpdateBudgetTotals();
             }
         }
 
@@ -556,7 +557,7 @@ namespace MyMoney.ViewModels.Pages
                 
 
                 // Recalculate the total of the income items
-                UpdateListViewTotals();
+                UpdateBudgetTotals();
             }
         }
 
@@ -584,7 +585,7 @@ namespace MyMoney.ViewModels.Pages
                 CurrentBudget.BudgetIncomeItems[i].Id = i + 1;
             }
 
-            UpdateListViewTotals();
+            UpdateBudgetTotals();
         }
 
         [RelayCommand]
@@ -669,7 +670,7 @@ namespace MyMoney.ViewModels.Pages
                 _ = Task.Run(() => AddActualSpentToCurrentBudget());
 
                 // Recalculate the total of the income items
-                UpdateListViewTotals();
+                UpdateBudgetTotals();
             }
         }
 
@@ -697,7 +698,7 @@ namespace MyMoney.ViewModels.Pages
                 CurrentBudget.BudgetSavingsCategories[i].Id = i + 1;
             }
 
-            UpdateListViewTotals();
+            UpdateBudgetTotals();
         }
 
         [RelayCommand]
@@ -771,7 +772,7 @@ namespace MyMoney.ViewModels.Pages
                 _ = Task.Run(() => AddActualSpentToCurrentBudget());
 
                 // Recalculate the total of the expense items
-                UpdateListViewTotals();
+                UpdateBudgetTotals();
             }
         }
 
@@ -793,7 +794,7 @@ namespace MyMoney.ViewModels.Pages
             CurrentBudget.BudgetExpenseItems.Remove(parameter);
 
             // Update the budget totals
-            UpdateListViewTotals();
+            UpdateBudgetTotals();
         }
 
         [RelayCommand]
@@ -820,7 +821,7 @@ namespace MyMoney.ViewModels.Pages
                 parameter.SubItems[i].Id = i + 1;
             }
 
-            UpdateListViewTotals();
+            UpdateBudgetTotals();
         }
 
         [RelayCommand]
@@ -940,7 +941,7 @@ namespace MyMoney.ViewModels.Pages
             IsEditingEnabled = true;
 
             UpdateCharts();
-            UpdateListViewTotals();
+            UpdateBudgetTotals();
 
             _ = Task.Run(() => AddActualSpentToCurrentBudget());
         }
