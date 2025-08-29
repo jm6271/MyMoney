@@ -168,7 +168,7 @@ namespace MyMoney.ViewModels.Pages
             {
                 var budgets = await Task.Run(() => LoadBudgetCollection());
                 Budgets = budgets;
-                
+
                 UpdateBudgetLists();
             }
             UpdateBudgetTotals();
@@ -225,13 +225,9 @@ namespace MyMoney.ViewModels.Pages
                     groupedBudgets.Add(new GroupedBudget() { Group = "Old", Budget = budget });
                 }
             }
-            
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                GroupedBudgets = new(groupedBudgets);
-                GroupedBudgets.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
-                GroupedBudgets.CustomSort = new GroupComparer();
-            });
+            GroupedBudgets = new(groupedBudgets);
+            GroupedBudgets.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+            GroupedBudgets.CustomSort = new GroupComparer();
         }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -299,7 +295,7 @@ namespace MyMoney.ViewModels.Pages
 
             var expenseSum = CurrentBudget.BudgetExpenseItems.Sum(item => item.CategoryTotal.Value);
             var savingsSum = CurrentBudget.BudgetSavingsCategories.Sum(item => item.BudgetedAmount.Value);
-            
+
             ExpenseTotal = new(expenseSum + savingsSum);
         }
 
@@ -431,7 +427,7 @@ namespace MyMoney.ViewModels.Pages
                 };
 
                 // Add a transaction that applies the budgeted amount to the savings category
-                Transaction appliedBudgetedAmount = new(CurrentBudget.BudgetDate, "", 
+                Transaction appliedBudgetedAmount = new(CurrentBudget.BudgetDate, "",
                     new Category() { Group = "Savings", Name = category.CategoryName },
                     category.BudgetedAmount, "Planned this month");
                 appliedBudgetedAmount.TransactionDetail = "Planned this month";
@@ -534,7 +530,7 @@ namespace MyMoney.ViewModels.Pages
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
                 // Make sure the category name of the edited item doesn't already exist
-                if (DoesIncomeItemExist(viewModel.BudgetCategory) && 
+                if (DoesIncomeItemExist(viewModel.BudgetCategory) &&
                     CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex].Category != viewModel.BudgetCategory)
                 {
                     await _messageBoxService.ShowInfoAsync(
@@ -554,7 +550,7 @@ namespace MyMoney.ViewModels.Pages
 
                 // Recalulate the spent properties of all the items in the budget
                 _ = Task.Run(() => AddActualSpentToCurrentBudget());
-                
+
 
                 // Recalculate the total of the income items
                 UpdateBudgetTotals();
@@ -634,11 +630,11 @@ namespace MyMoney.ViewModels.Pages
                         "Updated balance");
                     updatedTransaction.TransactionDetail = "Updated balance";
                     editedSavingsCategory.Transactions.Add(updatedTransaction);
-                    
+
                     // Update the balance
                     editedSavingsCategory.CurrentBalance = viewModel.CurrentBalance;
                 }
-                
+
                 // Update the planned amount if it has changed
                 if (editedSavingsCategory.BudgetedAmount != viewModel.Planned)
                 {
@@ -750,7 +746,7 @@ namespace MyMoney.ViewModels.Pages
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
                 // Make sure an item with this name doesn't already exist
-                if (DoesExpenseItemExist(viewModel.BudgetCategory) && 
+                if (DoesExpenseItemExist(viewModel.BudgetCategory) &&
                     parameter.SubItems[parameter.SelectedSubItemIndex].Category != viewModel.BudgetCategory)
                 {
                     await _messageBoxService.ShowInfoAsync(
@@ -868,7 +864,7 @@ namespace MyMoney.ViewModels.Pages
                         BudgetSavingsCategory newSavingsCategory = (BudgetSavingsCategory)item.Clone();
 
                         // Add a new transaction that carries the balance forward
-                        Transaction balanceCarriedForward = new(newBudget.BudgetDate.AddDays(-1), "", 
+                        Transaction balanceCarriedForward = new(newBudget.BudgetDate.AddDays(-1), "",
                             new Category() { Group = "Savings", Name = item.CategoryName },
                             item.CurrentBalance, "Balance carried forward")
                         {
@@ -928,7 +924,7 @@ namespace MyMoney.ViewModels.Pages
 
             // Load into current budget
             CurrentBudget = Budgets[index];
-            
+
             // Select the item in the listview
             foreach (var item in GroupedBudgets)
             {
@@ -972,7 +968,7 @@ namespace MyMoney.ViewModels.Pages
                     mostRecentIndex = i;
                     continue;
                 }
-                
+
                 if (Budgets[i].BudgetDate > mostRecent)
                 {
                     mostRecent = Budgets[i].BudgetDate;
@@ -1081,8 +1077,8 @@ namespace MyMoney.ViewModels.Pages
             {
                 foreach (var subItem in expenseGroup.SubItems)
                 {
-                    var matchingItem = expenseItems.FirstOrDefault(item => 
-                        item.Category == subItem.Category && 
+                    var matchingItem = expenseItems.FirstOrDefault(item =>
+                        item.Category == subItem.Category &&
                         item.Group == expenseGroup.CategoryName);
 
                     if (matchingItem != null)
@@ -1114,8 +1110,8 @@ namespace MyMoney.ViewModels.Pages
                         // Update begining balance
                         foreach (var transaction in
                             from Transaction transaction in currentSavingsCategory.Transactions
-                                where transaction.TransactionHash == currentSavingsCategory.BalanceTransactionHash
-                                    select transaction)
+                            where transaction.TransactionHash == currentSavingsCategory.BalanceTransactionHash
+                            select transaction)
                         {
                             transaction.Amount += balanceDifference;
                         }
