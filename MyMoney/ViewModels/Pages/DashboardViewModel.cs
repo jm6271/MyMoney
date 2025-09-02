@@ -9,6 +9,7 @@ using SkiaSharp;
 using Wpf.Ui.Appearance;
 using LiveChartsCore.SkiaSharpView.VisualElements;
 using Wpf.Ui.Abstractions.Controls;
+using System.Threading.Tasks;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -24,20 +25,14 @@ namespace MyMoney.ViewModels.Pages
         /// </summary>
         public ObservableCollection<AccountDashboardDisplayItem> Accounts { get; } = [];
 
-        /// <summary>
-        /// Collection of income items from the budget report
-        /// </summary>
-        public ObservableCollection<BudgetReportItem> BudgetReportIncomeItems { get; } = [];
+        [ObservableProperty]
+        private ObservableCollection<BudgetReportItem> _budgetReportIncomeItems = [];
 
-        /// <summary>
-        /// Collection of expense items from the budget report
-        /// </summary>
-        public ObservableCollection<BudgetReportItem> BudgetReportExpenseItems { get; } = [];
+        [ObservableProperty]
+        private ObservableCollection<BudgetReportItem> _budgetReportExpenseItems = [];
 
-        /// <summary>
-        /// Collection of savings category items from the budget report
-        /// </summary>
-        public ObservableCollection<SavingsCategoryReportItem> BudgetReportSavingsItems { get; } = [];
+        [ObservableProperty]
+        private ObservableCollection<SavingsCategoryReportItem> _budgetReportSavingsItems = [];
 
         #endregion
 
@@ -126,7 +121,6 @@ namespace MyMoney.ViewModels.Pages
             ClearReports();
             var reportItems = await Task.Run(LoadReportItems);
             UpdateReportCollections(reportItems);
-            await CalculateTotals();
             UpdateChartDisplay();
         }
 
@@ -142,68 +136,45 @@ namespace MyMoney.ViewModels.Pages
 
         private (List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) LoadReportItems()
         {
-            return BudgetReportCalculator.CalculateBudgetReport(DateTime.Today, _databaseReader);
+            var reportItems = BudgetReportCalculator.CalculateBudgetReport(DateTime.Today, _databaseReader);
+            var incomeTotal = CalculateTotal(reportItems.income);
+            var expenseTotal = CalculateTotal(reportItems.expenses);
+            reportItems.income.Add(incomeTotal);
+            reportItems.expenses.Add(expenseTotal);
+
+            Income = (double)incomeTotal.Actual.Value;
+            Expenses = (double)expenseTotal.Actual.Value;
+            DifferenceTotal = incomeTotal.Actual - expenseTotal.Actual;
+
+
+            return reportItems;
         }
 
         private void UpdateReportCollections((List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) items)
         {
             lock (_incomeItemsLock)
-                foreach (var item in items.income)
-                    BudgetReportIncomeItems.Add(item);
+                BudgetReportIncomeItems = new ObservableCollection<BudgetReportItem>(items.income);
 
+            // Load the expense items one at a time instead of replacing the whole collection,
+            // because there are some binding issues with the BudgetReportControl's expense listview's ListCollectionView
             lock (_expenseItemsLock)
                 foreach (var item in items.expense)
                     BudgetReportExpenseItems.Add(item);
 
             lock (_savingsItemsLock)
-                foreach (var item in items.savings)
-                    BudgetReportSavingsItems.Add(item);
+                BudgetReportSavingsItems = new ObservableCollection<SavingsCategoryReportItem>(items.savings);
         }
 
-        private async Task CalculateTotals()
+        private static BudgetReportItem CalculateTotal(List<BudgetReportItem> reportItems)
         {
-            var incomeTotal = await Task.Run(CalculateIncomeTotal);
-            var expenseTotal = await Task.Run(CalculateExpenseTotal);
-
-            lock (_incomeItemsLock)
-                BudgetReportIncomeItems.Add(incomeTotal);
-
-            lock (_expenseItemsLock)
-                BudgetReportExpenseItems.Add(expenseTotal);
-
-            Income = (double)incomeTotal.Actual.Value;
-            Expenses = (double)expenseTotal.Actual.Value;
-            DifferenceTotal = incomeTotal.Actual - expenseTotal.Actual;
-        }
-
-        private BudgetReportItem CalculateIncomeTotal()
-        {
-            lock (_incomeItemsLock)
+            var total = new BudgetReportItem { Category = "Total" };
+            foreach (var item in reportItems)
             {
-                var total = new BudgetReportItem { Category = "Total" };
-                foreach (var item in BudgetReportIncomeItems)
-                {
-                    total.Actual += item.Actual;
-                    total.Budgeted += item.Budgeted;
-                    total.Remaining += item.Remaining;
-                }
-                return total;
+                total.Actual += item.Actual;
+                total.Budgeted += item.Budgeted;
+                total.Remaining += item.Remaining;
             }
-        }
-
-        private BudgetReportItem CalculateExpenseTotal()
-        {
-            lock (_expenseItemsLock)
-            {
-                var total = new BudgetReportItem { Category = "Total" };
-                foreach (var item in BudgetReportExpenseItems)
-                {
-                    total.Actual += item.Actual;
-                    total.Budgeted += item.Budgeted;
-                    total.Remaining += item.Remaining;
-                }
-                return total;
-            }
+            return total;
         }
 
         private void UpdateChartDisplay()
@@ -231,8 +202,8 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateChartTheme()
         {
-            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light 
-                ? new SKColor(0x33, 0x33, 0x33) 
+            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
+                ? new SKColor(0x33, 0x33, 0x33)
                 : new SKColor(0xff, 0xff, 0xff);
 
             var textPaint = new SolidColorPaint(ChartTextColor);
