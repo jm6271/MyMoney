@@ -23,8 +23,9 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private ObservableCollection<Budget> _budgets = [];
 
-        [ObservableProperty]
-        private ListCollectionView? _groupedBudgets;
+        private ObservableCollection<GroupedBudget> groupedBudgetsCollection;
+
+        public ListCollectionView GroupedBudgetsView { get; }
 
         [ObservableProperty]
         private GroupedBudget? _selectedGroupedBudget;
@@ -152,6 +153,12 @@ namespace MyMoney.ViewModels.Pages
             SavingsCategoryReorderHandler = new(this);
             IncomeItemsReorderHandler = new(this);
             ExpenseItemsMoveAndReorderHandler = new(this);
+
+            // Set up budget grouping
+            groupedBudgetsCollection = [];
+            GroupedBudgetsView = new(groupedBudgetsCollection);
+            GroupedBudgetsView.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+            GroupedBudgetsView.CustomSort = new GroupComparer();
         }
 
         private void SelectCurrentBudget()
@@ -225,9 +232,10 @@ namespace MyMoney.ViewModels.Pages
                     groupedBudgets.Add(new GroupedBudget() { Group = "Old", Budget = budget });
                 }
             }
-            GroupedBudgets = new(groupedBudgets);
-            GroupedBudgets.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
-            GroupedBudgets.CustomSort = new GroupComparer();
+
+            groupedBudgetsCollection.Clear();
+            foreach (var budget in groupedBudgets)
+                groupedBudgetsCollection.Add(budget);
         }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -920,17 +928,16 @@ namespace MyMoney.ViewModels.Pages
         private void LoadBudget(int index)
         {
             if (index == -1) return;
-            if (GroupedBudgets == null) return;
 
             // Load into current budget
             CurrentBudget = Budgets[index];
 
             // Select the item in the listview
-            foreach (var item in GroupedBudgets)
+            foreach (var item in groupedBudgetsCollection)
             {
                 if (item is GroupedBudget budget && budget.Budget == CurrentBudget)
                 {
-                    SelectedGroupedBudgetIndex = GroupedBudgets.IndexOf(item);
+                    SelectedGroupedBudgetIndex = groupedBudgetsCollection.IndexOf(item);
                 }
             }
 

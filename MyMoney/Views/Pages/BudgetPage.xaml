@@ -43,7 +43,7 @@
         <ui:Card Grid.Column="0" VerticalAlignment="Top" x:Name="BudgetsCard" Margin="0,0,0,24">
             <StackPanel>
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,24">Budgets</ui:TextBlock>
-                <ui:ListView ItemsSource="{Binding ViewModel.GroupedBudgets}" SelectedItem="{Binding ViewModel.SelectedGroupedBudget, Mode=TwoWay}"
+                <ui:ListView ItemsSource="{Binding ViewModel.GroupedBudgetsView}" SelectedItem="{Binding ViewModel.SelectedGroupedBudget, Mode=TwoWay}"
                              SelectedIndex="{Binding ViewModel.SelectedGroupedBudgetIndex, Mode=TwoWay}" x:Name="BudgetsListView">
                     <ui:ListView.GroupStyle>
                         <GroupStyle>
