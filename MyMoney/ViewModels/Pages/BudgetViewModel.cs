@@ -23,9 +23,8 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private ObservableCollection<Budget> _budgets = [];
 
-        private ObservableCollection<GroupedBudget> groupedBudgetsCollection;
-
-        public ListCollectionView GroupedBudgetsView { get; }
+        [ObservableProperty]
+        private ObservableCollection<GroupedBudget> _groupedBudgetsCollection = [];
 
         [ObservableProperty]
         private GroupedBudget? _selectedGroupedBudget;
@@ -92,39 +91,7 @@ namespace MyMoney.ViewModels.Pages
         public BudgetIncomeItemReorderHandler IncomeItemsReorderHandler { get; }
         public BudgetExpenseItemMoveAndReorderHandler ExpenseItemsMoveAndReorderHandler { get; }
 
-        public class GroupedBudget
-        {
-            public string Group { get; set; } = "";
-            public Budget Budget { get; set; } = new();
-        }
 
-        public class GroupComparer : System.Collections.IComparer
-        {
-            private readonly Dictionary<string, int> _groupOrder = new()
-            {
-                { "Current", 0 },
-                { "Future", 1 },
-                { "Past", 2 }
-            };
-
-            public int Compare(object? x, object? y)
-            {
-                if (x is not GroupedBudget group1 || y is not GroupedBudget group2)
-                    return 0;
-
-                string name1 = group1.Group;
-                string name2 = group2.Group;
-
-                // If the group names are in our dictionary, use the custom order
-                if (_groupOrder.TryGetValue(name1, out int value) && _groupOrder.TryGetValue(name2, out int value2))
-                {
-                    return value.CompareTo(value2);
-                }
-
-                // Fall back to alphabetical sorting for any other groups
-                return string.Compare(name1, name2);
-            }
-        }
 
         // Content dialog service
         private readonly IContentDialogService _contentDialogService;
@@ -153,12 +120,6 @@ namespace MyMoney.ViewModels.Pages
             SavingsCategoryReorderHandler = new(this);
             IncomeItemsReorderHandler = new(this);
             ExpenseItemsMoveAndReorderHandler = new(this);
-
-            // Set up budget grouping
-            groupedBudgetsCollection = [];
-            GroupedBudgetsView = new(groupedBudgetsCollection);
-            GroupedBudgetsView.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
-            GroupedBudgetsView.CustomSort = new GroupComparer();
         }
 
         private void SelectCurrentBudget()
@@ -233,9 +194,9 @@ namespace MyMoney.ViewModels.Pages
                 }
             }
 
-            groupedBudgetsCollection.Clear();
+            GroupedBudgetsCollection.Clear();
             foreach (var budget in groupedBudgets)
-                groupedBudgetsCollection.Add(budget);
+                GroupedBudgetsCollection.Add(budget);
         }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -933,11 +894,11 @@ namespace MyMoney.ViewModels.Pages
             CurrentBudget = Budgets[index];
 
             // Select the item in the listview
-            foreach (var item in groupedBudgetsCollection)
+            foreach (var item in GroupedBudgetsCollection)
             {
                 if (item is GroupedBudget budget && budget.Budget == CurrentBudget)
                 {
-                    SelectedGroupedBudgetIndex = groupedBudgetsCollection.IndexOf(item);
+                    SelectedGroupedBudgetIndex = GroupedBudgetsCollection.IndexOf(item);
                 }
             }
 
