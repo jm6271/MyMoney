@@ -126,6 +126,7 @@ namespace MyMoney.ViewModels.Pages
         {
             if (Budgets.Count > 0)
             {
+                SelectedGroupedBudgetIndex = -1; // Trigger property changed
                 SelectedGroupedBudgetIndex = 0;
             }
         }
