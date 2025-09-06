@@ -5,9 +5,9 @@ namespace MyMoney.Core.Reports;
 
 public class NetWorthCalculator
 {
-    private readonly DatabaseManager _dbManager;
+    private readonly IDatabaseManager _dbManager;
 
-    public NetWorthCalculator(DatabaseManager dbManager)
+    public NetWorthCalculator(IDatabaseManager dbManager)
     {
         _dbManager = dbManager;
     }
