@@ -44,9 +44,10 @@ public class NetWorthCalculator
         }
 
         List<decimal> netWorthData = [];
+        netWorthData.Add(currentNetWorth);
 
         DateTime currentDate = DateTime.Today;
-        while(currentDate >= startDate)
+        while(currentDate > startDate)
         {
             // Add all transactions for the current date
             var transactionsForDate = allTransactions.Where(t => t.Date.Date == currentDate.Date);

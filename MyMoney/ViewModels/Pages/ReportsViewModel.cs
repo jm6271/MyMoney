@@ -151,7 +151,7 @@ namespace MyMoney.ViewModels.Pages
             var netWorthCalculator = new NetWorthCalculator(dbManager);
             var netWorthData = await Task.Run(() => 
                 netWorthCalculator.GetNetWorthSinceStartDate(DateTime.Today.AddDays(
-                    -GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex)))
+                    -GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex) + 1))
             );
 
             TotalNetWorth = new Currency(netWorthData.LastOrDefault());
@@ -169,7 +169,7 @@ namespace MyMoney.ViewModels.Pages
             ];
 
             NetWorthStartDate = DateTime.Today.AddDays(
-                -GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex))
+                -GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex) + 1)
                 .ToString("MMM dd, yyyy");
             NetWorthEndDate = DateTime.Today.ToString("MMM dd, yyyy");
         }
