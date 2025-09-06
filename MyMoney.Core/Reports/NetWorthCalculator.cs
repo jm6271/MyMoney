@@ -5,9 +5,9 @@ namespace MyMoney.Core.Reports;
 
 public class NetWorthCalculator
 {
-    private readonly DatabaseManager _dbManager;
+    private readonly IDatabaseManager _dbManager;
 
-    public NetWorthCalculator(DatabaseManager dbManager)
+    public NetWorthCalculator(IDatabaseManager dbManager)
     {
         _dbManager = dbManager;
     }
@@ -17,7 +17,7 @@ public class NetWorthCalculator
     /// </summary>
     /// <param name="startDate">The earliest date to include in the net worth data</param>
     /// <returns>A list of currency values, with each item representing each day since the start date</returns>
-    public List<decimal> GetNetWorthSinceStartDate(DateTime startDate)
+    public Dictionary<DateTime, decimal> GetNetWorthSinceStartDate(DateTime startDate)
     {
         if (startDate > DateTime.Today)
         {
@@ -43,10 +43,11 @@ public class NetWorthCalculator
             currentNetWorth += account.Total.Value;
         }
 
-        List<decimal> netWorthData = [];
+        Dictionary<DateTime, decimal> netWorthData = [];
+        netWorthData.Add(DateTime.Today, currentNetWorth);
 
         DateTime currentDate = DateTime.Today;
-        while(currentDate >= startDate)
+        while(currentDate > startDate)
         {
             // Add all transactions for the current date
             var transactionsForDate = allTransactions.Where(t => t.Date.Date == currentDate.Date);
@@ -55,10 +56,13 @@ public class NetWorthCalculator
                 currentNetWorth -= transaction.Amount.Value;
             }
             // Add the current net worth to the list
-            netWorthData.Insert(0, currentNetWorth);
+            netWorthData.Add(currentDate.AddDays(-1), currentNetWorth);
             // Move to the previous day
             currentDate = currentDate.AddDays(-1);
         }
+
+        // Sort dictionary by date, oldest to newest
+        netWorthData = netWorthData.OrderBy(kvp => kvp.Key).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
         return netWorthData;
     }

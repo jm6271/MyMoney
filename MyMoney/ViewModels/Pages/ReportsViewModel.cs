@@ -1,4 +1,5 @@
 ﻿using LiveChartsCore;
+using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using MyMoney.Core.Database;
@@ -69,10 +70,10 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private Axis[] _netWorthXAxes =
         [
-            new()
-            {
-                LabelsPaint = null
-            }
+             new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString("MMM dd"))
+             {
+                 LabelsPaint = null,
+             }
         ];
 
         [ObservableProperty]
@@ -149,19 +150,28 @@ namespace MyMoney.ViewModels.Pages
         {
             DatabaseManager dbManager = new();
             var netWorthCalculator = new NetWorthCalculator(dbManager);
-            var netWorthData = await Task.Run(() => 
+            var netWorthData = await Task.Run(() =>
                 netWorthCalculator.GetNetWorthSinceStartDate(DateTime.Today.AddDays(
-                    -GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex)))
+                    -GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex) + 1))
             );
 
-            TotalNetWorth = new Currency(netWorthData.LastOrDefault());
+            // Convert to a list of DateTimePoint
+            List<DateTimePoint> dateTimePoints = [];
+            foreach (var kvp in netWorthData)
+            {
+                dateTimePoints.Add(new DateTimePoint(kvp.Key, (double)kvp.Value));
+            }
+
+            TotalNetWorth = new Currency(netWorthData.LastOrDefault().Value);
+
             var accentColor = ApplicationAccentColorManager.SecondaryAccent;
             var lighterAccentColor = ApplicationAccentColorManager.PrimaryAccent;
+
             NetWorthSeries =
             [
-                new LineSeries<decimal>
+                new LineSeries<DateTimePoint>
                 {
-                    Values = netWorthData,
+                    Values = dateTimePoints,
                     GeometrySize = 0,
                     Stroke = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B), 4),
                     Fill = new SolidColorPaint(new SKColor(lighterAccentColor.R, lighterAccentColor.G, lighterAccentColor.B, 175)),
@@ -169,7 +179,7 @@ namespace MyMoney.ViewModels.Pages
             ];
 
             NetWorthStartDate = DateTime.Today.AddDays(
-                -GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex))
+                -GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex) + 1)
                 .ToString("MMM dd, yyyy");
             NetWorthEndDate = DateTime.Today.ToString("MMM dd, yyyy");
         }
@@ -220,7 +230,7 @@ namespace MyMoney.ViewModels.Pages
         private void UpdateChartAxes()
         {
             var textPaint = new SolidColorPaint(ChartTextColor);
-            
+
             IncomeExpense12MonthXAxes = [CreateMonthAxis(textPaint)];
             IncomeExpense12MonthYAxes = [CreateCurrencyAxis(textPaint)];
             NetWorthYAxes = [CreateNetWorthYAxis(textPaint)];
@@ -269,8 +279,8 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateTextColor()
         {
-            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light 
-                ? DefaultTextColor 
+            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
+                ? DefaultTextColor
                 : new SKColor(0xff, 0xff, 0xff);
         }
 
