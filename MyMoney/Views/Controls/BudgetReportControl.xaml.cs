@@ -4,6 +4,8 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
+using MyMoney.Helpers;
 
 namespace MyMoney.Views.Controls
 {
@@ -16,7 +18,11 @@ namespace MyMoney.Views.Controls
         {
             InitializeComponent();
 
-            ExpenseItems ??= [];   
+            ExpenseItems ??= [];
+            // Listen for MouseWheel on *all* column headers inside this control
+            AddHandler(GridViewColumnHeader.PreviewMouseWheelEvent,
+                       new MouseWheelEventHandler(GridViewColumnHeader_PreviewMouseWheel),
+                       handledEventsToo: true);
         }
 
         public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(string), typeof(BudgetReportControl), new PropertyMetadata("Budget Report"));
@@ -170,6 +176,22 @@ namespace MyMoney.Views.Controls
         {
             get { return (int)GetValue(RemainingColumnWidthProperty); }
             set { SetValue(RemainingColumnWidthProperty, value); }
+        }
+
+        private void GridViewColumnHeader_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            // Don't let the header eat the scroll event
+            e.Handled = true;
+
+            var scrollViewer = (sender as DependencyObject)?.FindAncestor<ScrollViewer>();
+            if (scrollViewer != null)
+            {
+                scrollViewer.RaiseEvent(new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+                {
+                    RoutedEvent = UIElement.MouseWheelEvent,
+                    Source = sender
+                });
+            }
         }
     }
 }
