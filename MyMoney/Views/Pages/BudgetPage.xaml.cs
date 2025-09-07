@@ -5,6 +5,7 @@ using MyMoney.ViewModels.Pages;
 using System.Windows.Controls;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Controls;
+using System.Windows.Input;
 
 namespace MyMoney.Views.Pages
 {
@@ -41,6 +42,11 @@ namespace MyMoney.Views.Pages
             _chartPanelWideMargin = ChartsPanel.Margin;
             _incomeChartWideMargin = IncomeChart.Margin;
             _expenseChartWideMargin= ExpenseChart.Margin;
+
+            // Listen for MouseWheel on *all* column headers inside this page
+            AddHandler(GridViewColumnHeader.PreviewMouseWheelEvent,
+                       new MouseWheelEventHandler(GridViewColumnHeader_PreviewMouseWheel),
+                       handledEventsToo: true);
         }
 
         private void ListView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -115,6 +121,22 @@ namespace MyMoney.Views.Pages
         private void CardExpander_Expanded(object sender, RoutedEventArgs e)
         {
             ViewModel.WriteToDatabase();
+        }
+
+        private void GridViewColumnHeader_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            // Don't let the header eat the scroll event
+            e.Handled = true;
+
+            var scrollViewer = (sender as DependencyObject)?.FindAncestor<ScrollViewer>();
+            if (scrollViewer != null)
+            {
+                scrollViewer.RaiseEvent(new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+                {
+                    RoutedEvent = UIElement.MouseWheelEvent,
+                    Source = sender
+                });
+            }
         }
     }
 }
