@@ -7,6 +7,7 @@ using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Core.Database;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.Views.Controls;
+using System.ComponentModel;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -97,6 +98,16 @@ namespace MyMoney.ViewModels.Pages
 
             LoadAccounts();
             LoadCategoryNames();
+        }
+
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            if (e.PropertyName == nameof(SelectedAccount))
+            {
+                OnPropertyChanged(nameof(SelectedAccountTransactions));
+            }
         }
 
         private void LoadAccounts()
@@ -427,6 +438,8 @@ namespace MyMoney.ViewModels.Pages
 
             ExecuteTransfer(fromAccount, toAccount, viewModel.Amount);
             SaveAccountsToDatabase();
+
+            OnPropertyChanged(nameof(SelectedAccountTransactions));
         }
 
         private static void ExecuteTransfer(Account fromAccount, Account toAccount, Currency amount)
