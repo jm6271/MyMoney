@@ -175,6 +175,7 @@ namespace MyMoney.ViewModels.Pages
                     GeometrySize = 0,
                     Stroke = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B), 4),
                     Fill = new SolidColorPaint(new SKColor(lighterAccentColor.R, lighterAccentColor.G, lighterAccentColor.B, 175)),
+                    LineSmoothness = 0,
                 }
             ];
 
