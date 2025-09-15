@@ -1,3 +1,6 @@
-site_name: MyMoney Documentation
+site_name: MyMoney Help
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
 theme:
   name: readthedocs

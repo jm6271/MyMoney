@@ -6,14 +6,8 @@ MyMoney is a personal finance program designed to help you manage your finances 
 
 **Important:** MyMoney is currently in its beta stage of development. It may contain bugs. Please use at your own risk.
 
-## Features
-
-- **Transaction Tracking**: Record and categorize income, expenses and savings.
-- **Budgeting**: Create monthly budgets and view reports on your spending.
-- **Reports**: View reports on the state of your finances.
-- **Local LiteDB Database**: All user data is stored securely in a local LiteDB database.
-- **Automatic Backups**: Backup all data and settings manually or automatically
-- **Light/Dark Modes**: Choose a light or dark theme  
+## Quick actions
+- [Get started →](getting-started.md)
 
 ## License
 This project is licensed under the MIT License.
