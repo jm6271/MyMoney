@@ -6,6 +6,7 @@ nav:
     - Create a Budget: tasks/new-budget.md
     - Add an Account: tasks/new-account.md
     - Add a Transaction: tasks/new-transaction.md
+    - Creating a Backup: tasks/backup.md
   - Tutorials:
     - First Month Workflow: tutorials/first-month-workflow.md
     - Using Sinking Funds: tutorials/sinking-fund.md
