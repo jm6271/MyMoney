@@ -6,6 +6,8 @@
 3. Enter a name for the new account, for example: "*Checking*", or "*Savings*".
 4. Enter a starting balance for the account and click OK.
 
+See [Creating a new account](tasks/new-account.md) for more information.
+
 ## Create a budget
 1. Go to the **Budget** page in the left navbar.
 2. Click the **New Budget** button at the top.
@@ -21,6 +23,9 @@
    the **+** button beside "Savings" and entering the category name and the amount
    you plan to save this month.
 
+See [Making a budget](tasks/new-budget.md) and [Tutorial: Zero-Based Budgeting](tutorials/zero-based-budgeting.md)
+for more information.
+
 ## Add transactions
 1. Go to the **Accounts** page in the left navbar.
 2. Click **New Transaction**.
@@ -33,3 +38,10 @@
 8. Choose the account to add the transaction to.
 9. (Optional) Enter a memo for the transaction.
 10. Click "OK" to add the transaction.
+
+See [Adding a transaction](tasks/new-transaction.md) for more information.
+
+## Next steps
+
+Checkout [Tutorial: First Month Workflow](tutorials/first-month-workflow.md) for an overview of how to
+use the application.

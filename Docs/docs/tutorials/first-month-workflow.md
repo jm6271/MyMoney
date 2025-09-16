@@ -11,22 +11,22 @@ MyMoney uses a [zero-based budgeting system](../tutorials/zero-based-budgeting.m
 1. Go to the **Budget** page and click **New Budget**.  
 2. Select the current month, then click **OK**.  
 3. Add your income categories:  
-   - Click the **+** beside *Income*.  
-   - Enter a category name (e.g., “Salary”), the expected amount, then click **OK**.  
-   - Repeat for each source of income.  
+    - Click the **+** beside *Income*.  
+    - Enter a category name (e.g., “Salary”), the expected amount, then click **OK**.  
+    - Repeat for each source of income.  
 4. Add your expenses:  
-   - First, create a group (e.g., *Housing*, *Transportation*) by clicking the **+** beside *Expenses*.  
-   - Within each group, click **Add Item**, enter a category name and planned amount, then click **OK**.  
-   - Repeat for all expenses.  
+    - First, create a group (e.g., *Housing*, *Transportation*) by clicking the **+** beside *Expenses*.  
+    - Within each group, click **Add Item**, enter a category name and planned amount, then click **OK**.  
+    - Repeat for all expenses.  
 5. Add savings categories:  
-   - Click the **+** beside *Savings*.  
-   - These categories function like [sinking funds](sinking-fund.md) for long-term goals.  
+    - Click the **+** beside *Savings*.  
+    - These categories function like [sinking funds](sinking-fund.md) for long-term goals.  
 
 **Tip:** Watch the “Amount left to budget” at the top. Adjust income/expenses until it reaches **$0.00**.  
 
 To make changes later:  
-- Right-click a category to **Edit** or **Delete** it.  
-- For expense groups, use the **Edit** or **Delete** buttons at the top of the group.  
+    - Right-click a category to **Edit** or **Delete** it.  
+    - For expense groups, use the **Edit** or **Delete** buttons at the top of the group.  
 
 ---
 
