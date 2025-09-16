@@ -29,8 +29,8 @@
                 <ColumnDefinition Width="1*"/>
                 <ColumnDefinition Width="1*"/>
             </Grid.ColumnDefinitions>
-            <RadioButton Grid.Column="1" IsChecked="{Binding NewTransactionIsIncome}">Income</RadioButton>
             <RadioButton Grid.Column="0" IsChecked="{Binding NewTransactionIsExpense}">Expense</RadioButton>
+            <RadioButton Grid.Column="1" IsChecked="{Binding NewTransactionIsIncome}">Income</RadioButton>
         </Grid>
         <ui:TextBlock Margin="0,0,0,4">Amount</ui:TextBlock>
         <ui:TextBox x:Name="txtAmount" Margin="0,0,0,16" Text="{Binding Path=NewTransactionAmount, Converter={StaticResource CurrencyConverter}}" GotKeyboardFocus="txtAmount_GotKeyboardFocus" GotMouseCapture="txtAmount_GotMouseCapture"/>
