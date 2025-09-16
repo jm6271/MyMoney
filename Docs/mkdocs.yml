@@ -12,3 +12,4 @@ nav:
     - Zero-Based Budgeting: tutorials/zero-based-budgeting.md
 theme:
   name: readthedocs
+use_directory_urls: false
