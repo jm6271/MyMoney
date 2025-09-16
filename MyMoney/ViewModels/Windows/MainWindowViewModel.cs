@@ -55,6 +55,29 @@ namespace MyMoney.ViewModels.Windows
         [
             new NavigationViewItem()
             {
+                Content = "Help",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.QuestionCircle24 },
+                Command = new RelayCommand(async () =>
+                {
+                    if (!System.IO.File.Exists(@"site\index.html"))
+                    {
+                        Wpf.Ui.Controls.MessageBox msgBox = new()
+                        {
+                            Title = "Help files not installed",
+                            Content = "The help files are not installed.",
+                        };
+                        await msgBox.ShowDialogAsync();
+                        return;
+                    }
+
+                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(@"site\index.html")
+                    {
+                        UseShellExecute = true,
+                    });
+                })
+            },
+            new NavigationViewItem()
+            {
                 Content = "Settings",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Settings24 },
                 TargetPageType = typeof(Views.Pages.SettingsPage)

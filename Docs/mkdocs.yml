@@ -1,0 +1,20 @@
+site_name: MyMoney Help
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Commmon Tasks:
+    - Create a Budget: tasks/new-budget.md
+    - Add an Account: tasks/new-account.md
+    - Add a Transaction: tasks/new-transaction.md
+    - Creating a Backup: tasks/backup.md
+  - Tutorials:
+    - First Month Workflow: tutorials/first-month-workflow.md
+    - Using Sinking Funds: tutorials/sinking-fund.md
+    - Zero-Based Budgeting: tutorials/zero-based-budgeting.md
+theme:
+  name: readthedocs
+use_directory_urls: false
+plugins: []
+site_url: ""
+repo_url: "https://github.com/jm6271/MyMoney"
+copyright: "Copyright © 2024-2025 Jordan Miller"

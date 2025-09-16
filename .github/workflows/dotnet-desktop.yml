@@ -34,6 +34,13 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v2
 
+    # Install uv to build docs
+    - name: Install uv
+      uses: astral-sh/setup-uv@v6
+      with:
+        # Install a specific version of uv.
+        version: "0.8.17"
+
     # Restore the application
     - name: Restore
       run: dotnet restore --locked-mode
