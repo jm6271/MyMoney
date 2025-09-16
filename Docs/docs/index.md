@@ -8,6 +8,18 @@ MyMoney is a personal finance program designed to help you manage your finances 
 
 ## Quick actions
 - [Get started →](getting-started.md)
+- [Create a budget →](tasks/new-budget.md)
+- [Create an account →](tasks/new-account.md)
+- [Add a transaction →](tasks/new-transaction.md)
+
+## Most common tasks
+- [Add a transaction →](tasks/new-transaction.md)
+- [Create a budget →](tasks/new-budget.md)
+
+## Tutorials
+- [First month workflow →](tutorials/first-month-workflow.md)
+- [Using Sinking Funds →](tutorials/sinking-fund.md)
+- [Zero-based Budgeting →](tutorials/zero-based-budgeting.md)
 
 ## License
 This project is licensed under the MIT License.
