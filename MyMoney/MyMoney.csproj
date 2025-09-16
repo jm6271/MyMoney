@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0-windows</TargetFramework>
@@ -35,4 +35,30 @@
     <Resource Include="Assets\MyMoney-icon-256.png" />
     <Resource Include="Assets\MyMoney-Banner.png" />
   </ItemGroup>
+
+	<!-- Target to build MkDocs documentation and copy it to output directory -->
+	<Target Name="BuildMkDocs" BeforeTargets="Build">
+		<!-- Check if uv is installed -->
+		<Exec Command="where uv" ContinueOnError="true" StandardOutputImportance="low">
+			<Output TaskParameter="ExitCode" PropertyName="UvFound" />
+		</Exec>
+
+		<!-- Run mkdocs build only if uv is available -->
+		<Exec Command="uvx mkdocs build"
+			  WorkingDirectory="$(ProjectDir)../Docs"
+			  Condition="'$(UvFound)' == '0'" />
+
+		<!-- Remove old help folder -->
+		<RemoveDir Directories="$(OutDir)site" Condition="'$(UvFound)' == '0'" />
+
+		<!-- Copy generated site -->
+		<ItemGroup Condition="'$(UvFound)' == '0'">
+			<MkDocsFiles Include="$(ProjectDir)../Docs/site\**\*" />
+		</ItemGroup>
+
+		<Copy SourceFiles="@(MkDocsFiles)"
+			  DestinationFolder="$(OutDir)site\%(RecursiveDir)"
+			  Condition="'$(UvFound)' == '0'" />
+	</Target>
+
 </Project>
