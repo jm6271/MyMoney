@@ -83,7 +83,7 @@ Reports show how your plan compares to reality.
     - Income vs. Expenses chart for the current month.
 - **Budget Reports**:  
     - View past months’ budgets.  
-- **Reports**:  
+- **Charts**:  
     - Income vs. Expense chart (last 12 months).  
     - Net worth chart (time period selectable).  
 

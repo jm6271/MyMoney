@@ -30,8 +30,8 @@ This project is licensed under the MIT License. See the LICENSE.txt file for mor
 
 ## Screenshots
 
-### Dashboard
-![Dashboard](Screenshots/dashboard.jpg)
+### Light/Dark modes
+![Dashboard](Screenshots/light-dark-modes.jpg)
 
 ### Accounts
 ![Accounts](Screenshots/accounts.jpg)
@@ -39,5 +39,5 @@ This project is licensed under the MIT License. See the LICENSE.txt file for mor
 ### Budget
 ![Budget](Screenshots/budget.jpg)
 
-### Reports
-![Reports](Screenshots/reports.gif)
+### Charts
+![Charts](Screenshots/charts.jpg)
