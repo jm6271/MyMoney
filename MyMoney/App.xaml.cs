@@ -21,6 +21,9 @@ namespace MyMoney
     /// </summary>
     public partial class App
     {
+        // Mutex object to ensure single instance application
+        private static Mutex? _mutex;
+
         // The.NET Generic Host provides dependency injection, configuration, logging, and other services.
         // https://docs.microsoft.com/dotnet/core/extensions/generic-host
         // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
@@ -102,6 +105,16 @@ namespace MyMoney
         /// </summary>
         private void OnStartup(object sender, StartupEventArgs e)
         {
+            // Ensure single instance application using mutex
+            _mutex = new Mutex(true, "MyMoney-DB684A92-F90C-4814-B3DF-F92C1615F21E", out bool isNewInstance);
+            if (!isNewInstance)
+            {
+                // Application is already running
+                MessageBox.Show("Another instance of the application is already running.", "MyMoney", 
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+                Shutdown();
+                return;
+            }
             _host.Start();
         }
 
@@ -110,6 +123,9 @@ namespace MyMoney
         /// </summary>
         private async void OnExit(object sender, ExitEventArgs e)
         {
+            _mutex?.ReleaseMutex();
+            _mutex?.Dispose();
+
             await _host.StopAsync();
 
             _host.Dispose();
