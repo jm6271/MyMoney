@@ -56,6 +56,7 @@ jobs:
 
     - name: Zip installer
       run: |
+        ls Installer/
         Get-ChildItem -Path Installer/mymoney-setup-*.exe | ForEach-Object { Compress-Archive -Path $_.FullName -DestinationPath "$($_.BaseName).zip" }
         ls Installer/
         ls
