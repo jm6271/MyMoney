@@ -45,13 +45,11 @@ jobs:
         dotnet publish -c Release -r win-x64 --self-contained /p:PublishReadyToRun=true MyMoney/MyMoney.csproj
       
     - name: Compile the Inno Setup script for x64
-      working-directory: Installer
       uses: Minionguyjpro/Inno-Setup-Action@v1.2.7
       with:
         path: Installer/installer_builder.iss
 
     - name: Compile the Inno Setup script for arm64
-      working-directory: Installer
       uses: Minionguyjpro/Inno-Setup-Action@v1.2.7
       with:
         path: Installer/installer_builder_arm64.iss
