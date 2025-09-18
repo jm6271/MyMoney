@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
     <PackageReference Include="LiteDB" Version="5.0.21" />
+    <PackageReference Include="Semver" Version="3.0.0" />
   </ItemGroup>
 
 </Project>
