@@ -35,8 +35,20 @@ namespace MyMoney.Views.Windows
 
             contentDialogService.SetDialogHost(RootContentDialog);
 
-            // Load the theme from settings
+            // Load the database and make sure the data is in the right format for this version of the application
             DatabaseManager dbReader = new();
+            DataVersionManager dataVersionManager = new(dbReader);
+            if (!dataVersionManager.EnsureDataVersion())
+            {
+                // The database version is newer than the application version, we can't read it.
+                System.Windows.MessageBox.Show("The database was created with a newer version of MyMoney." +
+                    " Please update the application to the latest version.", "Incompatible Database Version",
+                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                Application.Current.Shutdown();
+                Environment.Exit(-1);
+            }
+
+            // Load the theme from settings
             var SettingsDict = dbReader.GetSettingsDictionary("ApplicationSettings");
 
             if (SettingsDict != null && SettingsDict.Count > 0 && SettingsDict.ContainsKey("AppTheme"))
