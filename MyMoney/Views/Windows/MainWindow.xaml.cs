@@ -26,8 +26,6 @@ namespace MyMoney.Views.Windows
             ViewModel = viewModel;
             DataContext = this;
 
-            SystemThemeWatcher.Watch(this);
-
             InitializeComponent();
             SetPageService(pageService);
 
@@ -67,7 +65,11 @@ namespace MyMoney.Views.Windows
                     // set the color dynamic resources
                     Application.Current.Resources["LayerFillColorDefaultColor"] = Application.Current.Resources["LayerFillColorDefaultColorDark"];
                 }
-                    
+            }
+            else
+            {
+                // Set to system theme by default
+                ApplicationThemeManager.ApplySystemTheme();
             }
         }
 
