@@ -1,6 +1,4 @@
-﻿using Semver;
-
-namespace MyMoney.Core.Database
+﻿namespace MyMoney.Core.Database
 {
     public class DataVersionManager
     {
@@ -29,12 +27,12 @@ namespace MyMoney.Core.Database
             if (settingsDict.TryGetValue("DataVersion", out string? dbVersion))
             {
                 // Compare the versions, to ensure that the database is up to date
-                var dbSemVer = SemVersion.Parse(dbVersion);
-                var currentSemVer = SemVersion.Parse(CURRENT_DATA_VERSION);
+                Version currentVer = new(CURRENT_DATA_VERSION);
+                Version dbVer = new(dbVersion);
 
-                switch (SemVersion.ComparePrecedence(dbSemVer, currentSemVer))
+                switch (dbVer.CompareTo(currentVer))
                 {
-                    case -1:
+                    case < 0:
                         // Note: Here we need to update the data in the database to the
                         // current version. As of now (v1.0.0), there are no older supported
                         // versions, so we do nothing.
@@ -42,12 +40,10 @@ namespace MyMoney.Core.Database
                     case 0:
                         // The versions match, do nothing
                         break;
-                    case 1:
+                    case > 0:
                         // The version in the database is newer than the application version,
                         // we can't read it. The user needs to update the application.
                         return false;
-                    default:
-                        break;
                 }
 
                 return true;

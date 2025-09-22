@@ -45,6 +45,7 @@ namespace MyMoney.Views.Windows
                     " Please update the application to the latest version.", "Incompatible Database Version",
                     System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
                 Application.Current.Shutdown();
+                Environment.Exit(-1);
             }
 
             // Load the theme from settings

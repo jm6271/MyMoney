@@ -494,14 +494,6 @@
           "OpenTK": "[3.3.0, 3.4.0)"
         }
       },
-      "Semver": {
-        "type": "Transitive",
-        "resolved": "3.0.0",
-        "contentHash": "9jZCicsVgTebqkAujRWtC9J1A5EQVlu0TVKHcgoCuv345ve5DYf4D1MjhKEnQjdRZo6x/vdv6QQrYFs7ilGzLA==",
-        "dependencies": {
-          "Microsoft.Extensions.Primitives": "5.0.1"
-        }
-      },
       "SkiaSharp": {
         "type": "Transitive",
         "resolved": "3.116.1",
@@ -606,8 +598,7 @@
         "type": "Project",
         "dependencies": {
           "CommunityToolkit.Mvvm": "[8.4.0, )",
-          "LiteDB": "[5.0.21, )",
-          "Semver": "[3.0.0, )"
+          "LiteDB": "[5.0.21, )"
         }
       }
     }
