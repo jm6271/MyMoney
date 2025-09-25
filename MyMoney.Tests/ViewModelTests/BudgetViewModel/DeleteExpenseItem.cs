@@ -131,7 +131,7 @@ public class DeleteExpenseItemTests
             }
         };
         _viewModel.CurrentBudget = budget;
-        _viewModel.ExpenseItemsSelectedIndex = 1; // Delete middle item
+        _viewModel.CurrentBudget.BudgetExpenseItems[0].SelectedSubItemIndex = 1; // Select "Category 2"
 
         _messageBoxServiceMock.Setup(x => x.ShowAsync(
             It.IsAny<string>(),
