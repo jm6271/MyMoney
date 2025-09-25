@@ -62,13 +62,13 @@ namespace MyMoney.ViewModels.Pages
         private SKColor _chartTextColor = new(0x33, 0x33, 0x33);
 
         [ObservableProperty]
-        private int _incomeItemsSelectedIndex;
+        private int _incomeItemsSelectedIndex = -1;
 
         [ObservableProperty]
-        private int _savingsCategoriesSelectedIndex;
+        private int _savingsCategoriesSelectedIndex = -1;
 
         [ObservableProperty]
-        private int _expenseItemsSelectedIndex;
+        private int _expenseItemsSelectedIndex = -1;
 
         [ObservableProperty]
         private Currency _incomeTotal = new(0m);
