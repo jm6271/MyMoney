@@ -1,10 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using LiteDB;
 
 namespace MyMoney.Core.Models
 {
@@ -20,7 +16,8 @@ namespace MyMoney.Core.Models
         private ObservableCollection<BudgetItem> _subItems = [];
 
         [ObservableProperty]
-        private int _selectedSubItemIndex = 1;
+        [property: BsonIgnore]
+        private int _selectedSubItemIndex = -1;
 
         [ObservableProperty]
         private bool _isExpanded = true;
