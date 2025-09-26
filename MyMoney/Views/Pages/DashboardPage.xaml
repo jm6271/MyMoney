@@ -31,8 +31,19 @@
                 <ImageBrush ImageSource="pack://application:,,,/Assets/MyMoney-Banner.png" Stretch="Fill"/>
             </Border.Background>
             <StackPanel VerticalAlignment="Center" Margin="24,0,0,0">
-                <ui:TextBlock FontTypography="TitleLarge" Text="MyMoney" Foreground="LightGray"/>
-                <ui:TextBlock FontTypography="Title" Text="Personal Finance Software" Foreground="LightGray"/>
+                <StackPanel.Resources>
+                    <DropShadowEffect x:Key="TextBlockShadowEffect"
+                            ShadowDepth="4"
+                            Direction="330"
+                            Color="Black"
+                            Opacity="0.5"
+                            BlurRadius="4"
+                            />
+                </StackPanel.Resources>
+                <ui:TextBlock FontTypography="TitleLarge" Text="MyMoney" Foreground="LightGray" 
+                              Effect="{StaticResource TextBlockShadowEffect}"/>
+                <ui:TextBlock FontTypography="Title" Text="Personal Finance Software" Foreground="LightGray"
+                              Effect="{StaticResource TextBlockShadowEffect}"/>
             </StackPanel>
         </Border>
 
