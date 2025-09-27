@@ -126,7 +126,7 @@ namespace MyMoney.ViewModels.Pages
         {
             var version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
                 .InformationalVersion?.Split('+')[0];
-            return $"MyMoney - {version}";
+            return version ?? "";
         }
 
         #endregion
