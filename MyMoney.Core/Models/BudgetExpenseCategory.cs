@@ -4,7 +4,7 @@ using LiteDB;
 
 namespace MyMoney.Core.Models
 {
-    public partial class BudgetExpenseCategory : ObservableObject
+    public partial class BudgetExpenseCategory : ObservableObject, ICloneable
     {
         [ObservableProperty]
         private int _id = 0;
@@ -33,6 +33,17 @@ namespace MyMoney.Core.Models
                 }
                 return new Currency(total);
             }
+        }
+
+        public object Clone()
+        {
+            return new BudgetExpenseCategory()
+            {
+                Id = this.Id,
+                CategoryName = this.CategoryName,
+                SubItems = new ObservableCollection<BudgetItem>(this.SubItems.Select(item => (BudgetItem)item.Clone())),
+                IsExpanded = this.IsExpanded
+            };
         }
     }
 }
