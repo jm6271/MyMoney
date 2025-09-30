@@ -138,7 +138,7 @@ namespace MyMoney.ViewModels.Pages
                 var budgets = await Task.Run(() => LoadBudgetCollection());
                 Budgets = budgets;
 
-                UpdateBudgetLists();
+                UpdateGroupedBudgetList();
             }
             UpdateBudgetTotals();
 
@@ -171,7 +171,7 @@ namespace MyMoney.ViewModels.Pages
             return budgets;
         }
 
-        private void UpdateBudgetLists()
+        private void UpdateGroupedBudgetList()
         {
             List<GroupedBudget> groupedBudgets = [];
 
@@ -867,10 +867,17 @@ namespace MyMoney.ViewModels.Pages
                 Budgets.Add(newBudget);
 
                 // Update budget lists
-                UpdateBudgetLists();
+                UpdateGroupedBudgetList();
 
                 // Set as current budget
-                LoadBudget(FindBudgetIndex(budgetTitle));
+                if (newBudget.BudgetDate.Month == DateTime.Today.Month || Budgets.Count == 1) // Current month
+                {
+                    LoadBudget(0); // First budget in list
+                }
+                else if (newBudget.BudgetDate.Month == DateTime.Today.AddMonths(1).Month) // Next month
+                { 
+                    LoadBudget(1); // Next month's budget is the second item in the list
+                }
             }
         }
 
