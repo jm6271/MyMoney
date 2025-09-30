@@ -7,8 +7,19 @@ using System.Threading.Tasks;
 
 namespace MyMoney.Core.Models
 {
-    public partial class BudgetItem : ObservableObject
+    public partial class BudgetItem : ObservableObject, ICloneable
     {
+        public object Clone()
+        {
+            return new BudgetItem()
+            {
+                Id = this.Id,
+                Category = this.Category,
+                Amount = new Currency(this.Amount.Value),
+                Actual = new Currency(this.Actual.Value)
+            };
+        }
+    
         [ObservableProperty]
         private int _id = 0;
 
