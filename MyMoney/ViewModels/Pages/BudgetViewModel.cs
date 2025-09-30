@@ -138,7 +138,7 @@ namespace MyMoney.ViewModels.Pages
                 var budgets = await Task.Run(() => LoadBudgetCollection());
                 Budgets = budgets;
 
-                UpdateBudgetLists();
+                UpdateGroupedBudgetList();
             }
             UpdateBudgetTotals();
 
@@ -171,7 +171,7 @@ namespace MyMoney.ViewModels.Pages
             return budgets;
         }
 
-        private void UpdateBudgetLists()
+        private void UpdateGroupedBudgetList()
         {
             List<GroupedBudget> groupedBudgets = [];
 
@@ -867,7 +867,7 @@ namespace MyMoney.ViewModels.Pages
                 Budgets.Add(newBudget);
 
                 // Update budget lists
-                UpdateBudgetLists();
+                UpdateGroupedBudgetList();
 
                 // Set as current budget
                 LoadBudget(FindBudgetIndex(budgetTitle));
