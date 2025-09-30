@@ -870,7 +870,14 @@ namespace MyMoney.ViewModels.Pages
                 UpdateGroupedBudgetList();
 
                 // Set as current budget
-                LoadBudget(FindBudgetIndex(budgetTitle));
+                if (newBudget.BudgetDate.Month == DateTime.Today.Month || Budgets.Count == 1) // Current month
+                {
+                    LoadBudget(0); // First budget in list
+                }
+                else if (newBudget.BudgetDate.Month == DateTime.Today.AddMonths(1).Month) // Next month
+                { 
+                    LoadBudget(1); // Next month's budget is the second item in the list
+                }
             }
         }
 
