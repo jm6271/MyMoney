@@ -859,7 +859,7 @@ namespace MyMoney.ViewModels.Pages
 
                     foreach (var item in CurrentBudget.BudgetExpenseItems)
                     {
-                        newBudget.BudgetExpenseItems.Add(item);
+                        newBudget.BudgetExpenseItems.Add((BudgetExpenseCategory)item.Clone());
                     }
                 }
 
