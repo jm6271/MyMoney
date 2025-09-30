@@ -18,10 +18,14 @@
     </ui:ContentDialog.Resources>
     <StackPanel>
         <Label Margin="0,0,0,4">Category</Label>
-        <ui:TextBox x:Name="TxtCategory" Margin="0,4,0,8" Text="{Binding BudgetCategory}" 
-                    GotKeyboardFocus="TxtCategory_GotKeyboardFocus" MinWidth="300" GotMouseCapture="TxtCategory_GotMouseCapture"/>
+        <Border x:Name="TxtCategoryBorder" Margin="0,4,0,8" BorderBrush="Transparent" BorderThickness="1">
+             <ui:TextBox x:Name="TxtCategory" Text="{Binding BudgetCategory}" 
+                         GotKeyboardFocus="TxtCategory_GotKeyboardFocus" MinWidth="300" GotMouseCapture="TxtCategory_GotMouseCapture"
+                         LostKeyboardFocus="TxtCategory_LostKeyboardFocus" LostMouseCapture="TxtCategory_LostMouseCapture"/>           
+        </Border>
+
         <Label Margin="0,8,0,4">Amount</Label>
-        <ui:TextBox x:Name="txtAmount" Margin="0,4,0,0" Text="{Binding Path=BudgetAmount, Converter={StaticResource CurrencyConverter}}" 
+        <ui:TextBox x:Name="txtAmount" Margin="1,4,1,0" Text="{Binding Path=BudgetAmount, Converter={StaticResource CurrencyConverter}}" 
                       GotKeyboardFocus="txtAmount_GotKeyboardFocus" KeyDown="txtAmount_KeyDown" GotMouseCapture="txtAmount_GotMouseCapture"/>
     </StackPanel>
 </ui:ContentDialog>

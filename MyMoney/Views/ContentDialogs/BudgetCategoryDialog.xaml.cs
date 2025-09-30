@@ -1,6 +1,7 @@
 ﻿using MyMoney.ViewModels.ContentDialogs;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -49,9 +50,36 @@ namespace MyMoney.Views.ContentDialogs
 
         private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
         {
+            if (args.Result != ContentDialogResult.Primary) return;
             TxtCategory.Focus();
             TxtCategory.MoveFocus(
                 new TraversalRequest(FocusNavigationDirection.Next));
+
+            var amountValidationErrors = Validation.GetErrors(txtAmount);
+
+            if (!string.IsNullOrWhiteSpace(TxtCategory.Text) && amountValidationErrors is not { Count: > 0 })
+                return;
+            args.Cancel = true;
+
+            ValidateTxtCategory();
+        }
+
+        private void ValidateTxtCategory()
+        {
+            if (string.IsNullOrWhiteSpace(TxtCategory.Text))
+                TxtCategoryBorder.BorderBrush = new SolidColorBrush(Colors.Red);
+            else
+                TxtCategoryBorder.BorderBrush = new SolidColorBrush(Colors.Transparent);
+        }
+
+        private void TxtCategory_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            ValidateTxtCategory();
+        }
+
+        private void TxtCategory_LostMouseCapture(object sender, MouseEventArgs e)
+        {
+            ValidateTxtCategory();
         }
     }
 }
