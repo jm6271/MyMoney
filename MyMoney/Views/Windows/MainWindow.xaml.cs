@@ -151,13 +151,13 @@ namespace MyMoney.Views.Windows
             if (BackupMode == BackupModeRadioButtonGroup.Automatic && backupLocation != "")
             {
                 // Backup
-                DatabaseBackup.WriteDatabaseBackup(Path.Combine(BackupLocation, $"mymoney-database-backup-{DateTime.Now.ToString("MM-dd-yyyy")}.db"));
+                DatabaseBackup.WriteDatabaseBackup(Path.Combine(BackupLocation, $"mymoney-database-backup-{DateTime.Now:MM-dd-yyyy-HH_mm}.db"));
 
                 // Clear any old backups
 
                 // Get all *.db files in the backup directory
                 var filesInBackupDir = Directory.EnumerateFiles(BackupLocation, "*.db");
-                var regex = new Regex(@"mymoney-database-backup-(\d{2})-(\d{2})-(\d{4})\.db");
+                var regex = new Regex(@"mymoney-database-backup-(\d{2})-(\d{2})-(\d{4})(?:-[^.]+)?\.db");
 
                 foreach (var file in filesInBackupDir)
                 {
