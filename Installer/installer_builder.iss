@@ -29,8 +29,8 @@ OutputBaseFilename=mymoney-setup-0.10.1-win-x64
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-ArchitecturesAllowed=x64
-ArchitecturesInstallIn64BitMode=x64
+ArchitecturesAllowed=x64compatible
+ArchitecturesInstallIn64BitMode=x64compatible
 
 
 [Languages]
