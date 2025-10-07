@@ -227,7 +227,7 @@ namespace MyMoney.ViewModels.Pages
             {
                 Filter = "MyMoney Databases|*.db",
                 Title = "Choose backup location...",
-                FileName = $"mymoney-backup-{DateTime.Now:M-d-yyyy}.db"
+                FileName = $"mymoney-backup-{DateTime.Now:MM-dd-yyyy-HH_mm}.db"
             };
 
             if (dialog.ShowDialog() == true)
