@@ -5,6 +5,7 @@ using MyMoney.ViewModels.Windows;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions;
 using Wpf.Ui.Appearance;
@@ -113,7 +114,7 @@ namespace MyMoney.Views.Windows
             WindowState = WindowState.Maximized;
         }
 
-        private void FluentWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void FluentWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             // Check settings to see if we need to do a backup
             var databaseReader = new DatabaseManager();
@@ -150,68 +151,82 @@ namespace MyMoney.Views.Windows
             // Write backup
             if (BackupMode == BackupModeRadioButtonGroup.Automatic && backupLocation != "")
             {
-                // Backup
-                DatabaseBackup.WriteDatabaseBackup(Path.Combine(BackupLocation, $"mymoney-database-backup-{DateTime.Now:MM-dd-yyyy-HH_mm}.db"));
-
-                // Clear any old backups
-
-                // Get all *.db files in the backup directory
-                var filesInBackupDir = Directory.EnumerateFiles(BackupLocation, "*.db");
-                var regex = new Regex(@"mymoney-database-backup-(\d{2})-(\d{2})-(\d{4})(?:-[^.]+)?\.db");
-
-                foreach (var file in filesInBackupDir)
+                try
                 {
-                    var filename = Path.GetFileName(file);
-                    var match = regex.Match(filename);
-                    if (match.Success)
+
+
+                    // Backup
+                    DatabaseBackup.WriteDatabaseBackup(Path.Combine(BackupLocation, $"mymoney-database-backup-{DateTime.Now:MM-dd-yyyy-HH_mm}.db"));
+
+                    // Clear any old backups
+
+                    // Get all *.db files in the backup directory
+                    var filesInBackupDir = Directory.EnumerateFiles(BackupLocation, "*.db");
+                    var regex = new Regex(@"mymoney-database-backup-(\d{2})-(\d{2})-(\d{4})(?:-[^.]+)?\.db");
+
+                    foreach (var file in filesInBackupDir)
                     {
-                        var month = int.Parse(match.Groups[1].Value);
-                        var day = int.Parse(match.Groups[2].Value);
-                        var year = int.Parse(match.Groups[3].Value);
-
-                        if (DateTime.TryParseExact(
-                            $"{year}-{month:D2}-{day:D2}",
-                            "yyyy-MM-dd",
-                            CultureInfo.InvariantCulture,
-                            DateTimeStyles.None,
-                            out DateTime backupDate))
+                        var filename = Path.GetFileName(file);
+                        var match = regex.Match(filename);
+                        if (match.Success)
                         {
-                            int daysToKeep = 0;
+                            var month = int.Parse(match.Groups[1].Value);
+                            var day = int.Parse(match.Groups[2].Value);
+                            var year = int.Parse(match.Groups[3].Value);
 
-                            switch (BackupStorageDuration)
+                            if (DateTime.TryParseExact(
+                                $"{year}-{month:D2}-{day:D2}",
+                                "yyyy-MM-dd",
+                                CultureInfo.InvariantCulture,
+                                DateTimeStyles.None,
+                                out DateTime backupDate))
                             {
-                                case SettingsViewModel.BackupStorageDuration.FourDays:
-                                    daysToKeep = 4;
-                                    break;
-                                case SettingsViewModel.BackupStorageDuration.OneWeek:
-                                    daysToKeep = 7;
-                                    break;
-                                case SettingsViewModel.BackupStorageDuration.TwoWeeks:
-                                    daysToKeep = 14;
-                                    break;
-                                case SettingsViewModel.BackupStorageDuration.OneMonth:
-                                    daysToKeep = 30;
-                                    break;
-                                case SettingsViewModel.BackupStorageDuration.ThreeMonths:
-                                    daysToKeep = 90;
-                                    break;
-                                case SettingsViewModel.BackupStorageDuration.Forever:
-                                    return;
-                                default:
-                                    break;
-                            }
+                                int daysToKeep = 0;
 
-                            if (backupDate < DateTime.Today.AddDays(-daysToKeep))
-                            {
-                                try
+                                switch (BackupStorageDuration)
                                 {
-                                    File.Delete(file);
+                                    case SettingsViewModel.BackupStorageDuration.FourDays:
+                                        daysToKeep = 4;
+                                        break;
+                                    case SettingsViewModel.BackupStorageDuration.OneWeek:
+                                        daysToKeep = 7;
+                                        break;
+                                    case SettingsViewModel.BackupStorageDuration.TwoWeeks:
+                                        daysToKeep = 14;
+                                        break;
+                                    case SettingsViewModel.BackupStorageDuration.OneMonth:
+                                        daysToKeep = 30;
+                                        break;
+                                    case SettingsViewModel.BackupStorageDuration.ThreeMonths:
+                                        daysToKeep = 90;
+                                        break;
+                                    case SettingsViewModel.BackupStorageDuration.Forever:
+                                        return;
+                                    default:
+                                        break;
                                 }
-                                catch { /* Fail silently, it's not important that the file is deleted*/ }
+
+                                if (backupDate < DateTime.Today.AddDays(-daysToKeep))
+                                {
+                                    try
+                                    {
+                                        File.Delete(file);
+                                    }
+                                    catch { /* Fail silently, it's not important that the file is deleted*/ }
                                 }
                             }
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    // The backup failed because the location is inaccessible
+                    Wpf.Ui.Controls.MessageBox errorMsg = new();
+                    errorMsg.Title = "Backup Failed";
+                    errorMsg.Content = "The automatic backup failed. Please check your backup location in settings.\n\n" +
+                        $"Error details: {ex.Message}";
+                    await errorMsg.ShowDialogAsync();
+                }
             }
         }
     }
