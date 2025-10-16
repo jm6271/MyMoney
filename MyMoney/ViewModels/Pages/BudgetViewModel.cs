@@ -881,6 +881,50 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
+        [RelayCommand]
+        private async Task DeleteBudget()
+        {
+            if (CurrentBudget == null) return;
+            if (!IsEditingEnabled) return;
+            // Show message box asking user if they really want to delete the budget
+            var result = await _messageBoxService.ShowAsync("Delete Budget?",
+                                                "Are you sure you want to delete the selected budget?\n" +
+                                                "THIS CANNOT BE UNDONE!",
+                                                "Yes",
+                                                "No");
+            if (result != Wpf.Ui.Controls.MessageBoxResult.Primary) return; // User clicked no
+
+            var index = FindBudgetIndex(CurrentBudget.BudgetTitle);
+
+            // Remove the budget
+            Budgets.RemoveAt(index);
+            // Update budget lists
+            UpdateGroupedBudgetList();
+            // Load another budget
+            if (Budgets.Count > 0)
+            {
+                if (index - 1 >= 0)
+                {
+                    LoadBudget(index - 1); // Load previous budget
+                }
+                else
+                {
+                    LoadBudget(0); // Load first budget in list
+                }
+            }
+            else
+            {
+                // No budgets left
+                CurrentBudget = null;
+                IsEditingEnabled = false;
+                ResetTotals();
+                IncomePercentagesSeries = [];
+                ExpensePercentagesSeries = [];
+            }
+            WriteToDatabase();
+        }
+
+
         private bool DoesBudgetExist(DateTime selectedDate)
         {
             foreach (var budget in Budgets)
