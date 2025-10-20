@@ -31,7 +31,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition x:Name="Col0" Width="1*"/>
             <ColumnDefinition x:Name="Col1" Width="3*"/>
-            <ColumnDefinition x:Name="Col2" Width="1*"/>
+            <ColumnDefinition x:Name="Col2" Width="250"/>
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
@@ -326,16 +326,34 @@
             
             <ui:Card Margin="0,0,0,8" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.Row="0"
                      x:Name="IncomeChart">
-                <lvc:PieChart Series="{Binding ViewModel.IncomePercentagesSeries}"
-                        Title="{Binding ViewModel.IncomePercentagesTitle}"
-                        Height="300"/>
+                <StackPanel>
+                    <TextBlock Text="Income" FontSize="25" HorizontalAlignment="Center"/>
+                    <Grid>
+                        <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform">
+                            <TextBlock Text="{Binding ViewModel.IncomeTotal}" Margin="42"/>
+                        </Viewbox>
+                        
+                         <lvc:PieChart Series="{Binding ViewModel.IncomePercentagesSeries}"
+                            Height="275"/>                       
+                    </Grid>
+                                      
+                </StackPanel>
+
             </ui:Card>
 
             <ui:Card VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,8,0,0" Grid.Row="1"
                      x:Name="ExpenseChart">
-                <lvc:PieChart Series="{Binding ViewModel.ExpensePercentagesSeries}"
-                    Title="{Binding ViewModel.ExpensePercentagesTitle}"
-                    Height="300" />
+                <StackPanel>
+                    <TextBlock Text="Expenses" FontSize="25" HorizontalAlignment="Center"/>
+                    <Grid>
+                        <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform">
+                            <TextBlock Text="{Binding ViewModel.ExpenseTotal}" Margin="42"/>
+                        </Viewbox>
+                        
+                          <lvc:PieChart Series="{Binding ViewModel.ExpensePercentagesSeries}"
+                                      Height="275" />                      
+                    </Grid>
+                </StackPanel>
             </ui:Card>
 
         </Grid>

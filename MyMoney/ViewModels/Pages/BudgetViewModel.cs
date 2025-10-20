@@ -1,20 +1,21 @@
-﻿using System.Collections.ObjectModel;
-using MyMoney.Core.Models;
-using MyMoney.Core.Database;
-using LiveChartsCore;
+﻿using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.VisualElements;
-using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Painting;
-using Wpf.Ui.Appearance;
-using System.ComponentModel;
-using MyMoney.ViewModels.ContentDialogs;
-using Wpf.Ui;
-using MyMoney.Services.ContentDialogs;
+using LiveChartsCore.SkiaSharpView.VisualElements;
+using MyMoney.Core.Database;
+using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
-using System.Windows.Data;
 using MyMoney.Helpers.DropHandlers;
+using MyMoney.Services.ContentDialogs;
+using MyMoney.ViewModels.ContentDialogs;
+using SkiaSharp;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Globalization;
+using System.Windows.Data;
+using Wpf.Ui;
 using Wpf.Ui.Abstractions.Controls;
+using Wpf.Ui.Appearance;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -290,7 +291,15 @@ namespace MyMoney.ViewModels.Pages
             var i = 0;
             foreach (var item in incomeTotals)
             {
-                IncomePercentagesSeries[i] = new PieSeries<double> { Values = [item.Value], Name = item.Key };
+                IncomePercentagesSeries[i] = new PieSeries<double> 
+                { 
+                    Values = [item.Value], 
+                    Name = item.Key, 
+                    MaxRadialColumnWidth = 20,
+                    DataLabelsFormatter = point => point.Model.ToString("C", CultureInfo.CurrentCulture),
+                    ToolTipLabelFormatter = point => point.Model.ToString("C", CultureInfo.CurrentCulture)
+                };
+
                 i++;
             }
 
@@ -312,7 +321,14 @@ namespace MyMoney.ViewModels.Pages
             i = 0;
             foreach (var item in expenseTotals)
             {
-                ExpensePercentagesSeries[i] = new PieSeries<double> { Values = [item.Value], Name = item.Key };
+                ExpensePercentagesSeries[i] = new PieSeries<double> 
+                { 
+                    Values = [item.Value], 
+                    Name = item.Key, 
+                    MaxRadialColumnWidth = 20,
+                    DataLabelsFormatter = point => point.Model.ToString("C", CultureInfo.CurrentCulture),
+                    ToolTipLabelFormatter = point => point.Model.ToString("C", CultureInfo.CurrentCulture)
+                };
                 i++;
             }
 
