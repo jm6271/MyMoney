@@ -7,6 +7,7 @@ using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
 using SkiaSharp;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -340,7 +341,9 @@ namespace MyMoney.ViewModels.Pages
                 new PieSeries<double>
                 {
                     Values = [item.Value],
-                    Name = item.Key
+                    Name = item.Key,
+                    DataLabelsFormatter = point => point.Model.ToString("C", CultureInfo.CurrentCulture),
+                    ToolTipLabelFormatter = point => point.Model.ToString("C", CultureInfo.CurrentCulture)
                 }).ToArray();
         }
 
