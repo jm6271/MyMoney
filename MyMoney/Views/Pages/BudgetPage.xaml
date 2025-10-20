@@ -60,6 +60,12 @@
                             <ui:TextBlock Text="{Binding Budget.BudgetTitle}" Margin="5"/>
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
+
+                    <ui:ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="Delete budget" Command="{Binding ViewModel.DeleteBudgetCommand}"/>
+                        </ContextMenu>
+                    </ui:ListView.ContextMenu>
                 </ui:ListView>
             </StackPanel>
         </ui:Card>
