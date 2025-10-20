@@ -93,7 +93,7 @@ namespace MyMoney.Views.Pages
             {
                 // Switch to wide layout
                 Col0.Width = new GridLength(1, GridUnitType.Star);
-                Col2.Width = new GridLength(1, GridUnitType.Star);
+                Col2.Width = new GridLength(250, GridUnitType.Pixel);
                 Row0.Height = new GridLength(1, GridUnitType.Star);
                 Row1.Height = new GridLength(0);
                 Row2.Height = new GridLength(0);
