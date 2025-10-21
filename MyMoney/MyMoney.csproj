@@ -45,9 +45,7 @@
 		</Exec>
 
 		<!-- Run mkdocs build only if uv is available -->
-		<Exec Command="uvx mkdocs build"
-			  WorkingDirectory="$(ProjectDir)../Docs"
-			  Condition="'$(UvFound)' == '0'" />
+		<Exec Command="uvx mkdocs build" WorkingDirectory="$(ProjectDir)../Docs" Condition="'$(UvFound)' == '0'" />
 
 		<!-- Remove old help folder -->
 		<RemoveDir Directories="$(OutDir)site" Condition="'$(UvFound)' == '0'" />
@@ -57,9 +55,7 @@
 			<MkDocsFiles Include="$(ProjectDir)../Docs/site\**\*" />
 		</ItemGroup>
 
-		<Copy SourceFiles="@(MkDocsFiles)"
-			  DestinationFolder="$(OutDir)site\%(RecursiveDir)"
-			  Condition="'$(UvFound)' == '0'" />
+		<Copy SourceFiles="@(MkDocsFiles)" DestinationFolder="$(OutDir)site\%(RecursiveDir)" Condition="'$(UvFound)' == '0'" />
 	</Target>
 
 </Project>
