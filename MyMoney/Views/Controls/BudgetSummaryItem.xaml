@@ -45,7 +45,8 @@
                 <ProgressBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="7" IsIndeterminate="False" 
                              Minimum="0" Maximum="100" Margin="0,4,0,0"
                              Value="{Binding ActualAmountPercentage, RelativeSource={RelativeSource AncestorType=UserControl},
-                             Mode=OneWay}"/>
+                             Mode=OneWay}" Foreground="{Binding PercentageColorBrush, Mode=OneWay,
+                             RelativeSource={RelativeSource AncestorType=UserControl}}"/>
             </Grid>
         </ui:Card>
     </Grid>

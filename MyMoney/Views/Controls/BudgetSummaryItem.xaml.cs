@@ -1,6 +1,8 @@
 ﻿using MyMoney.Core.Models;
 using System.ComponentModel;
 using System.Windows.Controls;
+using System.Windows.Media;
+using Wpf.Ui.Appearance;
 
 namespace MyMoney.Views.Controls
 {
@@ -45,6 +47,7 @@ namespace MyMoney.Views.Controls
 
             control.OnPropertyChanged(nameof(ActualAmountPercentage));
             control.OnPropertyChanged(nameof(RemainingAmount));
+            control.OnPropertyChanged(nameof(PercentageColorBrush));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -73,6 +76,22 @@ namespace MyMoney.Views.Controls
                 if (BudgetedAmount.Value == 0)
                     return 0;
                 return Math.Min((double)(ActualAmount.Value / BudgetedAmount.Value) * 100, 100);
+            }
+        }
+
+        public Brush PercentageColorBrush
+        {
+            get
+            {
+                if (ActualAmount.Value > BudgetedAmount.Value)
+                {
+                    return new SolidColorBrush(Colors.Red);
+                }
+                else
+                {
+                    // Accent color
+                    return new SolidColorBrush(ApplicationAccentColorManager.PrimaryAccent);
+                }
             }
         }
     }
