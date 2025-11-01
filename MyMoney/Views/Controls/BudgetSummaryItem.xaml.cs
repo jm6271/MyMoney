@@ -46,8 +46,8 @@ namespace MyMoney.Views.Controls
             var control = (BudgetSummaryItem)d;
 
             control.OnPropertyChanged(nameof(ActualAmountPercentage));
-            control.OnPropertyChanged(nameof(RemainingAmount));
             control.OnPropertyChanged(nameof(PercentageColorBrush));
+            control.OnPropertyChanged(nameof(RemainingAmountTextColorBrush));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -61,12 +61,24 @@ namespace MyMoney.Views.Controls
             set { SetValue(ActualAmountProperty, value); }
         }
 
+        public static readonly DependencyProperty RemainingAmountProperty =
+            DependencyProperty.Register(nameof(RemainingAmount),
+                typeof(Currency), typeof(BudgetSummaryItem), new PropertyMetadata(new Currency(0m), OnValueChanged));
+
         public Currency RemainingAmount
         {
-            get
-            {
-                return BudgetedAmount - ActualAmount;
-            }
+            get => (Currency)GetValue(RemainingAmountProperty);
+            set { SetValue(RemainingAmountProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsExpenseProperty =
+            DependencyProperty.Register(nameof(IsExpense),
+                typeof(bool), typeof(BudgetSummaryItem), new PropertyMetadata(false, OnValueChanged));
+
+        public bool IsExpense
+        {
+            get => (bool)GetValue(IsExpenseProperty);
+            set { SetValue(IsExpenseProperty, value); }
         }
 
         public double ActualAmountPercentage
@@ -83,7 +95,7 @@ namespace MyMoney.Views.Controls
         {
             get
             {
-                if (ActualAmount.Value > BudgetedAmount.Value)
+                if (RemainingAmount.Value < 0 && IsExpense)
                 {
                     return new SolidColorBrush(Colors.Red);
                 }
@@ -91,6 +103,21 @@ namespace MyMoney.Views.Controls
                 {
                     // Accent color
                     return new SolidColorBrush(ApplicationAccentColorManager.PrimaryAccent);
+                }
+            }
+        }
+
+        public Brush RemainingAmountTextColorBrush
+        {
+            get
+            {
+                if (RemainingAmount.Value >= 0)
+                {
+                    return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+                }
+                else
+                {
+                    return new SolidColorBrush(Colors.Red);
                 }
             }
         }

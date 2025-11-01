@@ -100,11 +100,13 @@
             <ui:Card Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Margin="0,0,8,24">
                 <StackPanel>
                     <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,14">Budget Overview</ui:TextBlock>
-                    <ItemsControl ItemsSource="{Binding ViewModel.BudgetReportExpenseItems}">
+                    <ItemsControl ItemsSource="{Binding ViewAdapter.GroupedBudgetReportItemsView}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Controls:BudgetSummaryItem Category="{Binding Category}" BudgetedAmount="{Binding Budgeted}"
-                                                            ActualAmount="{Binding Actual}" Margin="0,2"/>
+                                                            ActualAmount="{Binding Actual}" Margin="0,2"
+                                                            RemainingAmount="{Binding Remaining}"
+                                                            IsExpense="{Binding IsExpense}"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
 
@@ -113,6 +115,18 @@
                                 <StackPanel Grid.IsSharedSizeScope="True" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <ui:TextBlock Margin="0,10,0,6" FontWeight="Bold" 
+                                                      Text="{Binding Name}"
+                                                      Foreground="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ItemsControl.GroupStyle>
                     </ItemsControl>
                 </StackPanel>
             </ui:Card>

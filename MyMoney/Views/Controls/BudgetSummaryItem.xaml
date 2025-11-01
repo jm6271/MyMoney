@@ -40,7 +40,8 @@
 
                 <TextBlock Grid.Column="6" Margin="8,0,0,0" FontSize="16" Text="{Binding RemainingAmount, 
                            RelativeSource={RelativeSource AncestorType=UserControl}, Mode=OneWay}"
-                           TextAlignment="Center"/>
+                           TextAlignment="Center" Foreground="{Binding RemainingAmountTextColorBrush,
+                           RelativeSource={RelativeSource AncestorType=UserControl}}"/>
 
                 <ProgressBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="7" IsIndeterminate="False" 
                              Minimum="0" Maximum="100" Margin="0,4,0,0"

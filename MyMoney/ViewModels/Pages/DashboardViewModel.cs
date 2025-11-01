@@ -34,6 +34,9 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private ObservableCollection<SavingsCategoryReportItem> _budgetReportSavingsItems = [];
 
+        [ObservableProperty]
+        private ObservableCollection<BudgetReportItem> _budgetReportItems = [];
+
         #endregion
 
         #region Budget Summary Properties
@@ -109,6 +112,7 @@ namespace MyMoney.ViewModels.Pages
         private readonly Lock _incomeItemsLock = new();
         private readonly Lock _expenseItemsLock = new();
         private readonly Lock _savingsItemsLock = new();
+        private readonly Lock _reportItemsLock = new();
 
         public DashboardViewModel(IDatabaseManager databaseReader)
         {
@@ -132,6 +136,8 @@ namespace MyMoney.ViewModels.Pages
                 BudgetReportIncomeItems.Clear();
             lock (_savingsItemsLock)
                 BudgetReportSavingsItems.Clear();
+            lock (_reportItemsLock)
+                BudgetReportItems.Clear();
         }
 
         private (List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) LoadReportItems()
@@ -139,8 +145,8 @@ namespace MyMoney.ViewModels.Pages
             var reportItems = BudgetReportCalculator.CalculateBudgetReport(DateTime.Today, _databaseReader);
             var incomeTotal = CalculateTotal(reportItems.income);
             var expenseTotal = CalculateTotal(reportItems.expenses);
-            reportItems.income.Add(incomeTotal);
-            reportItems.expenses.Add(expenseTotal);
+            //reportItems.income.Add(incomeTotal);
+            //reportItems.expenses.Add(expenseTotal);
 
             Income = (double)incomeTotal.Actual.Value;
             Expenses = (double)expenseTotal.Actual.Value;
@@ -163,6 +169,35 @@ namespace MyMoney.ViewModels.Pages
 
             lock (_savingsItemsLock)
                 BudgetReportSavingsItems = new ObservableCollection<SavingsCategoryReportItem>(items.savings);
+
+            // Copy all items to the report collection
+            lock (_reportItemsLock)
+            {
+                foreach (var item in items.income)
+                {
+                    BudgetReportItems.Add(item);
+                }
+
+                foreach (var item in items.savings)
+                {
+                    BudgetReportItem savingsItem = new()
+                    {
+                        Group = "Savings",
+                        Category = item.Category,
+                        Budgeted = item.Saved,
+                        Actual = item.Spent,
+                        Remaining = item.Balance,
+                        IsExpense = false
+                    };
+
+                    BudgetReportItems.Add(savingsItem);
+                }
+
+                foreach (var item in items.expense)
+                {
+                    BudgetReportItems.Add(item);
+                }
+            }
         }
 
         private static BudgetReportItem CalculateTotal(List<BudgetReportItem> reportItems)
