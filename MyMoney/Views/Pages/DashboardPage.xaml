@@ -135,7 +135,7 @@
                 </ui:Card>
             </Grid>
 
-            <ui:Card Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Margin="0,0,8,24">
+            <ui:Card Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Margin="0,8,8,24">
                 <StackPanel Grid.IsSharedSizeScope="True">
                     <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,24">Budget Overview</ui:TextBlock>
                     <Grid Margin="16,0,16,12">
@@ -191,7 +191,7 @@
                 </StackPanel>
             </ui:Card>
 
-            <StackPanel Grid.Row="1" Grid.Column="1" Margin="8,0,8,0" x:Name="RightPanel">
+            <StackPanel Grid.Row="1" Grid.Column="1" Margin="8,8,0,0" x:Name="RightPanel">
                 <ui:Card Margin="0,0,0,8">
                     <StackPanel>
                         <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,16">
