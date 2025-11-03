@@ -136,8 +136,30 @@
             </Grid>
 
             <ui:Card Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Margin="0,0,8,24">
-                <StackPanel>
-                    <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,14">Budget Overview</ui:TextBlock>
+                <StackPanel Grid.IsSharedSizeScope="True">
+                    <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,24">Budget Overview</ui:TextBlock>
+                    <Grid Margin="16,0,16,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Sep1" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Budgeted" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Sep2" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Actual" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Sep3" />
+                            <ColumnDefinition Width="Auto" SharedSizeGroup="Remaining" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Category" FontWeight="SemiBold" Grid.Column="0"/>
+                        <Separator Grid.Column="1"/>
+                        <TextBlock Text="Budgeted" FontWeight="SemiBold" Margin="8,0,8,0" Grid.Column="2" TextAlignment="Right"/>
+                        <Separator Grid.Column="3"/>
+                        <TextBlock Text="Actual" FontWeight="SemiBold" Margin="8,0" Grid.Column="4" TextAlignment="Right"/>
+                        <Separator Grid.Column="5"/>
+                        <TextBlock Text="Remaining" FontWeight="SemiBold" Margin="8,0,0,0" Grid.Column="6" TextAlignment="Right"/>
+                    </Grid>
+                    
+                    <Separator/>
+                    
                     <ItemsControl ItemsSource="{Binding ViewAdapter.GroupedBudgetReportItemsView}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -150,7 +172,7 @@
 
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel Grid.IsSharedSizeScope="True" />
+                                <StackPanel/>
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
 

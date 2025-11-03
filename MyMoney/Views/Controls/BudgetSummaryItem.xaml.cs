@@ -97,7 +97,7 @@ namespace MyMoney.Views.Controls
             {
                 if (RemainingAmount.Value < 0 && IsExpense)
                 {
-                    return new SolidColorBrush(Colors.Red);
+                    return new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x55, 0x55));
                 }
                 else
                 {
@@ -117,7 +117,7 @@ namespace MyMoney.Views.Controls
                 }
                 else
                 {
-                    return new SolidColorBrush(Colors.Red);
+                    return new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x55, 0x55));
                 }
             }
         }

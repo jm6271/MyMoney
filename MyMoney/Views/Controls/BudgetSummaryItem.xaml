@@ -30,17 +30,17 @@
 
                 <TextBlock Grid.Column="2" Margin="8,0,8,0" FontSize="16" Text="{Binding BudgetedAmount, 
                            RelativeSource={RelativeSource AncestorType=UserControl}}"
-                           TextAlignment="Center"/>
+                           TextAlignment="Right"/>
                 <Separator Grid.Column="3"/>
 
                 <TextBlock Grid.Column="4" Margin="8,0" FontSize="16" Text="{Binding ActualAmount, 
                            RelativeSource={RelativeSource AncestorType=UserControl}}"
-                           TextAlignment="Center" />
+                           TextAlignment="Right" />
                 <Separator Grid.Column="5"/>
 
                 <TextBlock Grid.Column="6" Margin="8,0,0,0" FontSize="16" Text="{Binding RemainingAmount, 
                            RelativeSource={RelativeSource AncestorType=UserControl}, Mode=OneWay}"
-                           TextAlignment="Center" Foreground="{Binding RemainingAmountTextColorBrush,
+                           TextAlignment="Right" Foreground="{Binding RemainingAmountTextColorBrush,
                            RelativeSource={RelativeSource AncestorType=UserControl}}"/>
 
                 <ProgressBar Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="7" IsIndeterminate="False" 

@@ -179,7 +179,7 @@ namespace MyMoney.ViewModels.Pages
                 if (CashFlowTotal.Value > 0)
                     return ApplicationAccentColorManager.PrimaryAccentBrush;
                 else if (CashFlowTotal.Value < 0)
-                    return new SolidColorBrush(Colors.Red);
+                    return new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x55, 0x55));
                 else
                     return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
             }
@@ -192,7 +192,7 @@ namespace MyMoney.ViewModels.Pages
                 if (CashFlowPercentVsLastMonth > 0d)
                     return ApplicationAccentColorManager.PrimaryAccentBrush;
                 else if (CashFlowPercentVsLastMonth < 0d)
-                    return new SolidColorBrush(Colors.Red);
+                    return new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x55, 0x55));
                 else
                     return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
             }
