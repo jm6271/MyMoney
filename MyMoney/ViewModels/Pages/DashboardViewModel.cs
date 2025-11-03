@@ -1,15 +1,16 @@
-﻿using System.Collections.ObjectModel;
-using MyMoney.Core.Models;
-using MyMoney.Core.Reports;
-using MyMoney.Core.Database;
-using LiveChartsCore;
+﻿using LiveChartsCore;
+using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
-using SkiaSharp;
-using Wpf.Ui.Appearance;
 using LiveChartsCore.SkiaSharpView.VisualElements;
-using Wpf.Ui.Abstractions.Controls;
+using MyMoney.Core.Database;
+using MyMoney.Core.Models;
+using MyMoney.Core.Reports;
+using SkiaSharp;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using Wpf.Ui.Abstractions.Controls;
+using Wpf.Ui.Appearance;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -108,6 +109,35 @@ namespace MyMoney.ViewModels.Pages
 
         #endregion
 
+        #region Net Worth Card Properties
+
+        [ObservableProperty]
+        private Currency _totalNetWorth = new(0m);
+
+        [ObservableProperty]
+        private ISeries[] _netWorthSeries = [];
+
+        [ObservableProperty]
+        private Axis[] _netWorthXAxes =
+        [
+            new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString("MMM dd"))
+            {
+                LabelsPaint = null,
+            }
+        ];
+
+        [ObservableProperty]
+        private Axis[] _netWorthYAxes =
+        [
+            new ()
+            {
+                LabelsPaint = null,
+                ShowSeparatorLines = false,
+            }
+        ];
+
+        #endregion
+
         private readonly IDatabaseManager _databaseReader;
         private readonly Lock _incomeItemsLock = new();
         private readonly Lock _expenseItemsLock = new();
@@ -125,7 +155,7 @@ namespace MyMoney.ViewModels.Pages
             ClearReports();
             var reportItems = await Task.Run(LoadReportItems);
             UpdateReportCollections(reportItems);
-            UpdateChartDisplay();
+            await UpdateChartDisplay();
         }
 
         private void ClearReports()
@@ -212,9 +242,10 @@ namespace MyMoney.ViewModels.Pages
             return total;
         }
 
-        private void UpdateChartDisplay()
+        private async Task UpdateChartDisplay()
         {
             Series = UpdateChartSeries();
+            await UpdateNetWorthChart();
             UpdateChartTheme();
         }
 
@@ -286,6 +317,36 @@ namespace MyMoney.ViewModels.Pages
             }
 
             Accounts.Add(totalItem);
+        }
+
+        private async Task UpdateNetWorthChart()
+        {
+            var netWorthCalculator = new NetWorthCalculator(_databaseReader);
+            var netWorthData = await Task.Run(() =>
+                netWorthCalculator.GetNetWorthSinceStartDate(DateTime.Today.AddDays(-30))
+            );
+
+            // Convert to a list of DateTimePoint
+            List<DateTimePoint> dateTimePoints = [];
+            foreach (var kvp in netWorthData)
+            {
+                dateTimePoints.Add(new DateTimePoint(kvp.Key, (double)kvp.Value));
+            }
+
+            TotalNetWorth = new Currency(netWorthData.LastOrDefault().Value);
+
+            var accentColor = ApplicationAccentColorManager.SecondaryAccent;
+
+            NetWorthSeries =
+            [
+                new LineSeries<DateTimePoint>
+                {
+                    Values = dateTimePoints,
+                    GeometrySize = 0,
+                    Stroke = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B), 2),
+                    LineSmoothness = 0,
+                }
+            ];
         }
     }
 }
