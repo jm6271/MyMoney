@@ -404,6 +404,7 @@ namespace MyMoney.ViewModels.Pages
             TotalNetWorth = new Currency(netWorthData.LastOrDefault().Value);
 
             var accentColor = ApplicationAccentColorManager.SecondaryAccent;
+            var lighterAccentColor = ApplicationAccentColorManager.PrimaryAccent;
 
             NetWorthSeries =
             [
@@ -413,6 +414,7 @@ namespace MyMoney.ViewModels.Pages
                     GeometrySize = 0,
                     Stroke = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B), 2),
                     LineSmoothness = 0,
+                    Fill = new SolidColorPaint(new SKColor(lighterAccentColor.R, lighterAccentColor.G, lighterAccentColor.B, 100)),
                 }
             ];
         }
