@@ -8,7 +8,7 @@ using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
 using SkiaSharp;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
+using System.Windows.Media;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
 
@@ -138,6 +138,68 @@ namespace MyMoney.ViewModels.Pages
 
         #endregion
 
+        #region Cash Flow Card Properties
+
+        [ObservableProperty]
+        private Currency _cashFlowTotal = new(0m);
+
+        public double CashFlowPercentVsLastMonth
+        {
+            get
+            {
+                var lastMonthCashFlow = GetCashFlowTotal(DateTime.Now.AddMonths(-1));
+
+                if (lastMonthCashFlow.Value == 0m)
+                {
+                    return double.PositiveInfinity;
+                }
+                var percentage = Math.Round((double)((CashFlowTotal.Value - lastMonthCashFlow.Value) / Math.Abs(lastMonthCashFlow.Value) * 100), 1);
+
+                
+                return percentage;
+            }
+        }
+
+        public string CashFlowTotalFormatted
+        {
+            get
+            {
+                if (CashFlowTotal.Value > 0)
+                {
+                    return "+" + CashFlowTotal.ToString();
+                }
+                return CashFlowTotal.ToString();
+            }
+        }
+
+        public Brush CashFlowTotalColorBrush
+        {
+            get
+            {
+                if (CashFlowTotal.Value > 0)
+                    return ApplicationAccentColorManager.PrimaryAccentBrush;
+                else if (CashFlowTotal.Value < 0)
+                    return new SolidColorBrush(Colors.Red);
+                else
+                    return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+            }
+        }
+
+        public Brush CashFlowPercentageColorBrush
+        {
+            get
+            {
+                if (CashFlowPercentVsLastMonth > 0d)
+                    return ApplicationAccentColorManager.PrimaryAccentBrush;
+                else if (CashFlowPercentVsLastMonth < 0d)
+                    return new SolidColorBrush(Colors.Red);
+                else
+                    return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+            }
+        }
+
+        #endregion
+
         private readonly IDatabaseManager _databaseReader;
         private readonly Lock _incomeItemsLock = new();
         private readonly Lock _expenseItemsLock = new();
@@ -156,6 +218,12 @@ namespace MyMoney.ViewModels.Pages
             var reportItems = await Task.Run(LoadReportItems);
             UpdateReportCollections(reportItems);
             await UpdateChartDisplay();
+
+            CashFlowTotal = GetCashFlowTotal(DateTime.Now);
+            OnPropertyChanged(nameof(CashFlowPercentVsLastMonth));
+            OnPropertyChanged(nameof(CashFlowTotalFormatted));
+            OnPropertyChanged(nameof(CashFlowTotalColorBrush));
+            OnPropertyChanged(nameof(CashFlowPercentageColorBrush));
         }
 
         private void ClearReports()
@@ -347,6 +415,26 @@ namespace MyMoney.ViewModels.Pages
                     LineSmoothness = 0,
                 }
             ];
+        }
+
+        private Currency GetCashFlowTotal(DateTime month)
+        {
+            // Get a budget report for the specified month
+            var report = BudgetReportCalculator.CalculateBudgetReport(month, _databaseReader);
+
+            Currency income = new(0m);
+            foreach (var item in report.income)
+            {
+                income.Value += item.Actual.Value;
+            }
+
+            Currency expense = new(0m);
+            foreach (var item in report.expenses)
+            {
+                expense.Value += item.Actual.Value;
+            }
+
+            return income - expense;
         }
     }
 }

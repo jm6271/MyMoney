@@ -20,6 +20,7 @@
     mc:Ignorable="d">
     <Page.Resources>
         <helpers:IsLastItemConverter x:Key="IsLastItemConverter"/>
+        <helpers:DoubleToUpDownIconConverter x:Key="DoubleToUpDownIconConverter"/>
     </Page.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -82,7 +83,7 @@
                                             Series="{Binding ViewModel.NetWorthSeries}"
                                             XAxes="{Binding ViewModel.NetWorthXAxes}"
                                             YAxes="{Binding ViewModel.NetWorthYAxes}"
-                                            />
+                                            TooltipPosition="Hidden"/>
                         <Viewbox Grid.Row="2" MaxHeight="40">
                             <TextBlock Text="{Binding ViewModel.TotalNetWorth}" FontWeight="SemiBold"/>
                         </Viewbox>
@@ -92,9 +93,31 @@
                 
                 <ui:Card Margin="4,0,8,0" Grid.Column="1" Height="150" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
                     <!-- Cash Flow -->
-                    <StackPanel>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
                         <TextBlock FontSize="18">Cash Flow</TextBlock>
-                    </StackPanel>
+                        <Viewbox Grid.Row="1" HorizontalAlignment="Left" Margin="0,8,0,8">
+                            <TextBlock Text="{Binding ViewModel.CashFlowTotalFormatted}" 
+                                       Foreground="{Binding ViewModel.CashFlowTotalColorBrush}"/>
+                        </Viewbox>
+                        <WrapPanel Grid.Row="2">
+                            <ui:SymbolIcon Symbol="{Binding ViewModel.CashFlowPercentVsLastMonth, 
+                                                        Converter={StaticResource DoubleToUpDownIconConverter}}" 
+                                           Filled="True" VerticalAlignment="Center" 
+                                           Foreground="{Binding ViewModel.CashFlowPercentageColorBrush}"/>
+                            <TextBlock Text=" "/>
+                            <TextBlock Text="{Binding ViewModel.CashFlowPercentVsLastMonth}" 
+                                       Foreground="{Binding ViewModel.CashFlowPercentageColorBrush}" 
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="%" Foreground="{Binding ViewModel.CashFlowPercentageColorBrush}" 
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="  vs last month" VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </Grid>
                 </ui:Card>
                 
                 <ui:Card Margin="8,0,4,0" Grid.Column="2" Height="150" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
