@@ -12,7 +12,7 @@
 
             currency = new(-47.75m);
 
-            Assert.AreEqual("($47.75)", currency.ToString());
+            Assert.AreEqual("-$47.75", currency.ToString());
         }
     }
 }
