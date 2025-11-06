@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Media;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -200,6 +201,51 @@ namespace MyMoney.ViewModels.Pages
 
         #endregion
 
+        #region Budget Health Card Properties
+
+        [ObservableProperty]
+        SymbolRegular _budgetHealthIcon = SymbolRegular.CheckmarkCircle24;
+
+        [ObservableProperty]
+        private Brush _budgetHealthIconColorBrush = ApplicationAccentColorManager.PrimaryAccentBrush;
+
+        public string BudgetHealthText
+        {
+            get
+            {
+                List<BudgetReportItem> overspentItems = [];
+                foreach (var item in BudgetReportExpenseItems)
+                {
+                    if (item.Actual.Value > item.Budgeted.Value)
+                    {
+                        overspentItems.Add(item);
+                    }
+                }
+
+                if (overspentItems.Count == 0)
+                {
+                    BudgetHealthIcon = SymbolRegular.CheckmarkCircle24;
+                    BudgetHealthIconColorBrush = ApplicationAccentColorManager.PrimaryAccentBrush;
+                    return "You're on track this month";
+                }
+                else
+                {
+                    BudgetHealthIcon = SymbolRegular.Warning24;
+                    BudgetHealthIconColorBrush = new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0xAA, 0x00));
+                    if (overspentItems.Count == 1)
+                    {
+                        return $"You're over budget in {overspentItems[0].Category}";
+                    }
+                    else
+                    {
+                        return $"You're over budget in {overspentItems[0].Category} and {overspentItems.Count - 1} more";
+                    }
+                }
+            }
+        }
+
+        #endregion
+
         private readonly IDatabaseManager _databaseReader;
         private readonly Lock _incomeItemsLock = new();
         private readonly Lock _expenseItemsLock = new();
@@ -224,6 +270,8 @@ namespace MyMoney.ViewModels.Pages
             OnPropertyChanged(nameof(CashFlowTotalFormatted));
             OnPropertyChanged(nameof(CashFlowTotalColorBrush));
             OnPropertyChanged(nameof(CashFlowPercentageColorBrush));
+
+            OnPropertyChanged(nameof(BudgetHealthText));
         }
 
         private void ClearReports()
