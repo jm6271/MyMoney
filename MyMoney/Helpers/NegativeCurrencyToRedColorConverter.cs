@@ -21,14 +21,7 @@ namespace MyMoney.Helpers
             }
             else
             {
-                if (ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light)
-                {
-                    return new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
-                }
-                else
-                {
-                    return new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
-                }
+                return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
             }
         }
 

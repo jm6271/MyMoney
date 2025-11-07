@@ -145,6 +145,9 @@ namespace MyMoney.ViewModels.Pages
 
             if (Budgets.Count > 0)
                 SelectCurrentBudget();
+
+            // Fire property changed so that colors update if the theme was changed
+            OnPropertyChanged(nameof(LeftToBudget));
         }
 
         public Task OnNavigatedFromAsync()
