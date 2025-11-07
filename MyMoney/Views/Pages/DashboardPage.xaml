@@ -148,9 +148,32 @@
                 
                 <ui:Card Margin="12,0,0,0" Grid.Column="3" Height="160" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
                     <!-- Spending vs. last month -->
-                    <StackPanel>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
                         <TextBlock FontSize="18">Spending</TextBlock>
-                    </StackPanel>
+
+                        <Viewbox Grid.Row="1" HorizontalAlignment="Left" Margin="0,8,0,8">
+                            <TextBlock Text="{Binding ViewModel.TotalSpending}" />
+                        </Viewbox>
+
+                        <WrapPanel Grid.Row="2">
+                            <ui:SymbolIcon Symbol="{Binding ViewModel.SpendingVsLastMonthPercentage, 
+                                Converter={StaticResource DoubleToUpDownIconConverter}}" 
+                                           Filled="True" VerticalAlignment="Center" 
+                                           Foreground="{Binding ViewModel.SpendingPercentageColorBrush}"/>
+                            <TextBlock Text=" "/>
+                            <TextBlock Text="{Binding ViewModel.SpendingVsLastMonthPercentage}" 
+                                       Foreground="{Binding ViewModel.SpendingPercentageColorBrush}" 
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="%" Foreground="{Binding ViewModel.SpendingPercentageColorBrush}" 
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="  vs last month" VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </Grid>
                 </ui:Card>
             </Grid>
 

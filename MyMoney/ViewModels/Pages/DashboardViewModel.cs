@@ -246,6 +246,42 @@ namespace MyMoney.ViewModels.Pages
 
         #endregion
 
+        #region Spending Insights Card Properties
+
+        [ObservableProperty]
+        private Currency _totalSpending = new(0m);
+
+        public double SpendingVsLastMonthPercentage
+        {
+            get
+            {
+                Currency lastMonthTotalSpending = GetSpendingTotal(DateTime.Now.AddMonths(-1));
+
+                if (lastMonthTotalSpending.Value == 0m)
+                {
+                    return double.PositiveInfinity;
+                }
+
+                var percentage = Math.Round((double)((TotalSpending.Value - lastMonthTotalSpending.Value) / Math.Abs(lastMonthTotalSpending.Value) * 100), 1);
+                return percentage;
+            }
+        }
+
+        public Brush SpendingPercentageColorBrush
+        {
+            get
+            {
+                if (SpendingVsLastMonthPercentage < 0d)
+                    return ApplicationAccentColorManager.PrimaryAccentBrush;
+                else if (SpendingVsLastMonthPercentage > 0d)
+                    return new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x55, 0x55));
+                else
+                    return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+            }
+        }
+
+        #endregion
+
         private readonly IDatabaseManager _databaseReader;
         private readonly Lock _incomeItemsLock = new();
         private readonly Lock _expenseItemsLock = new();
@@ -272,6 +308,10 @@ namespace MyMoney.ViewModels.Pages
             OnPropertyChanged(nameof(CashFlowPercentageColorBrush));
 
             OnPropertyChanged(nameof(BudgetHealthText));
+
+            TotalSpending = GetSpendingTotal(DateTime.Now);
+            OnPropertyChanged(nameof(SpendingVsLastMonthPercentage));
+            OnPropertyChanged(nameof(SpendingPercentageColorBrush));
         }
 
         private void ClearReports()
@@ -485,6 +525,17 @@ namespace MyMoney.ViewModels.Pages
             }
 
             return income - expense;
+        }
+
+        private Currency GetSpendingTotal(DateTime month)
+        {
+            var report = BudgetReportCalculator.CalculateExpenseReportItems(month, _databaseReader);
+            Currency totalSpending = new(0m);
+            foreach (var item in report)
+            {
+                totalSpending.Value += item.Actual.Value;
+            }
+            return totalSpending;
         }
     }
 }
