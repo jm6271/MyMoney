@@ -274,10 +274,28 @@
                         </ui:ListView>
                     </StackPanel>
                 </ui:Card>
-                <ui:Card Margin="0,8,0,24">
+                <ui:Card Margin="0,8,0,8">
                     <lvc:CartesianChart x:Name="IncomeExpenseChart" Height="350" Series="{Binding ViewModel.Series}" 
                                         XAxes="{Binding ViewModel.XAxes}" YAxes="{Binding ViewModel.YAxes}"
                                         Title="{Binding ViewModel.ChartTitle}"></lvc:CartesianChart>
+                </ui:Card>
+
+                <ui:Card VerticalContentAlignment="Stretch" Margin="0,8,0,24" Grid.Row="1"
+                     x:Name="ExpenseChart">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="400"/>
+                        </Grid.RowDefinitions>
+                        
+                        <TextBlock Text="Expenses by Category" FontSize="25" HorizontalAlignment="Center"/>
+                        
+                        <lvc:PieChart Series="{Binding ViewModel.ExpensePercentagesSeries}"
+                                      LegendPosition="Bottom"
+                                      Grid.Row="1"
+                                      LegendTextPaint="{Binding ViewModel.ExpenseBreakdownForeColor}"
+                                      />
+                    </Grid>
                 </ui:Card>
 
             </StackPanel>

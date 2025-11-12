@@ -1,5 +1,6 @@
 ﻿using LiveChartsCore;
 using LiveChartsCore.Defaults;
+using LiveChartsCore.Painting;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.VisualElements;
@@ -8,6 +9,7 @@ using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
 using SkiaSharp;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows.Media;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
@@ -54,7 +56,7 @@ namespace MyMoney.ViewModels.Pages
 
         #endregion
 
-        #region Chart Properties
+        #region Income vs. Expense Chart Properties
 
         [ObservableProperty]
         private ISeries[] _series = [];
@@ -91,6 +93,16 @@ namespace MyMoney.ViewModels.Pages
                 Labeler = Labelers.Currency,
             }
         ];
+
+        #endregion
+
+        #region Expense breakdown chart properties
+
+        [ObservableProperty]
+        private ISeries[] _expensePercentagesSeries = [];
+
+        [ObservableProperty]
+        private Paint _expenseBreakdownForeColor = new SolidColorPaint();
 
         #endregion
 
@@ -156,7 +168,7 @@ namespace MyMoney.ViewModels.Pages
                 }
                 var percentage = Math.Round((double)((CashFlowTotal.Value - lastMonthCashFlow.Value) / Math.Abs(lastMonthCashFlow.Value) * 100), 1);
 
-                
+
                 return percentage;
             }
         }
@@ -401,6 +413,7 @@ namespace MyMoney.ViewModels.Pages
         private async Task UpdateChartDisplay()
         {
             Series = UpdateChartSeries();
+            ExpensePercentagesSeries = UpdateExpenseBreakdownSeries();
             await UpdateNetWorthChart();
             UpdateChartTheme();
         }
@@ -422,6 +435,54 @@ namespace MyMoney.ViewModels.Pages
             }];
         }
 
+        private ISeries[] UpdateExpenseBreakdownSeries()
+        {
+            // Get expense categories
+            var expenseCategories = BudgetReportCalculator.CalculateExpenseReportItems(DateTime.Now, _databaseReader);
+
+            // Include savings with expenses
+            var savingsCategories = BudgetReportCalculator.CalculateSavingsReportItems(DateTime.Now, _databaseReader);
+            foreach (var savings in savingsCategories)
+            {
+                expenseCategories.Add(new BudgetReportItem
+                {
+                    Category = savings.Category,
+                    Actual = savings.Saved,
+                });
+            }
+
+            var expenseTotals = GetNonZeroTotals(expenseCategories,
+                item => item.Actual.Value,
+                item => item.Category
+            );
+
+            return CreatePieSeries(expenseTotals);
+        }
+
+        private static Dictionary<string, double> GetNonZeroTotals<T>(IEnumerable<T> items,
+                                                                      Func<T, decimal> valueSelector,
+                                                                      Func<T, string> categorySelector)
+        {
+            return items
+                .Where(item => valueSelector(item) != 0m)
+                .ToDictionary(
+                    item => categorySelector(item),
+                    item => (double)valueSelector(item));
+        }
+
+        private static ISeries[] CreatePieSeries(Dictionary<string, double> totals)
+        {
+            return [.. totals.Select(item =>
+                new PieSeries<double>
+                {
+                    Values = [item.Value],
+                    Name = item.Key,
+                    DataLabelsFormatter = point => point.Model.ToString("C", CultureInfo.CurrentCulture),
+                    ToolTipLabelFormatter = point => point.Model.ToString("C", CultureInfo.CurrentCulture),
+                    MaxRadialColumnWidth = 25,
+                })];
+        }
+
         private void UpdateChartTheme()
         {
             ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
@@ -433,6 +494,10 @@ namespace MyMoney.ViewModels.Pages
             YAxes[0].LabelsPaint = textPaint;
             YAxes[0].NamePaint = textPaint;
             ChartTitle.Paint = textPaint;
+
+            ExpenseBreakdownForeColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
+                ? new SolidColorPaint(new SKColor(0x33, 0x33, 0x33))
+                : new SolidColorPaint(new SKColor(0xff, 0xff, 0xff));
         }
 
         public async Task OnNavigatedToAsync()
