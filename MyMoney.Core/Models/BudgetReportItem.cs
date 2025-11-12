@@ -13,4 +13,6 @@ public class BudgetReportItem
     public Currency Actual { get; set; } = new(0m);
 
     public Currency Remaining { get; set; } = new(0m);
+
+    public bool IsExpense { get; set; } = true;
 }

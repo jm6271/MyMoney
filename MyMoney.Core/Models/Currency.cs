@@ -14,7 +14,7 @@ namespace MyMoney.Core.Models
             }
             else
             {
-                return $"(${Math.Abs(this.Value):N2})";
+                return $"-${Math.Abs(this.Value):N2}";
             }
         }
 

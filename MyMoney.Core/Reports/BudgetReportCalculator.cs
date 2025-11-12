@@ -38,6 +38,8 @@ namespace MyMoney.Core.Reports
                     Category = item.Category,
                     Budgeted = item.Amount,
                     Actual = CalculateTotalForCategory(new() { Group = "Income", Name = item.Category }, budgetMonth, databaseReader),
+                    IsExpense = false,
+                    Group = "Income"
                 };
 
                 budgetReportItem.Remaining = new(
@@ -137,6 +139,7 @@ namespace MyMoney.Core.Reports
                         Group = item.CategoryName,
                         Budgeted = subItem.Amount,
                         Actual = new(Math.Abs(CalculateTotalForCategory(new() { Group = item.CategoryName, Name = subItem.Category}, budgetMonth, databaseReader).Value)),
+                        IsExpense = true
                     };
 
                     budgetReportItem.Remaining = budgetReportItem.Budgeted - budgetReportItem.Actual;
