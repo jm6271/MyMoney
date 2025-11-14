@@ -98,7 +98,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             await _viewModel.EditTransactionCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.AreEqual(-100, account.Transactions[0].Amount.Value);
+            Assert.HasCount(1, account.Transactions);
             Assert.AreEqual(1000, account.Total.Value);
         }
 

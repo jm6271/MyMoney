@@ -58,7 +58,7 @@ public class LoadCategoryNames
             _updateAccountBalanceDialogService.Object);
 
         // Assert
-        Assert.AreEqual(0, _viewModel.CategoryNames.Count);
+        Assert.IsEmpty(_viewModel.CategoryNames);
     }
 
     [TestMethod]
@@ -101,7 +101,7 @@ public class LoadCategoryNames
             _updateAccountBalanceDialogService.Object);
 
         // Assert
-        Assert.AreEqual(5, _viewModel.CategoryNames.Count);
+        Assert.HasCount(5, _viewModel.CategoryNames);
         Assert.AreEqual("Salary", _viewModel.CategoryNames[0].Item.ToString());
         Assert.AreEqual("Bonus", _viewModel.CategoryNames[1].Item.ToString());
         Assert.AreEqual("Groceries", _viewModel.CategoryNames[2].Item.ToString());
@@ -138,7 +138,7 @@ public class LoadCategoryNames
         _viewModel.OnPageNavigatedTo(); // This calls LoadCategoryNames again
 
         // Assert
-        Assert.AreEqual(2, _viewModel.CategoryNames.Count);
+        Assert.HasCount(2, _viewModel.CategoryNames);
         Assert.AreEqual(1, _viewModel.CategoryNames.Count(x => x.Item.ToString() == "Salary"));
         Assert.AreEqual(1, _viewModel.CategoryNames.Count(x => x.Item.ToString() == "Groceries"));
     }

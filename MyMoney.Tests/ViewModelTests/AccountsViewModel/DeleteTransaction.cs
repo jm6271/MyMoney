@@ -94,7 +94,7 @@ public class DeleteTransactionTest
         _viewModel.DeleteTransactionCommand.Execute(null);
 
         // Assert
-        Assert.AreEqual(1, account.Transactions.Count);
+        Assert.HasCount(1, account.Transactions);
         Assert.AreEqual(1000m, account.Total.Value);
     }
 
@@ -119,7 +119,7 @@ public class DeleteTransactionTest
         _viewModel.DeleteTransactionCommand.Execute(null);
 
         // Assert
-        Assert.AreEqual(0, account.Transactions.Count);
+        Assert.HasCount(0, account.Transactions);
         Assert.AreEqual(900m, account.Total.Value); // 1000 - 100
     }
 
@@ -144,7 +144,7 @@ public class DeleteTransactionTest
         _viewModel.DeleteTransactionCommand.Execute(null);
 
         // Assert
-        Assert.AreEqual(0, account.Transactions.Count);
+        Assert.IsEmpty(account.Transactions);
         Assert.AreEqual(1100m, account.Total.Value); // 1000 - (-100)
     }
 

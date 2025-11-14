@@ -91,7 +91,7 @@ public class DeleteSavingsCategoryTests
         await _viewModel.DeleteSavingsCategoryCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.AreEqual(1, _viewModel.CurrentBudget.BudgetSavingsCategories.Count);
+        Assert.HasCount(1, _viewModel.CurrentBudget.BudgetSavingsCategories);
     }
 
     [TestMethod]
@@ -112,7 +112,7 @@ public class DeleteSavingsCategoryTests
         await _viewModel.DeleteSavingsCategoryCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.AreEqual(2, _viewModel.CurrentBudget.BudgetSavingsCategories.Count);
+        Assert.HasCount(2, _viewModel.CurrentBudget.BudgetSavingsCategories);
         Assert.AreEqual("A", _viewModel.CurrentBudget.BudgetSavingsCategories[0].CategoryName);
         Assert.AreEqual(1, _viewModel.CurrentBudget.BudgetSavingsCategories[0].Id);
         Assert.AreEqual("C", _viewModel.CurrentBudget.BudgetSavingsCategories[1].CategoryName);

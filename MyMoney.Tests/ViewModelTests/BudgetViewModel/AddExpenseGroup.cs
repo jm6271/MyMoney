@@ -69,7 +69,7 @@ public class AddExpenseGroupTests
         await viewModel.AddExpenseGroupCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.AreEqual(1, viewModel.CurrentBudget.BudgetExpenseItems.Count);
+        Assert.HasCount(1, viewModel.CurrentBudget.BudgetExpenseItems);
         Assert.AreEqual("Test Group", viewModel.CurrentBudget.BudgetExpenseItems[0].CategoryName);
     }
 

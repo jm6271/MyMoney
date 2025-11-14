@@ -111,7 +111,7 @@ public class DeleteExpenseItemTests
         await _viewModel.DeleteExpenseItemCommand.ExecuteAsync(new BudgetExpenseCategory());
 
         // Assert
-        Assert.AreEqual(1, budget.BudgetExpenseItems.Count);
+        Assert.HasCount(1, budget.BudgetExpenseItems);
     }
 
     [TestMethod]
@@ -144,8 +144,8 @@ public class DeleteExpenseItemTests
         await _viewModel.DeleteExpenseItemCommand.ExecuteAsync(budget.BudgetExpenseItems[0]);
 
         // Assert
-        Assert.AreEqual(1, budget.BudgetExpenseItems.Count);
-        Assert.AreEqual(2, budget.BudgetExpenseItems[0].SubItems.Count);
+        Assert.HasCount(1, budget.BudgetExpenseItems);
+        Assert.HasCount(2, budget.BudgetExpenseItems[0].SubItems);
         Assert.AreEqual("Category 1", budget.BudgetExpenseItems[0].SubItems[0].Category);
         Assert.AreEqual("Category 3", budget.BudgetExpenseItems[0].SubItems[1].Category);
         Assert.AreEqual(1, budget.BudgetExpenseItems[0].SubItems[0].Id);

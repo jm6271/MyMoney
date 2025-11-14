@@ -76,7 +76,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
 
             // Assert
             Assert.IsNotNull(_viewModel.CurrentBudget);
-            Assert.IsFalse(_viewModel.CurrentBudget.BudgetExpenseItems.Contains(expenseCategory));
+            Assert.DoesNotContain(expenseCategory, _viewModel.CurrentBudget.BudgetExpenseItems);
         }
 
         [TestMethod]
@@ -133,7 +133,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
 
             // Assert
             Assert.IsNotNull(_viewModel.CurrentBudget);
-            Assert.IsTrue(_viewModel.CurrentBudget.BudgetExpenseItems.Contains(expenseCategory));
+            Assert.Contains(expenseCategory, _viewModel.CurrentBudget.BudgetExpenseItems);
         }
     }
 }

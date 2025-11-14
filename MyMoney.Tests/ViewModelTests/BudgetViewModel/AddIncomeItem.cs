@@ -93,7 +93,7 @@ public class AddIncomeItemTests
         await _viewModel.AddIncomeItemCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.AreEqual(0, _viewModel.CurrentBudget.BudgetIncomeItems.Count);
+        Assert.IsEmpty(_viewModel.CurrentBudget.BudgetIncomeItems);
     }
 
     [TestMethod]
@@ -115,7 +115,7 @@ public class AddIncomeItemTests
         await _viewModel.AddIncomeItemCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.AreEqual(1, _viewModel.CurrentBudget.BudgetIncomeItems.Count);
+        Assert.HasCount(1, _viewModel.CurrentBudget.BudgetIncomeItems);
         Assert.AreEqual("Test Category", _viewModel.CurrentBudget.BudgetIncomeItems[0].Category);
         Assert.AreEqual(100m, _viewModel.CurrentBudget.BudgetIncomeItems[0].Amount.Value);
     }

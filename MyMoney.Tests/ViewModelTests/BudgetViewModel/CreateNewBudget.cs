@@ -71,11 +71,11 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.AreEqual(1, _viewModel.Budgets.Count);
+            Assert.HasCount(1, _viewModel.Budgets);
             Assert.AreEqual(budgetTitle, _viewModel.Budgets[0].BudgetTitle);
-            Assert.AreEqual(0, _viewModel.Budgets[0].BudgetIncomeItems.Count);
-            Assert.AreEqual(0, _viewModel.Budgets[0].BudgetExpenseItems.Count);
-            Assert.AreEqual(0, _viewModel.Budgets[0].BudgetSavingsCategories.Count);
+            Assert.HasCount(0, _viewModel.Budgets[0].BudgetIncomeItems);
+            Assert.HasCount(0, _viewModel.Budgets[0].BudgetExpenseItems);
+            Assert.HasCount(0, _viewModel.Budgets[0].BudgetSavingsCategories);
         }
 
         [TestMethod]
@@ -119,7 +119,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.AreEqual(1, _viewModel.Budgets.Count); // Only the existing budget
+            Assert.HasCount(1, _viewModel.Budgets); // Only the existing budget
             _mockMessageBoxService.Verify(x => x.ShowInfoAsync(
                 "Budget Already Exists",
                 "Cannot create a budget for the selected month because a budget for this month already exists",
@@ -138,7 +138,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.AreEqual(0, _viewModel.Budgets.Count);
+            Assert.HasCount(0, _viewModel.Budgets);
         }
 
         [TestMethod]
@@ -199,19 +199,19 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.AreEqual(2, _viewModel.Budgets.Count);
+            Assert.HasCount(2, _viewModel.Budgets);
             var newBudget = _viewModel.Budgets[1];
             Assert.AreEqual(nextBudgetTitle, newBudget.BudgetTitle);
-            Assert.AreEqual(1, newBudget.BudgetIncomeItems.Count);
+            Assert.HasCount(1, newBudget.BudgetIncomeItems);
             Assert.AreEqual("Income", newBudget.BudgetIncomeItems[0].Category);
-            Assert.AreEqual(1, newBudget.BudgetExpenseItems.Count);
+            Assert.HasCount(1, newBudget.BudgetExpenseItems);
             Assert.AreEqual("Expense", newBudget.BudgetExpenseItems[0].CategoryName);
-            Assert.AreEqual(1, newBudget.BudgetSavingsCategories.Count);
+            Assert.HasCount(1, newBudget.BudgetSavingsCategories);
 
             var newSavings = newBudget.BudgetSavingsCategories[0];
             Assert.AreEqual("Save", newSavings.CategoryName);
             Assert.AreEqual(currentBudget.BudgetSavingsCategories[0].CurrentBalance + currentBudget.BudgetSavingsCategories[0].BudgetedAmount, newSavings.CurrentBalance);
-            Assert.AreEqual(2, newSavings.Transactions.Count); // Old transactions are deleted during copy
+            Assert.HasCount(2, newSavings.Transactions); // Old transactions are deleted during copy
             Assert.AreEqual(newSavings.BudgetedAmount, newSavings.Transactions[1].Amount);
             Assert.AreEqual(newSavings.PlannedTransactionHash, newSavings.Transactions[1].TransactionHash);
         }
@@ -241,11 +241,11 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.AreEqual(1, _viewModel.Budgets.Count);
+            Assert.HasCount(1, _viewModel.Budgets);
             Assert.AreEqual(budgetTitle, _viewModel.Budgets[0].BudgetTitle);
-            Assert.AreEqual(0, _viewModel.Budgets[0].BudgetIncomeItems.Count);
-            Assert.AreEqual(0, _viewModel.Budgets[0].BudgetExpenseItems.Count);
-            Assert.AreEqual(0, _viewModel.Budgets[0].BudgetSavingsCategories.Count);
+            Assert.HasCount(0, _viewModel.Budgets[0].BudgetIncomeItems);
+            Assert.IsEmpty(_viewModel.Budgets[0].BudgetExpenseItems);
+            Assert.IsEmpty(_viewModel.Budgets[0].BudgetSavingsCategories);
         }
 
         [TestMethod]
@@ -276,11 +276,11 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.AreEqual(1, _viewModel.Budgets.Count);
+            Assert.HasCount(1, _viewModel.Budgets);
             Assert.AreEqual(budgetTitle, _viewModel.Budgets[0].BudgetTitle);
-            Assert.AreEqual(0, _viewModel.Budgets[0].BudgetIncomeItems.Count);
-            Assert.AreEqual(0, _viewModel.Budgets[0].BudgetExpenseItems.Count);
-            Assert.AreEqual(0, _viewModel.Budgets[0].BudgetSavingsCategories.Count);
+            Assert.IsEmpty(_viewModel.Budgets[0].BudgetIncomeItems);
+            Assert.IsEmpty(_viewModel.Budgets[0].BudgetExpenseItems);
+            Assert.IsEmpty(_viewModel.Budgets[0].BudgetSavingsCategories);
         }
     }
 }

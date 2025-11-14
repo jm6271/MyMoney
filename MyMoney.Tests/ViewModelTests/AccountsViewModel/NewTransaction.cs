@@ -56,7 +56,7 @@ public class NewTransactionTests
     public async Task CreateNewTransaction_NoAccountsExist_ReturnsEarly()
     {
         // Arrange
-        Assert.AreEqual(0, _viewModel.Accounts.Count);
+        Assert.IsEmpty(_viewModel.Accounts);
 
         // Act
         await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
@@ -111,7 +111,7 @@ public class NewTransactionTests
         await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.AreEqual(0, account.Transactions.Count);
+        Assert.IsEmpty(account.Transactions);
         Assert.AreEqual(1000, account.Total.Value);
     }
 
@@ -142,7 +142,7 @@ public class NewTransactionTests
         await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.AreEqual(1, account.Transactions.Count);
+        Assert.HasCount(1, account.Transactions);
         Assert.AreEqual(500, account.Total.Value); // 1000 - 500
 
         var transaction = account.Transactions[0];
@@ -181,7 +181,7 @@ public class NewTransactionTests
         await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.AreEqual(1, account.Transactions.Count);
+        Assert.HasCount(1, account.Transactions);
         Assert.AreEqual(1500, account.Total.Value); // 1000 + 500
 
         var transaction = account.Transactions[0];

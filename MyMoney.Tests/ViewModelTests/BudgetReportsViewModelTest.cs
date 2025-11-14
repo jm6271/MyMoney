@@ -57,8 +57,8 @@ namespace MyMoney.Tests.ViewModelTests
             var viewModel = new BudgetReportsViewModel(mockDatabaseService.Object);
             await viewModel.OnNavigatedToAsync();
 
-            Assert.AreEqual(3, viewModel.IncomeItems.Count);
-            Assert.AreEqual(5, viewModel.ExpenseItems.Count);
+            Assert.HasCount(3, viewModel.IncomeItems);
+            Assert.HasCount(5, viewModel.ExpenseItems);
 
             // Make sure income items are correct
             Assert.AreEqual(330m, viewModel.IncomeItems[0].Actual.Value);
