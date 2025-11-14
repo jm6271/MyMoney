@@ -118,7 +118,7 @@ public class DeleteIncomeItemTests
 
         // Assert
         Assert.IsNotNull(_viewModel.CurrentBudget);
-        Assert.AreEqual(originalCount, _viewModel.CurrentBudget.BudgetIncomeItems.Count);
+        Assert.HasCount(originalCount, _viewModel.CurrentBudget.BudgetIncomeItems);
     }
 
     [TestMethod]
@@ -137,7 +137,7 @@ public class DeleteIncomeItemTests
 
         // Assert
         Assert.IsNotNull(_viewModel.CurrentBudget);
-        Assert.AreEqual(expectedCount, _viewModel.CurrentBudget.BudgetIncomeItems.Count);
+        Assert.HasCount(expectedCount, _viewModel.CurrentBudget.BudgetIncomeItems);
         
         // Verify IDs are reindexed correctly
         for (int i = 0; i < _viewModel.CurrentBudget.BudgetIncomeItems.Count; i++)

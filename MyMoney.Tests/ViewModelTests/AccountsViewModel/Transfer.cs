@@ -83,8 +83,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             Assert.AreEqual(600m, account2.Total.Value); // 500 + 100
 
             // Verify transactions created in both accounts
-            Assert.AreEqual(1, account1.Transactions.Count);
-            Assert.AreEqual(1, account2.Transactions.Count);
+            Assert.HasCount(1, account1.Transactions);
+            Assert.HasCount(1, account2.Transactions);
 
             // Verify FROM transaction details
             var fromTransaction = account1.Transactions[0];
@@ -117,8 +117,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             // Assert
             Assert.AreEqual(1000m, account1.Total.Value); // Should remain unchanged
             Assert.AreEqual(500m, account2.Total.Value);  // Should remain unchanged
-            Assert.AreEqual(0, account1.Transactions.Count); // No transactions should be created
-            Assert.AreEqual(0, account2.Transactions.Count);
+            Assert.IsEmpty(account1.Transactions); // No transactions should be created
+            Assert.IsEmpty(account2.Transactions);
         }
 
         [TestMethod]
@@ -177,8 +177,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             // Assert
             Assert.AreEqual(50m, account1.Total.Value); // Should remain unchanged
             Assert.AreEqual(500m, account2.Total.Value); // Should remain unchanged
-            Assert.AreEqual(0, account1.Transactions.Count); // No transactions should be created
-            Assert.AreEqual(0, account2.Transactions.Count);
+            Assert.IsEmpty(account1.Transactions); // No transactions should be created
+            Assert.IsEmpty(account2.Transactions);
 
             // Verify message box was shown for insufficient funds
             _mockMessageBoxService.Verify(x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(),

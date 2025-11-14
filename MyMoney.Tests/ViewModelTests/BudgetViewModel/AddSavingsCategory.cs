@@ -93,7 +93,7 @@ public class AddSavingsCategoryTests
         await _viewModel.AddSavingsCategoryCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.AreEqual(0, _viewModel.CurrentBudget.BudgetSavingsCategories.Count);
+        Assert.IsEmpty(_viewModel.CurrentBudget.BudgetSavingsCategories);
     }
 
     [TestMethod]
@@ -115,7 +115,7 @@ public class AddSavingsCategoryTests
         await _viewModel.AddSavingsCategoryCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.AreEqual(1, _viewModel.CurrentBudget.BudgetSavingsCategories.Count);
+        Assert.HasCount(1, _viewModel.CurrentBudget.BudgetSavingsCategories);
         Assert.AreEqual("Test Savings", _viewModel.CurrentBudget.BudgetSavingsCategories[0].CategoryName);
         Assert.AreEqual(200m, _viewModel.CurrentBudget.BudgetSavingsCategories[0].BudgetedAmount.Value);
     }
@@ -149,6 +149,6 @@ public class AddSavingsCategoryTests
             It.IsAny<string>(),
             It.IsAny<string>(), It.IsAny<string>()
         ), Times.Once);
-        Assert.AreEqual(1, _viewModel.CurrentBudget.BudgetSavingsCategories.Count);
+        Assert.HasCount(1, _viewModel.CurrentBudget.BudgetSavingsCategories);
     }
 }

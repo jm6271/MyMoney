@@ -94,7 +94,7 @@ public class AddExpenseItemTests
         await _viewModel.AddExpenseItemCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.AreEqual(0, _viewModel.CurrentBudget.BudgetExpenseItems.Count);
+        Assert.IsEmpty(_viewModel.CurrentBudget.BudgetExpenseItems);
     }
 
     [TestMethod]
@@ -120,8 +120,8 @@ public class AddExpenseItemTests
         await _viewModel.AddExpenseItemCommand.ExecuteAsync(budgetExpenseCategory);
 
         // Assert
-        Assert.AreEqual(1, _viewModel.CurrentBudget.BudgetExpenseItems.Count);
-        Assert.AreEqual(1, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems.Count);
+        Assert.HasCount(1, _viewModel.CurrentBudget.BudgetExpenseItems);
+        Assert.HasCount(1, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems);
         Assert.AreEqual("Test Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Category);
         Assert.AreEqual(100m, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Amount.Value);
     }

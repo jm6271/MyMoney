@@ -60,7 +60,7 @@ public class NewAccountTest
         _viewModel.CreateNewAccountCommand.Execute(null);
 
         // Assert
-        Assert.AreEqual(1, _viewModel.Accounts.Count);
+        Assert.HasCount(1, _viewModel.Accounts);
         Assert.AreEqual("Checking", _viewModel.Accounts[0].AccountName);
         Assert.AreEqual(1000m, _viewModel.Accounts[0].Total.Value);
         Assert.IsTrue(_viewModel.TransactionsEnabled);
@@ -86,7 +86,7 @@ public class NewAccountTest
         _viewModel.CreateNewAccountCommand.Execute(null);
 
         // Assert
-        Assert.AreEqual(1, _viewModel.Accounts.Count);
+        Assert.HasCount(1, _viewModel.Accounts);
         Assert.AreEqual(0m, _viewModel.Accounts[0].Total.Value);
     }
 
@@ -106,7 +106,7 @@ public class NewAccountTest
         _viewModel.CreateNewAccountCommand.Execute(null);
 
         // Assert
-        Assert.AreEqual(0, _viewModel.Accounts.Count);
+        Assert.IsEmpty(_viewModel.Accounts);
     }
 
     [TestMethod]
@@ -139,7 +139,7 @@ public class NewAccountTest
         _viewModel.CreateNewAccountCommand.Execute(null);
 
         // Assert
-        Assert.AreEqual(2, _viewModel.Accounts.Count);
+        Assert.HasCount(2, _viewModel.Accounts);
         Assert.AreEqual("First Account", _viewModel.Accounts[0].AccountName);
         Assert.AreEqual("Second Account", _viewModel.Accounts[1].AccountName);
         Assert.AreEqual(100m, _viewModel.Accounts[0].Total.Value);

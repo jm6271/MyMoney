@@ -81,7 +81,7 @@ public class EditExpenseItem
         await _viewModel.EditExpenseItemCommand.ExecuteAsync(_viewModel.CurrentBudget.BudgetExpenseItems[0]);
 
         // Assert
-        Assert.AreEqual(1, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems.Count);
+        Assert.HasCount(1, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems);
         Assert.AreEqual("Updated Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Category);
         Assert.AreEqual(200m, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Amount.Value);
     }
