@@ -229,5 +229,10 @@ namespace MyMoney.Views.Windows
                 }
             }
         }
+
+        private void FluentWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            RootNavigation.SetCurrentValue(NavigationView.IsPaneOpenProperty, e.NewSize.Width > 1200);
+        }
     }
 }
