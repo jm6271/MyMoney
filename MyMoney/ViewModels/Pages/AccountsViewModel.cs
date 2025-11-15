@@ -27,11 +27,6 @@ namespace MyMoney.ViewModels.Pages
         public ObservableCollection<Transaction> SelectedAccountTransactions => 
             SelectedAccount?.Transactions ?? new ObservableCollection<Transaction>();
 
-        /// <summary>
-        /// Available budget categories for transactions
-        /// </summary>
-        public ObservableCollection<GroupedComboBox.GroupedComboBoxItem> CategoryNames { get; } = [];
-
         // Observable properties
         [ObservableProperty]
         private Account? _selectedAccount;
@@ -97,7 +92,6 @@ namespace MyMoney.ViewModels.Pages
             _updateAccountBalanceDialogService = updateAccountBalanceDialogService ?? throw new ArgumentNullException(nameof(updateAccountBalanceDialogService));
 
             LoadAccounts();
-            LoadCategoryNames();
         }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -122,41 +116,6 @@ namespace MyMoney.ViewModels.Pages
             }
 
             TransactionsEnabled = Accounts.Count > 0;
-        }
-
-        private void LoadCategoryNames()
-        {
-            CategoryNames.Clear();
-
-            BudgetCollection budgetCollection;
-            lock (_databaseLockObject)
-            {
-                budgetCollection = new(_databaseManager);
-                if (!budgetCollection.DoesCurrentBudgetExist())
-                    return;
-
-                var currentBudget = budgetCollection.GetCurrentBudget();
-                AddCategoriesToCollection("Income", currentBudget.BudgetIncomeItems.Select(x => x.Category));
-                AddCategoriesToCollection("Savings", currentBudget.BudgetSavingsCategories.Select(x => x.CategoryName));
-                
-                foreach (var expenseGroup in currentBudget.BudgetExpenseItems)
-                {
-                    AddCategoriesToCollection(expenseGroup.CategoryName, 
-                        expenseGroup.SubItems.Select(x => x.Category));
-                }
-            }
-        }
-
-        private void AddCategoriesToCollection(string group, IEnumerable<string> items)
-        {
-            foreach (var item in items)
-            {
-                CategoryNames.Add(new GroupedComboBox.GroupedComboBoxItem
-                {
-                    Group = group,
-                    Item = item
-                });
-            }
         }
 
         private void SortTransactions()
@@ -375,13 +334,12 @@ namespace MyMoney.ViewModels.Pages
         {
             if (!EnsureAccountSelected()) return;
 
-            var viewModel = new NewTransactionDialogViewModel
+            var viewModel = new NewTransactionDialogViewModel(_databaseManager)
             {
                 AutoSuggestPayees = GetAllPayees(),
                 SelectedAccountIndex = SelectedAccountIndex,
                 Accounts = Accounts,
-                SelectedAccount = SelectedAccount,
-                CategoryNames = CategoryNames
+                SelectedAccount = SelectedAccount
             };
 
             var (success, transaction) = await ShowTransactionDialog(viewModel);
@@ -404,6 +362,7 @@ namespace MyMoney.ViewModels.Pages
 
             var oldTransaction = SelectedAccountTransactions[SelectedTransactionIndex];
             var viewModel = CreateTransactionViewModel(oldTransaction);
+            viewModel.SetSelectedCategoryByName(oldTransaction.Category.Name);
 
             var (success, transaction) = await ShowTransactionDialog(viewModel, true);
             if (!success || transaction == null) return;
@@ -573,11 +532,10 @@ namespace MyMoney.ViewModels.Pages
 
         private NewTransactionDialogViewModel CreateTransactionViewModel(Transaction transaction)
         {
-            return new NewTransactionDialogViewModel
+            return new NewTransactionDialogViewModel(_databaseManager)
             {
                 NewTransactionDate = transaction.Date,
                 NewTransactionAmount = new(Math.Abs(transaction.Amount.Value)),
-                NewTransactionCategorySelectedIndex = GetCategoryIndex(transaction.Category),
                 NewTransactionIsExpense = transaction.Amount.Value < 0m,
                 NewTransactionIsIncome = transaction.Amount.Value >= 0m,
                 NewTransactionMemo = transaction.Memo,
@@ -586,7 +544,6 @@ namespace MyMoney.ViewModels.Pages
                 SelectedAccountIndex = SelectedAccountIndex,
                 Accounts = Accounts,
                 SelectedAccount = SelectedAccount,
-                CategoryNames = CategoryNames,
                 AccountsVisibility = Visibility.Collapsed
             };
         }
@@ -599,13 +556,6 @@ namespace MyMoney.ViewModels.Pages
                        .Distinct());
         }
 
-        private int GetCategoryIndex(Category category)
-        {
-            return CategoryNames.TakeWhile(item => 
-                !(item.Group == category.Group && item.Item.ToString() == category.Name))
-                .Count();
-        }
-
         partial void OnSelectedAccountChanged(Account? value)
         {
             OnPropertyChanged(nameof(SelectedAccountTransactions));
@@ -615,7 +565,6 @@ namespace MyMoney.ViewModels.Pages
 
         public void OnPageNavigatedTo()
         {
-            LoadCategoryNames();
             TransactionsEnabled = Accounts.Count > 0;
         }
     }
