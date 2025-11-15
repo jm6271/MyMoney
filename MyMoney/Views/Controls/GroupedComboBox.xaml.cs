@@ -128,9 +128,19 @@ namespace MyMoney.Views.Controls
 
         public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource",
             typeof(ObservableCollection<GroupedComboBoxItem>), typeof(GroupedComboBox), 
-            new PropertyMetadata(new ObservableCollection<GroupedComboBoxItem>()));
+            new PropertyMetadata(new ObservableCollection<GroupedComboBoxItem>(), OnItemsSourceChanged));
 
 
+        private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = (GroupedComboBox)d;
+            if (e.NewValue is ObservableCollection<GroupedComboBoxItem> newItemsSource)
+            {
+                control.GroupedItems = new ListCollectionView(newItemsSource);
+                control.GroupedItems.GroupDescriptions.Clear();
+                control.GroupedItems.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
+            }
+        }
 
         public class GroupedComboBoxItem : IEquatable<GroupedComboBoxItem>
         {

@@ -1,8 +1,10 @@
-﻿using MyMoney.Core.Models;
+﻿using MyMoney.Core.Database;
+using MyMoney.Core.Models;
 using MyMoney.Views.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +13,9 @@ namespace MyMoney.ViewModels.ContentDialogs
 {
     public partial class NewTransactionDialogViewModel : ObservableObject
     {
+        private readonly object _databaseLockObject = new();
+        private readonly IDatabaseManager _databaseManager;
+
         [ObservableProperty]
         private DateTime _newTransactionDate = DateTime.Today;
 
@@ -48,9 +53,71 @@ namespace MyMoney.ViewModels.ContentDialogs
         private Account? _selectedAccount;
 
         [ObservableProperty]
-        private ObservableCollection<GroupedComboBox.GroupedComboBoxItem> _categoryNames = [];
+        private Visibility _accountsVisibility = Visibility.Visible;
 
         [ObservableProperty]
-        private Visibility _accountsVisibility = Visibility.Visible;
+        private ObservableCollection<GroupedComboBox.GroupedComboBoxItem> _categoryNames;
+
+        public NewTransactionDialogViewModel(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager ?? throw new ArgumentNullException(nameof(databaseManager));
+
+            CategoryNames = BudgetCategoryNames;
+        }
+
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            if (e.PropertyName == nameof(NewTransactionDate))
+            {
+                CategoryNames.Clear();
+                
+                foreach (var item in BudgetCategoryNames)
+                {
+                    CategoryNames.Add(item);
+                }
+            }
+        }
+
+        public ObservableCollection<GroupedComboBox.GroupedComboBoxItem> BudgetCategoryNames
+        {
+            get
+            {
+                var categories = new ObservableCollection<GroupedComboBox.GroupedComboBoxItem>();
+
+                BudgetCollection budgetCollection;
+                lock (_databaseLockObject)
+                {
+                    budgetCollection = new(_databaseManager);
+                    var budget = budgetCollection.Budgets.FirstOrDefault(b => b.BudgetDate.Month == NewTransactionDate.Month && b.BudgetDate.Year == NewTransactionDate.Year);
+
+                    if (budget == null)
+                        return categories;
+
+                    AddCategoriesToCollection(categories, "Income", budget.BudgetIncomeItems.Select(x => x.Category));
+                    AddCategoriesToCollection(categories, "Savings", budget.BudgetSavingsCategories.Select(x => x.CategoryName));
+
+                    foreach (var expenseGroup in budget.BudgetExpenseItems)
+                    {
+                        AddCategoriesToCollection(categories, expenseGroup.CategoryName, expenseGroup.SubItems.Select(x => x.Category));
+                    }
+                }
+
+                return categories;
+            }
+        }
+
+        private void AddCategoriesToCollection(ObservableCollection<GroupedComboBox.GroupedComboBoxItem> collection, string group, IEnumerable<string> items)
+        {
+            foreach (var item in items)
+            {
+                collection.Add(new GroupedComboBox.GroupedComboBoxItem
+                {
+                    Group = group,
+                    Item = item
+                });
+            }
+        }
     }
 }

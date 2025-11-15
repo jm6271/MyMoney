@@ -13,7 +13,7 @@ namespace MyMoney.Services.ContentDialogs
     public interface ITransactionDialogService
     {
         public void SetViewModel(NewTransactionDialogViewModel viewModel);
-        public NewTransactionDialogViewModel GetViewModel();
+        public NewTransactionDialogViewModel? GetViewModel();
         public void SetTitle(string title);
         public string GetSelectedPayee();
         public Task<ContentDialogResult> ShowDialogAsync(IContentDialogService dialogService);
@@ -21,7 +21,7 @@ namespace MyMoney.Services.ContentDialogs
 
     public class TransactionDialogService : ITransactionDialogService
     {
-        NewTransactionDialogViewModel _viewModel = new();
+        NewTransactionDialogViewModel? _viewModel;
         string _title = "New Transaction";
         string _selectedPayee = "";
 
@@ -30,7 +30,7 @@ namespace MyMoney.Services.ContentDialogs
             return _selectedPayee;
         }
 
-        public NewTransactionDialogViewModel GetViewModel()
+        public NewTransactionDialogViewModel? GetViewModel()
         {
             return _viewModel;
         }
@@ -50,6 +50,9 @@ namespace MyMoney.Services.ContentDialogs
             var host = dialogService.GetDialogHost();
             if (host == null)
                 return ContentDialogResult.None;
+
+            if (_viewModel == null)
+                throw new InvalidOperationException("ViewModel must be set before showing the dialog.");
 
             NewTransactionDialog newTransactionDialog = new(host, _viewModel)
             {
