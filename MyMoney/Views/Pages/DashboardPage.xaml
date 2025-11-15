@@ -17,11 +17,14 @@
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    SizeChanged="Page_SizeChanged">
+    
     <Page.Resources>
         <helpers:IsLastItemConverter x:Key="IsLastItemConverter"/>
         <helpers:DoubleToUpDownIconConverter x:Key="DoubleToUpDownIconConverter"/>
     </Page.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="200"/>
@@ -57,9 +60,10 @@
             <Grid.RowDefinitions>
                 <RowDefinition x:Name="Row0" Height="Auto"/>
                 <RowDefinition x:Name="Row1" Height="1*"/>
+                <RowDefinition x:Name="Row2" Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" Grid.ColumnSpan="3" Margin="0,0,0,16">
+            <Grid Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
@@ -177,7 +181,7 @@
                 </ui:Card>
             </Grid>
 
-            <ui:Card Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Margin="0,8,8,24">
+            <ui:Card Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Margin="0,8,8,24" x:Name="budgetOverviewPanel">
                 <StackPanel Grid.IsSharedSizeScope="True">
                     <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,24">Budget Overview</ui:TextBlock>
                     <Grid Margin="16,0,16,12">

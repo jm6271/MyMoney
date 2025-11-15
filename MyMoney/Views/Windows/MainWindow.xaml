@@ -24,7 +24,8 @@
     MinWidth="1000"
     MinHeight="500"
     Loaded="FluentWindow_Loaded"
-    Closing="FluentWindow_Closing">
+    Closing="FluentWindow_Closing"
+    SizeChanged="FluentWindow_SizeChanged">
     <ui:FluentWindow.InputBindings>
         <KeyBinding
             Key="F"
