@@ -79,10 +79,14 @@ This automatically creates matching transactions in both accounts.
 Reports show how your plan compares to reality.  
 
 - **Dashboard**:  
-    - Budget report (Planned vs. Actual vs. Remaining).  
+    - Budget overview (Planned vs. Actual vs. Remaining).  
     - Income vs. Expenses chart for the current month.
+    - Net worth
+    - Cash flow vs. last month
+    - Budget alerts
+    - Spending vs. last month
 - **Budget Reports**:  
-    - View past months’ budgets.  
+    - View budget reports  
 - **Charts**:  
     - Income vs. Expense chart (last 12 months).  
     - Net worth chart (time period selectable).  
