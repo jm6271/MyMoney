@@ -26,7 +26,7 @@ category
 Enter the category name and planned amount, then click OK
 
 <div style="text-align: center;">
-    <img src="/img/new-income-category-dialog.jpg" width="300">
+    <img src="../img/new-income-category-dialog.jpg" width="300">
 </div>
 
 
@@ -36,7 +36,7 @@ Click the **+** button beside "Expenses" to create a new expense
 group. Enter a name for the group and click "Add".
 
 <div style="text-align: center;">
-    <img src="/img/new-budget-expense-group-dialog.jpg"         width="300">
+    <img src="../img/new-budget-expense-group-dialog.jpg"         width="300">
 </div>
 
 Click the **Add Item** button in the newly created expense
