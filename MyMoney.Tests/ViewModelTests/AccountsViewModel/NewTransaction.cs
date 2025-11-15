@@ -78,7 +78,7 @@ public class NewTransactionTests
         _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee())
             .Returns("Test Payee");
         _transactionDialogServiceMock.Setup(x => x.GetViewModel())
-            .Returns(new NewTransactionDialogViewModel
+            .Returns(new NewTransactionDialogViewModel(_databaseReaderMock.Object)
             {
                 NewTransactionAmount = new Currency(500),
                 NewTransactionIsExpense = true,
@@ -127,7 +127,7 @@ public class NewTransactionTests
         _transactionDialogServiceMock.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
             .ReturnsAsync(ContentDialogResult.Primary);
         _transactionDialogServiceMock.Setup(x => x.GetViewModel())
-            .Returns(new NewTransactionDialogViewModel
+            .Returns(new NewTransactionDialogViewModel(_databaseReaderMock.Object)
             {
                 NewTransactionAmount = new Currency(500),
                 NewTransactionIsExpense = true,
@@ -166,7 +166,7 @@ public class NewTransactionTests
         _transactionDialogServiceMock.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
             .ReturnsAsync(ContentDialogResult.Primary);
         _transactionDialogServiceMock.Setup(x => x.GetViewModel())
-            .Returns(new NewTransactionDialogViewModel
+            .Returns(new NewTransactionDialogViewModel(_databaseReaderMock.Object)
             {
                 NewTransactionAmount = new Currency(500),
                 NewTransactionIsExpense = false,
@@ -205,7 +205,7 @@ public class NewTransactionTests
         _transactionDialogServiceMock.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
             .ReturnsAsync(ContentDialogResult.Primary);
         _transactionDialogServiceMock.Setup(x => x.GetViewModel())
-            .Returns(new NewTransactionDialogViewModel
+            .Returns(new NewTransactionDialogViewModel(_databaseReaderMock.Object)
             {
                 NewTransactionAmount = new Currency(-2000),
                 NewTransactionIsExpense = true,

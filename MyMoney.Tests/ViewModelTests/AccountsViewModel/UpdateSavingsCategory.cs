@@ -93,7 +93,7 @@ public class UpdateSavingsCategoryTests
     {
         // Arrange
         _transactionDialogServiceMock.Setup(x => x.GetViewModel())
-            .Returns(new ViewModels.ContentDialogs.NewTransactionDialogViewModel()
+            .Returns(new ViewModels.ContentDialogs.NewTransactionDialogViewModel(_databaseReaderMock.Object)
             {
                 NewTransactionAmount = new(100),
                 NewTransactionCategory = new() { Group = "Savings", Name = "Test Category" },
@@ -129,7 +129,7 @@ public class UpdateSavingsCategoryTests
         _testBudget.BudgetSavingsCategories[0].Transactions.Add(originalTransaction);
     
         _transactionDialogServiceMock.Setup(x => x.GetViewModel())
-            .Returns(new ViewModels.ContentDialogs.NewTransactionDialogViewModel()
+            .Returns(new ViewModels.ContentDialogs.NewTransactionDialogViewModel(_databaseReaderMock.Object)
             {
                 NewTransactionAmount = new(100),
                 NewTransactionCategory = new() { Group = "Savings", Name = "Test Category" },
@@ -184,7 +184,7 @@ public class UpdateSavingsCategoryTests
         _testBudget.BudgetSavingsCategories[0].Transactions.Add(originalTransaction);
     
         _transactionDialogServiceMock.Setup(x => x.GetViewModel())
-            .Returns(new ViewModels.ContentDialogs.NewTransactionDialogViewModel()
+            .Returns(new ViewModels.ContentDialogs.NewTransactionDialogViewModel(_databaseReaderMock.Object)
             {
                 NewTransactionAmount = new(100),
                 NewTransactionCategory = new() { Group = "Savings", Name = "Other Category" },

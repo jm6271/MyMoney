@@ -1,9 +1,7 @@
 using Moq;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
-using MyMoney.Services.ContentDialogs;
-using Wpf.Ui;
-using MyMoney.Views.Controls;
+using MyMoney.ViewModels.ContentDialogs; // Added missing namespace
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -12,57 +10,38 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel;
 [TestClass]
 public class LoadCategoryNames
 {
-    private Mock<IContentDialogService> _contentDialogService;
     private Mock<IDatabaseManager> _databaseReader;
-    private Mock<INewAccountDialogService> _newAccountDialogService;
-    private Mock<ITransferDialogService> _transferDialogService;
-    private Mock<ITransactionDialogService> _transactionDialogService;
-    private Mock<IRenameAccountDialogService> _renameDialogService;
-    private Mock<IMessageBoxService> _messageBoxService;
-    private Mock<IUpdateAccountBalanceDialogService> _updateAccountBalanceDialogService;
-    private ViewModels.Pages.AccountsViewModel _viewModel;
+    private NewTransactionDialogViewModel _viewModel;
 
     [TestInitialize]
     public void Setup()
     {
-        _contentDialogService = new Mock<IContentDialogService>();
         _databaseReader = new Mock<IDatabaseManager>();
-        _newAccountDialogService = new Mock<INewAccountDialogService>();
-        _transferDialogService = new Mock<ITransferDialogService>();
-        _transactionDialogService = new Mock<ITransactionDialogService>();
-        _renameDialogService = new Mock<IRenameAccountDialogService>();
-        _messageBoxService = new Mock<IMessageBoxService>();
-        _updateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
 
         // Setup empty accounts collection
         _databaseReader.Setup(x => x.GetCollection<Account>("Accounts"))
             .Returns(new List<Account>());
+
+        // Initialize NewTransactionDialogViewModel
+        _viewModel = new NewTransactionDialogViewModel(_databaseReader.Object);
     }
 
     [TestMethod]
-    public void LoadCategoryNames_WhenNoBudgetExists_CategoryNamesIsEmpty()
+    public void BudgetCategoryNames_WhenNoBudgetExists_IsEmpty()
     {
         // Arrange
         _databaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
             .Returns(new List<Budget>());
 
         // Act
-        _viewModel = new ViewModels.Pages.AccountsViewModel(
-            _contentDialogService.Object,
-            _databaseReader.Object,
-            _newAccountDialogService.Object,
-            _transferDialogService.Object,
-            _transactionDialogService.Object,
-            _renameDialogService.Object,
-            _messageBoxService.Object,
-            _updateAccountBalanceDialogService.Object);
+        var categoryNames = _viewModel.BudgetCategoryNames;
 
         // Assert
-        Assert.IsEmpty(_viewModel.CategoryNames);
+        Assert.IsFalse(categoryNames.Any());
     }
 
     [TestMethod]
-    public void LoadCategoryNames_WithBudgetItems_LoadsAllCategories()
+    public void BudgetCategoryNames_WithBudgetItems_LoadsAllCategories()
     {
         // Arrange
         var budget = new Budget
@@ -87,30 +66,22 @@ public class LoadCategoryNames
         };
 
         _databaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
-            .Returns([budget]);
+            .Returns(new List<Budget> { budget });
 
         // Act
-        _viewModel = new ViewModels.Pages.AccountsViewModel(
-            _contentDialogService.Object,
-            _databaseReader.Object,
-            _newAccountDialogService.Object,
-            _transferDialogService.Object,
-            _transactionDialogService.Object,
-            _renameDialogService.Object,
-            _messageBoxService.Object,
-            _updateAccountBalanceDialogService.Object);
+        var categoryNames = _viewModel.BudgetCategoryNames;
 
         // Assert
-        Assert.HasCount(5, _viewModel.CategoryNames);
-        Assert.AreEqual("Salary", _viewModel.CategoryNames[0].Item.ToString());
-        Assert.AreEqual("Bonus", _viewModel.CategoryNames[1].Item.ToString());
-        Assert.AreEqual("Groceries", _viewModel.CategoryNames[2].Item.ToString());
-        Assert.AreEqual("Fast Food", _viewModel.CategoryNames[3].Item.ToString());
-        Assert.AreEqual("Utilities", _viewModel.CategoryNames[4].Item.ToString());  
+        Assert.HasCount(5, categoryNames);
+        Assert.AreEqual("Salary", categoryNames[0].Item.ToString());
+        Assert.AreEqual("Bonus", categoryNames[1].Item.ToString());
+        Assert.AreEqual("Groceries", categoryNames[2].Item.ToString());
+        Assert.AreEqual("Fast Food", categoryNames[3].Item.ToString());
+        Assert.AreEqual("Utilities", categoryNames[4].Item.ToString());
     }
 
     [TestMethod]
-    public void LoadCategoryNames_WhenCalledMultipleTimes_ClearsExistingCategories()
+    public void BudgetCategoryNames_WhenAccessedMultipleTimes_ClearsExistingCategories()
     {
         // Arrange
         var budget = new Budget
@@ -122,24 +93,15 @@ public class LoadCategoryNames
         };
 
         _databaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
-            .Returns([budget]);
-
-        _viewModel = new ViewModels.Pages.AccountsViewModel(
-            _contentDialogService.Object,
-            _databaseReader.Object,
-            _newAccountDialogService.Object,
-            _transferDialogService.Object,
-            _transactionDialogService.Object,
-            _renameDialogService.Object,
-            _messageBoxService.Object,
-            _updateAccountBalanceDialogService.Object);
+            .Returns(new List<Budget> { budget });
 
         // Act
-        _viewModel.OnPageNavigatedTo(); // This calls LoadCategoryNames again
+        var firstAccess = _viewModel.BudgetCategoryNames;
+        var secondAccess = _viewModel.BudgetCategoryNames;
 
         // Assert
-        Assert.HasCount(2, _viewModel.CategoryNames);
-        Assert.AreEqual(1, _viewModel.CategoryNames.Count(x => x.Item.ToString() == "Salary"));
-        Assert.AreEqual(1, _viewModel.CategoryNames.Count(x => x.Item.ToString() == "Groceries"));
+        Assert.HasCount(2, secondAccess);
+        Assert.AreEqual(1, secondAccess.Count(x => x.Item.ToString() == "Salary"));
+        Assert.AreEqual(1, secondAccess.Count(x => x.Item.ToString() == "Groceries"));
     }
 }
