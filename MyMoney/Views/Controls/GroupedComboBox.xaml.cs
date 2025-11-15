@@ -202,6 +202,7 @@ namespace MyMoney.Views.Controls
             dropDownPopup.IsOpen = true;
             var openAnimation = (Storyboard)FindResource("OpenAnimation");
             openAnimation.Begin((FrameworkElement)dropDownPopup.Child);
+            itemsList.ScrollIntoView(itemsList.SelectedItem);
         }
 
         private void HidePopUp()

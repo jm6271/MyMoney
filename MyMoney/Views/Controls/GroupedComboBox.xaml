@@ -59,7 +59,7 @@
                           Opacity="0.5"/>
                 </Border.Effect>
 
-                <ui:ListView Margin="8,12" MaxHeight="300"
+                <ui:ListView Margin="8,12" MaxHeight="300" x:Name="itemsList"
                              ItemsSource="{Binding GroupedItems, RelativeSource={RelativeSource AncestorType=UserControl}}"
                              SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=UserControl}}"
                              SelectedIndex="{Binding SelectedIndex, RelativeSource={RelativeSource AncestorType=UserControl}}"

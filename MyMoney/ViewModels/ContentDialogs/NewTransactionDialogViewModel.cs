@@ -65,6 +65,16 @@ namespace MyMoney.ViewModels.ContentDialogs
             CategoryNames = BudgetCategoryNames;
         }
 
+        public void SetSelectedCategoryByName(string categoryName)
+        {
+            var categoryItem = CategoryNames.FirstOrDefault(c => c.Item.ToString() == categoryName);
+            
+            if (categoryItem is not null)
+            {
+                NewTransactionCategorySelectedIndex = CategoryNames.IndexOf(categoryItem);
+            }
+        }
+
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);

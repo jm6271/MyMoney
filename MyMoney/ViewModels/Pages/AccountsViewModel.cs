@@ -362,6 +362,7 @@ namespace MyMoney.ViewModels.Pages
 
             var oldTransaction = SelectedAccountTransactions[SelectedTransactionIndex];
             var viewModel = CreateTransactionViewModel(oldTransaction);
+            viewModel.SetSelectedCategoryByName(oldTransaction.Category.Name);
 
             var (success, transaction) = await ShowTransactionDialog(viewModel, true);
             if (!success || transaction == null) return;
