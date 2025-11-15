@@ -260,7 +260,7 @@ namespace MyMoney.ViewModels.Pages
             await _messageBoxService.ShowInfoAsync(
                 "Restore Successful",
                 "The backup was restored successfully. The application will now close.",
-                "Restart");
+                "Close");
 
             Application.Current.Shutdown();
         }
