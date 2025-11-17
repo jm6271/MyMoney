@@ -66,6 +66,7 @@ jobs:
     #   uses: actions/setup-example@v1
     # Install the .NET Core workload
     - name: Install .NET Core
+      if: matrix.language == 'csharp'
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 10.0.x
