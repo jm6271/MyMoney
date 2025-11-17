@@ -50,6 +50,12 @@ jobs:
         dotnet restore --use-lock-file
         dotnet publish -c Release -r win-arm64 --self-contained /p:PublishReadyToRun=true MyMoney/MyMoney.csproj
         dotnet publish -c Release -r win-x64 --self-contained /p:PublishReadyToRun=true MyMoney/MyMoney.csproj
+
+    # Copy help files to the output directories
+    - name: Copy help files
+      run: |
+        cp -r Docs/site/* MyMoney/bin/Release/net10.0-windows/win-arm64/publish/site/
+        cp -r Docs/site/* MyMoney/bin/Release/net10.0-windows/win-x64/publish/site/
       
     - name: Compile the Inno Setup script for x64
       uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
