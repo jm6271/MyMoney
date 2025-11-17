@@ -17,6 +17,12 @@ namespace MyMoney.Views.Windows
     {
         public MainWindowViewModel ViewModel { get; }
 
+        private bool _isUserClosedPane;
+
+        private bool _isPaneOpenedOrClosedFromCode;
+
+        private bool _isWindowLoaded;
+
         public MainWindow(
             MainWindowViewModel viewModel,
             INavigationViewPageProvider pageService,
@@ -112,6 +118,7 @@ namespace MyMoney.Views.Windows
         private void FluentWindow_Loaded(object sender, RoutedEventArgs e)
         {
             WindowState = WindowState.Maximized;
+            _isWindowLoaded = true;
         }
 
         private async void FluentWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -230,9 +237,41 @@ namespace MyMoney.Views.Windows
             }
         }
 
-        private void FluentWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void MainWindow_OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
+            if (!_isWindowLoaded)
+            {
+                return;
+            }
+
+            if (_isUserClosedPane)
+            {
+                return;
+            }
+
+            _isPaneOpenedOrClosedFromCode = true;
             RootNavigation.SetCurrentValue(NavigationView.IsPaneOpenProperty, e.NewSize.Width > 1200);
+            _isPaneOpenedOrClosedFromCode = false;
+        }
+
+        private void NavigationView_OnPaneOpened(NavigationView sender, RoutedEventArgs args)
+        {
+            if (_isPaneOpenedOrClosedFromCode)
+            {
+                return;
+            }
+
+            _isUserClosedPane = false;
+        }
+
+        private void NavigationView_OnPaneClosed(NavigationView sender, RoutedEventArgs args)
+        {
+            if (_isPaneOpenedOrClosedFromCode)
+            {
+                return;
+            }
+
+            _isUserClosedPane = true;
         }
     }
 }

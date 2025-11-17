@@ -25,7 +25,7 @@
     MinHeight="500"
     Loaded="FluentWindow_Loaded"
     Closing="FluentWindow_Closing"
-    SizeChanged="FluentWindow_SizeChanged">
+    SizeChanged="MainWindow_OnSizeChanged">
     <ui:FluentWindow.InputBindings>
         <KeyBinding
             Key="F"
@@ -56,7 +56,9 @@
             OpenPaneLength="310"
             PaneDisplayMode="Left"
             TitleBar="{Binding ElementName=TitleBar, Mode=OneWay}"
-            ScrollViewer.IsDeferredScrollingEnabled="False">
+            ScrollViewer.IsDeferredScrollingEnabled="False"
+            PaneClosed="NavigationView_OnPaneClosed"
+            PaneOpened="NavigationView_OnPaneOpened">
             <ui:NavigationView.Header>
                 <ui:BreadcrumbBar x:Name="BreadcrumbBar" Margin="42,32,42,20" />
             </ui:NavigationView.Header>
