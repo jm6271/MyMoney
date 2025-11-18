@@ -344,34 +344,38 @@ namespace MyMoney.ViewModels.Pages
             _transactionDialogService.SetViewModel(viewModel);
             _transactionDialogService.SetTitle(isEdit ? "Edit Transaction" : "New Transaction");
             var result = await _transactionDialogService.ShowDialogAsync(_contentDialogService);
-            viewModel = _transactionDialogService.GetViewModel();
+            var returnedViewModel = _transactionDialogService.GetViewModel();
 
-            if (result != ContentDialogResult.Primary)
+            // If dialog was not confirmed or the service returned null, treat as cancel
+            if (result != ContentDialogResult.Primary || returnedViewModel == null)
             {
                 return (false, null);
             }
 
-            var amount = viewModel.NewTransactionAmount;
-            if (viewModel.NewTransactionIsExpense)
-                amount = new(-amount.Value);
+            var amount = returnedViewModel.NewTransactionAmount;
+            if (returnedViewModel.NewTransactionIsExpense)
+            {
+                amount = new Currency(-amount.Value);
+            }
 
-            var transaction = new Transaction(
-                viewModel.NewTransactionDate,
-                _transactionDialogService.GetSelectedPayee(),
-                viewModel.NewTransactionCategory,
-                amount,
-                viewModel.NewTransactionMemo
-            );
+            var transaction = new Transaction(returnedViewModel.NewTransactionDate, _transactionDialogService.GetSelectedPayee(),
+                returnedViewModel.NewTransactionCategory, amount, returnedViewModel.NewTransactionMemo);
 
             // make sure there's enough money in the account for this transaction
-            if (viewModel.NewTransactionIsExpense && Math.Abs(transaction.Amount.Value) > SelectedAccount?.Total.Value)
+            if (returnedViewModel.NewTransactionIsExpense)
             {
-                await _messageBoxService.ShowInfoAsync(
-                    "Error",
-                    "The amount of this transaction is greater than the balance of the selected account.",
-                    "OK"
-                );
-                return (false, null);
+                if (SelectedAccount == null)
+                {
+                    await _messageBoxService.ShowInfoAsync("Error", "No account is selected.", "OK");
+                    return (false, null);
+                }
+
+                if (Math.Abs(transaction.Amount.Value) > SelectedAccount.Total.Value)
+                {
+                    await _messageBoxService.ShowInfoAsync("Error",
+                        "The amount of this transaction is greater than the balance of the selected account.", "OK");
+                    return (false, null);
+                }
             }
 
             return (true, transaction);
