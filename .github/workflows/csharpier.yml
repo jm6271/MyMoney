@@ -26,6 +26,6 @@ jobs:
 
       # Check CSharpier formatting
       - name: Check CSharpier Formatting
-      - run: |
+        run: |
           dotnet tool install csharpier
           dotnet csharpier check .
