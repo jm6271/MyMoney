@@ -1,7 +1,7 @@
-﻿using MyMoney.ViewModels.ContentDialogs;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -11,7 +11,8 @@ namespace MyMoney.Views.ContentDialogs
     /// </summary>
     public partial class BudgetCategoryDialog : ContentDialog
     {
-        public BudgetCategoryDialog(ContentPresenter dialogHost, BudgetCategoryDialogViewModel viewModel) : base(dialogHost)
+        public BudgetCategoryDialog(ContentPresenter dialogHost, BudgetCategoryDialogViewModel viewModel)
+            : base(dialogHost)
         {
             InitializeComponent();
             DataContext = viewModel;
@@ -50,10 +51,10 @@ namespace MyMoney.Views.ContentDialogs
 
         private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
         {
-            if (args.Result != ContentDialogResult.Primary) return;
+            if (args.Result != ContentDialogResult.Primary)
+                return;
             TxtCategory.Focus();
-            TxtCategory.MoveFocus(
-                new TraversalRequest(FocusNavigationDirection.Next));
+            TxtCategory.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 
             var amountValidationErrors = Validation.GetErrors(txtAmount);
 

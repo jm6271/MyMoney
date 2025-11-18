@@ -1,55 +1,61 @@
-﻿<Page x:Class="MyMoney.Views.Pages.BudgetPage"
-      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-      xmlns:local="clr-namespace:MyMoney.Views.Pages" 
-      xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
-      xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-      xmlns:helpers="clr-namespace:MyMoney.Helpers"
-      xmlns:dd="urn:gong-wpf-dragdrop"
-      mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="800"
-      Title="Accounts"
-      d:DataContext="{d:DesignInstance local:BudgetPage,
+﻿<Page
+    x:Class="MyMoney.Views.Pages.BudgetPage"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:MyMoney.Views.Pages"
+    xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
+    xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+    xmlns:helpers="clr-namespace:MyMoney.Helpers"
+    xmlns:dd="urn:gong-wpf-dragdrop"
+    mc:Ignorable="d"
+    d:DesignHeight="600"
+    d:DesignWidth="800"
+    Title="Accounts"
+    d:DataContext="{d:DesignInstance local:BudgetPage,
                                  IsDesignTimeCreatable=False}"
-      ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
-      ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
-      SizeChanged="Page_SizeChanged">
-
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
+    SizeChanged="Page_SizeChanged"
+>
     <Page.Resources>
-        <helpers:LeftToBudgetTextConverter x:Key="LeftToBudgetTextConverter"/>
-        <helpers:CurrencyAbsoluteValueConverter x:Key="CurrencyAbsoluteValueConverter"/>
-        <helpers:NegativeCurrencyToRedColorConverter x:Key="NegativeCurrencyToRedColorConverter"/>
+        <helpers:LeftToBudgetTextConverter x:Key="LeftToBudgetTextConverter" />
+        <helpers:CurrencyAbsoluteValueConverter x:Key="CurrencyAbsoluteValueConverter" />
+        <helpers:NegativeCurrencyToRedColorConverter x:Key="NegativeCurrencyToRedColorConverter" />
     </Page.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="Col0" Width="1*"/>
-            <ColumnDefinition x:Name="Col1" Width="3*"/>
-            <ColumnDefinition x:Name="Col2" Width="250"/>
+            <ColumnDefinition x:Name="Col0" Width="1*" />
+            <ColumnDefinition x:Name="Col1" Width="3*" />
+            <ColumnDefinition x:Name="Col2" Width="250" />
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition x:Name="Row0" Height="*"/>
-            <RowDefinition x:Name="Row1" Height="0"/>
-            <RowDefinition x:Name="Row2" Height="0"/>
+            <RowDefinition x:Name="Row0" Height="*" />
+            <RowDefinition x:Name="Row1" Height="0" />
+            <RowDefinition x:Name="Row2" Height="0" />
         </Grid.RowDefinitions>
 
         <ui:Card Grid.Column="0" VerticalAlignment="Top" x:Name="BudgetsCard" Margin="0,0,0,24">
             <StackPanel>
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,24">Budgets</ui:TextBlock>
-                <ui:ListView ItemsSource="{Binding ViewAdapter.GroupedBudgetsView}" SelectedItem="{Binding ViewModel.SelectedGroupedBudget, Mode=TwoWay}"
-                             SelectedIndex="{Binding ViewModel.SelectedGroupedBudgetIndex, Mode=TwoWay}" x:Name="BudgetsListView">
+                <ui:ListView
+                    ItemsSource="{Binding ViewAdapter.GroupedBudgetsView}"
+                    SelectedItem="{Binding ViewModel.SelectedGroupedBudget, Mode=TwoWay}"
+                    SelectedIndex="{Binding ViewModel.SelectedGroupedBudgetIndex, Mode=TwoWay}"
+                    x:Name="BudgetsListView"
+                >
                     <ui:ListView.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate>
-                                    <ui:TextBlock Margin="4,0,4,0" FontWeight="Bold" Text="{Binding Name}"/>
+                                    <ui:TextBlock Margin="4,0,4,0" FontWeight="Bold" Text="{Binding Name}" />
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
                         </GroupStyle>
@@ -57,13 +63,13 @@
 
                     <ui:ListView.ItemTemplate>
                         <DataTemplate>
-                            <ui:TextBlock Text="{Binding Budget.BudgetTitle}" Margin="5"/>
+                            <ui:TextBlock Text="{Binding Budget.BudgetTitle}" Margin="5" />
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
 
                     <ui:ListView.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Delete budget" Command="{Binding ViewModel.DeleteBudgetCommand}"/>
+                            <MenuItem Header="Delete budget" Command="{Binding ViewModel.DeleteBudgetCommand}" />
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
                 </ui:ListView>
@@ -71,18 +77,22 @@
         </ui:Card>
 
         <StackPanel Grid.Column="1" Margin="24,0,24,24" x:Name="BudgetPanel">
-
             <ui:Card Margin="0,0,0,8">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <ui:TextBlock FontTypography="Title" Text="{Binding ViewModel.CurrentBudget.BudgetTitle}"/>
-                    <ui:Button Command="{Binding ViewModel.CreateNewBudgetCommand}" Grid.Column="1" Appearance="Primary" Margin="12,0,0,0">
+                    <ui:TextBlock FontTypography="Title" Text="{Binding ViewModel.CurrentBudget.BudgetTitle}" />
+                    <ui:Button
+                        Command="{Binding ViewModel.CreateNewBudgetCommand}"
+                        Grid.Column="1"
+                        Appearance="Primary"
+                        Margin="12,0,0,0"
+                    >
                         <StackPanel Orientation="Horizontal">
-                            <ui:SymbolIcon Symbol="FormNew20" Margin="0,0,4,0"/>
+                            <ui:SymbolIcon Symbol="FormNew20" Margin="0,0,4,0" />
                             <ui:TextBlock Margin="4,0,0,0">New Budget</ui:TextBlock>
                         </StackPanel>
                     </ui:Button>
@@ -91,63 +101,86 @@
 
             <ui:Card Margin="0,8,0,8">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock VerticalAlignment="Center" FontSize="20" FontWeight="SemiBold" Text="{Binding ViewModel.LeftToBudget, Converter={StaticResource CurrencyAbsoluteValueConverter}}" Foreground="{Binding ViewModel.LeftToBudget, Converter={StaticResource NegativeCurrencyToRedColorConverter}}"/>
-                    <TextBlock VerticalAlignment="Center" Text="{Binding ViewModel.LeftToBudget, Converter={StaticResource LeftToBudgetTextConverter}}"/>
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="20"
+                        FontWeight="SemiBold"
+                        Text="{Binding ViewModel.LeftToBudget, Converter={StaticResource CurrencyAbsoluteValueConverter}}"
+                        Foreground="{Binding ViewModel.LeftToBudget, Converter={StaticResource NegativeCurrencyToRedColorConverter}}"
+                    />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        Text="{Binding ViewModel.LeftToBudget, Converter={StaticResource LeftToBudgetTextConverter}}"
+                    />
                 </StackPanel>
             </ui:Card>
 
             <Grid Margin="0,8,0,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,4">Income</ui:TextBlock>
-                <ui:Button Grid.Column="1" Margin="8,0,0,0" Command="{Binding ViewModel.AddIncomeItemCommand}" IsEnabled="{Binding ViewModel.IsEditingEnabled}">
-                    <ui:SymbolIcon Symbol="Add24"/>
+                <ui:Button
+                    Grid.Column="1"
+                    Margin="8,0,0,0"
+                    Command="{Binding ViewModel.AddIncomeItemCommand}"
+                    IsEnabled="{Binding ViewModel.IsEditingEnabled}"
+                >
+                    <ui:SymbolIcon Symbol="Add24" />
                     <ui:Button.ToolTip>
-                        <ToolTip Content="Add income item"/>
+                        <ToolTip Content="Add income item" />
                     </ui:Button.ToolTip>
                 </ui:Button>
             </Grid>
 
-
             <ui:Card Margin="0,4,0,8">
-                <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetIncomeItems}" 
-                             SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}"
-                             SizeChanged="ListView_SizeChanged" SelectionMode="Single"
-                             dd:DragDrop.IsDragSource="True"
-                             dd:DragDrop.IsDropTarget="True"
-                             dd:DragDrop.DropHandler="{Binding ViewModel.IncomeItemsReorderHandler}"
-                             dd:DragDrop.DragHandler="{Binding ViewModel.IncomeItemsReorderHandler}">
+                <ui:ListView
+                    ItemsSource="{Binding ViewModel.CurrentBudget.BudgetIncomeItems}"
+                    SelectedIndex="{Binding ViewModel.IncomeItemsSelectedIndex}"
+                    SizeChanged="ListView_SizeChanged"
+                    SelectionMode="Single"
+                    dd:DragDrop.IsDragSource="True"
+                    dd:DragDrop.IsDropTarget="True"
+                    dd:DragDrop.DropHandler="{Binding ViewModel.IncomeItemsReorderHandler}"
+                    dd:DragDrop.DragHandler="{Binding ViewModel.IncomeItemsReorderHandler}"
+                >
                     <ui:ListView.Resources>
                         <DataTemplate x:Key="CategoryItemTemplate">
-                            <ui:TextBlock Text="{Binding Category}" Margin="0,5,0,5"/>
+                            <ui:TextBlock Text="{Binding Category}" Margin="0,5,0,5" />
                         </DataTemplate>
                         <DataTemplate x:Key="BudgetedItemTemplate">
-                            <ui:TextBlock Text="{Binding Amount}" Margin="0,5,0,5"/>
+                            <ui:TextBlock Text="{Binding Amount}" Margin="0,5,0,5" />
                         </DataTemplate>
                         <DataTemplate x:Key="ActualItemTemplate">
-                            <ui:TextBlock Text="{Binding Actual}" Margin="0,5,5,5"/>
+                            <ui:TextBlock Text="{Binding Actual}" Margin="0,5,5,5" />
                         </DataTemplate>
                     </ui:ListView.Resources>
 
                     <ui:ListView.ContextMenu>
                         <ContextMenu IsEnabled="{Binding ViewModel.IsEditingEnabled}">
-                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditIncomeItemCommand}"/>
-                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
+                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditIncomeItemCommand}" />
+                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}" />
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
 
                     <ui:ListView.InputBindings>
-                        <KeyBinding 
-                            Key="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}"/>
+                        <KeyBinding Key="Delete" Command="{Binding ViewModel.DeleteIncomeItemCommand}" />
                     </ui:ListView.InputBindings>
 
                     <ui:ListView.View>
                         <ui:GridView>
-                            <ui:GridViewColumn Header="Category" CellTemplate="{StaticResource CategoryItemTemplate}"/>
-                            <ui:GridViewColumn Header="Budgeted" CellTemplate="{StaticResource BudgetedItemTemplate}" Width="125"/>
-                            <ui:GridViewColumn Header="Actual" CellTemplate="{StaticResource ActualItemTemplate}" Width="125"/>
+                            <ui:GridViewColumn Header="Category" CellTemplate="{StaticResource CategoryItemTemplate}" />
+                            <ui:GridViewColumn
+                                Header="Budgeted"
+                                CellTemplate="{StaticResource BudgetedItemTemplate}"
+                                Width="125"
+                            />
+                            <ui:GridViewColumn
+                                Header="Actual"
+                                CellTemplate="{StaticResource ActualItemTemplate}"
+                                Width="125"
+                            />
                         </ui:GridView>
                     </ui:ListView.View>
                 </ui:ListView>
@@ -155,56 +188,70 @@
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <ui:TextBlock FontTypography="Subtitle" Margin="0,8,0,4">Savings</ui:TextBlock>
-                <ui:Button Grid.Column="1" Margin="8,0,0,0" IsEnabled="{Binding ViewModel.IsEditingEnabled}" 
-                           Command="{Binding ViewModel.AddSavingsCategoryCommand}">
-                    <ui:SymbolIcon Symbol="Add24"/>
+                <ui:Button
+                    Grid.Column="1"
+                    Margin="8,0,0,0"
+                    IsEnabled="{Binding ViewModel.IsEditingEnabled}"
+                    Command="{Binding ViewModel.AddSavingsCategoryCommand}"
+                >
+                    <ui:SymbolIcon Symbol="Add24" />
                     <ui:Button.ToolTip>
-                        <ToolTip Content="Add savings category"/>
+                        <ToolTip Content="Add savings category" />
                     </ui:Button.ToolTip>
                 </ui:Button>
             </Grid>
 
             <ui:Card Margin="0,4,0,8">
-                <ui:ListView ItemsSource="{Binding ViewModel.CurrentBudget.BudgetSavingsCategories}" 
-                             SelectedIndex="{Binding ViewModel.SavingsCategoriesSelectedIndex}"
-                             SizeChanged="ListView_SizeChanged" SelectionMode="Single"
-                             dd:DragDrop.IsDragSource="True"
-                             dd:DragDrop.IsDropTarget="True"
-                             dd:DragDrop.DropHandler="{Binding ViewModel.SavingsCategoryReorderHandler}"
-                             dd:DragDrop.DragHandler="{Binding ViewModel.SavingsCategoryReorderHandler}">
+                <ui:ListView
+                    ItemsSource="{Binding ViewModel.CurrentBudget.BudgetSavingsCategories}"
+                    SelectedIndex="{Binding ViewModel.SavingsCategoriesSelectedIndex}"
+                    SizeChanged="ListView_SizeChanged"
+                    SelectionMode="Single"
+                    dd:DragDrop.IsDragSource="True"
+                    dd:DragDrop.IsDropTarget="True"
+                    dd:DragDrop.DropHandler="{Binding ViewModel.SavingsCategoryReorderHandler}"
+                    dd:DragDrop.DragHandler="{Binding ViewModel.SavingsCategoryReorderHandler}"
+                >
                     <ui:ListView.Resources>
                         <DataTemplate x:Key="CategoryItemTemplate">
-                            <ui:TextBlock Text="{Binding CategoryName}" Margin="0,5,0,5"/>
+                            <ui:TextBlock Text="{Binding CategoryName}" Margin="0,5,0,5" />
                         </DataTemplate>
                         <DataTemplate x:Key="BudgetedItemTemplate">
-                            <ui:TextBlock Text="{Binding BudgetedAmount}" Margin="0,5,0,5"/>
+                            <ui:TextBlock Text="{Binding BudgetedAmount}" Margin="0,5,0,5" />
                         </DataTemplate>
                         <DataTemplate x:Key="ActualItemTemplate">
-                            <ui:TextBlock Text="{Binding CurrentBalance}" Margin="0,5,5,5"/>
+                            <ui:TextBlock Text="{Binding CurrentBalance}" Margin="0,5,5,5" />
                         </DataTemplate>
                     </ui:ListView.Resources>
 
                     <ui:ListView.ContextMenu>
                         <ContextMenu IsEnabled="{Binding ViewModel.IsEditingEnabled}">
-                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditSavingsCategoryCommand}"/>
-                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteSavingsCategoryCommand}"/>
+                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditSavingsCategoryCommand}" />
+                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteSavingsCategoryCommand}" />
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
 
                     <ui:ListView.InputBindings>
-                        <KeyBinding 
-                            Key="Delete" Command="{Binding ViewModel.DeleteSavingsCategoryCommand}"/>
+                        <KeyBinding Key="Delete" Command="{Binding ViewModel.DeleteSavingsCategoryCommand}" />
                     </ui:ListView.InputBindings>
 
                     <ui:ListView.View>
                         <ui:GridView>
-                            <ui:GridViewColumn Header="Category" CellTemplate="{StaticResource CategoryItemTemplate}"/>
-                            <ui:GridViewColumn Header="Saved" CellTemplate="{StaticResource BudgetedItemTemplate}" Width="125"/>
-                            <ui:GridViewColumn Header="Balance" CellTemplate="{StaticResource ActualItemTemplate}" Width="125"/>
+                            <ui:GridViewColumn Header="Category" CellTemplate="{StaticResource CategoryItemTemplate}" />
+                            <ui:GridViewColumn
+                                Header="Saved"
+                                CellTemplate="{StaticResource BudgetedItemTemplate}"
+                                Width="125"
+                            />
+                            <ui:GridViewColumn
+                                Header="Balance"
+                                CellTemplate="{StaticResource ActualItemTemplate}"
+                                Width="125"
+                            />
                         </ui:GridView>
                     </ui:ListView.View>
                 </ui:ListView>
@@ -212,150 +259,202 @@
 
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <ui:TextBlock Grid.Column="0" FontTypography="Subtitle" Margin="0,8,0,4">Expenses</ui:TextBlock>
-                <ui:Button Grid.Column="1" Margin="8,0,0,0" IsEnabled="{Binding ViewModel.IsEditingEnabled}" Command="{Binding ViewModel.AddExpenseGroupCommand}">
-                    <ui:SymbolIcon Symbol="Add24"/>
+                <ui:Button
+                    Grid.Column="1"
+                    Margin="8,0,0,0"
+                    IsEnabled="{Binding ViewModel.IsEditingEnabled}"
+                    Command="{Binding ViewModel.AddExpenseGroupCommand}"
+                >
+                    <ui:SymbolIcon Symbol="Add24" />
                     <ui:Button.ToolTip>
-                        <ToolTip Content="Add expense group"/>
+                        <ToolTip Content="Add expense group" />
                     </ui:Button.ToolTip>
                 </ui:Button>
             </Grid>
 
-            <ItemsControl x:Name="ExpensesItemsControl" ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}"
-                          dd:DragDrop.IsDragSource="True"
-                          dd:DragDrop.IsDropTarget="True"
-                          dd:DragDrop.DropHandler="{Binding ViewModel.ExpenseGroupsReorderHandler}"
-                          dd:DragDrop.DragHandler="{Binding ViewModel.ExpenseGroupsReorderHandler}">
+            <ItemsControl
+                x:Name="ExpensesItemsControl"
+                ItemsSource="{Binding ViewModel.CurrentBudget.BudgetExpenseItems}"
+                dd:DragDrop.IsDragSource="True"
+                dd:DragDrop.IsDropTarget="True"
+                dd:DragDrop.DropHandler="{Binding ViewModel.ExpenseGroupsReorderHandler}"
+                dd:DragDrop.DragHandler="{Binding ViewModel.ExpenseGroupsReorderHandler}"
+            >
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <ui:CardExpander Margin="0,8,0,8" Expanded="CardExpander_Expanded" Collapsed="CardExpander_Expanded"
-                                         IsExpanded="{Binding IsExpanded, UpdateSourceTrigger=PropertyChanged}">
+                        <ui:CardExpander
+                            Margin="0,8,0,8"
+                            Expanded="CardExpander_Expanded"
+                            Collapsed="CardExpander_Expanded"
+                            IsExpanded="{Binding IsExpanded, UpdateSourceTrigger=PropertyChanged}"
+                        >
                             <ui:CardExpander.Header>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <ui:TextBlock FontTypography="Subtitle" Text="{Binding CategoryName}" Margin="0,0,24,0" />
-                                    <ui:Button Margin="0,0,4,0" Grid.Column="1" Command="{Binding DataContext.ViewModel.EditExpenseGroupCommand, 
+                                    <ui:TextBlock
+                                        FontTypography="Subtitle"
+                                        Text="{Binding CategoryName}"
+                                        Margin="0,0,24,0"
+                                    />
+                                    <ui:Button
+                                        Margin="0,0,4,0"
+                                        Grid.Column="1"
+                                        Command="{Binding DataContext.ViewModel.EditExpenseGroupCommand, 
                                                     RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                                    CommandParameter="{Binding}">
-                                        <ui:SymbolIcon Symbol="Edit24"/>
+                                        CommandParameter="{Binding}"
+                                    >
+                                        <ui:SymbolIcon Symbol="Edit24" />
                                         <ui:Button.ToolTip>
-                                            <ToolTip Content="Edit group"/>
+                                            <ToolTip Content="Edit group" />
                                         </ui:Button.ToolTip>
                                     </ui:Button>
-                                    <ui:Button Margin="4,0,24,0" Grid.Column="2" Command="{Binding DataContext.ViewModel.DeleteExpenseGroupCommand,
+                                    <ui:Button
+                                        Margin="4,0,24,0"
+                                        Grid.Column="2"
+                                        Command="{Binding DataContext.ViewModel.DeleteExpenseGroupCommand,
                                                     RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                                    CommandParameter="{Binding}">
-                                        <ui:SymbolIcon Symbol="Delete24"/>
+                                        CommandParameter="{Binding}"
+                                    >
+                                        <ui:SymbolIcon Symbol="Delete24" />
                                         <ui:Button.ToolTip>
-                                            <ToolTip Content="Delete group"/>
+                                            <ToolTip Content="Delete group" />
                                         </ui:Button.ToolTip>
                                     </ui:Button>
                                 </Grid>
-
                             </ui:CardExpander.Header>
                             <StackPanel>
-                                <ui:ListView ItemsSource="{Binding SubItems}" SelectedIndex="{Binding SelectedSubItemIndex}"
-                                             Tag="{Binding DataContext.ViewModel, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                             SelectionMode="Single" MinHeight="50" Margin="0,0,0,8" SizeChanged="ListView_SizeChanged"
-                                             dd:DragDrop.IsDragSource="True"
-                                             dd:DragDrop.IsDropTarget="True"
-                                             dd:DragDrop.DropHandler="{Binding DataContext.ViewModel.ExpenseItemsMoveAndReorderHandler,
+                                <ui:ListView
+                                    ItemsSource="{Binding SubItems}"
+                                    SelectedIndex="{Binding SelectedSubItemIndex}"
+                                    Tag="{Binding DataContext.ViewModel, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                    SelectionMode="Single"
+                                    MinHeight="50"
+                                    Margin="0,0,0,8"
+                                    SizeChanged="ListView_SizeChanged"
+                                    dd:DragDrop.IsDragSource="True"
+                                    dd:DragDrop.IsDropTarget="True"
+                                    dd:DragDrop.DropHandler="{Binding DataContext.ViewModel.ExpenseItemsMoveAndReorderHandler,
                                                                         RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                             dd:DragDrop.DragHandler="{Binding DataContext.ViewModel.ExpenseItemsMoveAndReorderHandler,
-                                                                        RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">
+                                    dd:DragDrop.DragHandler="{Binding DataContext.ViewModel.ExpenseItemsMoveAndReorderHandler,
+                                                                        RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                >
                                     <ui:ListView.Resources>
                                         <DataTemplate x:Key="CategoryItemTemplate">
-                                            <ui:TextBlock Text="{Binding Category}" Margin="0,5,0,5"/>
+                                            <ui:TextBlock Text="{Binding Category}" Margin="0,5,0,5" />
                                         </DataTemplate>
                                         <DataTemplate x:Key="BudgetedItemTemplate">
-                                            <ui:TextBlock Text="{Binding Amount}" Margin="0,5,0,5"/>
+                                            <ui:TextBlock Text="{Binding Amount}" Margin="0,5,0,5" />
                                         </DataTemplate>
                                         <DataTemplate x:Key="ActualItemTemplate">
-                                            <ui:TextBlock Text="{Binding Actual}" Margin="0,5,5,5"/>
+                                            <ui:TextBlock Text="{Binding Actual}" Margin="0,5,5,5" />
                                         </DataTemplate>
                                     </ui:ListView.Resources>
                                     <ui:ListView.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem Header="Edit" Command="{Binding PlacementTarget.Tag.EditExpenseItemCommand,
+                                            <MenuItem
+                                                Header="Edit"
+                                                Command="{Binding PlacementTarget.Tag.EditExpenseItemCommand,
                                                                             RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"
-                                                                            CommandParameter="{Binding}"/>
-                                            <MenuItem Header="Delete" Command="{Binding PlacementTarget.Tag.DeleteExpenseItemCommand,
+                                                CommandParameter="{Binding}"
+                                            />
+                                            <MenuItem
+                                                Header="Delete"
+                                                Command="{Binding PlacementTarget.Tag.DeleteExpenseItemCommand,
                                                                             RelativeSource={RelativeSource AncestorType={x:Type ContextMenu}}}"
-                                                                            CommandParameter="{Binding}"/>
+                                                CommandParameter="{Binding}"
+                                            />
                                         </ContextMenu>
                                     </ui:ListView.ContextMenu>
 
                                     <ui:ListView.View>
                                         <ui:GridView>
-                                            <ui:GridViewColumn Header="Category" CellTemplate="{StaticResource CategoryItemTemplate}"/>
-                                            <ui:GridViewColumn Header="Budgeted" CellTemplate="{StaticResource BudgetedItemTemplate}" Width="125"/>
-                                            <ui:GridViewColumn Header="Actual" CellTemplate="{StaticResource ActualItemTemplate}" Width="125"/>
+                                            <ui:GridViewColumn
+                                                Header="Category"
+                                                CellTemplate="{StaticResource CategoryItemTemplate}"
+                                            />
+                                            <ui:GridViewColumn
+                                                Header="Budgeted"
+                                                CellTemplate="{StaticResource BudgetedItemTemplate}"
+                                                Width="125"
+                                            />
+                                            <ui:GridViewColumn
+                                                Header="Actual"
+                                                CellTemplate="{StaticResource ActualItemTemplate}"
+                                                Width="125"
+                                            />
                                         </ui:GridView>
                                     </ui:ListView.View>
                                 </ui:ListView>
 
-                                <ui:Button Command="{Binding DataContext.ViewModel.AddExpenseItemCommand, 
+                                <ui:Button
+                                    Command="{Binding DataContext.ViewModel.AddExpenseItemCommand, 
                                                     RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                                                    CommandParameter="{Binding}"
-                                                    Content="Add Item"/>
+                                    CommandParameter="{Binding}"
+                                    Content="Add Item"
+                                />
                             </StackPanel>
                         </ui:CardExpander>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-
         </StackPanel>
 
         <Grid Grid.Column="2" Margin="0,0,0,24" x:Name="ChartsPanel">
             <Grid.RowDefinitions>
-                <RowDefinition x:Name="ChartRow0" Height="Auto"/>
-                <RowDefinition x:Name="ChartRow1" Height="Auto"/>
+                <RowDefinition x:Name="ChartRow0" Height="Auto" />
+                <RowDefinition x:Name="ChartRow1" Height="Auto" />
             </Grid.RowDefinitions>
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition x:Name="ChartCol0" Width="*"/>
-                <ColumnDefinition x:Name="ChartCol1" Width="0"/>
+                <ColumnDefinition x:Name="ChartCol0" Width="*" />
+                <ColumnDefinition x:Name="ChartCol1" Width="0" />
             </Grid.ColumnDefinitions>
-            
-            <ui:Card Margin="0,0,0,8" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Grid.Row="0"
-                     x:Name="IncomeChart">
+
+            <ui:Card
+                Margin="0,0,0,8"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Grid.Row="0"
+                x:Name="IncomeChart"
+            >
                 <StackPanel>
-                    <TextBlock Text="Income" FontSize="25" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Income" FontSize="25" HorizontalAlignment="Center" />
                     <Grid>
                         <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform">
-                            <TextBlock Text="{Binding ViewModel.IncomeTotal}" Margin="42"/>
+                            <TextBlock Text="{Binding ViewModel.IncomeTotal}" Margin="42" />
                         </Viewbox>
-                        
-                         <lvc:PieChart Series="{Binding ViewModel.IncomePercentagesSeries}"
-                            Height="275"/>                       
-                    </Grid>
-                                      
-                </StackPanel>
 
-            </ui:Card>
-
-            <ui:Card VerticalAlignment="Stretch" VerticalContentAlignment="Stretch" Margin="0,8,0,0" Grid.Row="1"
-                     x:Name="ExpenseChart">
-                <StackPanel>
-                    <TextBlock Text="Expenses" FontSize="25" HorizontalAlignment="Center"/>
-                    <Grid>
-                        <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform">
-                            <TextBlock Text="{Binding ViewModel.ExpenseTotal}" Margin="42"/>
-                        </Viewbox>
-                        
-                          <lvc:PieChart Series="{Binding ViewModel.ExpensePercentagesSeries}"
-                                      Height="275" />                      
+                        <lvc:PieChart Series="{Binding ViewModel.IncomePercentagesSeries}" Height="275" />
                     </Grid>
                 </StackPanel>
             </ui:Card>
 
+            <ui:Card
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+                Margin="0,8,0,0"
+                Grid.Row="1"
+                x:Name="ExpenseChart"
+            >
+                <StackPanel>
+                    <TextBlock Text="Expenses" FontSize="25" HorizontalAlignment="Center" />
+                    <Grid>
+                        <Viewbox HorizontalAlignment="Center" VerticalAlignment="Center" Stretch="Uniform">
+                            <TextBlock Text="{Binding ViewModel.ExpenseTotal}" Margin="42" />
+                        </Viewbox>
+
+                        <lvc:PieChart Series="{Binding ViewModel.ExpensePercentagesSeries}" Height="275" />
+                    </Grid>
+                </StackPanel>
+            </ui:Card>
         </Grid>
     </Grid>
 </Page>

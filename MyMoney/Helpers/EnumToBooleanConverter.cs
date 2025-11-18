@@ -1,6 +1,6 @@
-﻿using MyMoney.ViewModels.Pages;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows.Data;
+using MyMoney.ViewModels.Pages;
 using Wpf.Ui.Appearance;
 
 namespace MyMoney.Helpers

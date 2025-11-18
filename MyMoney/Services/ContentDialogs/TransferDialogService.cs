@@ -1,7 +1,7 @@
 ﻿using MyMoney.ViewModels.ContentDialogs;
-using Wpf.Ui.Controls;
-using Wpf.Ui;
 using MyMoney.Views.ContentDialogs;
+using Wpf.Ui;
+using Wpf.Ui.Controls;
 
 namespace MyMoney.Services.ContentDialogs
 {
@@ -15,6 +15,7 @@ namespace MyMoney.Services.ContentDialogs
     public class TransferDialogService : ITransferDialogService
     {
         private TransferDialogViewModel _viewModel = new([]);
+
         public TransferDialogViewModel GetViewModel()
         {
             return _viewModel;
@@ -34,7 +35,7 @@ namespace MyMoney.Services.ContentDialogs
             TransferDialog transferDialog = new(host, _viewModel)
             {
                 PrimaryButtonText = "OK",
-                CloseButtonText = "Cancel"
+                CloseButtonText = "Cancel",
             };
             return await dialogService.ShowAsync(transferDialog, CancellationToken.None);
         }

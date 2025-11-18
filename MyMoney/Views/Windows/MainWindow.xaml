@@ -20,17 +20,16 @@
     WindowBackdropType="Mica"
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
-    mc:Ignorable="d" WindowState="Normal"
+    mc:Ignorable="d"
+    WindowState="Normal"
     MinWidth="1000"
     MinHeight="500"
     Loaded="FluentWindow_Loaded"
     Closing="FluentWindow_Closing"
-    SizeChanged="MainWindow_OnSizeChanged">
+    SizeChanged="MainWindow_OnSizeChanged"
+>
     <ui:FluentWindow.InputBindings>
-        <KeyBinding
-            Key="F"
-            Command="{Binding ElementName=AutoSuggestBox, Path=FocusCommand}"
-            Modifiers="Control" />
+        <KeyBinding Key="F" Command="{Binding ElementName=AutoSuggestBox, Path=FocusCommand}" Modifiers="Control" />
     </ui:FluentWindow.InputBindings>
 
     <Grid>
@@ -38,7 +37,8 @@
             x:Name="TitleBar"
             Title="{Binding ViewModel.ApplicationTitle}"
             Grid.Row="0"
-            CloseWindowByDoubleClickOnIcon="True">
+            CloseWindowByDoubleClickOnIcon="True"
+        >
             <ui:TitleBar.Icon>
                 <ui:ImageIcon Source="pack://application:,,,/Assets/MyMoney-icon-256.png" />
             </ui:TitleBar.Icon>
@@ -58,7 +58,8 @@
             TitleBar="{Binding ElementName=TitleBar, Mode=OneWay}"
             ScrollViewer.IsDeferredScrollingEnabled="False"
             PaneClosed="NavigationView_OnPaneClosed"
-            PaneOpened="NavigationView_OnPaneOpened">
+            PaneOpened="NavigationView_OnPaneOpened"
+        >
             <ui:NavigationView.Header>
                 <ui:BreadcrumbBar x:Name="BreadcrumbBar" Margin="42,32,42,20" />
             </ui:NavigationView.Header>
@@ -73,7 +74,7 @@
             </ui:NavigationView.AutoSuggestBox>
             <ui:NavigationView.ContentOverlay>
                 <Grid>
-                    <ui:SnackbarPresenter x:Name="SnackbarPresenter" ScrollViewer.CanContentScroll="False"/>
+                    <ui:SnackbarPresenter x:Name="SnackbarPresenter" ScrollViewer.CanContentScroll="False" />
                 </Grid>
             </ui:NavigationView.ContentOverlay>
         </ui:NavigationView>

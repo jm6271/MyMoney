@@ -16,32 +16,26 @@ namespace MyMoney.ViewModels.Windows
                 Content = "Home",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Home24 },
                 TargetPageType = typeof(Views.Pages.DashboardPage),
-                
             },
-
             new NavigationViewItem()
             {
                 Content = "Accounts",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.TextBulletListRtl24 },
-                TargetPageType = typeof(Views.Pages.AccountsPage)
+                TargetPageType = typeof(Views.Pages.AccountsPage),
             },
-
             new NavigationViewItem()
             {
                 Content = "Budget",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.MoneyCalculator24 },
-                TargetPageType = typeof(Views.Pages.BudgetPage)
+                TargetPageType = typeof(Views.Pages.BudgetPage),
             },
-
             new NavigationViewItemSeparator(),
-
             new NavigationViewItem()
             {
-                 Content = "Charts",
-                 Icon = new SymbolIcon { Symbol = SymbolRegular.ChartMultiple24 },
-                 TargetPageType = typeof(Views.Pages.ReportsPage),
+                Content = "Charts",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.ChartMultiple24 },
+                TargetPageType = typeof(Views.Pages.ReportsPage),
             },
-
             new NavigationViewItem()
             {
                 Content = "Budget Reports",
@@ -70,18 +64,17 @@ namespace MyMoney.ViewModels.Windows
                         return;
                     }
 
-                    System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(@"site\index.html")
-                    {
-                        UseShellExecute = true,
-                    });
-                })
+                    System.Diagnostics.Process.Start(
+                        new System.Diagnostics.ProcessStartInfo(@"site\index.html") { UseShellExecute = true }
+                    );
+                }),
             },
             new NavigationViewItem()
             {
                 Content = "Settings",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Settings24 },
-                TargetPageType = typeof(Views.Pages.SettingsPage)
-            }
+                TargetPageType = typeof(Views.Pages.SettingsPage),
+            },
         ];
 
         [ObservableProperty]

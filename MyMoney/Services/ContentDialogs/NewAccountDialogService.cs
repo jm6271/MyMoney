@@ -1,10 +1,10 @@
-﻿using MyMoney.ViewModels.ContentDialogs;
-using MyMoney.Views.ContentDialogs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MyMoney.ViewModels.ContentDialogs;
+using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -40,7 +40,7 @@ namespace MyMoney.Services.ContentDialogs
             NewAccountDialog newAccountDialog = new(host, _viewModel)
             {
                 PrimaryButtonText = "OK",
-                CloseButtonText = "Cancel"
+                CloseButtonText = "Cancel",
             };
             return await dialogService.ShowAsync(newAccountDialog, CancellationToken.None);
         }

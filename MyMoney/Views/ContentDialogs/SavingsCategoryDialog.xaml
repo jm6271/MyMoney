@@ -1,83 +1,127 @@
-﻿<ui:ContentDialog x:Class="MyMoney.Views.ContentDialogs.SavingsCategoryDialog"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:MyMoney.Views.ContentDialogs"
-      xmlns:helpers="clr-namespace:MyMoney.Helpers" 
-      xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs" xmlns:Controls="clr-namespace:MyMoney.Views.Controls" xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
-                  d:DataContext="{d:DesignInstance Type=contentdialogs:SavingsCategoryDialogViewModel}"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="600"
-      Title="SavingsCategoryDialog"
-      Closing="ContentDialog_Closing"
-      DialogMaxWidth="600"
-      DialogMaxHeight="500">
+﻿<ui:ContentDialog
+    x:Class="MyMoney.Views.ContentDialogs.SavingsCategoryDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MyMoney.Views.ContentDialogs"
+    xmlns:helpers="clr-namespace:MyMoney.Helpers"
+    xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs"
+    xmlns:Controls="clr-namespace:MyMoney.Views.Controls"
+    xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
+    d:DataContext="{d:DesignInstance Type=contentdialogs:SavingsCategoryDialogViewModel}"
+    mc:Ignorable="d"
+    d:DesignHeight="450"
+    d:DesignWidth="600"
+    Title="SavingsCategoryDialog"
+    Closing="ContentDialog_Closing"
+    DialogMaxWidth="600"
+    DialogMaxHeight="500"
+>
     <ui:ContentDialog.Resources>
-        <helpers:CurrencyConverter x:Key="CurrencyConverter"/>
-        <helpers:StartsWithPlusConverter x:Key="StartsWithPlusConverter"/>
+        <helpers:CurrencyConverter x:Key="CurrencyConverter" />
+        <helpers:StartsWithPlusConverter x:Key="StartsWithPlusConverter" />
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:SavingsCategoryDialog}" />
     </ui:ContentDialog.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="{Binding EditColumnWidth}"/>
-            <ColumnDefinition Width="{Binding RecentTransactionsColumnWidth}"/>
+            <ColumnDefinition Width="{Binding EditColumnWidth}" />
+            <ColumnDefinition Width="{Binding RecentTransactionsColumnWidth}" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <ui:TextBlock>Category</ui:TextBlock>
         <Border Grid.Row="1" BorderThickness="1" BorderBrush="Transparent" x:Name="TxtCategoryBorder" Margin="0,8,0,0">
-            <ui:TextBox x:Name="TxtCategory" Text="{Binding Category}"
-                        GotKeyboardFocus="TxtCategory_GotKeyboardFocus"
-                        GotMouseCapture="TxtCategory_GotMouseCapture"
-                        LostFocus="TxtCategory_LostFocus"/>
+            <ui:TextBox
+                x:Name="TxtCategory"
+                Text="{Binding Category}"
+                GotKeyboardFocus="TxtCategory_GotKeyboardFocus"
+                GotMouseCapture="TxtCategory_GotMouseCapture"
+                LostFocus="TxtCategory_LostFocus"
+            />
         </Border>
 
-
         <ui:TextBlock Grid.Row="2" Margin="0,12,0,0">Planned for this month</ui:TextBlock>
-        <ui:TextBox Grid.Row="3" x:Name="TxtPlanned" Text="{Binding Planned, Converter={StaticResource CurrencyConverter}}" 
-                    Margin="1,8,1,0"
-                    GotKeyboardFocus="TxtPlanned_GotKeyboardFocus"
-                    GotMouseCapture="TxtPlanned_GotMouseCapture"/>
+        <ui:TextBox
+            Grid.Row="3"
+            x:Name="TxtPlanned"
+            Text="{Binding Planned, Converter={StaticResource CurrencyConverter}}"
+            Margin="1,8,1,0"
+            GotKeyboardFocus="TxtPlanned_GotKeyboardFocus"
+            GotMouseCapture="TxtPlanned_GotMouseCapture"
+        />
 
         <ui:TextBlock Grid.Row="4" Margin="0,12,0,0">Current balance</ui:TextBlock>
-        <ui:TextBox Grid.Row="5" x:Name="TxtBalance" Text="{Binding CurrentBalance, Converter={StaticResource CurrencyConverter}}" 
-                    Margin="1,8,1,0" GotKeyboardFocus="TxtBalance_GotKeyboardFocus"
-                    GotMouseCapture="TxtBalance_GotMouseCapture"/>
-        <ui:TextBlock Margin="24,0,0,0" Grid.Column="1" Visibility="{Binding RecentTransactionsVisibility}">Recent activity</ui:TextBlock>
-        <Border Grid.Column="1" Grid.Row="1" Grid.RowSpan="6" BorderThickness="1" BorderBrush="#828790" Margin="24,12,0,0"
-                MinWidth="300" Visibility="{Binding RecentTransactionsVisibility}">
+        <ui:TextBox
+            Grid.Row="5"
+            x:Name="TxtBalance"
+            Text="{Binding CurrentBalance, Converter={StaticResource CurrencyConverter}}"
+            Margin="1,8,1,0"
+            GotKeyboardFocus="TxtBalance_GotKeyboardFocus"
+            GotMouseCapture="TxtBalance_GotMouseCapture"
+        />
+        <ui:TextBlock Margin="24,0,0,0" Grid.Column="1" Visibility="{Binding RecentTransactionsVisibility}"
+            >Recent activity</ui:TextBlock
+        >
+        <Border
+            Grid.Column="1"
+            Grid.Row="1"
+            Grid.RowSpan="6"
+            BorderThickness="1"
+            BorderBrush="#828790"
+            Margin="24,12,0,0"
+            MinWidth="300"
+            Visibility="{Binding RecentTransactionsVisibility}"
+        >
             <ui:ListView ItemsSource="{Binding RecentTransactions}" Margin="0,0,0,0">
                 <ui:ListView.ItemTemplate>
                     <DataTemplate DataType="{x:Type models:Transaction}">
                         <Grid Margin="0,2,0,2">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*"/>
-                                <ColumnDefinition Width="3*"/>
-                                <ColumnDefinition Width="1*"/>
+                                <ColumnDefinition Width="1*" />
+                                <ColumnDefinition Width="3*" />
+                                <ColumnDefinition Width="1*" />
                             </Grid.ColumnDefinitions>
 
-                            <Controls:MonthDayControl Day="{Binding Path=Date.Day}" Month="{Binding Path=MonthAbbreviated}" 
-                                                      HorizontalAlignment="Left" Margin="8,0,0,0" DayFontSize="16"/>
+                            <Controls:MonthDayControl
+                                Day="{Binding Path=Date.Day}"
+                                Month="{Binding Path=MonthAbbreviated}"
+                                HorizontalAlignment="Left"
+                                Margin="8,0,0,0"
+                                DayFontSize="16"
+                            />
 
-                            <TextBlock Grid.Column="1" Text="{Binding TransactionDetail}" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding TransactionDetail}" VerticalAlignment="Center" />
 
-                            <TextBlock Grid.Column="2" FontSize="16" FontWeight="SemiBold" VerticalAlignment="Center"
-                                                  Text="{Binding AmountFormatted}" HorizontalAlignment="Right" Margin="0,0,8,0">
+                            <TextBlock
+                                Grid.Column="2"
+                                FontSize="16"
+                                FontWeight="SemiBold"
+                                VerticalAlignment="Center"
+                                Text="{Binding AmountFormatted}"
+                                HorizontalAlignment="Right"
+                                Margin="0,0,8,0"
+                            >
                                 <TextBlock.Style>
                                     <Style TargetType="TextBlock">
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding AmountFormatted, Converter={StaticResource StartsWithPlusConverter} }" Value="True">
-                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
+                                            <DataTrigger
+                                                Binding="{Binding AmountFormatted, Converter={StaticResource StartsWithPlusConverter} }"
+                                                Value="True"
+                                            >
+                                                <Setter
+                                                    Property="Foreground"
+                                                    Value="{DynamicResource AccentTextFillColorTertiaryBrush}"
+                                                />
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>

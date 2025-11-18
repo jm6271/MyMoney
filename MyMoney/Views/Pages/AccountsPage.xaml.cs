@@ -1,5 +1,5 @@
-﻿using MyMoney.ViewModels.Pages;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
+using MyMoney.ViewModels.Pages;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 

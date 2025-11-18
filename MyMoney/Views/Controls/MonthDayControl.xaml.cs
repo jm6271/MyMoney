@@ -27,46 +27,39 @@ namespace MyMoney.Views.Controls
 
         public string Month
         {
-            get
-            {
-                return (string)GetValue(MonthProperty);
-            }
-
-            set
-            {
-                SetValue(MonthProperty, value);
-            }
+            get { return (string)GetValue(MonthProperty); }
+            set { SetValue(MonthProperty, value); }
         }
-        public static readonly DependencyProperty MonthProperty = DependencyProperty.Register("Month", typeof(string), typeof(MonthDayControl), new PropertyMetadata(string.Empty));
-        
-        
+        public static readonly DependencyProperty MonthProperty = DependencyProperty.Register(
+            "Month",
+            typeof(string),
+            typeof(MonthDayControl),
+            new PropertyMetadata(string.Empty)
+        );
+
         public int Day
         {
-            get
-            {
-                return (int)GetValue(DayProperty);
-            }
-            set
-            {
-                SetValue(DayProperty, value);
-            }
+            get { return (int)GetValue(DayProperty); }
+            set { SetValue(DayProperty, value); }
         }
-        public static readonly DependencyProperty DayProperty = DependencyProperty.Register("Day", typeof(int), typeof(MonthDayControl), new PropertyMetadata(0));
-
+        public static readonly DependencyProperty DayProperty = DependencyProperty.Register(
+            "Day",
+            typeof(int),
+            typeof(MonthDayControl),
+            new PropertyMetadata(0)
+        );
 
         public int DayFontSize
         {
-            get
-            {
-                return (int)GetValue(DayFontSizeProperty);
-            }
-            set
-            {
-                SetValue(DayFontSizeProperty, value);
-            }
+            get { return (int)GetValue(DayFontSizeProperty); }
+            set { SetValue(DayFontSizeProperty, value); }
         }
 
         public static readonly DependencyProperty DayFontSizeProperty = DependencyProperty.Register(
-            "DayFontSize", typeof(int), typeof(MonthDayControl), new PropertyMetadata(18));
+            "DayFontSize",
+            typeof(int),
+            typeof(MonthDayControl),
+            new PropertyMetadata(18)
+        );
     }
 }

@@ -1,11 +1,11 @@
-﻿using GongSolutions.Wpf.DragDrop;
-using MyMoney.Core.Models;
-using MyMoney.ViewModels.Pages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GongSolutions.Wpf.DragDrop;
+using MyMoney.Core.Models;
+using MyMoney.ViewModels.Pages;
 
 namespace MyMoney.Helpers.DropHandlers
 {
@@ -15,9 +15,11 @@ namespace MyMoney.Helpers.DropHandlers
 
         public void DragOver(IDropInfo dropInfo)
         {
-            if (dropInfo.DragInfo.SourceCollection is IList<BudgetItem> &&
-                dropInfo.TargetCollection is IList<BudgetItem>
-                && !ReferenceEquals(dropInfo.DragInfo.SourceCollection, _viewModel.CurrentBudget?.BudgetIncomeItems))
+            if (
+                dropInfo.DragInfo.SourceCollection is IList<BudgetItem>
+                && dropInfo.TargetCollection is IList<BudgetItem>
+                && !ReferenceEquals(dropInfo.DragInfo.SourceCollection, _viewModel.CurrentBudget?.BudgetIncomeItems)
+            )
             {
                 dropInfo.Effects = DragDropEffects.Move;
                 dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
@@ -30,10 +32,12 @@ namespace MyMoney.Helpers.DropHandlers
 
         public void Drop(IDropInfo dropInfo)
         {
-            if (dropInfo.DragInfo.SourceCollection is not IList<BudgetItem> sourceList||
-                dropInfo.TargetCollection is not IList<BudgetItem> targetList||
-                dropInfo.Data is not BudgetItem item ||
-                ReferenceEquals(dropInfo.DragInfo.SourceCollection, _viewModel.CurrentBudget?.BudgetIncomeItems))
+            if (
+                dropInfo.DragInfo.SourceCollection is not IList<BudgetItem> sourceList
+                || dropInfo.TargetCollection is not IList<BudgetItem> targetList
+                || dropInfo.Data is not BudgetItem item
+                || ReferenceEquals(dropInfo.DragInfo.SourceCollection, _viewModel.CurrentBudget?.BudgetIncomeItems)
+            )
                 return;
 
             if (ReferenceEquals(sourceList, targetList)) // Reordering within the same collection
@@ -42,7 +46,8 @@ namespace MyMoney.Helpers.DropHandlers
                 int newIndex = dropInfo.InsertIndex;
 
                 // If dragging downward in the same list, the removal shifts the target index down by one
-                if (oldIndex < newIndex) newIndex--;
+                if (oldIndex < newIndex)
+                    newIndex--;
 
                 sourceList.RemoveAt(oldIndex);
                 targetList.Insert(newIndex, item);

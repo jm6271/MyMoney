@@ -1,11 +1,11 @@
-﻿using MyMoney.Core.Models;
+﻿using System.Windows.Controls;
+using System.Windows.Input;
+using MyMoney.Core.Models;
 using MyMoney.Helpers;
 using MyMoney.ViewAdapters.Pages;
 using MyMoney.ViewModels.Pages;
-using System.Windows.Controls;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Controls;
-using System.Windows.Input;
 
 namespace MyMoney.Views.Pages
 {
@@ -41,12 +41,14 @@ namespace MyMoney.Views.Pages
             _budgetsPanelWideMargin = BudgetPanel.Margin;
             _chartPanelWideMargin = ChartsPanel.Margin;
             _incomeChartWideMargin = IncomeChart.Margin;
-            _expenseChartWideMargin= ExpenseChart.Margin;
+            _expenseChartWideMargin = ExpenseChart.Margin;
 
             // Listen for MouseWheel on *all* column headers inside this page
-            AddHandler(GridViewColumnHeader.PreviewMouseWheelEvent,
-                       new MouseWheelEventHandler(GridViewColumnHeader_PreviewMouseWheel),
-                       handledEventsToo: true);
+            AddHandler(
+                GridViewColumnHeader.PreviewMouseWheelEvent,
+                new MouseWheelEventHandler(GridViewColumnHeader_PreviewMouseWheel),
+                handledEventsToo: true
+            );
         }
 
         private void ListView_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -55,7 +57,8 @@ namespace MyMoney.Views.Pages
             if (sender is Wpf.Ui.Controls.ListView listView)
             {
                 int w = (int)(listView.ActualWidth - 280); // width of other columns plus some extra for padding
-                if (w < 100) w = 100;
+                if (w < 100)
+                    w = 100;
                 ((Wpf.Ui.Controls.GridView)listView.View).Columns[0].Width = w;
             }
         }
@@ -131,11 +134,13 @@ namespace MyMoney.Views.Pages
             var scrollViewer = (sender as DependencyObject)?.FindAncestor<ScrollViewer>();
             if (scrollViewer != null)
             {
-                scrollViewer.RaiseEvent(new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
-                {
-                    RoutedEvent = UIElement.MouseWheelEvent,
-                    Source = sender
-                });
+                scrollViewer.RaiseEvent(
+                    new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+                    {
+                        RoutedEvent = UIElement.MouseWheelEvent,
+                        Source = sender,
+                    }
+                );
             }
         }
     }

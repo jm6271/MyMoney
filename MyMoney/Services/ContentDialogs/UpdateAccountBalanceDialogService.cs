@@ -35,7 +35,7 @@ namespace MyMoney.Services.ContentDialogs
             UpdateAccountBalanceDialog updateBalanceDialog = new(host, _viewModel)
             {
                 PrimaryButtonText = "Update",
-                CloseButtonText = "Cancel"
+                CloseButtonText = "Cancel",
             };
             return await dialogService.ShowAsync(updateBalanceDialog, CancellationToken.None);
         }

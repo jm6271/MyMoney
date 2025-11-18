@@ -1,6 +1,6 @@
-﻿using MyMoney.ViewModels.ContentDialogs;
-using System;
+﻿using System;
 using System.Windows.Controls;
+using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -10,7 +10,8 @@ namespace MyMoney.Views.ContentDialogs
     /// </summary>
     public partial class RenameAccountDialog : ContentDialog
     {
-        public RenameAccountDialog(ContentPresenter dialogHost, RenameAccountViewModel viewModel) : base(dialogHost)
+        public RenameAccountDialog(ContentPresenter dialogHost, RenameAccountViewModel viewModel)
+            : base(dialogHost)
         {
             InitializeComponent();
 
@@ -27,7 +28,9 @@ namespace MyMoney.Views.ContentDialogs
         {
             if (e.Key == System.Windows.Input.Key.Enter)
             {
-                txtNewName.MoveFocus(new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.Next));
+                txtNewName.MoveFocus(
+                    new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.Next)
+                );
                 e.Handled = false;
             }
         }

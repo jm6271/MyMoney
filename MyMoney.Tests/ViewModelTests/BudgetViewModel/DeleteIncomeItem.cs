@@ -1,11 +1,11 @@
 // filepath: MyMoney/Tests/ViewModelTests/BudgetViewModel/DeleteIncomeItem.cs
-using MyMoney.ViewModels.Pages;
-using MyMoney.Core.Models;
 using Moq;
-using MyMoney.Services.ContentDialogs;
 using MyMoney.Core.Database;
-using Wpf.Ui.Controls;
+using MyMoney.Core.Models;
+using MyMoney.Services.ContentDialogs;
+using MyMoney.ViewModels.Pages;
 using Wpf.Ui;
+using Wpf.Ui.Controls;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -42,20 +42,34 @@ public class DeleteIncomeItemTests
         {
             BudgetDate = DateTime.Now,
             BudgetTitle = DateTime.Now.ToString("MMMM, yyyy"),
-            BudgetIncomeItems = 
+            BudgetIncomeItems =
             {
-                new BudgetItem { Id = 1, Category = "Income 1", Amount = new Currency(1000m) },
-                new BudgetItem { Id = 2, Category = "Income 2", Amount = new Currency(2000m) },
-                new BudgetItem { Id = 3, Category = "Income 3", Amount = new Currency(3000m) }
-            }
+                new BudgetItem
+                {
+                    Id = 1,
+                    Category = "Income 1",
+                    Amount = new Currency(1000m),
+                },
+                new BudgetItem
+                {
+                    Id = 2,
+                    Category = "Income 2",
+                    Amount = new Currency(2000m),
+                },
+                new BudgetItem
+                {
+                    Id = 3,
+                    Category = "Income 3",
+                    Amount = new Currency(3000m),
+                },
+            },
         };
 
         _originalNumberOfIncomeItems = _testBudget.BudgetIncomeItems.Count;
 
-        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
-            .Returns(new List<Budget> { _testBudget });
+        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget> { _testBudget });
 
-        _viewModel = new (
+        _viewModel = new(
             _mockContentDialogService.Object,
             _mockDatabaseReader.Object,
             _mockMessageBoxService.Object,
@@ -79,11 +93,10 @@ public class DeleteIncomeItemTests
         await _viewModel.DeleteIncomeItemCommand.ExecuteAsync(null);
 
         // Assert
-        _mockMessageBoxService.Verify(x => x.ShowAsync(
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>()), Times.Never);
+        _mockMessageBoxService.Verify(
+            x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -96,11 +109,10 @@ public class DeleteIncomeItemTests
         await _viewModel.DeleteIncomeItemCommand.ExecuteAsync(null);
 
         // Assert
-        _mockMessageBoxService.Verify(x => x.ShowAsync(
-            It.IsAny<string>(), 
-            It.IsAny<string>(), 
-            It.IsAny<string>(), 
-            It.IsAny<string>()), Times.Never);
+        _mockMessageBoxService.Verify(
+            x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -110,9 +122,9 @@ public class DeleteIncomeItemTests
         _mockMessageBoxService
             .Setup(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(MessageBoxResult.Secondary);
-        
+
         var originalCount = _originalNumberOfIncomeItems;
-        
+
         // Act
         await _viewModel.DeleteIncomeItemCommand.ExecuteAsync(null);
 
@@ -138,7 +150,7 @@ public class DeleteIncomeItemTests
         // Assert
         Assert.IsNotNull(_viewModel.CurrentBudget);
         Assert.HasCount(expectedCount, _viewModel.CurrentBudget.BudgetIncomeItems);
-        
+
         // Verify IDs are reindexed correctly
         for (int i = 0; i < _viewModel.CurrentBudget.BudgetIncomeItems.Count; i++)
         {

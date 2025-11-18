@@ -1,5 +1,5 @@
-﻿using LiteDB;
-using System.Collections;
+﻿using System.Collections;
+using LiteDB;
 
 namespace MyMoney.Core.Database
 {
@@ -9,8 +9,10 @@ namespace MyMoney.Core.Database
         public void WriteSettingsDictionary(string collectionName, Dictionary<string, string> collection);
         public List<T> GetCollection<T>(string collectionName);
         public Dictionary<string, string> GetSettingsDictionary(string collectionName);
-        public Dictionary<TKey, TValue> ReadDictionary<TKey, TValue>(string dictName) where TKey : notnull;
-        public void WriteDictionary<TKey, TValue>(string dictName, Dictionary<TKey, TValue> dictionary) where TKey : notnull;
+        public Dictionary<TKey, TValue> ReadDictionary<TKey, TValue>(string dictName)
+            where TKey : notnull;
+        public void WriteDictionary<TKey, TValue>(string dictName, Dictionary<TKey, TValue> dictionary)
+            where TKey : notnull;
     }
 
     public class DatabaseManager : IDatabaseManager
@@ -107,7 +109,8 @@ namespace MyMoney.Core.Database
             }
         }
 
-        public Dictionary<TKey, TValue> ReadDictionary<TKey, TValue>(string dictName) where TKey: notnull
+        public Dictionary<TKey, TValue> ReadDictionary<TKey, TValue>(string dictName)
+            where TKey : notnull
         {
             Dictionary<TKey, TValue> dict = [];
 
@@ -126,7 +129,8 @@ namespace MyMoney.Core.Database
             return dict;
         }
 
-        public void WriteDictionary<TKey, TValue>(string dictName, Dictionary<TKey, TValue> dictionary) where TKey: notnull
+        public void WriteDictionary<TKey, TValue>(string dictName, Dictionary<TKey, TValue> dictionary)
+            where TKey : notnull
         {
             lock (_databaseLock)
             {

@@ -1,4 +1,7 @@
-﻿using LiveChartsCore;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Threading.Tasks;
+using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
@@ -6,9 +9,6 @@ using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
 using SkiaSharp;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Threading.Tasks;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
 
@@ -51,7 +51,6 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private SKColor _chartTextColor = DefaultTextColor;
 
-
         [ObservableProperty]
         private Currency _totalNetWorth = new(0m);
 
@@ -59,21 +58,12 @@ namespace MyMoney.ViewModels.Pages
         private ISeries[] _netWorthSeries = [];
 
         [ObservableProperty]
-        private Axis[] _netWorthYAxes =
-        [
-            new()
-            {
-                Labeler = Labelers.Currency,
-            }
-        ];
+        private Axis[] _netWorthYAxes = [new() { Labeler = Labelers.Currency }];
 
         [ObservableProperty]
         private Axis[] _netWorthXAxes =
         [
-             new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString("MMM dd"))
-             {
-                 LabelsPaint = null,
-             }
+            new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString("MMM dd")) { LabelsPaint = null },
         ];
 
         [ObservableProperty]
@@ -84,7 +74,6 @@ namespace MyMoney.ViewModels.Pages
 
         [ObservableProperty]
         private int _netWorthPeriodIndex = 2; // Last 30 days
-
         #endregion
 
         #region Constants
@@ -93,7 +82,6 @@ namespace MyMoney.ViewModels.Pages
         private static readonly SKColor IncomeFillColor = new(0x21, 0x96, 0xf3);
         private static readonly SKColor ExpenseFillColor = new(0xf4, 0x43, 0x36);
         private const int MaxBarWidth = 25;
-
 
         private enum NetWorthPeriod
         {
@@ -151,8 +139,9 @@ namespace MyMoney.ViewModels.Pages
             DatabaseManager dbManager = new();
             var netWorthCalculator = new NetWorthCalculator(dbManager);
             var netWorthData = await Task.Run(() =>
-                netWorthCalculator.GetNetWorthSinceStartDate(DateTime.Today.AddDays(
-                    -GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex) + 1))
+                netWorthCalculator.GetNetWorthSinceStartDate(
+                    DateTime.Today.AddDays(-GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex) + 1)
+                )
             );
 
             // Convert to a list of DateTimePoint
@@ -174,13 +163,15 @@ namespace MyMoney.ViewModels.Pages
                     Values = dateTimePoints,
                     GeometrySize = 0,
                     Stroke = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B), 4),
-                    Fill = new SolidColorPaint(new SKColor(lighterAccentColor.R, lighterAccentColor.G, lighterAccentColor.B, 175)),
+                    Fill = new SolidColorPaint(
+                        new SKColor(lighterAccentColor.R, lighterAccentColor.G, lighterAccentColor.B, 175)
+                    ),
                     LineSmoothness = 0,
-                }
+                },
             ];
 
-            NetWorthStartDate = DateTime.Today.AddDays(
-                -GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex) + 1)
+            NetWorthStartDate = DateTime
+                .Today.AddDays(-GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex) + 1)
                 .ToString("MMM dd, yyyy");
             NetWorthEndDate = DateTime.Today.ToString("MMM dd, yyyy");
         }
@@ -213,7 +204,7 @@ namespace MyMoney.ViewModels.Pages
             IncomeExpense12MonthSeries =
             [
                 CreateSeries("Income", incomeSeries, IncomeFillColor),
-                CreateSeries("Expenses", expenseSeries, ExpenseFillColor)
+                CreateSeries("Expenses", expenseSeries, ExpenseFillColor),
             ];
         }
 
@@ -224,7 +215,7 @@ namespace MyMoney.ViewModels.Pages
                 Values = values,
                 MaxBarWidth = MaxBarWidth,
                 Name = name,
-                Fill = new SolidColorPaint(fillColor)
+                Fill = new SolidColorPaint(fillColor),
             };
         }
 
@@ -243,7 +234,7 @@ namespace MyMoney.ViewModels.Pages
             {
                 Labeler = Labelers.Currency,
                 LabelsPaint = textPaint,
-                NamePaint = textPaint
+                NamePaint = textPaint,
             };
         }
 
@@ -258,7 +249,7 @@ namespace MyMoney.ViewModels.Pages
                 ForceStepToMin = true,
                 MinStep = 1,
                 LabelsPaint = textPaint,
-                NamePaint = textPaint
+                NamePaint = textPaint,
             };
         }
 
@@ -269,7 +260,7 @@ namespace MyMoney.ViewModels.Pages
                 LabelsPaint = textPaint,
                 Labeler = Labelers.Currency,
                 NamePaint = textPaint,
-                MinLimit = 0
+                MinLimit = 0,
             };
         }
 
@@ -280,35 +271,42 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateTextColor()
         {
-            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
-                ? DefaultTextColor
-                : new SKColor(0xff, 0xff, 0xff);
+            ChartTextColor =
+                ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
+                    ? DefaultTextColor
+                    : new SKColor(0xff, 0xff, 0xff);
         }
 
         private static Axis[] GetDefaultXAxis()
         {
-            return [new Axis
-            {
-                Labels = [],
-                LabelsRotation = 0,
-                SeparatorsAtCenter = false,
-                TicksAtCenter = true,
-                ForceStepToMin = true,
-                MinStep = 1,
-                LabelsPaint = new SolidColorPaint(DefaultTextColor),
-                NamePaint = new SolidColorPaint(DefaultTextColor)
-            }];
+            return
+            [
+                new Axis
+                {
+                    Labels = [],
+                    LabelsRotation = 0,
+                    SeparatorsAtCenter = false,
+                    TicksAtCenter = true,
+                    ForceStepToMin = true,
+                    MinStep = 1,
+                    LabelsPaint = new SolidColorPaint(DefaultTextColor),
+                    NamePaint = new SolidColorPaint(DefaultTextColor),
+                },
+            ];
         }
 
         private static Axis[] GetDefaultYAxis()
         {
-            return [new Axis
-            {
-                LabelsPaint = new SolidColorPaint(DefaultTextColor),
-                Labeler = Labelers.Currency,
-                NamePaint = new SolidColorPaint(DefaultTextColor),
-                MinLimit = 0
-            }];
+            return
+            [
+                new Axis
+                {
+                    LabelsPaint = new SolidColorPaint(DefaultTextColor),
+                    Labeler = Labelers.Currency,
+                    NamePaint = new SolidColorPaint(DefaultTextColor),
+                    MinLimit = 0,
+                },
+            ];
         }
 
         #endregion

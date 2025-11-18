@@ -1,6 +1,6 @@
-﻿using MyMoney.Core.Database;
+﻿using System.Globalization;
+using MyMoney.Core.Database;
 using MyMoney.Core.Models;
-using System.Globalization;
 
 namespace MyMoney.Core.Reports
 {
@@ -13,19 +13,19 @@ namespace MyMoney.Core.Reports
         /// Get the names of all the months from 11 months ago to the current month
         /// </summary>
         /// <returns>A list of month names</returns>
-        public static List<string> GetMonthNames() 
-        { 
-            List<string> monthNames = []; 
-            var currentDate = DateTime.Now; 
-            
-            for (var i = 11; i >= 0; i--) 
-            { 
-                var targetDate = currentDate.AddMonths(-i); 
-                var monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(targetDate.Month); 
+        public static List<string> GetMonthNames()
+        {
+            List<string> monthNames = [];
+            var currentDate = DateTime.Now;
+
+            for (var i = 11; i >= 0; i--)
+            {
+                var targetDate = currentDate.AddMonths(-i);
+                var monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetAbbreviatedMonthName(targetDate.Month);
                 monthNames.Add(monthName);
-            } 
-            
-            return monthNames; 
+            }
+
+            return monthNames;
         }
 
         public static List<double> GetPast12MonthsIncome()
@@ -60,19 +60,22 @@ namespace MyMoney.Core.Reports
 
         private static decimal GetIncome(List<Transaction> transactions)
         {
-            return (from transaction in transactions 
-                where !string.IsNullOrWhiteSpace(transaction.Category.Name) 
-                where transaction.Amount.Value > 0 
-                select transaction.Amount.Value).Sum();
+            return (
+                from transaction in transactions
+                where !string.IsNullOrWhiteSpace(transaction.Category.Name)
+                where transaction.Amount.Value > 0
+                select transaction.Amount.Value
+            ).Sum();
         }
 
         private static decimal GetExpenses(List<Transaction> transactions)
         {
-            var expenses = 
-                (from transaction in transactions 
-                    where !string.IsNullOrWhiteSpace(transaction.Category.Name) 
-                    where transaction.Amount.Value < 0 
-                    select transaction.Amount.Value).Sum();
+            var expenses = (
+                from transaction in transactions
+                where !string.IsNullOrWhiteSpace(transaction.Category.Name)
+                where transaction.Amount.Value < 0
+                select transaction.Amount.Value
+            ).Sum();
 
             return Math.Abs(expenses);
         }
@@ -132,15 +135,17 @@ namespace MyMoney.Core.Reports
 
             // go through the transactions and get the ones in the specified date range
             List<Transaction> transactions = [];
-            transactions.AddRange(from transaction in allTransactions
-                                  where IsDateBetween(transaction.Date, startDate, endDate)
-                                  select transaction);
+            transactions.AddRange(
+                from transaction in allTransactions
+                where IsDateBetween(transaction.Date, startDate, endDate)
+                select transaction
+            );
             return transactions;
         }
 
-        private static bool IsDateBetween(DateTime dateToCheck, DateTime startDate, DateTime endDate) 
-        { 
-            return dateToCheck >= startDate && dateToCheck <= endDate; 
+        private static bool IsDateBetween(DateTime dateToCheck, DateTime startDate, DateTime endDate)
+        {
+            return dateToCheck >= startDate && dateToCheck <= endDate;
         }
     }
 }

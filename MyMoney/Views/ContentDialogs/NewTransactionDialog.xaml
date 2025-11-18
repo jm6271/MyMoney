@@ -1,24 +1,31 @@
-﻿<ui:ContentDialog x:Class="MyMoney.Views.ContentDialogs.NewTransactionDialog"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:MyMoney.Views.ContentDialogs"
-      mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
-      xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core" 
-      xmlns:helpers="clr-namespace:MyMoney.Helpers" xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs" xmlns:pages="clr-namespace:MyMoney.ViewModels.Pages" xmlns:controls="clr-namespace:MyMoney.Views.Controls"
-                  Title="New Transaction"
-                  d:DataContext="{d:DesignInstance {x:Type contentdialogs:NewTransactionDialogViewModel}, IsDesignTimeCreatable=False}"
-      ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
-      ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      Loaded="ContentDialog_Loaded" Closing="ContentDialog_Closing">
+﻿<ui:ContentDialog
+    x:Class="MyMoney.Views.ContentDialogs.NewTransactionDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MyMoney.Views.ContentDialogs"
+    mc:Ignorable="d"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
+    xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
+    xmlns:helpers="clr-namespace:MyMoney.Helpers"
+    xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs"
+    xmlns:pages="clr-namespace:MyMoney.ViewModels.Pages"
+    xmlns:controls="clr-namespace:MyMoney.Views.Controls"
+    Title="New Transaction"
+    d:DataContext="{d:DesignInstance {x:Type contentdialogs:NewTransactionDialogViewModel}, IsDesignTimeCreatable=False}"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Loaded="ContentDialog_Loaded"
+    Closing="ContentDialog_Closing"
+>
     <ui:ContentDialog.Resources>
-        <helpers:CurrencyConverter x:Key="CurrencyConverter"/>
-        <helpers:CategoryToGroupedItemConverter x:Key="CategoryToGroupedItemConverter"/>
+        <helpers:CurrencyConverter x:Key="CurrencyConverter" />
+        <helpers:CategoryToGroupedItemConverter x:Key="CategoryToGroupedItemConverter" />
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:NewTransactionDialog}" />
     </ui:ContentDialog.Resources>
 
@@ -26,62 +33,97 @@
         <ui:TextBlock Margin="0,0,0,4">Transaction type</ui:TextBlock>
         <Grid Margin="0,0,0,16">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
             </Grid.ColumnDefinitions>
             <RadioButton Grid.Column="0" IsChecked="{Binding NewTransactionIsExpense}">Expense</RadioButton>
             <RadioButton Grid.Column="1" IsChecked="{Binding NewTransactionIsIncome}">Income</RadioButton>
         </Grid>
         <ui:TextBlock Margin="0,0,0,4">Amount</ui:TextBlock>
-        <ui:TextBox x:Name="txtAmount" Margin="0,0,0,16" Text="{Binding Path=NewTransactionAmount, Converter={StaticResource CurrencyConverter}}" GotKeyboardFocus="txtAmount_GotKeyboardFocus" GotMouseCapture="txtAmount_GotMouseCapture"/>
+        <ui:TextBox
+            x:Name="txtAmount"
+            Margin="0,0,0,16"
+            Text="{Binding Path=NewTransactionAmount, Converter={StaticResource CurrencyConverter}}"
+            GotKeyboardFocus="txtAmount_GotKeyboardFocus"
+            GotMouseCapture="txtAmount_GotMouseCapture"
+        />
         <Grid Margin="0,0,0,16">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="135"/>
-                <ColumnDefinition/>
+                <ColumnDefinition Width="135" />
+                <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <ui:TextBlock Margin="0,0,0,4">Date</ui:TextBlock>
-            <DatePicker x:Name="txtDate" Grid.Row="1" Margin="0,0,4,0" SelectedDateFormat="Short" IsTodayHighlighted="True"
-                                    SelectedDate="{Binding NewTransactionDate}"/>
+            <DatePicker
+                x:Name="txtDate"
+                Grid.Row="1"
+                Margin="0,0,4,0"
+                SelectedDateFormat="Short"
+                IsTodayHighlighted="True"
+                SelectedDate="{Binding NewTransactionDate}"
+            />
             <ui:TextBlock Grid.Column="1" Grid.Row="0" Margin="4,0,0,4">Payee</ui:TextBlock>
-            <Border x:Name="PayeeBorder" Grid.Row="1" Grid.Column="1" Margin="3,0,0,0" BorderThickness="1" BorderBrush="Transparent">
-                <ui:AutoSuggestBox x:Name="txtPayee" MinWidth="300" LostFocus="TxtPayee_OnLostFocus"
-                               OriginalItemsSource="{Binding AutoSuggestPayees, Mode=OneWay}">
-                <ui:AutoSuggestBox.Icon>
-                    <ui:FontIcon Glyph=""/>
-                </ui:AutoSuggestBox.Icon>
-            </ui:AutoSuggestBox>    
+            <Border
+                x:Name="PayeeBorder"
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="3,0,0,0"
+                BorderThickness="1"
+                BorderBrush="Transparent"
+            >
+                <ui:AutoSuggestBox
+                    x:Name="txtPayee"
+                    MinWidth="300"
+                    LostFocus="TxtPayee_OnLostFocus"
+                    OriginalItemsSource="{Binding AutoSuggestPayees, Mode=OneWay}"
+                >
+                    <ui:AutoSuggestBox.Icon>
+                        <ui:FontIcon Glyph="" />
+                    </ui:AutoSuggestBox.Icon>
+                </ui:AutoSuggestBox>
             </Border>
-
         </Grid>
         <ui:TextBlock Margin="0,0,0,4">Category</ui:TextBlock>
-        
+
         <Border x:Name="CategoryBorder" BorderThickness="1" BorderBrush="Transparent" Margin="0,0,0,16">
-            <controls:GroupedComboBox x:Name="cmbCategory" ItemsSource="{Binding CategoryNames}" 
-                                      SelectedItem="{Binding NewTransactionCategory, 
+            <controls:GroupedComboBox
+                x:Name="cmbCategory"
+                ItemsSource="{Binding CategoryNames}"
+                SelectedItem="{Binding NewTransactionCategory, 
                                         Converter={StaticResource CategoryToGroupedItemConverter}}"
-                                      SelectedIndex="{Binding NewTransactionCategorySelectedIndex}"
-                                      SelectionChanged="cmbCategory_SelectionChanged_1"
-                                      LostFocus="cmbCategory_LostFocus">
-                
-            </controls:GroupedComboBox>
+                SelectedIndex="{Binding NewTransactionCategorySelectedIndex}"
+                SelectionChanged="cmbCategory_SelectionChanged_1"
+                LostFocus="cmbCategory_LostFocus"
+            ></controls:GroupedComboBox>
         </Border>
 
         <ui:TextBlock Margin="0,0,0,4" Visibility="{Binding AccountsVisibility}">Account</ui:TextBlock>
-        <ComboBox x:Name="cmbAccount" Margin="0,0,0,16" ItemsSource="{Binding Accounts}" SelectedIndex="{Binding SelectedAccountIndex}"
-                  SelectedItem="{Binding SelectedAccount}" Visibility="{Binding AccountsVisibility}">
+        <ComboBox
+            x:Name="cmbAccount"
+            Margin="0,0,0,16"
+            ItemsSource="{Binding Accounts}"
+            SelectedIndex="{Binding SelectedAccountIndex}"
+            SelectedItem="{Binding SelectedAccount}"
+            Visibility="{Binding AccountsVisibility}"
+        >
             <ComboBox.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding AccountName}"/>
+                    <TextBlock Text="{Binding AccountName}" />
                 </DataTemplate>
             </ComboBox.ItemTemplate>
         </ComboBox>
         <ui:TextBlock Margin="0,0,0,4">Memo</ui:TextBlock>
-        <ui:TextBox x:Name="txtMemo" Margin="0,0,0,24" Text="{Binding NewTransactionMemo}" KeyDown="TextBox_KeyDown"
-                    GotKeyboardFocus="txtMemo_GotKeyboardFocus" GotMouseCapture="txtMemo_GotMouseCapture"/>
+        <ui:TextBox
+            x:Name="txtMemo"
+            Margin="0,0,0,24"
+            Text="{Binding NewTransactionMemo}"
+            KeyDown="TextBox_KeyDown"
+            GotKeyboardFocus="txtMemo_GotKeyboardFocus"
+            GotMouseCapture="txtMemo_GotMouseCapture"
+        />
     </StackPanel>
 </ui:ContentDialog>

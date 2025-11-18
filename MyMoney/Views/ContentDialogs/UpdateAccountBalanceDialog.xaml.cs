@@ -1,5 +1,4 @@
-﻿using MyMoney.ViewModels.ContentDialogs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -47,16 +47,16 @@ namespace MyMoney.Views.ContentDialogs
 
         private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
         {
-            if (args.Result != ContentDialogResult.Primary) return;
+            if (args.Result != ContentDialogResult.Primary)
+                return;
 
             txtBalance.Focus();
-            txtBalance.MoveFocus(
-                new TraversalRequest(FocusNavigationDirection.Next));
+            txtBalance.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 
             // validate the user data, and if it is invalid, prevent the dialog from closing
             var validationErrors = Validation.GetErrors(txtBalance);
 
-            if (validationErrors is { Count: > 0})
+            if (validationErrors is { Count: > 0 })
             {
                 args.Cancel = true;
             }

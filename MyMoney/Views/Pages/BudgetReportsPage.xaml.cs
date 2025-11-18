@@ -1,5 +1,4 @@
-﻿using MyMoney.ViewModels.Pages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MyMoney.ViewModels.Pages;
 using Wpf.Ui.Abstractions.Controls;
 
 namespace MyMoney.Views.Pages
@@ -83,7 +83,7 @@ namespace MyMoney.Views.Pages
 
                 // Adjust margins
                 BudgetsCard.Margin = _wideBudgetsMargin;
-                BudgetReport.Margin= _wideReportMargin;
+                BudgetReport.Margin = _wideReportMargin;
                 IncomeChart.Margin = _wideIncomeChartMargin;
             }
         }

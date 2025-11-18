@@ -1,12 +1,12 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace MyMoney.Tests.ReportsTests;
 
@@ -40,23 +40,25 @@ public class NetWorthCalculatorTests
         var startDate = DateTime.Today.AddDays(-4);
         var accounts = new List<Account>
         {
-            new() {
+            new()
+            {
                 Total = new Currency(1000m),
                 Transactions = new ObservableCollection<Transaction>
                 {
                     new(DateTime.Today.AddDays(-1), "Payee1", new Category(), new Currency(200m), "Memo1"),
-                    new(DateTime.Today, "Payee2", new Category(), new Currency(300m), "Memo2")
+                    new(DateTime.Today, "Payee2", new Category(), new Currency(300m), "Memo2"),
                 },
-                AccountName = "Account 1"
+                AccountName = "Account 1",
             },
-            new() {
+            new()
+            {
                 Total = new Currency(500m),
                 Transactions = new ObservableCollection<Transaction>
                 {
-                    new(DateTime.Today.AddDays(-3), "Payee3", new Category(), new Currency(100m), "Memo3")
+                    new(DateTime.Today.AddDays(-3), "Payee3", new Category(), new Currency(100m), "Memo3"),
                 },
-                AccountName = "Account 2"
-            }
+                AccountName = "Account 2",
+            },
         };
 
         _mockDbManager.Setup(db => db.GetCollection<Account>("Accounts")).Returns(accounts);

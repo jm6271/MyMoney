@@ -35,8 +35,7 @@ public class EditSavingsCategoryTests
         _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
 
         // Setup database reader to return empty collection
-        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
-            .Returns(new List<Budget>());
+        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
 
         _viewModel = new(
             _mockContentDialogService.Object,
@@ -59,8 +58,10 @@ public class EditSavingsCategoryTests
         await _viewModel.EditSavingsCategoryCommand.ExecuteAsync(null);
 
         // Assert
-        _mockSavingsCategoryDialogService.Verify(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
-            It.IsAny<string>()), Times.Never);
+        _mockSavingsCategoryDialogService.Verify(
+            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()),
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -74,8 +75,10 @@ public class EditSavingsCategoryTests
         await _viewModel.EditSavingsCategoryCommand.ExecuteAsync(null);
 
         // Assert
-        _mockSavingsCategoryDialogService.Verify(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
-            It.IsAny<string>()), Times.Never);
+        _mockSavingsCategoryDialogService.Verify(
+            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()),
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -87,13 +90,14 @@ public class EditSavingsCategoryTests
         {
             CategoryName = "Test Savings",
             BudgetedAmount = new Currency(100m),
-            CurrentBalance = new Currency(500m)
+            CurrentBalance = new Currency(500m),
         };
         _viewModel.CurrentBudget.BudgetSavingsCategories.Add(originalCategory);
         _viewModel.SavingsCategoriesSelectedIndex = 0;
 
-        _mockSavingsCategoryDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
-            It.IsAny<string>())).ReturnsAsync(ContentDialogResult.Secondary);
+        _mockSavingsCategoryDialogService
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+            .ReturnsAsync(ContentDialogResult.Secondary);
 
         // Act
         await _viewModel.EditSavingsCategoryCommand.ExecuteAsync(null);
@@ -109,37 +113,33 @@ public class EditSavingsCategoryTests
     {
         // Arrange
         _viewModel.CurrentBudget = new Budget();
-        _viewModel.CurrentBudget.BudgetSavingsCategories.Add(new BudgetSavingsCategory
-        {
-            CategoryName = "Savings 1",
-            BudgetedAmount = new Currency(100m)
-        });
-        _viewModel.CurrentBudget.BudgetSavingsCategories.Add(new BudgetSavingsCategory
-        {
-            CategoryName = "Savings 2",
-            BudgetedAmount = new Currency(200m)
-        });
+        _viewModel.CurrentBudget.BudgetSavingsCategories.Add(
+            new BudgetSavingsCategory { CategoryName = "Savings 1", BudgetedAmount = new Currency(100m) }
+        );
+        _viewModel.CurrentBudget.BudgetSavingsCategories.Add(
+            new BudgetSavingsCategory { CategoryName = "Savings 2", BudgetedAmount = new Currency(200m) }
+        );
         _viewModel.SavingsCategoriesSelectedIndex = 0;
 
         var dialogViewModel = new SavingsCategoryDialogViewModel
         {
             Category = "Savings 2", // Try to rename to existing name
-            Planned = new Currency(100m)
+            Planned = new Currency(100m),
         };
 
-        _mockSavingsCategoryDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
-            It.IsAny<string>())).ReturnsAsync(ContentDialogResult.Primary);
+        _mockSavingsCategoryDialogService
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+            .ReturnsAsync(ContentDialogResult.Primary);
         _mockSavingsCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
 
         // Act
         await _viewModel.EditSavingsCategoryCommand.ExecuteAsync(null);
 
         // Assert
-        _mockMessageBoxService.Verify(x => x.ShowInfoAsync(
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>()
-        ), Times.Once);
+        _mockMessageBoxService.Verify(
+            x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Once
+        );
         Assert.AreEqual("Savings 1", _viewModel.CurrentBudget.BudgetSavingsCategories[0].CategoryName);
     }
 
@@ -152,7 +152,7 @@ public class EditSavingsCategoryTests
         {
             CategoryName = "Test Savings",
             BudgetedAmount = new Currency(100m),
-            CurrentBalance = new Currency(500m)
+            CurrentBalance = new Currency(500m),
         };
         _viewModel.CurrentBudget.BudgetSavingsCategories.Add(originalCategory);
         _viewModel.SavingsCategoriesSelectedIndex = 0;
@@ -161,11 +161,12 @@ public class EditSavingsCategoryTests
         {
             Category = "Test Savings",
             Planned = new Currency(100m),
-            CurrentBalance = new Currency(600m) // Changed balance
+            CurrentBalance = new Currency(600m), // Changed balance
         };
 
-        _mockSavingsCategoryDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
-            It.IsAny<string>())).ReturnsAsync(ContentDialogResult.Primary);
+        _mockSavingsCategoryDialogService
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+            .ReturnsAsync(ContentDialogResult.Primary);
         _mockSavingsCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
 
         // Act
@@ -173,9 +174,11 @@ public class EditSavingsCategoryTests
 
         // Assert
         Assert.AreEqual(600m, _viewModel.CurrentBudget.BudgetSavingsCategories[0].CurrentBalance.Value);
-        Assert.IsTrue(_viewModel.CurrentBudget.BudgetSavingsCategories[0].Transactions.Any(t => 
-            t.TransactionDetail == "Updated balance" && 
-            t.Amount.Value == 100m)); // Should add transaction for 100m difference
+        Assert.IsTrue(
+            _viewModel
+                .CurrentBudget.BudgetSavingsCategories[0]
+                .Transactions.Any(t => t.TransactionDetail == "Updated balance" && t.Amount.Value == 100m)
+        ); // Should add transaction for 100m difference
     }
 
     [TestMethod]
@@ -187,16 +190,20 @@ public class EditSavingsCategoryTests
         {
             CategoryName = "Test Savings",
             BudgetedAmount = new Currency(100m),
-            CurrentBalance = new Currency(500m)
+            CurrentBalance = new Currency(500m),
         };
-        
+
         // Add initial planned transaction
-        var plannedTransaction = new Transaction(DateTime.Today, "",
+        var plannedTransaction = new Transaction(
+            DateTime.Today,
+            "",
             new Category { Group = "Savings", Name = "Test Savings" },
-            new Currency(100m), "Planned This Month");
+            new Currency(100m),
+            "Planned This Month"
+        );
         originalCategory.Transactions.Add(plannedTransaction);
         originalCategory.PlannedTransactionHash = plannedTransaction.TransactionHash;
-        
+
         _viewModel.CurrentBudget.BudgetSavingsCategories.Add(originalCategory);
         _viewModel.SavingsCategoriesSelectedIndex = 0;
 
@@ -204,11 +211,12 @@ public class EditSavingsCategoryTests
         {
             Category = "Test Savings",
             Planned = new Currency(200m), // Changed planned amount
-            CurrentBalance = new Currency(500m)
+            CurrentBalance = new Currency(500m),
         };
 
-        _mockSavingsCategoryDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
-            It.IsAny<string>())).ReturnsAsync(ContentDialogResult.Primary);
+        _mockSavingsCategoryDialogService
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+            .ReturnsAsync(ContentDialogResult.Primary);
         _mockSavingsCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
 
         // Act
@@ -217,8 +225,9 @@ public class EditSavingsCategoryTests
         // Assert
         Assert.AreEqual(200m, _viewModel.CurrentBudget.BudgetSavingsCategories[0].BudgetedAmount.Value);
         Assert.AreEqual(600m, _viewModel.CurrentBudget.BudgetSavingsCategories[0].CurrentBalance.Value); // 500 + 100
-        var updatedPlannedTransaction = _viewModel.CurrentBudget.BudgetSavingsCategories[0].Transactions
-            .First(t => t.TransactionHash == originalCategory.PlannedTransactionHash);
+        var updatedPlannedTransaction = _viewModel
+            .CurrentBudget.BudgetSavingsCategories[0]
+            .Transactions.First(t => t.TransactionHash == originalCategory.PlannedTransactionHash);
         Assert.AreEqual(200m, updatedPlannedTransaction.Amount.Value);
     }
 }

@@ -1,4 +1,6 @@
-﻿using LiveChartsCore;
+﻿using System.Collections.ObjectModel;
+using System.Globalization;
+using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.VisualElements;
@@ -6,8 +8,6 @@ using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
 using SkiaSharp;
-using System.Collections.ObjectModel;
-using System.Globalization;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -91,7 +91,7 @@ namespace MyMoney.ViewModels.Pages
         {
             Text = "Actual Income",
             TextSize = 25,
-            Padding = new LiveChartsCore.Drawing.Padding(15)
+            Padding = new LiveChartsCore.Drawing.Padding(15),
         };
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace MyMoney.ViewModels.Pages
         {
             Text = "Actual Expenses",
             TextSize = 25,
-            Padding = new LiveChartsCore.Drawing.Padding(15)
+            Padding = new LiveChartsCore.Drawing.Padding(15),
         };
 
         /// <summary>
@@ -159,8 +159,11 @@ namespace MyMoney.ViewModels.Pages
         {
             ClearReports();
             var reportData = BudgetReportCalculator.CalculateBudgetReport(date, _databaseReader);
-            
-            var (incomeTotal, expenseTotal, reportTotal) = await CalculateReportTotals(reportData.income, reportData.expenses);
+
+            var (incomeTotal, expenseTotal, reportTotal) = await CalculateReportTotals(
+                reportData.income,
+                reportData.expenses
+            );
             reportData.income.Add(incomeTotal);
             reportData.expenses.Add(expenseTotal);
             UpdateReportCollections(reportData);
@@ -240,7 +243,13 @@ namespace MyMoney.ViewModels.Pages
             SavingsItems.Clear();
         }
 
-        private void UpdateReportCollections((List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) data)
+        private void UpdateReportCollections(
+            (
+                List<BudgetReportItem> income,
+                List<BudgetReportItem> expense,
+                List<SavingsCategoryReportItem> savings
+            ) data
+        )
         {
             foreach (var item in data.income)
                 IncomeItems.Add(item);
@@ -252,8 +261,11 @@ namespace MyMoney.ViewModels.Pages
                 SavingsItems.Add(item);
         }
 
-        private static async Task<(BudgetReportItem income, BudgetReportItem expenses, Currency total)> 
-            CalculateReportTotals(IList<BudgetReportItem> incomeItems, IList<BudgetReportItem> expenseItems)
+        private static async Task<(
+            BudgetReportItem income,
+            BudgetReportItem expenses,
+            Currency total
+        )> CalculateReportTotals(IList<BudgetReportItem> incomeItems, IList<BudgetReportItem> expenseItems)
         {
             var incomeTotal = await Task.Run(() => CalculateTotal(incomeItems));
             var expenseTotal = await Task.Run(() => CalculateTotal(expenseItems));
@@ -284,7 +296,8 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateCharts()
         {
-            if (SelectedBudget == null) return;
+            if (SelectedBudget == null)
+                return;
 
             UpdateActualIncomeChart();
             UpdateActualExpensesChart();
@@ -293,32 +306,32 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateActualIncomeChart()
         {
-            if (SelectedBudget == null) return;
+            if (SelectedBudget == null)
+                return;
 
             var incomeTotals = GetNonZeroTotals(
                 IncomeItems.Take(IncomeItems.Count - 1),
                 item => item.Actual.Value,
-                item => item.Category);
+                item => item.Category
+            );
 
             ActualIncomeSeries = CreatePieSeries(incomeTotals);
         }
 
         private void UpdateActualExpensesChart()
         {
-            if (SelectedBudget == null) return;
+            if (SelectedBudget == null)
+                return;
 
             var expenseTotals = GetNonZeroTotals(
                 ExpenseItems.Take(ExpenseItems.Count - 1),
                 item => item.Actual.Value,
-                item => item.Category);
+                item => item.Category
+            );
 
-            var savingsTotals = GetNonZeroTotals(
-                SavingsItems,
-                item => item.Saved.Value,
-                item => item.Category);
+            var savingsTotals = GetNonZeroTotals(SavingsItems, item => item.Saved.Value, item => item.Category);
 
-            var combinedTotals = expenseTotals.Concat(savingsTotals)
-                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            var combinedTotals = expenseTotals.Concat(savingsTotals).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
             ActualExpenseSeries = CreatePieSeries(combinedTotals);
         }
@@ -326,32 +339,31 @@ namespace MyMoney.ViewModels.Pages
         private static Dictionary<string, double> GetNonZeroTotals<T>(
             IEnumerable<T> items,
             Func<T, decimal> valueSelector,
-            Func<T, string> categorySelector)
+            Func<T, string> categorySelector
+        )
         {
             return items
                 .Where(item => valueSelector(item) != 0m)
-                .ToDictionary(
-                    item => categorySelector(item),
-                    item => (double)valueSelector(item));
+                .ToDictionary(item => categorySelector(item), item => (double)valueSelector(item));
         }
 
         private static ISeries[] CreatePieSeries(Dictionary<string, double> totals)
         {
-            return totals.Select(item =>
-                new PieSeries<double>
+            return totals
+                .Select(item => new PieSeries<double>
                 {
                     Values = [item.Value],
                     Name = item.Key,
                     DataLabelsFormatter = point => point.Model.ToString("C", CultureInfo.CurrentCulture),
-                    ToolTipLabelFormatter = point => point.Model.ToString("C", CultureInfo.CurrentCulture)
-                }).ToArray();
+                    ToolTipLabelFormatter = point => point.Model.ToString("C", CultureInfo.CurrentCulture),
+                })
+                .ToArray();
         }
 
         private void UpdateChartsTheme()
         {
-            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
-                ? LightTextColor
-                : DarkTextColor;
+            ChartTextColor =
+                ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light ? LightTextColor : DarkTextColor;
 
             var textPaint = new SolidColorPaint(ChartTextColor);
             ActualIncomeTitle.Paint = textPaint;

@@ -1,9 +1,9 @@
+using System.Collections.ObjectModel;
+using Moq;
 using MyMoney.Core.Models;
 using MyMoney.Services.ContentDialogs;
-using Moq;
-using Wpf.Ui.Controls;
 using Wpf.Ui;
-using System.Collections.ObjectModel;
+using Wpf.Ui.Controls;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -32,8 +32,7 @@ public class DeleteExpenseItemTests
         _expenseGroupDialogServiceMock = new Mock<INewExpenseGroupDialogService>();
         _savingsCategoryDialogServiceMock = new Mock<ISavingsCategoryDialogService>();
 
-        _databaseReaderMock.Setup(x => x.GetCollection<Budget>("Budgets"))
-            .Returns(new List<Budget>());
+        _databaseReaderMock.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
 
         _viewModel = new MyMoney.ViewModels.Pages.BudgetViewModel(
             _contentDialogServiceMock.Object,
@@ -46,19 +45,17 @@ public class DeleteExpenseItemTests
         );
     }
 
-    [TestMethod] 
+    [TestMethod]
     public async Task DeleteExpenseItem_WhenCurrentBudgetIsNull_ShouldReturnEarly()
     {
         // Act
         await _viewModel.DeleteExpenseItemCommand.ExecuteAsync(null);
 
         // Assert
-        _messageBoxServiceMock.Verify(x => x.ShowAsync(
-            It.IsAny<string>(), 
-            It.IsAny<string>(), 
-            It.IsAny<string>(), 
-            It.IsAny<string>()), 
-            Times.Never);
+        _messageBoxServiceMock.Verify(
+            x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -68,7 +65,7 @@ public class DeleteExpenseItemTests
         var budget = new Budget
         {
             BudgetDate = DateTime.Now,
-            BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>()
+            BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>(),
         };
         _viewModel.CurrentBudget = budget;
         _viewModel.IsEditingEnabled = false;
@@ -77,12 +74,10 @@ public class DeleteExpenseItemTests
         await _viewModel.DeleteExpenseItemCommand.ExecuteAsync(null);
 
         // Assert
-        _messageBoxServiceMock.Verify(x => x.ShowAsync(
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>()),
-            Times.Never);
+        _messageBoxServiceMock.Verify(
+            x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -94,17 +89,17 @@ public class DeleteExpenseItemTests
             BudgetDate = DateTime.Now,
             BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>
             {
-                new() { CategoryName = "Test", /* Amount = new Currency(100m), Id = 1 */}
-            }
+                new()
+                {
+                    CategoryName = "Test", /* Amount = new Currency(100m), Id = 1 */
+                },
+            },
         };
         _viewModel.CurrentBudget = budget;
         _viewModel.ExpenseItemsSelectedIndex = 0;
 
-        _messageBoxServiceMock.Setup(x => x.ShowAsync(
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>()))
+        _messageBoxServiceMock
+            .Setup(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(MessageBoxResult.Secondary);
 
         // Act
@@ -123,21 +118,23 @@ public class DeleteExpenseItemTests
             BudgetDate = DateTime.Now,
             BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>
             {
-                new() {CategoryName = "Group 1", SubItems = [
-                    new() { Category = "Category 1", Amount = new(50m)},
-                    new() {Category = "Category 2", Amount = new(100m)},
-                    new() { Category = "Category 3", Amount = new (200m)}
-                    ]},
-            }
+                new()
+                {
+                    CategoryName = "Group 1",
+                    SubItems =
+                    [
+                        new() { Category = "Category 1", Amount = new(50m) },
+                        new() { Category = "Category 2", Amount = new(100m) },
+                        new() { Category = "Category 3", Amount = new(200m) },
+                    ],
+                },
+            },
         };
         _viewModel.CurrentBudget = budget;
         _viewModel.CurrentBudget.BudgetExpenseItems[0].SelectedSubItemIndex = 1; // Select "Category 2"
 
-        _messageBoxServiceMock.Setup(x => x.ShowAsync(
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>(),
-            It.IsAny<string>()))
+        _messageBoxServiceMock
+            .Setup(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(MessageBoxResult.Primary);
 
         // Act

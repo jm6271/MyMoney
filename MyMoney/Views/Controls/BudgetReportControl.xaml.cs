@@ -1,10 +1,10 @@
-﻿using MyMoney.Core.Models;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
+using MyMoney.Core.Models;
 using MyMoney.Helpers;
 
 namespace MyMoney.Views.Controls
@@ -20,13 +20,20 @@ namespace MyMoney.Views.Controls
 
             ExpenseItems ??= [];
             // Listen for MouseWheel on *all* column headers inside this control
-            AddHandler(GridViewColumnHeader.PreviewMouseWheelEvent,
-                       new MouseWheelEventHandler(GridViewColumnHeader_PreviewMouseWheel),
-                       handledEventsToo: true);
+            AddHandler(
+                GridViewColumnHeader.PreviewMouseWheelEvent,
+                new MouseWheelEventHandler(GridViewColumnHeader_PreviewMouseWheel),
+                handledEventsToo: true
+            );
         }
 
-        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register("Title", typeof(string), typeof(BudgetReportControl), new PropertyMetadata("Budget Report"));
-        
+        public static readonly DependencyProperty TitleProperty = DependencyProperty.Register(
+            "Title",
+            typeof(string),
+            typeof(BudgetReportControl),
+            new PropertyMetadata("Budget Report")
+        );
+
         /// <summary>
         /// The title to display on the budget report
         /// </summary>
@@ -36,9 +43,12 @@ namespace MyMoney.Views.Controls
             set { SetValue(TitleProperty, value); }
         }
 
-        public static readonly DependencyProperty IncomeItemsProperty = 
-            DependencyProperty.Register("IncomeItems", typeof(ObservableCollection<BudgetReportItem>), 
-                typeof(BudgetReportControl), new PropertyMetadata(new ObservableCollection<BudgetReportItem>()));
+        public static readonly DependencyProperty IncomeItemsProperty = DependencyProperty.Register(
+            "IncomeItems",
+            typeof(ObservableCollection<BudgetReportItem>),
+            typeof(BudgetReportControl),
+            new PropertyMetadata(new ObservableCollection<BudgetReportItem>())
+        );
 
         /// <summary>
         /// The report's income items
@@ -49,9 +59,12 @@ namespace MyMoney.Views.Controls
             set { SetValue(IncomeItemsProperty, value); }
         }
 
-        public static readonly DependencyProperty SavingsItemsProperty =
-            DependencyProperty.Register("SavingsItems", typeof(ObservableCollection<SavingsCategoryReportItem>),
-                typeof(BudgetReportControl), new PropertyMetadata(new ObservableCollection<SavingsCategoryReportItem>()));
+        public static readonly DependencyProperty SavingsItemsProperty = DependencyProperty.Register(
+            "SavingsItems",
+            typeof(ObservableCollection<SavingsCategoryReportItem>),
+            typeof(BudgetReportControl),
+            new PropertyMetadata(new ObservableCollection<SavingsCategoryReportItem>())
+        );
 
         /// <summary>
         /// The report's savings items
@@ -62,10 +75,16 @@ namespace MyMoney.Views.Controls
             set { SetValue(SavingsItemsProperty, value); }
         }
 
-        public static readonly DependencyProperty ExpenseItemsProperty = DependencyProperty.Register("ExpenseItems",
-            typeof(ObservableCollection<BudgetReportItem>), typeof(BudgetReportControl),
-            new FrameworkPropertyMetadata(null,
-                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnExpenseItemsChanged));
+        public static readonly DependencyProperty ExpenseItemsProperty = DependencyProperty.Register(
+            "ExpenseItems",
+            typeof(ObservableCollection<BudgetReportItem>),
+            typeof(BudgetReportControl),
+            new FrameworkPropertyMetadata(
+                null,
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                OnExpenseItemsChanged
+            )
+        );
 
         /// <summary>
         /// The report's expense items
@@ -75,7 +94,6 @@ namespace MyMoney.Views.Controls
             get { return (ObservableCollection<BudgetReportItem>)GetValue(ExpenseItemsProperty); }
             set { SetValue(ExpenseItemsProperty, value); }
         }
-
 
         // This gets called when the entire collection is replaced
         private static void OnExpenseItemsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -95,13 +113,11 @@ namespace MyMoney.Views.Controls
             }
         }
 
-
         // This gets called when items are added/removed/replaced
         private void UpdateGroupedExpenseItems(object? sender, NotifyCollectionChangedEventArgs e)
         {
             OnPropertyChanged(nameof(GroupedExpenseItems));
         }
-
 
         // grouped items to display in the ListView
         public ListCollectionView GroupedExpenseItems
@@ -115,9 +131,12 @@ namespace MyMoney.Views.Controls
             }
         }
 
-        public static readonly DependencyProperty ReportTotalProperty = DependencyProperty.Register("ReportTotal",
-            typeof(Currency), typeof(BudgetReportControl),
-            new PropertyMetadata(new Currency(0m)));
+        public static readonly DependencyProperty ReportTotalProperty = DependencyProperty.Register(
+            "ReportTotal",
+            typeof(Currency),
+            typeof(BudgetReportControl),
+            new PropertyMetadata(new Currency(0m))
+        );
 
         public Currency ReportTotal
         {
@@ -125,8 +144,12 @@ namespace MyMoney.Views.Controls
             set { SetValue(ReportTotalProperty, value); }
         }
 
-        public static readonly DependencyProperty CategoryColumnWidthProperty = DependencyProperty.Register("CategoryColumnWidth",
-            typeof(int), typeof(BudgetReportControl), new PropertyMetadata(200));
+        public static readonly DependencyProperty CategoryColumnWidthProperty = DependencyProperty.Register(
+            "CategoryColumnWidth",
+            typeof(int),
+            typeof(BudgetReportControl),
+            new PropertyMetadata(200)
+        );
 
         /// <summary>
         /// The width of the category column
@@ -137,8 +160,12 @@ namespace MyMoney.Views.Controls
             set { SetValue(CategoryColumnWidthProperty, value); }
         }
 
-        public static readonly DependencyProperty BudgetedColumnWidthProperty = DependencyProperty.Register("BudgetedColumnWidth",
-            typeof(int), typeof(BudgetReportControl), new PropertyMetadata(100));
+        public static readonly DependencyProperty BudgetedColumnWidthProperty = DependencyProperty.Register(
+            "BudgetedColumnWidth",
+            typeof(int),
+            typeof(BudgetReportControl),
+            new PropertyMetadata(100)
+        );
 
         /// <summary>
         /// The width of the budgeted column
@@ -149,8 +176,12 @@ namespace MyMoney.Views.Controls
             set { SetValue(BudgetedColumnWidthProperty, value); }
         }
 
-        public static readonly DependencyProperty ActualColumnWidthProperty = DependencyProperty.Register("ActualColumnWidth",
-            typeof(int), typeof(BudgetReportControl), new PropertyMetadata(100));
+        public static readonly DependencyProperty ActualColumnWidthProperty = DependencyProperty.Register(
+            "ActualColumnWidth",
+            typeof(int),
+            typeof(BudgetReportControl),
+            new PropertyMetadata(100)
+        );
 
         /// <summary>
         /// The width of the actual column
@@ -161,8 +192,12 @@ namespace MyMoney.Views.Controls
             set { SetValue(ActualColumnWidthProperty, value); }
         }
 
-        public static readonly DependencyProperty RemainingColumnWidthProperty = DependencyProperty.Register("RemainingColumnWidth",
-            typeof(int), typeof(BudgetReportControl), new PropertyMetadata(100));
+        public static readonly DependencyProperty RemainingColumnWidthProperty = DependencyProperty.Register(
+            "RemainingColumnWidth",
+            typeof(int),
+            typeof(BudgetReportControl),
+            new PropertyMetadata(100)
+        );
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -186,11 +221,13 @@ namespace MyMoney.Views.Controls
             var scrollViewer = (sender as DependencyObject)?.FindAncestor<ScrollViewer>();
             if (scrollViewer != null)
             {
-                scrollViewer.RaiseEvent(new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
-                {
-                    RoutedEvent = UIElement.MouseWheelEvent,
-                    Source = sender
-                });
+                scrollViewer.RaiseEvent(
+                    new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+                    {
+                        RoutedEvent = UIElement.MouseWheelEvent,
+                        Source = sender,
+                    }
+                );
             }
         }
     }

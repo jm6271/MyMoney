@@ -56,9 +56,7 @@ namespace MyMoney.Core.Database
             if (collectionName == "Budgets" || collectionName == "Accounts")
             {
                 // Invalidate all the budget reports
-                var keysToRemove = _cacheObjects.Keys
-                    .Where(key => key.StartsWith("Budget-Report-"))
-                    .ToList();
+                var keysToRemove = _cacheObjects.Keys.Where(key => key.StartsWith("Budget-Report-")).ToList();
                 foreach (var key in keysToRemove)
                 {
                     _cacheObjects.Remove(key);

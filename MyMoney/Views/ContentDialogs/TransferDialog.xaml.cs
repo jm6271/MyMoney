@@ -1,7 +1,7 @@
-﻿using MyMoney.ViewModels.ContentDialogs;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -11,7 +11,8 @@ namespace MyMoney.Views.ContentDialogs
     /// </summary>
     public partial class TransferDialog : ContentDialog
     {
-        public TransferDialog(ContentPresenter dialogHost, TransferDialogViewModel viewModel) : base(dialogHost)
+        public TransferDialog(ContentPresenter dialogHost, TransferDialogViewModel viewModel)
+            : base(dialogHost)
         {
             InitializeComponent();
             DataContext = viewModel;
@@ -27,7 +28,9 @@ namespace MyMoney.Views.ContentDialogs
         {
             if (e.Key == System.Windows.Input.Key.Enter)
             {
-                txtAmount.MoveFocus(new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.Next));
+                txtAmount.MoveFocus(
+                    new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.Next)
+                );
                 e.Handled = false;
             }
         }
@@ -39,7 +42,8 @@ namespace MyMoney.Views.ContentDialogs
 
         private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
         {
-            if (args.Result != ContentDialogResult.Primary) return;
+            if (args.Result != ContentDialogResult.Primary)
+                return;
 
             txtAmount.Focus();
             txtAmount.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
@@ -56,8 +60,8 @@ namespace MyMoney.Views.ContentDialogs
             cmbToBorder.BorderBrush = Brushes.Transparent;
 
             // validate
-            if (!fromHasErrors && !toHasErrors
-                              && amountValidationErrors is not { Count: > 0 }) return;
+            if (!fromHasErrors && !toHasErrors && amountValidationErrors is not { Count: > 0 })
+                return;
 
             // Errors, prevent the dialog from cancelling
             args.Cancel = true;
@@ -70,14 +74,18 @@ namespace MyMoney.Views.ContentDialogs
 
         private void cmbTo_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (cmbTo.IsDropDownOpen) return;
-            cmbToBorder.BorderBrush = string.IsNullOrEmpty(cmbTo.Text) || cmbFrom.Text == cmbTo.Text ? Brushes.Red : Brushes.Transparent;
+            if (cmbTo.IsDropDownOpen)
+                return;
+            cmbToBorder.BorderBrush =
+                string.IsNullOrEmpty(cmbTo.Text) || cmbFrom.Text == cmbTo.Text ? Brushes.Red : Brushes.Transparent;
         }
 
         private void cmbFrom_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (cmbFrom.IsDropDownOpen) return;
-            cmbFromBorder.BorderBrush = string.IsNullOrEmpty(cmbFrom.Text) || cmbFrom.Text == cmbTo.Text ? Brushes.Red : Brushes.Transparent;
+            if (cmbFrom.IsDropDownOpen)
+                return;
+            cmbFromBorder.BorderBrush =
+                string.IsNullOrEmpty(cmbFrom.Text) || cmbFrom.Text == cmbTo.Text ? Brushes.Red : Brushes.Transparent;
         }
     }
 }

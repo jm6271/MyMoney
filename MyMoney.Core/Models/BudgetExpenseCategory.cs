@@ -1,5 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using LiteDB;
 
 namespace MyMoney.Core.Models
@@ -42,7 +42,7 @@ namespace MyMoney.Core.Models
                 Id = this.Id,
                 CategoryName = this.CategoryName,
                 SubItems = new ObservableCollection<BudgetItem>(this.SubItems.Select(item => (BudgetItem)item.Clone())),
-                IsExpanded = this.IsExpanded
+                IsExpanded = this.IsExpanded,
             };
         }
     }

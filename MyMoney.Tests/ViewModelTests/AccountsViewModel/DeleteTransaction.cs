@@ -1,10 +1,10 @@
-﻿using MyMoney.Core.Models;
+﻿using Moq;
+using MyMoney.Core.Database;
+using MyMoney.Core.Models;
+using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.Pages;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
-using Moq;
-using MyMoney.Services.ContentDialogs;
-using MyMoney.Core.Database;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -36,8 +36,7 @@ public class DeleteTransactionTest
         _mockUpdateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
 
         // Setup empty accounts collection by default
-        _mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts"))
-            .Returns([]);
+        _mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts")).Returns([]);
     }
 
     [TestMethod]
@@ -51,8 +50,10 @@ public class DeleteTransactionTest
         _viewModel.DeleteTransactionCommand.Execute(null);
 
         // Assert
-        _mockMessageBoxService.Verify(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(),
-            It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+        _mockMessageBoxService.Verify(
+            x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never()
+        );
     }
 
     [TestMethod]
@@ -69,8 +70,10 @@ public class DeleteTransactionTest
         _viewModel.DeleteTransactionCommand.Execute(null);
 
         // Assert
-        _mockMessageBoxService.Verify(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(),
-            It.IsAny<string>()), Times.Never());
+        _mockMessageBoxService.Verify(
+            x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never()
+        );
     }
 
     [TestMethod]
@@ -79,8 +82,13 @@ public class DeleteTransactionTest
         // Arrange
         _viewModel = CreateViewModel();
         var account = new Account { AccountName = "Test", Total = new Currency(1000m) };
-        var transaction = new Transaction(DateTime.Today, "Test", 
-            new() { Name = "Category", Group = "Income" }, new Currency(100m), "Memo");
+        var transaction = new Transaction(
+            DateTime.Today,
+            "Test",
+            new() { Name = "Category", Group = "Income" },
+            new Currency(100m),
+            "Memo"
+        );
         account.Transactions.Add(transaction);
         _viewModel.Accounts.Add(account);
         _viewModel.SelectedAccount = account;
@@ -104,8 +112,13 @@ public class DeleteTransactionTest
         // Arrange
         _viewModel = CreateViewModel();
         var account = new Account { AccountName = "Test", Total = new Currency(1000m) };
-        var transaction = new Transaction(DateTime.Today, "Test", 
-            new() { Name = "Category", Group = "Income" }, new Currency(100m), "Memo");
+        var transaction = new Transaction(
+            DateTime.Today,
+            "Test",
+            new() { Name = "Category", Group = "Income" },
+            new Currency(100m),
+            "Memo"
+        );
         account.Transactions.Add(transaction);
         _viewModel.Accounts.Add(account);
         _viewModel.SelectedAccount = account;
@@ -129,8 +142,13 @@ public class DeleteTransactionTest
         // Arrange
         _viewModel = CreateViewModel();
         var account = new Account { AccountName = "Test", Total = new Currency(1000m) };
-        var transaction = new Transaction(DateTime.Today, "Test", 
-            new() { Name = "Category", Group = "Income" }, new Currency(-100m), "Memo");
+        var transaction = new Transaction(
+            DateTime.Today,
+            "Test",
+            new() { Name = "Category", Group = "Income" },
+            new Currency(-100m),
+            "Memo"
+        );
         account.Transactions.Add(transaction);
         _viewModel.Accounts.Add(account);
         _viewModel.SelectedAccount = account;

@@ -1,12 +1,12 @@
-﻿using MyMoney.ViewModels.ContentDialogs;
-using MyMoney.Views.ContentDialogs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Wpf.Ui.Controls;
+using MyMoney.ViewModels.ContentDialogs;
+using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
+using Wpf.Ui.Controls;
 
 namespace MyMoney.Services.ContentDialogs
 {
@@ -14,11 +14,17 @@ namespace MyMoney.Services.ContentDialogs
     {
         public void SetViewModel(NewExpenseGroupDialogViewModel viewModel);
         public NewExpenseGroupDialogViewModel GetViewModel();
-        public Task<ContentDialogResult> ShowDialogAsync(IContentDialogService dialogService, string dialogTitle, string acceptButtonText);
+        public Task<ContentDialogResult> ShowDialogAsync(
+            IContentDialogService dialogService,
+            string dialogTitle,
+            string acceptButtonText
+        );
     }
+
     public class NewExpenseGroupDialogService : INewExpenseGroupDialogService
     {
         private NewExpenseGroupDialogViewModel _viewModel = new();
+
         public NewExpenseGroupDialogViewModel GetViewModel()
         {
             return _viewModel;
@@ -29,7 +35,11 @@ namespace MyMoney.Services.ContentDialogs
             _viewModel = viewModel;
         }
 
-        public async Task<ContentDialogResult> ShowDialogAsync(IContentDialogService dialogService, string dialogTitle, string acceptButtonText)
+        public async Task<ContentDialogResult> ShowDialogAsync(
+            IContentDialogService dialogService,
+            string dialogTitle,
+            string acceptButtonText
+        )
         {
             var host = dialogService.GetDialogHost();
             if (host == null)
@@ -39,7 +49,7 @@ namespace MyMoney.Services.ContentDialogs
             {
                 PrimaryButtonText = acceptButtonText,
                 CloseButtonText = "Cancel",
-                Title = dialogTitle
+                Title = dialogTitle,
             };
             return await dialogService.ShowAsync(newExpenseGroupDialog, CancellationToken.None);
         }

@@ -1,5 +1,4 @@
-﻿using MyMoney.Core.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
+using MyMoney.Core.Models;
 using Wpf.Ui.Appearance;
 
 namespace MyMoney.Helpers
@@ -17,7 +17,7 @@ namespace MyMoney.Helpers
         {
             if (value is Currency currency && currency.Value < 0)
             {
-                return new SolidColorBrush(Color.FromArgb(255,255,0,0));
+                return new SolidColorBrush(Color.FromArgb(255, 255, 0, 0));
             }
             else
             {

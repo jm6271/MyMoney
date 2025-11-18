@@ -1,6 +1,6 @@
-﻿using MyMoney.ViewModels.ContentDialogs;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
+using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -10,7 +10,8 @@ namespace MyMoney.Views.ContentDialogs
     /// </summary>
     public partial class NewAccountDialog : ContentDialog
     {
-        public NewAccountDialog(ContentPresenter dialogHost, NewAccountDialogViewModel viewModel) : base(dialogHost)
+        public NewAccountDialog(ContentPresenter dialogHost, NewAccountDialogViewModel viewModel)
+            : base(dialogHost)
         {
             InitializeComponent();
             DataContext = viewModel;
@@ -28,7 +29,8 @@ namespace MyMoney.Views.ContentDialogs
             if (e.Key == System.Windows.Input.Key.Enter)
             {
                 txtStartingBalance.MoveFocus(
-                    new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.Next));
+                    new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.Next)
+                );
 
                 e.Handled = false;
             }
@@ -52,8 +54,7 @@ namespace MyMoney.Views.ContentDialogs
         private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
         {
             TxtAccountName.Focus();
-            TxtAccountName.MoveFocus(
-                new TraversalRequest(FocusNavigationDirection.Next));
+            TxtAccountName.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
         }
     }
 }

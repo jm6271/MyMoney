@@ -10,7 +10,6 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
-
 [TestClass]
 public class AddExpenseGroupTests
 {
@@ -33,8 +32,7 @@ public class AddExpenseGroupTests
         _savingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
         _mockDatabaseReader = new Mock<Core.Database.IDatabaseManager>();
 
-        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
-            .Returns(new List<Budget>());
+        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
     }
 
     [TestMethod]
@@ -51,18 +49,12 @@ public class AddExpenseGroupTests
             _savingsCategoryDialogService.Object
         );
 
-        viewModel.CurrentBudget = new Budget
-        {
-            BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>()
-        };
+        viewModel.CurrentBudget = new Budget { BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>() };
 
         var dialogViewModel = new NewExpenseGroupDialogViewModel { GroupName = "Test Group" };
-        _mockNewExpenseGroupDialogService.Setup(x => x.GetViewModel())
-            .Returns(dialogViewModel);
-        _mockNewExpenseGroupDialogService.Setup(x => x.ShowDialogAsync(
-            It.IsAny<IContentDialogService>(),
-            It.IsAny<string>(),
-            It.IsAny<string>()))
+        _mockNewExpenseGroupDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
+        _mockNewExpenseGroupDialogService
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(ContentDialogResult.Primary);
 
         // Act
@@ -93,7 +85,8 @@ public class AddExpenseGroupTests
         // Assert
         _mockNewExpenseGroupDialogService.Verify(
             x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>(), It.IsAny<string>()),
-            Times.Never);
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -119,7 +112,8 @@ public class AddExpenseGroupTests
         // Assert
         _mockNewExpenseGroupDialogService.Verify(
             x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>(), It.IsAny<string>()),
-            Times.Never);
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -136,20 +130,12 @@ public class AddExpenseGroupTests
             _savingsCategoryDialogService.Object
         );
 
-        viewModel.CurrentBudget = new Budget
-        {
-            BudgetExpenseItems = [
-                new() { CategoryName = "Test Group" }
-            ]
-        };
+        viewModel.CurrentBudget = new Budget { BudgetExpenseItems = [new() { CategoryName = "Test Group" }] };
 
         var dialogViewModel = new NewExpenseGroupDialogViewModel { GroupName = "Test Group" };
-        _mockNewExpenseGroupDialogService.Setup(x => x.GetViewModel())
-            .Returns(dialogViewModel);
-        _mockNewExpenseGroupDialogService.Setup(x => x.ShowDialogAsync(
-            It.IsAny<IContentDialogService>(),
-            It.IsAny<string>(),
-            It.IsAny<string>()))
+        _mockNewExpenseGroupDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
+        _mockNewExpenseGroupDialogService
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(ContentDialogResult.Primary);
 
         // Act
@@ -157,6 +143,9 @@ public class AddExpenseGroupTests
 
         // Assert
         Assert.HasCount(1, viewModel.CurrentBudget.BudgetExpenseItems);
-        _mockMessageBoxService.Verify(x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        _mockMessageBoxService.Verify(
+            x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Once
+        );
     }
 }
