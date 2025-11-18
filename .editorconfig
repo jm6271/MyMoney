@@ -13,7 +13,7 @@ tab_width = 4
 max_line_length = 120
 
 # New line preferences
-end_of_line = crlf
+# end_of_line = crlf
 insert_final_newline = true
 
 #### .NET Code Actions ####
