@@ -358,8 +358,13 @@ namespace MyMoney.ViewModels.Pages
                 amount = new Currency(-amount.Value);
             }
 
-            var transaction = new Transaction(returnedViewModel.NewTransactionDate, _transactionDialogService.GetSelectedPayee(),
-                returnedViewModel.NewTransactionCategory, amount, returnedViewModel.NewTransactionMemo);
+            var transaction = new Transaction(
+                returnedViewModel.NewTransactionDate,
+                _transactionDialogService.GetSelectedPayee(),
+                returnedViewModel.NewTransactionCategory,
+                amount,
+                returnedViewModel.NewTransactionMemo
+            );
 
             // make sure there's enough money in the account for this transaction
             if (returnedViewModel.NewTransactionIsExpense)
@@ -372,8 +377,11 @@ namespace MyMoney.ViewModels.Pages
 
                 if (Math.Abs(transaction.Amount.Value) > SelectedAccount.Total.Value)
                 {
-                    await _messageBoxService.ShowInfoAsync("Error",
-                        "The amount of this transaction is greater than the balance of the selected account.", "OK");
+                    await _messageBoxService.ShowInfoAsync(
+                        "Error",
+                        "The amount of this transaction is greater than the balance of the selected account.",
+                        "OK"
+                    );
                     return (false, null);
                 }
             }
