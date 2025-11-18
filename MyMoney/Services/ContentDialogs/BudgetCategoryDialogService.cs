@@ -1,7 +1,7 @@
 ﻿using MyMoney.ViewModels.ContentDialogs;
-using Wpf.Ui.Controls;
-using Wpf.Ui;
 using MyMoney.Views.ContentDialogs;
+using Wpf.Ui;
+using Wpf.Ui.Controls;
 
 namespace MyMoney.Services.ContentDialogs
 {
@@ -36,7 +36,7 @@ namespace MyMoney.Services.ContentDialogs
             {
                 PrimaryButtonText = "OK",
                 CloseButtonText = "Cancel",
-                Title = title
+                Title = title,
             };
             return await dialogService.ShowAsync(budgetCategoryDialog, CancellationToken.None);
         }

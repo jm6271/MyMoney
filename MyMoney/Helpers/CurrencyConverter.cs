@@ -1,6 +1,6 @@
-﻿using MyMoney.Core.Models;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Windows.Data;
+using MyMoney.Core.Models;
 
 namespace MyMoney.Helpers
 {
@@ -8,8 +8,8 @@ namespace MyMoney.Helpers
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is Currency currency) 
-            { 
+            if (value is Currency currency)
+            {
                 return currency.ToString();
             }
             return string.Empty;
@@ -30,7 +30,6 @@ namespace MyMoney.Helpers
                     if (result >= 0)
                         return new Currency(result);
                 }
-                    
             }
             return DependencyProperty.UnsetValue;
         }

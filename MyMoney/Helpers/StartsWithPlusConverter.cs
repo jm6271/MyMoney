@@ -10,19 +10,19 @@ namespace MyMoney.Helpers
 {
     public class StartsWithPlusConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) 
-        { 
-            if (value is string stringValue) 
-            { 
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value is string stringValue)
+            {
                 return stringValue.StartsWith('+');
-            } 
-            
-            return false; 
+            }
+
+            return false;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) 
-        { 
-            throw new NotImplementedException(); 
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }

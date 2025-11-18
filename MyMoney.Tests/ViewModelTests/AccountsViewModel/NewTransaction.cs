@@ -1,11 +1,11 @@
+using System.Collections.ObjectModel;
+using Moq;
+using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.ViewModels.Pages;
-using System.Collections.ObjectModel;
 using Wpf.Ui;
-using Moq;
-using MyMoney.Core.Database;
 using Wpf.Ui.Controls;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
@@ -37,8 +37,7 @@ public class NewTransactionTests
         _messageBoxServiceMock = new Mock<IMessageBoxService>();
         _updateAccountBalanceDialogServiceMock = new Mock<IUpdateAccountBalanceDialogService>();
 
-        _databaseReaderMock.Setup(x => x.GetCollection<Account>("Accounts"))
-            .Returns([]);
+        _databaseReaderMock.Setup(x => x.GetCollection<Account>("Accounts")).Returns([]);
 
         _viewModel = new(
             _contentDialogServiceMock.Object,
@@ -73,19 +72,22 @@ public class NewTransactionTests
         _viewModel.Accounts.Add(account);
         Assert.IsNull(_viewModel.SelectedAccount);
 
-        _transactionDialogServiceMock.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+        _transactionDialogServiceMock
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
             .ReturnsAsync(ContentDialogResult.Primary);
-        _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee())
-            .Returns("Test Payee");
-        _transactionDialogServiceMock.Setup(x => x.GetViewModel())
-            .Returns(new NewTransactionDialogViewModel(_databaseReaderMock.Object)
-            {
-                NewTransactionAmount = new Currency(500),
-                NewTransactionIsExpense = true,
-                NewTransactionDate = DateTime.Today,
-                NewTransactionCategory = new() { Name = "Test Category", Group = "Income" },
-                NewTransactionMemo = "Test Memo"
-            });
+        _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee()).Returns("Test Payee");
+        _transactionDialogServiceMock
+            .Setup(x => x.GetViewModel())
+            .Returns(
+                new NewTransactionDialogViewModel(_databaseReaderMock.Object)
+                {
+                    NewTransactionAmount = new Currency(500),
+                    NewTransactionIsExpense = true,
+                    NewTransactionDate = DateTime.Today,
+                    NewTransactionCategory = new() { Name = "Test Category", Group = "Income" },
+                    NewTransactionMemo = "Test Memo",
+                }
+            );
 
         // Act
         await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
@@ -104,7 +106,8 @@ public class NewTransactionTests
         _viewModel.SelectedAccount = account;
         _viewModel.SelectedAccountIndex = 0;
 
-        _transactionDialogServiceMock.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+        _transactionDialogServiceMock
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
             .ReturnsAsync(ContentDialogResult.Secondary);
 
         // Act
@@ -124,19 +127,22 @@ public class NewTransactionTests
         _viewModel.SelectedAccount = account;
         _viewModel.SelectedAccountIndex = 0;
 
-        _transactionDialogServiceMock.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+        _transactionDialogServiceMock
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
             .ReturnsAsync(ContentDialogResult.Primary);
-        _transactionDialogServiceMock.Setup(x => x.GetViewModel())
-            .Returns(new NewTransactionDialogViewModel(_databaseReaderMock.Object)
-            {
-                NewTransactionAmount = new Currency(500),
-                NewTransactionIsExpense = true,
-                NewTransactionDate = DateTime.Today,
-                NewTransactionCategory = new() { Name = "Test Category", Group = "Income" },
-                NewTransactionMemo = "Test Memo"
-            });
-        _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee())
-            .Returns("Test Payee");
+        _transactionDialogServiceMock
+            .Setup(x => x.GetViewModel())
+            .Returns(
+                new NewTransactionDialogViewModel(_databaseReaderMock.Object)
+                {
+                    NewTransactionAmount = new Currency(500),
+                    NewTransactionIsExpense = true,
+                    NewTransactionDate = DateTime.Today,
+                    NewTransactionCategory = new() { Name = "Test Category", Group = "Income" },
+                    NewTransactionMemo = "Test Memo",
+                }
+            );
+        _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee()).Returns("Test Payee");
 
         // Act
         await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
@@ -163,19 +169,22 @@ public class NewTransactionTests
         _viewModel.SelectedAccount = account;
         _viewModel.SelectedAccountIndex = 0;
 
-        _transactionDialogServiceMock.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+        _transactionDialogServiceMock
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
             .ReturnsAsync(ContentDialogResult.Primary);
-        _transactionDialogServiceMock.Setup(x => x.GetViewModel())
-            .Returns(new NewTransactionDialogViewModel(_databaseReaderMock.Object)
-            {
-                NewTransactionAmount = new Currency(500),
-                NewTransactionIsExpense = false,
-                NewTransactionDate = DateTime.Today,
-                NewTransactionCategory = new() { Name = "Income", Group = "Income" },
-                NewTransactionMemo = "Salary"
-            });
-        _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee())
-            .Returns("Employer");
+        _transactionDialogServiceMock
+            .Setup(x => x.GetViewModel())
+            .Returns(
+                new NewTransactionDialogViewModel(_databaseReaderMock.Object)
+                {
+                    NewTransactionAmount = new Currency(500),
+                    NewTransactionIsExpense = false,
+                    NewTransactionDate = DateTime.Today,
+                    NewTransactionCategory = new() { Name = "Income", Group = "Income" },
+                    NewTransactionMemo = "Salary",
+                }
+            );
+        _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee()).Returns("Employer");
 
         // Act
         await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
@@ -202,19 +211,22 @@ public class NewTransactionTests
         _viewModel.SelectedAccount = account;
         _viewModel.SelectedAccountIndex = 0;
 
-        _transactionDialogServiceMock.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+        _transactionDialogServiceMock
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
             .ReturnsAsync(ContentDialogResult.Primary);
-        _transactionDialogServiceMock.Setup(x => x.GetViewModel())
-            .Returns(new NewTransactionDialogViewModel(_databaseReaderMock.Object)
-            {
-                NewTransactionAmount = new Currency(-2000),
-                NewTransactionIsExpense = true,
-                NewTransactionDate = DateTime.Today,
-                NewTransactionCategory = new() { Name = "Expense 1", Group = "Expense" },
-                NewTransactionMemo = ""
-            });
-        _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee())
-            .Returns("Payee");
+        _transactionDialogServiceMock
+            .Setup(x => x.GetViewModel())
+            .Returns(
+                new NewTransactionDialogViewModel(_databaseReaderMock.Object)
+                {
+                    NewTransactionAmount = new Currency(-2000),
+                    NewTransactionIsExpense = true,
+                    NewTransactionDate = DateTime.Today,
+                    NewTransactionCategory = new() { Name = "Expense 1", Group = "Expense" },
+                    NewTransactionMemo = "",
+                }
+            );
+        _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee()).Returns("Payee");
 
         // Act
         await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
@@ -224,7 +236,9 @@ public class NewTransactionTests
         Assert.AreEqual(1000, account.Total.Value);
 
         // Verify message box was shown for insufficient funds
-        _messageBoxServiceMock.Verify(x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(),
-            It.IsAny<string>()), Times.Once);
+        _messageBoxServiceMock.Verify(
+            x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Once
+        );
     }
 }

@@ -1,6 +1,6 @@
-﻿using MyMoney.ViewAdapters.Pages;
+﻿using System.Windows.Controls;
+using MyMoney.ViewAdapters.Pages;
 using MyMoney.ViewModels.Pages;
-using System.Windows.Controls;
 using Wpf.Ui.Abstractions.Controls;
 
 namespace MyMoney.Views.Pages

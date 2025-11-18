@@ -1,12 +1,12 @@
-﻿using MyMoney.ViewModels.Pages;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using MyMoney.Core.Models;
-using System.Collections.ObjectModel;
+using MyMoney.ViewModels.Pages;
 
 namespace MyMoney.ViewAdapters.Pages
 {
@@ -27,7 +27,7 @@ namespace MyMoney.ViewAdapters.Pages
             {
                 { "Current", 0 },
                 { "Future", 1 },
-                { "Past", 2 }
+                { "Past", 2 },
             };
 
             public int Compare(object? x, object? y)

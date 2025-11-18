@@ -39,12 +39,11 @@ public class EditIncomeItemTests
             BudgetTitle = DateTime.Now.ToString("MMMM, yyyy"),
             BudgetIncomeItems = new ObservableCollection<BudgetItem>
             {
-                new() { Category = "Test Income", Amount = new Currency(1000m) }
-            }
+                new() { Category = "Test Income", Amount = new Currency(1000m) },
+            },
         };
 
-        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
-            .Returns([testBudget]);
+        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns([testBudget]);
 
         _viewModel = new ViewModels.Pages.BudgetViewModel(
             _mockContentDialogService.Object,
@@ -71,15 +70,13 @@ public class EditIncomeItemTests
         var dialogViewModel = new BudgetCategoryDialogViewModel
         {
             BudgetCategory = newCategory,
-            BudgetAmount = newAmount
+            BudgetAmount = newAmount,
         };
 
-        _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel())
-            .Returns(dialogViewModel);
+        _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
 
-        _mockBudgetCategoryDialogService.Setup(x => x.ShowDialogAsync(
-            It.IsAny<IContentDialogService>(),
-            It.IsAny<string>()))
+        _mockBudgetCategoryDialogService
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
             .ReturnsAsync(ContentDialogResult.Primary);
 
         // Act
@@ -103,7 +100,8 @@ public class EditIncomeItemTests
         // Assert
         _mockBudgetCategoryDialogService.Verify(
             x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()),
-            Times.Never);
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -118,7 +116,8 @@ public class EditIncomeItemTests
         // Assert
         _mockBudgetCategoryDialogService.Verify(
             x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()),
-            Times.Never);
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -129,9 +128,8 @@ public class EditIncomeItemTests
         var originalCategory = _viewModel.CurrentBudget!.BudgetIncomeItems[0].Category;
         var originalAmount = _viewModel.CurrentBudget.BudgetIncomeItems[0].Amount;
 
-        _mockBudgetCategoryDialogService.Setup(x => x.ShowDialogAsync(
-            It.IsAny<IContentDialogService>(),
-            It.IsAny<string>()))
+        _mockBudgetCategoryDialogService
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
             .ReturnsAsync(ContentDialogResult.Secondary);
 
         // Act
@@ -154,15 +152,13 @@ public class EditIncomeItemTests
         var dialogViewModel = new BudgetCategoryDialogViewModel
         {
             BudgetCategory = newCategory,
-            BudgetAmount = newAmount
+            BudgetAmount = newAmount,
         };
 
-        _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel())
-            .Returns(dialogViewModel);
+        _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
 
-        _mockBudgetCategoryDialogService.Setup(x => x.ShowDialogAsync(
-            It.IsAny<IContentDialogService>(),
-            It.IsAny<string>()))
+        _mockBudgetCategoryDialogService
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
             .ReturnsAsync(ContentDialogResult.Primary);
 
         // Act
@@ -170,6 +166,9 @@ public class EditIncomeItemTests
 
         // Assert
         Assert.HasCount(2, _viewModel.CurrentBudget!.BudgetIncomeItems);
-        _mockMessageBoxService.Verify(x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        _mockMessageBoxService.Verify(
+            x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Once
+        );
     }
 }

@@ -2,7 +2,6 @@ using Moq;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.ViewModels.ContentDialogs; // Added missing namespace
-
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 namespace MyMoney.Tests.ViewModelTests.AccountsViewModel;
@@ -19,8 +18,7 @@ public class LoadCategoryNames
         _databaseReader = new Mock<IDatabaseManager>();
 
         // Setup empty accounts collection
-        _databaseReader.Setup(x => x.GetCollection<Account>("Accounts"))
-            .Returns(new List<Account>());
+        _databaseReader.Setup(x => x.GetCollection<Account>("Accounts")).Returns(new List<Account>());
 
         // Initialize NewTransactionDialogViewModel
         _viewModel = new NewTransactionDialogViewModel(_databaseReader.Object);
@@ -30,8 +28,7 @@ public class LoadCategoryNames
     public void BudgetCategoryNames_WhenNoBudgetExists_IsEmpty()
     {
         // Arrange
-        _databaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
-            .Returns(new List<Budget>());
+        _databaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
 
         // Act
         var categoryNames = _viewModel.BudgetCategoryNames;
@@ -46,27 +43,25 @@ public class LoadCategoryNames
         // Arrange
         var budget = new Budget
         {
-            BudgetIncomeItems =
-            [
-                new BudgetItem { Category = "Salary" },
-                new BudgetItem { Category = "Bonus" }
-            ],
+            BudgetIncomeItems = [new BudgetItem { Category = "Salary" }, new BudgetItem { Category = "Bonus" }],
             BudgetExpenseItems =
             [
-                new BudgetExpenseCategory { CategoryName = "Category 1", SubItems = [
-                    new () { Category = "Groceries"},
-                    new () { Category = "Fast Food"}
-                    ] },
-                new BudgetExpenseCategory { CategoryName = "Category 2", SubItems = [
-                    new () {Category = "Utilities" }
-                    ] }
+                new BudgetExpenseCategory
+                {
+                    CategoryName = "Category 1",
+                    SubItems = [new() { Category = "Groceries" }, new() { Category = "Fast Food" }],
+                },
+                new BudgetExpenseCategory
+                {
+                    CategoryName = "Category 2",
+                    SubItems = [new() { Category = "Utilities" }],
+                },
             ],
             BudgetDate = DateTime.Now,
             BudgetTitle = DateTime.Now.ToString("MMMM, yyyy"),
         };
 
-        _databaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
-            .Returns(new List<Budget> { budget });
+        _databaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget> { budget });
 
         // Act
         var categoryNames = _viewModel.BudgetCategoryNames;
@@ -87,13 +82,19 @@ public class LoadCategoryNames
         var budget = new Budget
         {
             BudgetIncomeItems = [new BudgetItem { Category = "Salary" }],
-            BudgetExpenseItems = [new BudgetExpenseCategory { CategoryName = "Category 1", SubItems = [ new() { Category = "Groceries"}] }],
+            BudgetExpenseItems =
+            [
+                new BudgetExpenseCategory
+                {
+                    CategoryName = "Category 1",
+                    SubItems = [new() { Category = "Groceries" }],
+                },
+            ],
             BudgetDate = DateTime.Now,
             BudgetTitle = DateTime.Now.ToString("MMMM, yyyy"),
         };
 
-        _databaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
-            .Returns(new List<Budget> { budget });
+        _databaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget> { budget });
 
         // Act
         var firstAccess = _viewModel.BudgetCategoryNames;

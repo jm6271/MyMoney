@@ -1,10 +1,10 @@
+using Moq;
+using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
-using Moq;
-using Wpf.Ui.Controls;
-using MyMoney.Core.Database;
 using Wpf.Ui;
+using Wpf.Ui.Controls;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -35,9 +35,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _messageBoxService = new Mock<IMessageBoxService>();
             _updateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
 
-            _databaseReader.Setup(x => x.GetCollection<Account>("Accounts"))
-                .Returns([]);
-            
+            _databaseReader.Setup(x => x.GetCollection<Account>("Accounts")).Returns([]);
+
             _viewModel = new MyMoney.ViewModels.Pages.AccountsViewModel(
                 _contentDialogService.Object,
                 _databaseReader.Object,
@@ -83,9 +82,15 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         {
             // Arrange
             var account = new Account { AccountName = "Test", Total = new Currency(1000) };
-            var transaction = new Transaction(DateTime.Today, "Test", new() { Name = "Category", Group = "Income" }, new Currency(-100), "Memo");
+            var transaction = new Transaction(
+                DateTime.Today,
+                "Test",
+                new() { Name = "Category", Group = "Income" },
+                new Currency(-100),
+                "Memo"
+            );
             account.Transactions.Add(transaction);
-            
+
             _viewModel.Accounts.Add(account);
             _viewModel.SelectedAccount = account;
             _viewModel.SelectedTransactionIndex = 0;
@@ -107,29 +112,35 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         {
             // Arrange
             var account = new Account { AccountName = "Test", Total = new Currency(1000) };
-            var oldTransaction = new Transaction(DateTime.Today, "Test", new() { Name = "Category", Group = "Income" }, new Currency(-100), "Memo");
+            var oldTransaction = new Transaction(
+                DateTime.Today,
+                "Test",
+                new() { Name = "Category", Group = "Income" },
+                new Currency(-100),
+                "Memo"
+            );
             account.Transactions.Add(oldTransaction);
-            
+
             _viewModel.Accounts.Add(account);
             _viewModel.SelectedAccount = account;
             _viewModel.SelectedTransactionIndex = 0;
-            
+
             _transactionDialogService
                 .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
                 .ReturnsAsync(ContentDialogResult.Primary);
             _transactionDialogService
                 .Setup(x => x.GetViewModel())
-                .Returns(new NewTransactionDialogViewModel(_databaseReader.Object)
-                {
-                    NewTransactionAmount = new Currency(200),
-                    NewTransactionIsExpense = true,
-                    NewTransactionDate = DateTime.Today,
-                    NewTransactionCategory = new() { Name = "Category", Group = "Income" },
-                    NewTransactionMemo = "Updated memo"
-                });
-            _transactionDialogService
-                .Setup(x => x.GetSelectedPayee())
-                .Returns("Test");
+                .Returns(
+                    new NewTransactionDialogViewModel(_databaseReader.Object)
+                    {
+                        NewTransactionAmount = new Currency(200),
+                        NewTransactionIsExpense = true,
+                        NewTransactionDate = DateTime.Today,
+                        NewTransactionCategory = new() { Name = "Category", Group = "Income" },
+                        NewTransactionMemo = "Updated memo",
+                    }
+                );
+            _transactionDialogService.Setup(x => x.GetSelectedPayee()).Returns("Test");
 
             // Act
             await _viewModel.EditTransactionCommand.ExecuteAsync(null);

@@ -1,6 +1,6 @@
-﻿using MyMoney.Core.Models;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Data;
+using MyMoney.Core.Models;
 
 namespace MyMoney.ViewAdapters.Pages
 {
@@ -12,7 +12,6 @@ namespace MyMoney.ViewAdapters.Pages
         {
             GroupedBudgetReportItemsView = new(reportItems);
             GroupedBudgetReportItemsView.GroupDescriptions.Add(new PropertyGroupDescription("Group"));
-
         }
     }
 }

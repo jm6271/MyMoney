@@ -1,7 +1,4 @@
-﻿using MyMoney.Core.Models;
-using MyMoney.ViewModels.ContentDialogs;
-using MyMoney.ViewModels.Pages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,6 +12,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MyMoney.Core.Models;
+using MyMoney.ViewModels.ContentDialogs;
+using MyMoney.ViewModels.Pages;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -24,7 +24,8 @@ namespace MyMoney.Views.ContentDialogs
     /// </summary>
     public partial class NewTransactionDialog : ContentDialog
     {
-        public NewTransactionDialog(ContentPresenter dialogHost, NewTransactionDialogViewModel viewModel) : base(dialogHost)
+        public NewTransactionDialog(ContentPresenter dialogHost, NewTransactionDialogViewModel viewModel)
+            : base(dialogHost)
         {
             InitializeComponent();
             DataContext = viewModel;
@@ -40,17 +41,18 @@ namespace MyMoney.Views.ContentDialogs
 
         public string SelectedPayee
         {
-            get
-            {
-                return txtPayee.Text;
-            }
+            get { return txtPayee.Text; }
         }
 
         public Category SelectedCategory
         {
             get
             {
-                return new() { Name = cmbCategory.SelectedItem?.Item.ToString() ?? "", Group = cmbCategory.SelectedItem?.Group ?? ""};
+                return new()
+                {
+                    Name = cmbCategory.SelectedItem?.Item.ToString() ?? "",
+                    Group = cmbCategory.SelectedItem?.Group ?? "",
+                };
             }
         }
 
@@ -86,7 +88,8 @@ namespace MyMoney.Views.ContentDialogs
 
         private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
         {
-            if (args.Result != ContentDialogResult.Primary) return;
+            if (args.Result != ContentDialogResult.Primary)
+                return;
 
             txtPayee.Focus();
             txtPayee.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
@@ -104,9 +107,13 @@ namespace MyMoney.Views.ContentDialogs
             PayeeBorder.BorderBrush = Brushes.Transparent;
 
             // validate
-            if (!invalidPayee && !invalidCategory
-                              && amountValidationErrors is not { Count: > 0 }
-                              && dateValidationErrors is not { Count: > 0 }) return;
+            if (
+                !invalidPayee
+                && !invalidCategory
+                && amountValidationErrors is not { Count: > 0 }
+                && dateValidationErrors is not { Count: > 0 }
+            )
+                return;
             args.Cancel = true;
 
             if (invalidCategory)

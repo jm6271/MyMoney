@@ -27,16 +27,19 @@ namespace MyMoney.Helpers.DropHandlers
             if (!ReferenceEquals(dropInfo.DragInfo.SourceCollection, dropInfo.TargetCollection))
                 return;
 
-            if (dropInfo.DragInfo.SourceCollection is not IList<BudgetExpenseCategory> sourceList ||
-                dropInfo.TargetCollection is not IList<BudgetExpenseCategory> targetList ||
-                dropInfo.Data is not BudgetExpenseCategory item)
+            if (
+                dropInfo.DragInfo.SourceCollection is not IList<BudgetExpenseCategory> sourceList
+                || dropInfo.TargetCollection is not IList<BudgetExpenseCategory> targetList
+                || dropInfo.Data is not BudgetExpenseCategory item
+            )
                 return;
 
             int oldIndex = sourceList.IndexOf(item);
             int newIndex = dropInfo.InsertIndex;
 
             // If dragging downward in the same list, the removal shifts the target index down by one
-            if (oldIndex < newIndex) newIndex--;
+            if (oldIndex < newIndex)
+                newIndex--;
 
             sourceList.RemoveAt(oldIndex);
             targetList.Insert(newIndex, item);

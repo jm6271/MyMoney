@@ -1,7 +1,7 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace MyMoney.Core.Models
 {
@@ -17,6 +17,6 @@ namespace MyMoney.Core.Models
         private string _accountName = "";
 
         [ObservableProperty]
-        private Currency _total = new (0m);
+        private Currency _total = new(0m);
     }
 }

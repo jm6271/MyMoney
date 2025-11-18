@@ -1,11 +1,11 @@
-﻿using MyMoney.ViewModels.Pages;
-using MyMoney.Core.Models;
-using MyMoney.ViewModels.ContentDialogs;
-using MyMoney.Services.ContentDialogs;
-using Moq;
-using Wpf.Ui.Controls;
-using Wpf.Ui;
+﻿using Moq;
 using MyMoney.Core.Database;
+using MyMoney.Core.Models;
+using MyMoney.Services.ContentDialogs;
+using MyMoney.ViewModels.ContentDialogs;
+using MyMoney.ViewModels.Pages;
+using Wpf.Ui;
+using Wpf.Ui.Controls;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -58,7 +58,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
 
             var renameViewModel = new RenameAccountViewModel { NewName = "New Name" };
             _renameAccountDialogService.Setup(x => x.GetViewModel()).Returns(renameViewModel);
-            _renameAccountDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+            _renameAccountDialogService
+                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
                 .ReturnsAsync(ContentDialogResult.Primary);
 
             // Act
@@ -89,7 +90,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
 
             var renameViewModel = new RenameAccountViewModel { NewName = "New Name" };
             _renameAccountDialogService.Setup(x => x.GetViewModel()).Returns(renameViewModel);
-            _renameAccountDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+            _renameAccountDialogService
+                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
                 .ReturnsAsync(ContentDialogResult.None);
 
             // Act

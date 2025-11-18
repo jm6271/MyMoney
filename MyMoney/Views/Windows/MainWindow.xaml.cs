@@ -1,11 +1,11 @@
-﻿using MyMoney.Core.Database;
-using MyMoney.Helpers.RadioButtonConverters;
-using MyMoney.ViewModels.Pages;
-using MyMoney.ViewModels.Windows;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MyMoney.Core.Database;
+using MyMoney.Helpers.RadioButtonConverters;
+using MyMoney.ViewModels.Pages;
+using MyMoney.ViewModels.Windows;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions;
 using Wpf.Ui.Appearance;
@@ -46,9 +46,13 @@ namespace MyMoney.Views.Windows
             if (!dataVersionManager.EnsureDataVersion())
             {
                 // The database version is newer than the application version, we can't read it.
-                System.Windows.MessageBox.Show("The database was created with a newer version of MyMoney." +
-                    " Please update the application to the latest version.", "Incompatible Database Version",
-                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+                System.Windows.MessageBox.Show(
+                    "The database was created with a newer version of MyMoney."
+                        + " Please update the application to the latest version.",
+                    "Incompatible Database Version",
+                    System.Windows.MessageBoxButton.OK,
+                    System.Windows.MessageBoxImage.Error
+                );
                 Application.Current.Shutdown();
                 Environment.Exit(-1);
             }
@@ -63,14 +67,18 @@ namespace MyMoney.Views.Windows
                     ApplicationThemeManager.Apply(ApplicationTheme.Light);
 
                     // Set the color dynamic resources
-                    Application.Current.Resources["LayerFillColorDefaultColor"] = Application.Current.Resources["LayerFillColorDefaultColorLight"];
+                    Application.Current.Resources["LayerFillColorDefaultColor"] = Application.Current.Resources[
+                        "LayerFillColorDefaultColorLight"
+                    ];
                 }
                 else
                 {
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark);
 
                     // set the color dynamic resources
-                    Application.Current.Resources["LayerFillColorDefaultColor"] = Application.Current.Resources["LayerFillColorDefaultColorDark"];
+                    Application.Current.Resources["LayerFillColorDefaultColor"] = Application.Current.Resources[
+                        "LayerFillColorDefaultColorDark"
+                    ];
                 }
             }
             else
@@ -86,7 +94,8 @@ namespace MyMoney.Views.Windows
 
         public bool Navigate(Type pageType) => RootNavigation.Navigate(pageType);
 
-        public void SetPageService(INavigationViewPageProvider navigationViewPageProvider) => RootNavigation.SetPageProviderService(navigationViewPageProvider);
+        public void SetPageService(INavigationViewPageProvider navigationViewPageProvider) =>
+            RootNavigation.SetPageProviderService(navigationViewPageProvider);
 
         public void ShowWindow() => Show();
 
@@ -129,7 +138,9 @@ namespace MyMoney.Views.Windows
 
             BackupModeRadioButtonGroup BackupMode = BackupModeRadioButtonGroup.Manual;
             string BackupLocation = "";
-            SettingsViewModel.BackupStorageDuration BackupStorageDuration = SettingsViewModel.BackupStorageDuration.OneWeek;
+            SettingsViewModel.BackupStorageDuration BackupStorageDuration = SettingsViewModel
+                .BackupStorageDuration
+                .OneWeek;
 
             // Extract the settings values
             if (settingsDict.TryGetValue("BackupMode", out string? backupMode))
@@ -138,7 +149,9 @@ namespace MyMoney.Views.Windows
                 {
                     BackupMode = (BackupModeRadioButtonGroup)Convert.ToInt32(backupMode);
                 }
-                catch { /* If we can't load a setting, ignore it */ }
+                catch
+                { /* If we can't load a setting, ignore it */
+                }
             }
 
             if (settingsDict.TryGetValue("BackupLocation", out string? backupLocation))
@@ -150,9 +163,12 @@ namespace MyMoney.Views.Windows
             {
                 try
                 {
-                    BackupStorageDuration = (SettingsViewModel.BackupStorageDuration)Convert.ToInt32(backupStorageDuration);
+                    BackupStorageDuration = (SettingsViewModel.BackupStorageDuration)
+                        Convert.ToInt32(backupStorageDuration);
                 }
-                catch { /* If we can't load a setting, ignore it */ }
+                catch
+                { /* If we can't load a setting, ignore it */
+                }
             }
 
             // Write backup
@@ -160,10 +176,10 @@ namespace MyMoney.Views.Windows
             {
                 try
                 {
-
-
                     // Backup
-                    DatabaseBackup.WriteDatabaseBackup(Path.Combine(BackupLocation, $"mymoney-database-backup-{DateTime.Now:MM-dd-yyyy-HH_mm}.db"));
+                    DatabaseBackup.WriteDatabaseBackup(
+                        Path.Combine(BackupLocation, $"mymoney-database-backup-{DateTime.Now:MM-dd-yyyy-HH_mm}.db")
+                    );
 
                     // Clear any old backups
 
@@ -181,12 +197,15 @@ namespace MyMoney.Views.Windows
                             var day = int.Parse(match.Groups[2].Value);
                             var year = int.Parse(match.Groups[3].Value);
 
-                            if (DateTime.TryParseExact(
-                                $"{year}-{month:D2}-{day:D2}",
-                                "yyyy-MM-dd",
-                                CultureInfo.InvariantCulture,
-                                DateTimeStyles.None,
-                                out DateTime backupDate))
+                            if (
+                                DateTime.TryParseExact(
+                                    $"{year}-{month:D2}-{day:D2}",
+                                    "yyyy-MM-dd",
+                                    CultureInfo.InvariantCulture,
+                                    DateTimeStyles.None,
+                                    out DateTime backupDate
+                                )
+                            )
                             {
                                 int daysToKeep = 0;
 
@@ -219,7 +238,9 @@ namespace MyMoney.Views.Windows
                                     {
                                         File.Delete(file);
                                     }
-                                    catch { /* Fail silently, it's not important that the file is deleted*/ }
+                                    catch
+                                    { /* Fail silently, it's not important that the file is deleted*/
+                                    }
                                 }
                             }
                         }
@@ -230,8 +251,9 @@ namespace MyMoney.Views.Windows
                     // The backup failed because the location is inaccessible
                     Wpf.Ui.Controls.MessageBox errorMsg = new();
                     errorMsg.Title = "Backup Failed";
-                    errorMsg.Content = "The automatic backup failed. Please check your backup location in settings.\n\n" +
-                        $"Error details: {ex.Message}";
+                    errorMsg.Content =
+                        "The automatic backup failed. Please check your backup location in settings.\n\n"
+                        + $"Error details: {ex.Message}";
                     await errorMsg.ShowDialogAsync();
                 }
             }

@@ -1,28 +1,40 @@
-﻿<UserControl x:Class="MyMoney.Views.Controls.BudgetReportControl"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:MyMoney.Views.Controls"
-             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-             xmlns:helpers="clr-namespace:MyMoney.Helpers"
-             d:DataContext="{d:DesignInstance local:BudgetReportControl, IsDesignTimeCreatable=False}"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+﻿<UserControl
+    x:Class="MyMoney.Views.Controls.BudgetReportControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MyMoney.Views.Controls"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:helpers="clr-namespace:MyMoney.Helpers"
+    d:DataContext="{d:DesignInstance local:BudgetReportControl, IsDesignTimeCreatable=False}"
+    mc:Ignorable="d"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+>
     <UserControl.Resources>
-        <helpers:IsLastItemConverter x:Key="IsLastItemConverter"/>
-        <helpers:IsNegativeConverter x:Key="IsNegativeConverter"/>
+        <helpers:IsLastItemConverter x:Key="IsLastItemConverter" />
+        <helpers:IsNegativeConverter x:Key="IsNegativeConverter" />
     </UserControl.Resources>
-    
-    <ui:Card HorizontalAlignment="Stretch" VerticalAlignment="Stretch" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+
+    <ui:Card
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch"
+        HorizontalContentAlignment="Stretch"
+        VerticalContentAlignment="Stretch"
+    >
         <StackPanel>
+            <ui:TextBlock
+                FontTypography="Subtitle"
+                Text="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                Margin="0,0,0,24"
+            />
 
-            <ui:TextBlock FontTypography="Subtitle" Text="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                          Margin="0,0,0,24"/>
-
-            <ui:TextBlock FontWeight="SemiBold" Text="Income" Margin="0,0,0,8"/>
-            <ui:ListView ItemsSource="{Binding IncomeItems, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                         x:Name="IncomeItemsList">
+            <ui:TextBlock FontWeight="SemiBold" Text="Income" Margin="0,0,0,8" />
+            <ui:ListView
+                ItemsSource="{Binding IncomeItems, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                x:Name="IncomeItemsList"
+            >
                 <ui:ListView.Resources>
                     <Style TargetType="{x:Type GridViewColumnHeader}">
                         <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -36,59 +48,80 @@
                                         <!-- current item -->
                                         <Binding />
                                         <!-- the ItemsSource on the nearest ListView -->
-                                        <Binding Path="ItemsSource" 
-                                                 ElementName="IncomeItemsList"/>
+                                        <Binding Path="ItemsSource" ElementName="IncomeItemsList" />
                                     </MultiBinding>
                                 </DataTrigger.Binding>
-                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontWeight" Value="Bold" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
 
-                    <Style x:Key="LastItemAndNegativeStyle"
+                    <Style
+                        x:Key="LastItemAndNegativeStyle"
                         TargetType="TextBlock"
-                        BasedOn="{StaticResource LastItemTextBlockStyle}">
+                        BasedOn="{StaticResource LastItemTextBlockStyle}"
+                    >
                         <Style.Triggers>
                             <DataTrigger Value="True">
                                 <DataTrigger.Binding>
                                     <Binding Path="Remaining" Converter="{StaticResource IsNegativeConverter}" />
                                 </DataTrigger.Binding>
-                                <Setter Property="Foreground" Value="Red"/>
+                                <Setter Property="Foreground" Value="Red" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
                 </ui:ListView.Resources>
                 <ui:ListView.View>
                     <ui:GridView>
-                        <GridViewColumn Header="Category" 
-                                        Width="{Binding CategoryColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <GridViewColumn
+                            Header="Category"
+                            Width="{Binding CategoryColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        >
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Category}" Style="{StaticResource LastItemTextBlockStyle}"/>
+                                    <TextBlock
+                                        Text="{Binding Category}"
+                                        Style="{StaticResource LastItemTextBlockStyle}"
+                                    />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Budgeted" 
-                                        Width="{Binding BudgetedColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <GridViewColumn
+                            Header="Budgeted"
+                            Width="{Binding BudgetedColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        >
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Budgeted}" Style="{StaticResource LastItemTextBlockStyle}"/>
+                                    <TextBlock
+                                        Text="{Binding Budgeted}"
+                                        Style="{StaticResource LastItemTextBlockStyle}"
+                                    />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Actual" 
-                                        Width="{Binding ActualColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <GridViewColumn
+                            Header="Actual"
+                            Width="{Binding ActualColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        >
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Actual}" Style="{StaticResource LastItemTextBlockStyle}"/>
+                                    <TextBlock
+                                        Text="{Binding Actual}"
+                                        Style="{StaticResource LastItemTextBlockStyle}"
+                                    />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Remaining" 
-                                        Width="{Binding RemainingColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <GridViewColumn
+                            Header="Remaining"
+                            Width="{Binding RemainingColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        >
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Remaining}" Style="{StaticResource LastItemAndNegativeStyle}"/>
+                                    <TextBlock
+                                        Text="{Binding Remaining}"
+                                        Style="{StaticResource LastItemAndNegativeStyle}"
+                                    />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
@@ -96,35 +129,44 @@
                 </ui:ListView.View>
             </ui:ListView>
 
-            <ui:TextBlock FontWeight="SemiBold" Text="Savings" Margin="0,16,0,8"/>
-            <ui:ListView
-                ItemsSource="{Binding SavingsItems, RelativeSource={RelativeSource AncestorType=UserControl}}">
+            <ui:TextBlock FontWeight="SemiBold" Text="Savings" Margin="0,16,0,8" />
+            <ui:ListView ItemsSource="{Binding SavingsItems, RelativeSource={RelativeSource AncestorType=UserControl}}">
                 <ui:ListView.Resources>
                     <Style TargetType="{x:Type GridViewColumnHeader}">
-                        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Left" />
                     </Style>
                 </ui:ListView.Resources>
                 <ui:ListView.View>
                     <ui:GridView>
-                        <GridViewColumn Header="Category" 
-                                        Width="{Binding CategoryColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                        DisplayMemberBinding="{Binding Category}" />
-                        <GridViewColumn Header="Saved" 
-                                        Width="{Binding BudgetedColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                        DisplayMemberBinding="{Binding Saved}" />
-                        <GridViewColumn Header="Spent" 
-                                        Width="{Binding ActualColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                        DisplayMemberBinding="{Binding Spent}"/>
-                        <GridViewColumn Header="Balance" 
-                                        Width="{Binding RemainingColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                                        DisplayMemberBinding="{Binding Balance}"/>
+                        <GridViewColumn
+                            Header="Category"
+                            Width="{Binding CategoryColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            DisplayMemberBinding="{Binding Category}"
+                        />
+                        <GridViewColumn
+                            Header="Saved"
+                            Width="{Binding BudgetedColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            DisplayMemberBinding="{Binding Saved}"
+                        />
+                        <GridViewColumn
+                            Header="Spent"
+                            Width="{Binding ActualColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            DisplayMemberBinding="{Binding Spent}"
+                        />
+                        <GridViewColumn
+                            Header="Balance"
+                            Width="{Binding RemainingColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            DisplayMemberBinding="{Binding Balance}"
+                        />
                     </ui:GridView>
                 </ui:ListView.View>
             </ui:ListView>
 
-                <ui:TextBlock FontWeight="SemiBold" Text="Expenses" Margin="0,16,0,8"/>
-            <ui:ListView x:Name="ExpenseItemsList"
-                         ItemsSource="{Binding GroupedExpenseItems, RelativeSource={RelativeSource AncestorType=UserControl}}">
+            <ui:TextBlock FontWeight="SemiBold" Text="Expenses" Margin="0,16,0,8" />
+            <ui:ListView
+                x:Name="ExpenseItemsList"
+                ItemsSource="{Binding GroupedExpenseItems, RelativeSource={RelativeSource AncestorType=UserControl}}"
+            >
                 <ListView.Resources>
                     <Style TargetType="{x:Type GridViewColumnHeader}">
                         <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -138,24 +180,25 @@
                                         <!-- current item -->
                                         <Binding />
                                         <!-- the ItemsSource on the nearest ListView -->
-                                        <Binding Path="ItemsSource" 
-                                                 ElementName="ExpenseItemsList"/>
+                                        <Binding Path="ItemsSource" ElementName="ExpenseItemsList" />
                                     </MultiBinding>
                                 </DataTrigger.Binding>
-                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="FontWeight" Value="Bold" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
 
-                    <Style x:Key="LastItemAndNegativeStyle"
+                    <Style
+                        x:Key="LastItemAndNegativeStyle"
                         TargetType="TextBlock"
-                        BasedOn="{StaticResource LastItemTextBlockStyle}">
+                        BasedOn="{StaticResource LastItemTextBlockStyle}"
+                    >
                         <Style.Triggers>
                             <DataTrigger Value="True">
                                 <DataTrigger.Binding>
                                     <Binding Path="Remaining" Converter="{StaticResource IsNegativeConverter}" />
                                 </DataTrigger.Binding>
-                                <Setter Property="Foreground" Value="Red"/>
+                                <Setter Property="Foreground" Value="Red" />
                             </DataTrigger>
                         </Style.Triggers>
                     </Style>
@@ -164,42 +207,67 @@
                     <GroupStyle>
                         <GroupStyle.HeaderTemplate>
                             <DataTemplate>
-                                <ui:TextBlock Margin="4,0,4,0" FontWeight="Bold" Text="{Binding Name}" Foreground="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
+                                <ui:TextBlock
+                                    Margin="4,0,4,0"
+                                    FontWeight="Bold"
+                                    Text="{Binding Name}"
+                                    Foreground="{DynamicResource AccentTextFillColorTertiaryBrush}"
+                                />
                             </DataTemplate>
                         </GroupStyle.HeaderTemplate>
                     </GroupStyle>
                 </ui:ListView.GroupStyle>
                 <ui:ListView.View>
                     <ui:GridView>
-                        <GridViewColumn Header="Category" 
-                                        Width="{Binding CategoryColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <GridViewColumn
+                            Header="Category"
+                            Width="{Binding CategoryColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        >
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Category}" Style="{StaticResource LastItemTextBlockStyle}"/>
+                                    <TextBlock
+                                        Text="{Binding Category}"
+                                        Style="{StaticResource LastItemTextBlockStyle}"
+                                    />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Budgeted" 
-                                        Width="{Binding BudgetedColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <GridViewColumn
+                            Header="Budgeted"
+                            Width="{Binding BudgetedColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        >
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Budgeted}" Style="{StaticResource LastItemTextBlockStyle}"/>
+                                    <TextBlock
+                                        Text="{Binding Budgeted}"
+                                        Style="{StaticResource LastItemTextBlockStyle}"
+                                    />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Actual" 
-                                        Width="{Binding ActualColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <GridViewColumn
+                            Header="Actual"
+                            Width="{Binding ActualColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        >
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Actual}" Style="{StaticResource LastItemTextBlockStyle}"/>
+                                    <TextBlock
+                                        Text="{Binding Actual}"
+                                        Style="{StaticResource LastItemTextBlockStyle}"
+                                    />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
-                        <GridViewColumn Header="Remaining" 
-                                        Width="{Binding RemainingColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <GridViewColumn
+                            Header="Remaining"
+                            Width="{Binding RemainingColumnWidth, Mode=TwoWay, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        >
                             <GridViewColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Remaining}" Style="{StaticResource LastItemAndNegativeStyle}"/>
+                                    <TextBlock
+                                        Text="{Binding Remaining}"
+                                        Style="{StaticResource LastItemAndNegativeStyle}"
+                                    />
                                 </DataTemplate>
                             </GridViewColumn.CellTemplate>
                         </GridViewColumn>
@@ -211,23 +279,32 @@
             <Border Margin="0,16,0,0" BorderThickness="1" BorderBrush="#828790">
                 <Grid Margin="12,8,0,8">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="{Binding CategoryColumnWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <ColumnDefinition Width="{Binding BudgetedColumnWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <ColumnDefinition Width="{Binding ActualColumnWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <ColumnDefinition Width="{Binding RemainingColumnWidth, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <ColumnDefinition Width="{Binding CategoryColumnWidth, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                        <ColumnDefinition Width="{Binding BudgetedColumnWidth, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                        <ColumnDefinition Width="{Binding ActualColumnWidth, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                        <ColumnDefinition Width="{Binding RemainingColumnWidth, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     </Grid.ColumnDefinitions>
 
                     <ui:TextBlock Grid.Column="0" FontTypography="BodyStrong" FontWeight="Bold">Remaining</ui:TextBlock>
-                    <TextBlock x:Name="ReportTotalTextBlock" Grid.Column="3" FontWeight="Bold" FontSize="14" Text="{Binding ReportTotal, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                    <TextBlock
+                        x:Name="ReportTotalTextBlock"
+                        Grid.Column="3"
+                        FontWeight="Bold"
+                        FontSize="14"
+                        Text="{Binding ReportTotal, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                    >
                         <TextBlock.Style>
                             <Style TargetType="TextBlock">
                                 <Style.Triggers>
                                     <DataTrigger Value="True">
                                         <DataTrigger.Binding>
-                                            <Binding Path="ReportTotal" Converter="{StaticResource IsNegativeConverter}" 
-                                                     RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                                            <Binding
+                                                Path="ReportTotal"
+                                                Converter="{StaticResource IsNegativeConverter}"
+                                                RelativeSource="{RelativeSource AncestorType=UserControl}"
+                                            />
                                         </DataTrigger.Binding>
-                                        <Setter Property="Foreground" Value="Red"/>
+                                        <Setter Property="Foreground" Value="Red" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>

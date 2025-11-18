@@ -1,12 +1,11 @@
-using MyMoney.Core.Models;
 using Moq;
-using MyMoney.ViewModels.ContentDialogs;
-using MyMoney.Services.ContentDialogs;
 using MyMoney.Core.Database;
+using MyMoney.Core.Models;
+using MyMoney.Services.ContentDialogs;
+using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-
 
 namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
 {
@@ -60,10 +59,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
 
             _updateAccountBalanceDialogService
                 .Setup(x => x.GetViewModel())
-                .Returns(new UpdateAccountBalanceDialogViewModel
-                {
-                    Balance = new Currency(150),
-                });
+                .Returns(new UpdateAccountBalanceDialogViewModel { Balance = new Currency(150) });
             _updateAccountBalanceDialogService
                 .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
                 .ReturnsAsync(Wpf.Ui.Controls.ContentDialogResult.Primary);

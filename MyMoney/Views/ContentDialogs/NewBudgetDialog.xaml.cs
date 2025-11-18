@@ -1,5 +1,5 @@
-﻿using MyMoney.ViewModels.ContentDialogs;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
+using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -9,7 +9,8 @@ namespace MyMoney.Views.ContentDialogs
     /// </summary>
     public partial class NewBudgetDialog : ContentDialog
     {
-        public NewBudgetDialog(ContentPresenter dialogHost, NewBudgetDialogViewModel viewModel) : base(dialogHost)
+        public NewBudgetDialog(ContentPresenter dialogHost, NewBudgetDialogViewModel viewModel)
+            : base(dialogHost)
         {
             InitializeComponent();
             DataContext = viewModel;

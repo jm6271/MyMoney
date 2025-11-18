@@ -5,7 +5,8 @@
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     DispatcherUnhandledException="OnDispatcherUnhandledException"
     Exit="OnExit"
-    Startup="OnStartup">
+    Startup="OnStartup"
+>
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -15,8 +16,8 @@
 
             <Color x:Key="LayerFillColorDefaultColorLight">#FEFEFE</Color>
             <Color x:Key="LayerFillColorDefaultColorDark">#2C2C2C</Color>
-            <Color x:Key="LayerFillColorDefaultColor"/>
-            <SolidColorBrush x:Key="LayerFillColorDefaultBrush" Color="{DynamicResource LayerFillColorDefaultColor}"/>
+            <Color x:Key="LayerFillColorDefaultColor" />
+            <SolidColorBrush x:Key="LayerFillColorDefaultBrush" Color="{DynamicResource LayerFillColorDefaultColor}" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

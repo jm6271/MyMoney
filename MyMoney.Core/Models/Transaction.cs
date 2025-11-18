@@ -1,6 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
+﻿using System;
 using System.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace MyMoney.Core.Models;
 
@@ -19,7 +19,6 @@ public partial class Transaction : ObservableObject
             // Generate a hash for this transaction
             TransactionHash = Guid.NewGuid().ToString();
         }
- 
     }
 
     public string TransactionHash { get; private set; } = "";

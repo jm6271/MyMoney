@@ -1,13 +1,13 @@
-﻿using MyMoney.Core.Database;
-using MyMoney.Core.Models;
-using MyMoney.Views.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MyMoney.Core.Database;
+using MyMoney.Core.Models;
+using MyMoney.Views.Controls;
 
 namespace MyMoney.ViewModels.ContentDialogs
 {
@@ -68,7 +68,7 @@ namespace MyMoney.ViewModels.ContentDialogs
         public void SetSelectedCategoryByName(string categoryName)
         {
             var categoryItem = CategoryNames.FirstOrDefault(c => c.Item.ToString() == categoryName);
-            
+
             if (categoryItem is not null)
             {
                 NewTransactionCategorySelectedIndex = CategoryNames.IndexOf(categoryItem);
@@ -82,7 +82,7 @@ namespace MyMoney.ViewModels.ContentDialogs
             if (e.PropertyName == nameof(NewTransactionDate))
             {
                 CategoryNames.Clear();
-                
+
                 foreach (var item in BudgetCategoryNames)
                 {
                     CategoryNames.Add(item);
@@ -100,17 +100,27 @@ namespace MyMoney.ViewModels.ContentDialogs
                 lock (_databaseLockObject)
                 {
                     budgetCollection = new(_databaseManager);
-                    var budget = budgetCollection.Budgets.FirstOrDefault(b => b.BudgetDate.Month == NewTransactionDate.Month && b.BudgetDate.Year == NewTransactionDate.Year);
+                    var budget = budgetCollection.Budgets.FirstOrDefault(b =>
+                        b.BudgetDate.Month == NewTransactionDate.Month && b.BudgetDate.Year == NewTransactionDate.Year
+                    );
 
                     if (budget == null)
                         return categories;
 
                     AddCategoriesToCollection(categories, "Income", budget.BudgetIncomeItems.Select(x => x.Category));
-                    AddCategoriesToCollection(categories, "Savings", budget.BudgetSavingsCategories.Select(x => x.CategoryName));
+                    AddCategoriesToCollection(
+                        categories,
+                        "Savings",
+                        budget.BudgetSavingsCategories.Select(x => x.CategoryName)
+                    );
 
                     foreach (var expenseGroup in budget.BudgetExpenseItems)
                     {
-                        AddCategoriesToCollection(categories, expenseGroup.CategoryName, expenseGroup.SubItems.Select(x => x.Category));
+                        AddCategoriesToCollection(
+                            categories,
+                            expenseGroup.CategoryName,
+                            expenseGroup.SubItems.Select(x => x.Category)
+                        );
                     }
                 }
 
@@ -118,15 +128,15 @@ namespace MyMoney.ViewModels.ContentDialogs
             }
         }
 
-        private void AddCategoriesToCollection(ObservableCollection<GroupedComboBox.GroupedComboBoxItem> collection, string group, IEnumerable<string> items)
+        private void AddCategoriesToCollection(
+            ObservableCollection<GroupedComboBox.GroupedComboBoxItem> collection,
+            string group,
+            IEnumerable<string> items
+        )
         {
             foreach (var item in items)
             {
-                collection.Add(new GroupedComboBox.GroupedComboBoxItem
-                {
-                    Group = group,
-                    Item = item
-                });
+                collection.Add(new GroupedComboBox.GroupedComboBoxItem { Group = group, Item = item });
             }
         }
     }

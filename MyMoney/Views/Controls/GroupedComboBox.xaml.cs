@@ -24,9 +24,12 @@ namespace MyMoney.Views.Controls
     /// </summary>
     public partial class GroupedComboBox : UserControl, INotifyPropertyChanged
     {
-        public static readonly RoutedEvent SelectionChangedEvent =
-            EventManager.RegisterRoutedEvent("SelectionChanged", RoutingStrategy.Bubble,
-            typeof(RoutedEventHandler), typeof(GroupedComboBox));
+        public static readonly RoutedEvent SelectionChangedEvent = EventManager.RegisterRoutedEvent(
+            "SelectionChanged",
+            RoutingStrategy.Bubble,
+            typeof(RoutedEventHandler),
+            typeof(GroupedComboBox)
+        );
 
         public event RoutedEventHandler SelectionChanged
         {
@@ -40,7 +43,6 @@ namespace MyMoney.Views.Controls
             RaiseEvent(args);
         }
 
-
         public ListCollectionView GroupedItems { get; set; }
 
         public GroupedComboBox()
@@ -51,29 +53,27 @@ namespace MyMoney.Views.Controls
 
         public int SelectedIndex
         {
-            get
-            {
-                return (int)GetValue(SelectedIndexProperty);
-            }
-            set
-            {
-                SetValue(SelectedIndexProperty, value);
-            }
+            get { return (int)GetValue(SelectedIndexProperty); }
+            set { SetValue(SelectedIndexProperty, value); }
         }
 
-        public static readonly DependencyProperty SelectedIndexProperty = DependencyProperty.Register("SelectedIndex",
-            typeof(int), typeof(GroupedComboBox), new PropertyMetadata(-1));
+        public static readonly DependencyProperty SelectedIndexProperty = DependencyProperty.Register(
+            "SelectedIndex",
+            typeof(int),
+            typeof(GroupedComboBox),
+            new PropertyMetadata(-1)
+        );
 
-
-        public static readonly DependencyProperty SelectedItemProperty =
-            DependencyProperty.Register(
-                nameof(SelectedItem),
-                typeof(GroupedComboBoxItem),
-                typeof(GroupedComboBox),
-                new FrameworkPropertyMetadata(
-                    null,
-                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                    OnSelectedItemChanged));
+        public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register(
+            nameof(SelectedItem),
+            typeof(GroupedComboBoxItem),
+            typeof(GroupedComboBox),
+            new FrameworkPropertyMetadata(
+                null,
+                FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                OnSelectedItemChanged
+            )
+        );
 
         public GroupedComboBoxItem? SelectedItem
         {
@@ -110,14 +110,11 @@ namespace MyMoney.Views.Controls
                     return SelectedItem?.Item.ToString() ?? "";
                 }
             }
-        } 
+        }
 
         public ObservableCollection<GroupedComboBoxItem> ItemsSource
         {
-            get
-            {
-                return (ObservableCollection<GroupedComboBoxItem>)GetValue(ItemsSourceProperty);
-            }
+            get { return (ObservableCollection<GroupedComboBoxItem>)GetValue(ItemsSourceProperty); }
             set
             {
                 SetValue(ItemsSourceProperty, value);
@@ -126,10 +123,12 @@ namespace MyMoney.Views.Controls
             }
         }
 
-        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register("ItemsSource",
-            typeof(ObservableCollection<GroupedComboBoxItem>), typeof(GroupedComboBox), 
-            new PropertyMetadata(new ObservableCollection<GroupedComboBoxItem>(), OnItemsSourceChanged));
-
+        public static readonly DependencyProperty ItemsSourceProperty = DependencyProperty.Register(
+            "ItemsSource",
+            typeof(ObservableCollection<GroupedComboBoxItem>),
+            typeof(GroupedComboBox),
+            new PropertyMetadata(new ObservableCollection<GroupedComboBoxItem>(), OnItemsSourceChanged)
+        );
 
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -160,8 +159,10 @@ namespace MyMoney.Views.Controls
             // IEquatable<T> implementation
             public bool Equals(GroupedComboBoxItem? other)
             {
-                if (other is null) return false;
-                if (ReferenceEquals(this, other)) return true;
+                if (other is null)
+                    return false;
+                if (ReferenceEquals(this, other))
+                    return true;
                 // Compare Group and Item (using default equality for Item)
                 return string.Equals(Group, other.Group, StringComparison.Ordinal)
                     && EqualityComparer<object?>.Default.Equals(Item, other.Item);
@@ -170,9 +171,12 @@ namespace MyMoney.Views.Controls
             // Override of object.Equals
             public override bool Equals(object? obj)
             {
-                if (obj is null) return false;
-                if (ReferenceEquals(this, obj)) return true;
-                if (obj.GetType() != GetType()) return false;
+                if (obj is null)
+                    return false;
+                if (ReferenceEquals(this, obj))
+                    return true;
+                if (obj.GetType() != GetType())
+                    return false;
                 return Equals((GroupedComboBoxItem)obj);
             }
 
@@ -182,7 +186,6 @@ namespace MyMoney.Views.Controls
                 return HashCode.Combine(Group, Item);
             }
         }
-
 
         private void dropdownButton_Click(object sender, RoutedEventArgs e)
         {
@@ -213,6 +216,7 @@ namespace MyMoney.Views.Controls
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
+
         protected void OnPropertyChanged(string name) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 
@@ -239,10 +243,13 @@ namespace MyMoney.Views.Controls
         private void dropDownPopup_Closed(object sender, EventArgs e)
         {
             // Delay focus just enough to allow animation to complete
-            Dispatcher.BeginInvoke(new Action(() =>
-            {
-                dropdownButton.Focus();
-            }), System.Windows.Threading.DispatcherPriority.Input);
+            Dispatcher.BeginInvoke(
+                new Action(() =>
+                {
+                    dropdownButton.Focus();
+                }),
+                System.Windows.Threading.DispatcherPriority.Input
+            );
         }
     }
 }

@@ -16,7 +16,8 @@ namespace MyMoney.Helpers
             // values[0] = current item,
             // values[1] = the IEnumerable (ItemsSource)
             var item = values[0];
-            if (values[1] is not IEnumerable items) return false;
+            if (values[1] is not IEnumerable items)
+                return false;
 
             // grab the last item in the enumeration:
             var last = items.Cast<object>().LastOrDefault();

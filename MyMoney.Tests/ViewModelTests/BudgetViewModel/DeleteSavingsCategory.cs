@@ -34,8 +34,7 @@ public class DeleteSavingsCategoryTests
         _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
         _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
 
-        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
-            .Returns(new List<Budget>());
+        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
 
         _viewModel = new(
             _mockContentDialogService.Object,
@@ -58,7 +57,10 @@ public class DeleteSavingsCategoryTests
         await _viewModel.DeleteSavingsCategoryCommand.ExecuteAsync(null);
 
         // Assert
-        _mockMessageBoxService.Verify(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        _mockMessageBoxService.Verify(
+            x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -72,7 +74,10 @@ public class DeleteSavingsCategoryTests
         await _viewModel.DeleteSavingsCategoryCommand.ExecuteAsync(null);
 
         // Assert
-        _mockMessageBoxService.Verify(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        _mockMessageBoxService.Verify(
+            x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -84,7 +89,8 @@ public class DeleteSavingsCategoryTests
         _viewModel.CurrentBudget = budget;
         _viewModel.IsEditingEnabled = true;
         _viewModel.SavingsCategoriesSelectedIndex = 0;
-        _mockMessageBoxService.Setup(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+        _mockMessageBoxService
+            .Setup(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(MessageBoxResult.Secondary);
 
         // Act
@@ -105,7 +111,8 @@ public class DeleteSavingsCategoryTests
         _viewModel.CurrentBudget = budget;
         _viewModel.IsEditingEnabled = true;
         _viewModel.SavingsCategoriesSelectedIndex = 1; // Delete "B"
-        _mockMessageBoxService.Setup(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+        _mockMessageBoxService
+            .Setup(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(MessageBoxResult.Primary);
 
         // Act

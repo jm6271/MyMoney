@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.IO;
+using System.Reflection;
+using System.Windows.Threading;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyMoney.Core.Database;
@@ -8,9 +11,6 @@ using MyMoney.ViewModels.Pages;
 using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Pages;
 using MyMoney.Views.Windows;
-using System.IO;
-using System.Reflection;
-using System.Windows.Threading;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions;
 
@@ -29,65 +29,70 @@ namespace MyMoney
         // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
         // https://docs.microsoft.com/dotnet/core/extensions/configuration
         // https://docs.microsoft.com/dotnet/core/extensions/logging
-        private static readonly IHost _host = Host
-            .CreateDefaultBuilder()
-            .ConfigureAppConfiguration(c => 
-                { c.SetBasePath(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location) 
-                                ?? throw new InvalidOperationException()); })
-            .ConfigureServices((context, services) =>
+        private static readonly IHost _host = Host.CreateDefaultBuilder()
+            .ConfigureAppConfiguration(c =>
             {
-                services.AddHostedService<ApplicationHostService>();
+                c.SetBasePath(
+                    Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location)
+                        ?? throw new InvalidOperationException()
+                );
+            })
+            .ConfigureServices(
+                (context, services) =>
+                {
+                    services.AddHostedService<ApplicationHostService>();
 
-                // Page resolver service
-                services.AddSingleton<INavigationViewPageProvider, PageService>();
+                    // Page resolver service
+                    services.AddSingleton<INavigationViewPageProvider, PageService>();
 
-                // Theme manipulation
-                services.AddSingleton<IThemeService, ThemeService>();
+                    // Theme manipulation
+                    services.AddSingleton<IThemeService, ThemeService>();
 
-                // TaskBar manipulation
-                services.AddSingleton<ITaskBarService, TaskBarService>();
+                    // TaskBar manipulation
+                    services.AddSingleton<ITaskBarService, TaskBarService>();
 
-                // Service containing navigation, same as INavigationWindow... but without window
-                services.AddSingleton<INavigationService, NavigationService>();
+                    // Service containing navigation, same as INavigationWindow... but without window
+                    services.AddSingleton<INavigationService, NavigationService>();
 
-                // Service for showing content dialogs
-                services.AddSingleton<IContentDialogService, ContentDialogService>();
+                    // Service for showing content dialogs
+                    services.AddSingleton<IContentDialogService, ContentDialogService>();
 
-                // Main window with navigation
-                services.AddSingleton<INavigationWindow, MainWindow>();
-                services.AddSingleton<MainWindowViewModel>();
+                    // Main window with navigation
+                    services.AddSingleton<INavigationWindow, MainWindow>();
+                    services.AddSingleton<MainWindowViewModel>();
 
-                services.AddSingleton<DashboardPage>();
-                services.AddSingleton<DashboardViewModel>();
-                services.AddSingleton<AccountsPage>();
-                services.AddSingleton<AccountsViewModel>();
-                services.AddSingleton<BudgetPage>();
-                services.AddSingleton<BudgetViewModel>();
-                services.AddSingleton<ReportsPage>();
-                services.AddSingleton<ReportsViewModel>();
-                services.AddSingleton<SettingsPage>();
-                services.AddSingleton<SettingsViewModel>();
+                    services.AddSingleton<DashboardPage>();
+                    services.AddSingleton<DashboardViewModel>();
+                    services.AddSingleton<AccountsPage>();
+                    services.AddSingleton<AccountsViewModel>();
+                    services.AddSingleton<BudgetPage>();
+                    services.AddSingleton<BudgetViewModel>();
+                    services.AddSingleton<ReportsPage>();
+                    services.AddSingleton<ReportsViewModel>();
+                    services.AddSingleton<SettingsPage>();
+                    services.AddSingleton<SettingsViewModel>();
 
-                // Report pages
-                services.AddSingleton<BudgetReportsPage>();
-                services.AddSingleton<BudgetReportsViewModel>();
+                    // Report pages
+                    services.AddSingleton<BudgetReportsPage>();
+                    services.AddSingleton<BudgetReportsViewModel>();
 
-                // Database
-                services.AddSingleton<IDatabaseManager, DatabaseManager>();
+                    // Database
+                    services.AddSingleton<IDatabaseManager, DatabaseManager>();
 
-                // Custom content dialogs
-                services.AddSingleton<INewAccountDialogService, NewAccountDialogService>();
-                services.AddSingleton<ITransferDialogService, TransferDialogService>();
-                services.AddSingleton<ITransactionDialogService, TransactionDialogService>();
-                services.AddSingleton<IRenameAccountDialogService, RenameAccountDialogService>();
-                services.AddSingleton<IMessageBoxService, MessageBoxService>();
-                services.AddSingleton<INewBudgetDialogService, NewBudgetDialogService>();
-                services.AddSingleton<IBudgetCategoryDialogService, BudgetCategoryDialogService>();
-                services.AddSingleton<INewExpenseGroupDialogService, NewExpenseGroupDialogService>();
-                services.AddSingleton<ISavingsCategoryDialogService,  SavingsCategoryDialogService>();
-                services.AddSingleton<IUpdateAccountBalanceDialogService, UpdateAccountBalanceDialogService>();
-
-            }).Build();
+                    // Custom content dialogs
+                    services.AddSingleton<INewAccountDialogService, NewAccountDialogService>();
+                    services.AddSingleton<ITransferDialogService, TransferDialogService>();
+                    services.AddSingleton<ITransactionDialogService, TransactionDialogService>();
+                    services.AddSingleton<IRenameAccountDialogService, RenameAccountDialogService>();
+                    services.AddSingleton<IMessageBoxService, MessageBoxService>();
+                    services.AddSingleton<INewBudgetDialogService, NewBudgetDialogService>();
+                    services.AddSingleton<IBudgetCategoryDialogService, BudgetCategoryDialogService>();
+                    services.AddSingleton<INewExpenseGroupDialogService, NewExpenseGroupDialogService>();
+                    services.AddSingleton<ISavingsCategoryDialogService, SavingsCategoryDialogService>();
+                    services.AddSingleton<IUpdateAccountBalanceDialogService, UpdateAccountBalanceDialogService>();
+                }
+            )
+            .Build();
 
         /// <summary>
         /// Gets registered service.
@@ -110,8 +115,12 @@ namespace MyMoney
             if (!isNewInstance)
             {
                 // Application is already running
-                MessageBox.Show("Another instance of the application is already running.", "MyMoney", 
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(
+                    "Another instance of the application is already running.",
+                    "MyMoney",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information
+                );
                 Shutdown();
                 return;
             }

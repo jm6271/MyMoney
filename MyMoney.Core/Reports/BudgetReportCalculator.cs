@@ -11,13 +11,18 @@ namespace MyMoney.Core.Reports
         /// <param name="budgetMonth">The month of the budget to generate a report on</param>
         /// <param name="databaseReader">The database reader to use to get the information for the report</param>
         /// <returns>A list of income report items that occurred in the specified month</returns>
-        public static List<BudgetReportItem> CalculateIncomeReportItems(DateTime budgetMonth, IDatabaseManager databaseReader)
+        public static List<BudgetReportItem> CalculateIncomeReportItems(
+            DateTime budgetMonth,
+            IDatabaseManager databaseReader
+        )
         {
             // read the budget from the database
             BudgetCollection budgetCollection = new(databaseReader);
 
             // Make sure the specified budget exists
-            var budget = budgetCollection.Budgets.FirstOrDefault(b => b.BudgetDate.Month == budgetMonth.Month && b.BudgetDate.Year == budgetMonth.Year);
+            var budget = budgetCollection.Budgets.FirstOrDefault(b =>
+                b.BudgetDate.Month == budgetMonth.Month && b.BudgetDate.Year == budgetMonth.Year
+            );
 
             if (budget == null)
             {
@@ -37,13 +42,18 @@ namespace MyMoney.Core.Reports
                 {
                     Category = item.Category,
                     Budgeted = item.Amount,
-                    Actual = CalculateTotalForCategory(new() { Group = "Income", Name = item.Category }, budgetMonth, databaseReader),
+                    Actual = CalculateTotalForCategory(
+                        new() { Group = "Income", Name = item.Category },
+                        budgetMonth,
+                        databaseReader
+                    ),
                     IsExpense = false,
-                    Group = "Income"
+                    Group = "Income",
                 };
 
                 budgetReportItem.Remaining = new(
-                    InvertSign((budgetReportItem.Budgeted - budgetReportItem.Actual).Value));
+                    InvertSign((budgetReportItem.Budgeted - budgetReportItem.Actual).Value)
+                );
 
                 budgetReportItems.Add(budgetReportItem);
             }
@@ -66,13 +76,18 @@ namespace MyMoney.Core.Reports
         /// <param name="budgetMonth">The month of the budget to generate a report on</param>
         /// <param name="databaseReader">The database reader to use to get the information for the report</param>
         /// <returns>A list of report items, for each savings category</returns>
-        public static List<SavingsCategoryReportItem> CalculateSavingsReportItems(DateTime budgetMonth, IDatabaseManager databaseReader)
+        public static List<SavingsCategoryReportItem> CalculateSavingsReportItems(
+            DateTime budgetMonth,
+            IDatabaseManager databaseReader
+        )
         {
             // read the budget from the database
             BudgetCollection budgetCollection = new(databaseReader);
 
             // Make sure the specified budget exists
-            var budget = budgetCollection.Budgets.FirstOrDefault(b => b.BudgetDate.Month == budgetMonth.Month && b.BudgetDate.Year == budgetMonth.Year);
+            var budget = budgetCollection.Budgets.FirstOrDefault(b =>
+                b.BudgetDate.Month == budgetMonth.Month && b.BudgetDate.Year == budgetMonth.Year
+            );
 
             if (budget == null)
             {
@@ -92,7 +107,13 @@ namespace MyMoney.Core.Reports
                 {
                     Category = item.CategoryName,
                     Saved = item.BudgetedAmount,
-                    Spent = new(-CalculateTotalForCategory(new() { Group = "Savings", Name = item.CategoryName }, budgetMonth, databaseReader).Value),
+                    Spent = new(
+                        -CalculateTotalForCategory(
+                            new() { Group = "Savings", Name = item.CategoryName },
+                            budgetMonth,
+                            databaseReader
+                        ).Value
+                    ),
                     Balance = item.CurrentBalance,
                 };
 
@@ -108,13 +129,18 @@ namespace MyMoney.Core.Reports
         /// <param name="budgetMonth">The month of the budget to generate a report on</param>
         /// <param name="databaseReader">The database reader to use to get the information for the report</param>
         /// <returns>A list of expense report items that occurred in the specified month</returns>
-        public static List<BudgetReportItem> CalculateExpenseReportItems(DateTime budgetMonth, IDatabaseManager databaseReader)
+        public static List<BudgetReportItem> CalculateExpenseReportItems(
+            DateTime budgetMonth,
+            IDatabaseManager databaseReader
+        )
         {
             // read the budget from the database
             BudgetCollection budgetCollection = new(databaseReader);
 
             // Make sure the specified budget exists
-            var budget = budgetCollection.Budgets.FirstOrDefault(b => b.BudgetDate.Month == budgetMonth.Month && b.BudgetDate.Year == budgetMonth.Year);
+            var budget = budgetCollection.Budgets.FirstOrDefault(b =>
+                b.BudgetDate.Month == budgetMonth.Month && b.BudgetDate.Year == budgetMonth.Year
+            );
 
             if (budget == null)
             {
@@ -132,14 +158,21 @@ namespace MyMoney.Core.Reports
             {
                 foreach (var subItem in item.SubItems)
                 {
-
                     BudgetReportItem budgetReportItem = new()
                     {
                         Category = subItem.Category,
                         Group = item.CategoryName,
                         Budgeted = subItem.Amount,
-                        Actual = new(Math.Abs(CalculateTotalForCategory(new() { Group = item.CategoryName, Name = subItem.Category}, budgetMonth, databaseReader).Value)),
-                        IsExpense = true
+                        Actual = new(
+                            Math.Abs(
+                                CalculateTotalForCategory(
+                                    new() { Group = item.CategoryName, Name = subItem.Category },
+                                    budgetMonth,
+                                    databaseReader
+                                ).Value
+                            )
+                        ),
+                        IsExpense = true,
                     };
 
                     budgetReportItem.Remaining = budgetReportItem.Budgeted - budgetReportItem.Actual;
@@ -165,8 +198,11 @@ namespace MyMoney.Core.Reports
         /// </summary>
         /// <param name="date">The date of the report</param>
         /// <returns>The income, expenses, and savings report items</returns>
-        public static (List<BudgetReportItem> income, List<BudgetReportItem> expenses, List<SavingsCategoryReportItem> savings)
-            CalculateBudgetReport(DateTime date, IDatabaseManager databaseManager)
+        public static (
+            List<BudgetReportItem> income,
+            List<BudgetReportItem> expenses,
+            List<SavingsCategoryReportItem> savings
+        ) CalculateBudgetReport(DateTime date, IDatabaseManager databaseManager)
         {
             // Check to see if data is cached
             ReportsCache cache = new(databaseManager);
@@ -183,9 +219,11 @@ namespace MyMoney.Core.Reports
                         cachedReport = (Dictionary<string, object>)cachedItem;
 
                         // Ensure the correct items are in the cached report
-                        if (cachedReport.TryGetValue("Income", out object? cachedIncomeObject) &&
-                            cachedReport.TryGetValue("Expenses", out object? cachedExpensesObject) &&
-                            cachedReport.TryGetValue("Savings", out object? cachedSavingsObject))
+                        if (
+                            cachedReport.TryGetValue("Income", out object? cachedIncomeObject)
+                            && cachedReport.TryGetValue("Expenses", out object? cachedExpensesObject)
+                            && cachedReport.TryGetValue("Savings", out object? cachedSavingsObject)
+                        )
                         {
                             // convert to arrays of object
                             var cachedIncomeObjectArray = (object[])cachedIncomeObject;
@@ -235,14 +273,14 @@ namespace MyMoney.Core.Reports
 
             cache.CacheObject(key, reportToCache);
 
-            return (
-                calculatedIncomeItems,
-                calculatedExpenseItems,
-                calulatedSavingsItems
-            );
+            return (calculatedIncomeItems, calculatedExpenseItems, calulatedSavingsItems);
         }
 
-        private static Currency CalculateTotalForCategory(Category category, DateTime month, IDatabaseManager databaseReader)
+        private static Currency CalculateTotalForCategory(
+            Category category,
+            DateTime month,
+            IDatabaseManager databaseReader
+        )
         {
             // Read the accounts from the database
             var accounts = databaseReader.GetCollection<Account>("Accounts");

@@ -1,94 +1,130 @@
 ﻿<Page
-      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-      xmlns:local="clr-namespace:MyMoney.Views.Pages" 
-      xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
-      xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core" xmlns:Controls="clr-namespace:MyMoney.Views.Controls" x:Class="MyMoney.Views.Pages.AccountsPage"
-      xmlns:helpers="clr-namespace:MyMoney.Helpers"
-      mc:Ignorable="d" 
-      d:DesignHeight="800" d:DesignWidth="1200"
-      Title="Accounts"
-      d:DataContext="{d:DesignInstance {x:Type local:AccountsPage}, IsDesignTimeCreatable=False}"
-      ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
-      ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      Loaded="Page_Loaded"
-      SizeChanged="MainWindow_SizeChanged"
-      >
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:MyMoney.Views.Pages"
+    xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
+    xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
+    xmlns:Controls="clr-namespace:MyMoney.Views.Controls"
+    x:Class="MyMoney.Views.Pages.AccountsPage"
+    xmlns:helpers="clr-namespace:MyMoney.Helpers"
+    mc:Ignorable="d"
+    d:DesignHeight="800"
+    d:DesignWidth="1200"
+    Title="Accounts"
+    d:DataContext="{d:DesignInstance {x:Type local:AccountsPage}, IsDesignTimeCreatable=False}"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Loaded="Page_Loaded"
+    SizeChanged="MainWindow_SizeChanged"
+>
     <Page.Resources>
         <ResourceDictionary>
-            <helpers:CurrencyConverter x:Key="CurrencyConverter"/>
-            <helpers:StartsWithPlusConverter x:Key="StartsWithPlusConverter"/>
+            <helpers:CurrencyConverter x:Key="CurrencyConverter" />
+            <helpers:StartsWithPlusConverter x:Key="StartsWithPlusConverter" />
             <StackPanel x:Key="RenameDialogContent">
                 <TextBlock Margin="0,0,0,8">Rename account to</TextBlock>
-                <TextBox HorizontalAlignment="Stretch"/>
+                <TextBox HorizontalAlignment="Stretch" />
             </StackPanel>
         </ResourceDictionary>
     </Page.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition x:Name="Row1" Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition x:Name="Row1" Height="Auto" />
         </Grid.RowDefinitions>
-        
+
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="Col0" Width="275"/>
-            <ColumnDefinition x:Name="Col1" Width="*"/>
+            <ColumnDefinition x:Name="Col0" Width="275" />
+            <ColumnDefinition x:Name="Col1" Width="*" />
         </Grid.ColumnDefinitions>
 
         <ui:Card x:Name="AccountsCard" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" Margin="0,0,12,24">
             <StackPanel Grid.Column="0">
-                <ui:ListView MaxHeight="200" ItemsSource="{Binding ViewModel.Accounts}" 
-                                   SelectedIndex="{Binding ViewModel.SelectedAccountIndex}"
-                                   SelectedItem="{Binding ViewModel.SelectedAccount}">
+                <ui:ListView
+                    MaxHeight="200"
+                    ItemsSource="{Binding ViewModel.Accounts}"
+                    SelectedIndex="{Binding ViewModel.SelectedAccountIndex}"
+                    SelectedItem="{Binding ViewModel.SelectedAccount}"
+                >
                     <ui:ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <ui:TextBlock Text="{Binding AccountName}" Margin="4"/>
-                                <ui:TextBlock Grid.Column="1" Text="{Binding Total}" Margin="4"/>
+                                <ui:TextBlock Text="{Binding AccountName}" Margin="4" />
+                                <ui:TextBlock Grid.Column="1" Text="{Binding Total}" Margin="4" />
                             </Grid>
-
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
 
                     <ui:ListView.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Rename" Command="{Binding ViewModel.RenameAccountCommand}" CommandParameter="{StaticResource RenameDialogContent}"/>
-                            <MenuItem Header="Update balance" Command="{Binding ViewModel.UpdateAccountBalanceCommand}"/>
-                            <MenuItem Header="Delete account" Command="{Binding ViewModel.DeleteAccountCommand}"/>
+                            <MenuItem
+                                Header="Rename"
+                                Command="{Binding ViewModel.RenameAccountCommand}"
+                                CommandParameter="{StaticResource RenameDialogContent}"
+                            />
+                            <MenuItem
+                                Header="Update balance"
+                                Command="{Binding ViewModel.UpdateAccountBalanceCommand}"
+                            />
+                            <MenuItem Header="Delete account" Command="{Binding ViewModel.DeleteAccountCommand}" />
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
                 </ui:ListView>
-                <ui:Button HorizontalAlignment="Stretch" Margin="0,12,0,8" Command="{Binding ViewModel.CreateNewTransactionCommand}" Appearance="Primary" IsEnabled="{Binding ViewModel.TransactionsEnabled}">New transaction</ui:Button>
-                <ui:Button HorizontalAlignment="Stretch" Margin="0,0,0,8" Command="{Binding ViewModel.CreateNewAccountCommand}">New account</ui:Button>
-                <ui:Button HorizontalAlignment="Stretch" Command="{Binding ViewModel.TransferBetweenAccountsCommand}" IsEnabled="{Binding ViewModel.TransactionsEnabled}">Transfer</ui:Button>
+                <ui:Button
+                    HorizontalAlignment="Stretch"
+                    Margin="0,12,0,8"
+                    Command="{Binding ViewModel.CreateNewTransactionCommand}"
+                    Appearance="Primary"
+                    IsEnabled="{Binding ViewModel.TransactionsEnabled}"
+                    >New transaction</ui:Button
+                >
+                <ui:Button
+                    HorizontalAlignment="Stretch"
+                    Margin="0,0,0,8"
+                    Command="{Binding ViewModel.CreateNewAccountCommand}"
+                    >New account</ui:Button
+                >
+                <ui:Button
+                    HorizontalAlignment="Stretch"
+                    Command="{Binding ViewModel.TransferBetweenAccountsCommand}"
+                    IsEnabled="{Binding ViewModel.TransactionsEnabled}"
+                    >Transfer</ui:Button
+                >
             </StackPanel>
         </ui:Card>
 
         <Grid x:Name="TransactionsGrid" Grid.Column="1" Grid.Row="0" Margin="12,0,0,24">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-
-            <ui:Card x:Name="TransactionsCard" Grid.Row="1" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
-
-                <ui:ListView x:Name="TransactionsList" ItemsSource="{Binding ViewModel.SelectedAccountTransactions}" 
-                                  SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}"
-                                  SelectedItem="{Binding ViewModel.SelectedTransaction}" VerticalAlignment="Top">
+            <ui:Card
+                x:Name="TransactionsCard"
+                Grid.Row="1"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Stretch"
+            >
+                <ui:ListView
+                    x:Name="TransactionsList"
+                    ItemsSource="{Binding ViewModel.SelectedAccountTransactions}"
+                    SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}"
+                    SelectedItem="{Binding ViewModel.SelectedTransaction}"
+                    VerticalAlignment="Top"
+                >
                     <ui:ListView.ContextMenu>
                         <ContextMenu>
-                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditTransactionCommand}"/>
-                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}"/>
+                            <MenuItem Header="Edit" Command="{Binding ViewModel.EditTransactionCommand}" />
+                            <MenuItem Header="Delete" Command="{Binding ViewModel.DeleteTransactionCommand}" />
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
 
@@ -96,27 +132,58 @@
                         <DataTemplate DataType="{x:Type models:Transaction}">
                             <Grid Margin="0,2,0,2">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*"/>
-                                    <ColumnDefinition Width="5*"/>
-                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="5*" />
+                                    <ColumnDefinition Width="1*" />
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <Controls:MonthDayControl Grid.RowSpan="2" Day="{Binding Path=Date.Day}" Month="{Binding Path=MonthAbbreviated}" HorizontalAlignment="Left" Margin="16,0,0,0"/>
+                                <Controls:MonthDayControl
+                                    Grid.RowSpan="2"
+                                    Day="{Binding Path=Date.Day}"
+                                    Month="{Binding Path=MonthAbbreviated}"
+                                    HorizontalAlignment="Left"
+                                    Margin="16,0,0,0"
+                                />
 
-                                <ui:TextBlock Grid.Row="0" Grid.Column="1" FontSize="16" HorizontalAlignment="Left" Text="{Binding Payee}"/>
-                                <ui:TextBlock Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Text="{Binding Category.Name}"/>
+                                <ui:TextBlock
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    FontSize="16"
+                                    HorizontalAlignment="Left"
+                                    Text="{Binding Payee}"
+                                />
+                                <ui:TextBlock
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Left"
+                                    Text="{Binding Category.Name}"
+                                />
 
-                                <TextBlock Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" FontSize="24" FontWeight="SemiBold"
-                                                  Text="{Binding AmountFormatted}" HorizontalAlignment="Right" Margin="0,0,16,0">
+                                <TextBlock
+                                    Grid.Row="0"
+                                    Grid.Column="2"
+                                    Grid.RowSpan="2"
+                                    FontSize="24"
+                                    FontWeight="SemiBold"
+                                    Text="{Binding AmountFormatted}"
+                                    HorizontalAlignment="Right"
+                                    Margin="0,0,16,0"
+                                >
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Style.Triggers>
-                                                <DataTrigger Binding="{Binding AmountFormatted, Converter={StaticResource StartsWithPlusConverter} }" Value="True">
-                                                    <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
+                                                <DataTrigger
+                                                    Binding="{Binding AmountFormatted, Converter={StaticResource StartsWithPlusConverter} }"
+                                                    Value="True"
+                                                >
+                                                    <Setter
+                                                        Property="Foreground"
+                                                        Value="{DynamicResource AccentTextFillColorTertiaryBrush}"
+                                                    />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -126,7 +193,6 @@
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
                 </ui:ListView>
-
             </ui:Card>
         </Grid>
     </Grid>

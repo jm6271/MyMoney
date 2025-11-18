@@ -1,6 +1,4 @@
 namespace MyMoney.Resources
 {
-    public partial class Translations
-    {
-    }
+    public partial class Translations { }
 }

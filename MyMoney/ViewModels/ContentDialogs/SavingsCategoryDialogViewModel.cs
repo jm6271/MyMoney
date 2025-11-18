@@ -1,6 +1,6 @@
-﻿using MyMoney.Core.Models;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using MyMoney.Core.Models;
 
 namespace MyMoney.ViewModels.ContentDialogs
 {

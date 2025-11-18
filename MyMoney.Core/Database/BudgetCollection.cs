@@ -24,8 +24,8 @@ namespace MyMoney.Core.Database
             {
                 foreach (var budget in budgetsInDatabase)
                 {
-                    if (budget != null) 
-                    { 
+                    if (budget != null)
+                    {
                         foreach (var incomeItem in budget.BudgetIncomeItems)
                         {
                             incomeItem.Category ??= "";
@@ -47,7 +47,6 @@ namespace MyMoney.Core.Database
         /// </summary>
         public void SaveBudgetCollection()
         {
-            
             _databaseManager.WriteCollection(BudgetCollectionName, Budgets);
         }
 
@@ -65,7 +64,6 @@ namespace MyMoney.Core.Database
 
             var budget = Budgets.FirstOrDefault(budget => budget.BudgetTitle == GetCurrentBudgetName());
             return budget ?? throw new BudgetNotFoundException("No budget exists for current month");
-
         }
 
         /// <summary>
@@ -113,8 +111,6 @@ namespace MyMoney.Core.Database
         /// <summary>
         /// An error that occurs when a budget is not found
         /// </summary>
-        public class BudgetNotFoundException(string message) : Exception(message)
-        {
-        }
+        public class BudgetNotFoundException(string message) : Exception(message) { }
     }
 }

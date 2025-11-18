@@ -1,5 +1,4 @@
-﻿using MyMoney.ViewModels.ContentDialogs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -22,9 +22,10 @@ namespace MyMoney.Views.ContentDialogs
     /// </summary>
     public partial class NewExpenseGroupDialog : ContentDialog
     {
-        public NewExpenseGroupDialog(ContentPresenter host, NewExpenseGroupDialogViewModel viewModel) : base(host)
+        public NewExpenseGroupDialog(ContentPresenter host, NewExpenseGroupDialogViewModel viewModel)
+            : base(host)
         {
-            InitializeComponent(); 
+            InitializeComponent();
             DataContext = viewModel;
         }
 

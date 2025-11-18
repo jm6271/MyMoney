@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-    xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core" 
+    xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
     xmlns:Controls="clr-namespace:MyMoney.Views.Controls"
     xmlns:helpers="clr-namespace:MyMoney.Helpers"
     x:Class="MyMoney.Views.Pages.DashboardPage"
@@ -18,145 +18,187 @@
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d"
-    SizeChanged="Page_SizeChanged">
-    
+    SizeChanged="Page_SizeChanged"
+>
     <Page.Resources>
-        <helpers:IsLastItemConverter x:Key="IsLastItemConverter"/>
-        <helpers:DoubleToUpDownIconConverter x:Key="DoubleToUpDownIconConverter"/>
+        <helpers:IsLastItemConverter x:Key="IsLastItemConverter" />
+        <helpers:DoubleToUpDownIconConverter x:Key="DoubleToUpDownIconConverter" />
     </Page.Resources>
-    
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="200"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="200" />
+            <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
         <Border VerticalAlignment="Stretch" CornerRadius="8" Grid.Row="0">
             <Border.Background>
-                <ImageBrush ImageSource="pack://application:,,,/Assets/MyMoney-Banner.png" Stretch="Fill"/>
+                <ImageBrush ImageSource="pack://application:,,,/Assets/MyMoney-Banner.png" Stretch="Fill" />
             </Border.Background>
             <StackPanel VerticalAlignment="Center" Margin="24,0,0,0">
                 <StackPanel.Resources>
-                    <DropShadowEffect x:Key="TextBlockShadowEffect"
-                            ShadowDepth="4"
-                            Direction="330"
-                            Color="Black"
-                            Opacity="0.5"
-                            BlurRadius="4"
-                            />
+                    <DropShadowEffect
+                        x:Key="TextBlockShadowEffect"
+                        ShadowDepth="4"
+                        Direction="330"
+                        Color="Black"
+                        Opacity="0.5"
+                        BlurRadius="4"
+                    />
                 </StackPanel.Resources>
-                <ui:TextBlock FontTypography="TitleLarge" Text="MyMoney" Foreground="LightGray" 
-                              Effect="{StaticResource TextBlockShadowEffect}"/>
-                <ui:TextBlock FontTypography="Title" Text="Personal Finance Software" Foreground="LightGray"
-                              Effect="{StaticResource TextBlockShadowEffect}"/>
+                <ui:TextBlock
+                    FontTypography="TitleLarge"
+                    Text="MyMoney"
+                    Foreground="LightGray"
+                    Effect="{StaticResource TextBlockShadowEffect}"
+                />
+                <ui:TextBlock
+                    FontTypography="Title"
+                    Text="Personal Finance Software"
+                    Foreground="LightGray"
+                    Effect="{StaticResource TextBlockShadowEffect}"
+                />
             </StackPanel>
         </Border>
 
         <Grid Margin="0,24,0,0" Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition x:Name="Col0" Width="4*"/>
-                <ColumnDefinition x:Name="Col1" Width="3*"/>
+                <ColumnDefinition x:Name="Col0" Width="4*" />
+                <ColumnDefinition x:Name="Col1" Width="3*" />
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
-                <RowDefinition x:Name="Row0" Height="Auto"/>
-                <RowDefinition x:Name="Row1" Height="1*"/>
-                <RowDefinition x:Name="Row2" Height="Auto"/>
+                <RowDefinition x:Name="Row0" Height="Auto" />
+                <RowDefinition x:Name="Row1" Height="1*" />
+                <RowDefinition x:Name="Row2" Height="Auto" />
             </Grid.RowDefinitions>
 
             <Grid Grid.Row="0" Grid.ColumnSpan="2" Margin="0,0,0,16">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                
+
                 <!-- Quick overview cards -->
                 <ui:Card Margin="0,0,12,0" Height="160" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
                     <!-- Net Worth-->
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <TextBlock FontSize="18">Net Worth</TextBlock>
-                        <lvc:CartesianChart VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-                                            Grid.Row="1"
-                                            Margin="0,8,0,8"
-                                            Series="{Binding ViewModel.NetWorthSeries}"
-                                            XAxes="{Binding ViewModel.NetWorthXAxes}"
-                                            YAxes="{Binding ViewModel.NetWorthYAxes}"
-                                            TooltipPosition="Hidden"/>
+                        <lvc:CartesianChart
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch"
+                            Grid.Row="1"
+                            Margin="0,8,0,8"
+                            Series="{Binding ViewModel.NetWorthSeries}"
+                            XAxes="{Binding ViewModel.NetWorthXAxes}"
+                            YAxes="{Binding ViewModel.NetWorthYAxes}"
+                            TooltipPosition="Hidden"
+                        />
                         <Viewbox Grid.Row="2" MaxHeight="40">
-                            <TextBlock Text="{Binding ViewModel.TotalNetWorth}" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding ViewModel.TotalNetWorth}" FontWeight="SemiBold" />
                         </Viewbox>
-                        
                     </Grid>
                 </ui:Card>
-                
-                <ui:Card Margin="4,0,8,0" Grid.Column="1" Height="160" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
+
+                <ui:Card
+                    Margin="4,0,8,0"
+                    Grid.Column="1"
+                    Height="160"
+                    VerticalAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
+                >
                     <!-- Cash Flow -->
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <TextBlock FontSize="18">Cash Flow</TextBlock>
                         <Viewbox Grid.Row="1" HorizontalAlignment="Left" Margin="0,8,0,8">
-                            <TextBlock Text="{Binding ViewModel.CashFlowTotalFormatted}" 
-                                       Foreground="{Binding ViewModel.CashFlowTotalColorBrush}"/>
+                            <TextBlock
+                                Text="{Binding ViewModel.CashFlowTotalFormatted}"
+                                Foreground="{Binding ViewModel.CashFlowTotalColorBrush}"
+                            />
                         </Viewbox>
                         <WrapPanel Grid.Row="2">
-                            <ui:SymbolIcon Symbol="{Binding ViewModel.CashFlowPercentVsLastMonth, 
-                                                        Converter={StaticResource DoubleToUpDownIconConverter}}" 
-                                           Filled="True" VerticalAlignment="Center" 
-                                           Foreground="{Binding ViewModel.CashFlowPercentageColorBrush}"/>
-                            <TextBlock Text=" "/>
-                            <TextBlock Text="{Binding ViewModel.CashFlowPercentVsLastMonth}" 
-                                       Foreground="{Binding ViewModel.CashFlowPercentageColorBrush}" 
-                                       VerticalAlignment="Center"/>
-                            <TextBlock Text="%" Foreground="{Binding ViewModel.CashFlowPercentageColorBrush}" 
-                                       VerticalAlignment="Center"/>
-                            <TextBlock Text="  vs last month" VerticalAlignment="Center"/>
+                            <ui:SymbolIcon
+                                Symbol="{Binding ViewModel.CashFlowPercentVsLastMonth, 
+                                                        Converter={StaticResource DoubleToUpDownIconConverter}}"
+                                Filled="True"
+                                VerticalAlignment="Center"
+                                Foreground="{Binding ViewModel.CashFlowPercentageColorBrush}"
+                            />
+                            <TextBlock Text=" " />
+                            <TextBlock
+                                Text="{Binding ViewModel.CashFlowPercentVsLastMonth}"
+                                Foreground="{Binding ViewModel.CashFlowPercentageColorBrush}"
+                                VerticalAlignment="Center"
+                            />
+                            <TextBlock
+                                Text="%"
+                                Foreground="{Binding ViewModel.CashFlowPercentageColorBrush}"
+                                VerticalAlignment="Center"
+                            />
+                            <TextBlock Text="  vs last month" VerticalAlignment="Center" />
                         </WrapPanel>
                     </Grid>
                 </ui:Card>
-                
-                <ui:Card Margin="8,0,4,0" Grid.Column="2" Height="160" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
+
+                <ui:Card
+                    Margin="8,0,4,0"
+                    Grid.Column="2"
+                    Height="160"
+                    VerticalAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
+                >
                     <!-- Budget health -->
                     <StackPanel>
-
                         <TextBlock FontSize="18">Budget</TextBlock>
-                        
+
                         <Grid Margin="0,12,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            
-                            <ui:SymbolIcon Symbol="{Binding ViewModel.BudgetHealthIcon}" 
-                                           Foreground="{Binding ViewModel.BudgetHealthIconColorBrush}" 
-                                           VerticalAlignment="Center"
-                                           Margin="0,0,8,0" FontSize="24"/>
-                            
-                            <TextBlock Text="{Binding ViewModel.BudgetHealthText}" 
-                                       TextWrapping="Wrap"
-                                       VerticalAlignment="Center"
-                                       Grid.Column="1"
-                                       />
+
+                            <ui:SymbolIcon
+                                Symbol="{Binding ViewModel.BudgetHealthIcon}"
+                                Foreground="{Binding ViewModel.BudgetHealthIconColorBrush}"
+                                VerticalAlignment="Center"
+                                Margin="0,0,8,0"
+                                FontSize="24"
+                            />
+
+                            <TextBlock
+                                Text="{Binding ViewModel.BudgetHealthText}"
+                                TextWrapping="Wrap"
+                                VerticalAlignment="Center"
+                                Grid.Column="1"
+                            />
                         </Grid>
                     </StackPanel>
                 </ui:Card>
-                
-                <ui:Card Margin="12,0,0,0" Grid.Column="3" Height="160" VerticalAlignment="Stretch" VerticalContentAlignment="Stretch">
+
+                <ui:Card
+                    Margin="12,0,0,0"
+                    Grid.Column="3"
+                    Height="160"
+                    VerticalAlignment="Stretch"
+                    VerticalContentAlignment="Stretch"
+                >
                     <!-- Spending vs. last month -->
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <TextBlock FontSize="18">Spending</TextBlock>
 
@@ -165,23 +207,37 @@
                         </Viewbox>
 
                         <WrapPanel Grid.Row="2">
-                            <ui:SymbolIcon Symbol="{Binding ViewModel.SpendingVsLastMonthPercentage, 
-                                Converter={StaticResource DoubleToUpDownIconConverter}}" 
-                                           Filled="True" VerticalAlignment="Center" 
-                                           Foreground="{Binding ViewModel.SpendingPercentageColorBrush}"/>
-                            <TextBlock Text=" "/>
-                            <TextBlock Text="{Binding ViewModel.SpendingVsLastMonthPercentage}" 
-                                       Foreground="{Binding ViewModel.SpendingPercentageColorBrush}" 
-                                       VerticalAlignment="Center"/>
-                            <TextBlock Text="%" Foreground="{Binding ViewModel.SpendingPercentageColorBrush}" 
-                                       VerticalAlignment="Center"/>
-                            <TextBlock Text="  vs last month" VerticalAlignment="Center"/>
+                            <ui:SymbolIcon
+                                Symbol="{Binding ViewModel.SpendingVsLastMonthPercentage, 
+                                Converter={StaticResource DoubleToUpDownIconConverter}}"
+                                Filled="True"
+                                VerticalAlignment="Center"
+                                Foreground="{Binding ViewModel.SpendingPercentageColorBrush}"
+                            />
+                            <TextBlock Text=" " />
+                            <TextBlock
+                                Text="{Binding ViewModel.SpendingVsLastMonthPercentage}"
+                                Foreground="{Binding ViewModel.SpendingPercentageColorBrush}"
+                                VerticalAlignment="Center"
+                            />
+                            <TextBlock
+                                Text="%"
+                                Foreground="{Binding ViewModel.SpendingPercentageColorBrush}"
+                                VerticalAlignment="Center"
+                            />
+                            <TextBlock Text="  vs last month" VerticalAlignment="Center" />
                         </WrapPanel>
                     </Grid>
                 </ui:Card>
             </Grid>
 
-            <ui:Card Grid.Row="1" Grid.Column="0" VerticalAlignment="Top" Margin="0,8,8,24" x:Name="budgetOverviewPanel">
+            <ui:Card
+                Grid.Row="1"
+                Grid.Column="0"
+                VerticalAlignment="Top"
+                Margin="0,8,8,24"
+                x:Name="budgetOverviewPanel"
+            >
                 <StackPanel Grid.IsSharedSizeScope="True">
                     <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,24">Budget Overview</ui:TextBlock>
                     <Grid Margin="16,0,16,12">
@@ -195,30 +251,52 @@
                             <ColumnDefinition Width="Auto" SharedSizeGroup="Remaining" />
                         </Grid.ColumnDefinitions>
 
-                        <TextBlock Text="Category" FontWeight="SemiBold" Grid.Column="0"/>
-                        <Separator Grid.Column="1"/>
-                        <TextBlock Text="Budgeted" FontWeight="SemiBold" Margin="8,0,8,0" Grid.Column="2" TextAlignment="Right"/>
-                        <Separator Grid.Column="3"/>
-                        <TextBlock Text="Actual" FontWeight="SemiBold" Margin="8,0" Grid.Column="4" TextAlignment="Right"/>
-                        <Separator Grid.Column="5"/>
-                        <TextBlock Text="Remaining" FontWeight="SemiBold" Margin="8,0,0,0" Grid.Column="6" TextAlignment="Right"/>
+                        <TextBlock Text="Category" FontWeight="SemiBold" Grid.Column="0" />
+                        <Separator Grid.Column="1" />
+                        <TextBlock
+                            Text="Budgeted"
+                            FontWeight="SemiBold"
+                            Margin="8,0,8,0"
+                            Grid.Column="2"
+                            TextAlignment="Right"
+                        />
+                        <Separator Grid.Column="3" />
+                        <TextBlock
+                            Text="Actual"
+                            FontWeight="SemiBold"
+                            Margin="8,0"
+                            Grid.Column="4"
+                            TextAlignment="Right"
+                        />
+                        <Separator Grid.Column="5" />
+                        <TextBlock
+                            Text="Remaining"
+                            FontWeight="SemiBold"
+                            Margin="8,0,0,0"
+                            Grid.Column="6"
+                            TextAlignment="Right"
+                        />
                     </Grid>
-                    
-                    <Separator/>
-                    
+
+                    <Separator />
+
                     <ItemsControl ItemsSource="{Binding ViewAdapter.GroupedBudgetReportItemsView}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Controls:BudgetSummaryItem Category="{Binding Category}" BudgetedAmount="{Binding Budgeted}"
-                                                            ActualAmount="{Binding Actual}" Margin="0,2"
-                                                            RemainingAmount="{Binding Remaining}"
-                                                            IsExpense="{Binding IsExpense}"/>
+                                <Controls:BudgetSummaryItem
+                                    Category="{Binding Category}"
+                                    BudgetedAmount="{Binding Budgeted}"
+                                    ActualAmount="{Binding Actual}"
+                                    Margin="0,2"
+                                    RemainingAmount="{Binding Remaining}"
+                                    IsExpense="{Binding IsExpense}"
+                                />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
 
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
-                                <StackPanel/>
+                                <StackPanel />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
 
@@ -226,9 +304,12 @@
                             <GroupStyle>
                                 <GroupStyle.HeaderTemplate>
                                     <DataTemplate>
-                                        <ui:TextBlock Margin="0,10,0,6" FontWeight="Bold" 
-                                                      Text="{Binding Name}"
-                                                      Foreground="{DynamicResource AccentTextFillColorTertiaryBrush}"/>
+                                        <ui:TextBlock
+                                            Margin="0,10,0,6"
+                                            FontWeight="Bold"
+                                            Text="{Binding Name}"
+                                            Foreground="{DynamicResource AccentTextFillColorTertiaryBrush}"
+                                        />
                                     </DataTemplate>
                                 </GroupStyle.HeaderTemplate>
                             </GroupStyle>
@@ -241,7 +322,7 @@
                 <ui:Card Margin="0,0,0,8">
                     <StackPanel>
                         <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,16">
-                            <Run Text="Accounts"/>
+                            <Run Text="Accounts" />
                         </ui:TextBlock>
                         <ui:ListView x:Name="AccountsListView" ItemsSource="{Binding ViewModel.Accounts}">
                             <ui:ListView.Resources>
@@ -253,11 +334,10 @@
                                                     <!-- current item -->
                                                     <Binding />
                                                     <!-- the ItemsSource on the nearest ListView -->
-                                                    <Binding Path="ItemsSource" 
-                                                        ElementName="AccountsListView"/>
+                                                    <Binding Path="ItemsSource" ElementName="AccountsListView" />
                                                 </MultiBinding>
                                             </DataTrigger.Binding>
-                                            <Setter Property="FontWeight" Value="Bold"/>
+                                            <Setter Property="FontWeight" Value="Bold" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -266,12 +346,22 @@
                                 <DataTemplate DataType="{x:Type models:AccountDashboardDisplayItem}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Style="{StaticResource LastItemTextBlockStyle}" Text="{Binding AccountName}" Margin="5,5,0,5" Grid.Column="0"/>
-                                        <TextBlock Style="{StaticResource LastItemTextBlockStyle}" Text="{Binding Total}" Margin="0,5,5,5" Grid.Column="1"/>
+                                        <TextBlock
+                                            Style="{StaticResource LastItemTextBlockStyle}"
+                                            Text="{Binding AccountName}"
+                                            Margin="5,5,0,5"
+                                            Grid.Column="0"
+                                        />
+                                        <TextBlock
+                                            Style="{StaticResource LastItemTextBlockStyle}"
+                                            Text="{Binding Total}"
+                                            Margin="0,5,5,5"
+                                            Grid.Column="1"
+                                        />
                                     </Grid>
                                 </DataTemplate>
                             </ui:ListView.ItemTemplate>
@@ -279,31 +369,34 @@
                     </StackPanel>
                 </ui:Card>
                 <ui:Card Margin="0,8,0,8">
-                    <lvc:CartesianChart x:Name="IncomeExpenseChart" Height="350" Series="{Binding ViewModel.Series}" 
-                                        XAxes="{Binding ViewModel.XAxes}" YAxes="{Binding ViewModel.YAxes}"
-                                        Title="{Binding ViewModel.ChartTitle}"></lvc:CartesianChart>
+                    <lvc:CartesianChart
+                        x:Name="IncomeExpenseChart"
+                        Height="350"
+                        Series="{Binding ViewModel.Series}"
+                        XAxes="{Binding ViewModel.XAxes}"
+                        YAxes="{Binding ViewModel.YAxes}"
+                        Title="{Binding ViewModel.ChartTitle}"
+                    ></lvc:CartesianChart>
                 </ui:Card>
 
-                <ui:Card VerticalContentAlignment="Stretch" Margin="0,8,0,24" Grid.Row="1"
-                     x:Name="ExpenseChart">
+                <ui:Card VerticalContentAlignment="Stretch" Margin="0,8,0,24" Grid.Row="1" x:Name="ExpenseChart">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="400"/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="400" />
                         </Grid.RowDefinitions>
-                        
-                        <TextBlock Text="Expenses by Category" FontSize="25" HorizontalAlignment="Center"/>
-                        
-                        <lvc:PieChart Series="{Binding ViewModel.ExpensePercentagesSeries}"
-                                      LegendPosition="Bottom"
-                                      Grid.Row="1"
-                                      LegendTextPaint="{Binding ViewModel.ExpenseBreakdownForeColor}"
-                                      />
+
+                        <TextBlock Text="Expenses by Category" FontSize="25" HorizontalAlignment="Center" />
+
+                        <lvc:PieChart
+                            Series="{Binding ViewModel.ExpensePercentagesSeries}"
+                            LegendPosition="Bottom"
+                            Grid.Row="1"
+                            LegendTextPaint="{Binding ViewModel.ExpenseBreakdownForeColor}"
+                        />
                     </Grid>
                 </ui:Card>
-
             </StackPanel>
         </Grid>
     </Grid>
-
 </Page>

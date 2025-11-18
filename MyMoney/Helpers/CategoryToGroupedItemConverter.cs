@@ -1,12 +1,12 @@
-﻿using MyMoney.Core.Models;
-using MyMoney.Views.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using MyMoney.Core.Models;
+using MyMoney.Views.Controls;
 
 namespace MyMoney.Helpers
 {
@@ -16,11 +16,7 @@ namespace MyMoney.Helpers
         {
             if (value is Category category)
             {
-                GroupedComboBox.GroupedComboBoxItem item = new()
-                {
-                    Item = category.Name,
-                    Group = category.Group,
-                };
+                GroupedComboBox.GroupedComboBoxItem item = new() { Item = category.Name, Group = category.Group };
 
                 return item;
             }
@@ -31,13 +27,11 @@ namespace MyMoney.Helpers
         {
             if (value is GroupedComboBox.GroupedComboBoxItem item)
             {
-                Category category = new()
-                {
-                    Group = item.Group,
-                };
+                Category category = new() { Group = item.Group };
 
                 string? str = item.Item.ToString();
-                if (str != null) category.Name = str;
+                if (str != null)
+                    category.Name = str;
 
                 return category;
             }

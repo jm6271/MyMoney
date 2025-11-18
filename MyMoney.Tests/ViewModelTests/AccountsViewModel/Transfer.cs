@@ -1,15 +1,14 @@
-using MyMoney.ViewModels.Pages;
-using MyMoney.ViewModels.ContentDialogs;
+using System.Collections.ObjectModel;
+using Moq;
+using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Services.ContentDialogs;
-using Moq;
+using MyMoney.ViewModels.ContentDialogs;
+using MyMoney.ViewModels.Pages;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
-using MyMoney.Core.Database;
-using System.Collections.ObjectModel;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
-
 
 namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
 {
@@ -39,8 +38,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _mockUpdateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
 
             // Set up empty accounts collection in database reader
-            _mockDatabaseReader.Setup(x => x.GetCollection<Account>("Accounts"))
-                .Returns(new List<Account>());
+            _mockDatabaseReader.Setup(x => x.GetCollection<Account>("Accounts")).Returns(new List<Account>());
 
             _viewModel = new MyMoney.ViewModels.Pages.AccountsViewModel(
                 _mockContentDialogService.Object,
@@ -63,17 +61,19 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _viewModel.Accounts.Add(account1);
             _viewModel.Accounts.Add(account2);
 
-            var transferViewModel = new TransferDialogViewModel(new ObservableCollection<string> { "Checking", "Savings" })
+            var transferViewModel = new TransferDialogViewModel(
+                new ObservableCollection<string> { "Checking", "Savings" }
+            )
             {
                 TransferFrom = "Checking",
                 TransferTo = "Savings",
-                Amount = new Currency(100m)
+                Amount = new Currency(100m),
             };
 
-            _mockTransferDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+            _mockTransferDialogService
+                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
                 .ReturnsAsync(ContentDialogResult.Primary);
-            _mockTransferDialogService.Setup(x => x.GetViewModel())
-                .Returns(transferViewModel);
+            _mockTransferDialogService.Setup(x => x.GetViewModel()).Returns(transferViewModel);
 
             // Act
             _viewModel.TransferBetweenAccountsCommand.Execute(null);
@@ -108,7 +108,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _viewModel.Accounts.Add(account1);
             _viewModel.Accounts.Add(account2);
 
-            _mockTransferDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+            _mockTransferDialogService
+                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
                 .ReturnsAsync(ContentDialogResult.None); // User cancels dialog
 
             // Act
@@ -116,7 +117,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
 
             // Assert
             Assert.AreEqual(1000m, account1.Total.Value); // Should remain unchanged
-            Assert.AreEqual(500m, account2.Total.Value);  // Should remain unchanged
+            Assert.AreEqual(500m, account2.Total.Value); // Should remain unchanged
             Assert.IsEmpty(account1.Transactions); // No transactions should be created
             Assert.IsEmpty(account2.Transactions);
         }
@@ -130,17 +131,19 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _viewModel.Accounts.Add(account1);
             _viewModel.Accounts.Add(account2);
 
-            var transferViewModel = new TransferDialogViewModel(new ObservableCollection<string> { "Checking", "Savings" })
+            var transferViewModel = new TransferDialogViewModel(
+                new ObservableCollection<string> { "Checking", "Savings" }
+            )
             {
                 TransferFrom = "Checking",
                 TransferTo = "Savings",
-                Amount = new Currency(100m)
+                Amount = new Currency(100m),
             };
 
-            _mockTransferDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+            _mockTransferDialogService
+                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
                 .ReturnsAsync(ContentDialogResult.Primary);
-            _mockTransferDialogService.Setup(x => x.GetViewModel())
-                .Returns(transferViewModel);
+            _mockTransferDialogService.Setup(x => x.GetViewModel()).Returns(transferViewModel);
 
             // Act
             _viewModel.TransferBetweenAccountsCommand.Execute(null);
@@ -159,17 +162,19 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _viewModel.Accounts.Add(account1);
             _viewModel.Accounts.Add(account2);
 
-            var transferViewModel = new TransferDialogViewModel(new ObservableCollection<string> { "Checking", "Savings" })
+            var transferViewModel = new TransferDialogViewModel(
+                new ObservableCollection<string> { "Checking", "Savings" }
+            )
             {
                 TransferFrom = "Checking",
                 TransferTo = "Savings",
-                Amount = new Currency(100m) // More than available in Checking
+                Amount = new Currency(100m), // More than available in Checking
             };
 
-            _mockTransferDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+            _mockTransferDialogService
+                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
                 .ReturnsAsync(ContentDialogResult.Primary);
-            _mockTransferDialogService.Setup(x => x.GetViewModel())
-                .Returns(transferViewModel);
+            _mockTransferDialogService.Setup(x => x.GetViewModel()).Returns(transferViewModel);
 
             // Act
             _viewModel.TransferBetweenAccountsCommand.Execute(null);
@@ -181,8 +186,10 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             Assert.IsEmpty(account2.Transactions);
 
             // Verify message box was shown for insufficient funds
-            _mockMessageBoxService.Verify(x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(),
-            It.IsAny<string>()), Times.Once);
+            _mockMessageBoxService.Verify(
+                x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+                Times.Once
+            );
         }
     }
 }

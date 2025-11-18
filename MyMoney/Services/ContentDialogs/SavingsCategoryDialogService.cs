@@ -1,10 +1,10 @@
-﻿using MyMoney.ViewModels.ContentDialogs;
-using MyMoney.Views.ContentDialogs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MyMoney.ViewModels.ContentDialogs;
+using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -16,6 +16,7 @@ namespace MyMoney.Services.ContentDialogs
         public SavingsCategoryDialogViewModel GetViewModel();
         public Task<ContentDialogResult> ShowDialogAsync(IContentDialogService dialogService, string title);
     }
+
     public class SavingsCategoryDialogService : ISavingsCategoryDialogService
     {
         private SavingsCategoryDialogViewModel _viewModel = new();
@@ -40,7 +41,7 @@ namespace MyMoney.Services.ContentDialogs
             {
                 PrimaryButtonText = "OK",
                 CloseButtonText = "Cancel",
-                Title = title
+                Title = title,
             };
             return await dialogService.ShowAsync(dialog, CancellationToken.None);
         }

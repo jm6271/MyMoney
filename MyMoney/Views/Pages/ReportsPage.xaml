@@ -1,70 +1,92 @@
-﻿<Page x:Class="MyMoney.Views.Pages.ReportsPage"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:MyMoney.Views.Pages"
-      xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-      mc:Ignorable="d" 
-      d:DesignHeight="600" d:DesignWidth="800"
-      Title="Reports"
-      d:DataContext="{d:DesignInstance local:ReportsPage,
+﻿<Page
+    x:Class="MyMoney.Views.Pages.ReportsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MyMoney.Views.Pages"
+    xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+    mc:Ignorable="d"
+    d:DesignHeight="600"
+    d:DesignWidth="800"
+    Title="Reports"
+    d:DataContext="{d:DesignInstance local:ReportsPage,
                                  IsDesignTimeCreatable=False}"
-      ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
-      ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-      xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core">
-
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
+>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
 
         <ui:Card Margin="0,0,0,16">
-            <lvc:CartesianChart Grid.Row="0" Height="400" Series="{Binding ViewModel.IncomeExpense12MonthSeries}" 
-                                XAxes="{Binding ViewModel.IncomeExpense12MonthXAxes}" LegendPosition="Bottom"
-                                YAxes="{Binding ViewModel.IncomeExpense12MonthYAxes}" LegendTextPaint="{Binding ViewModel.IncomeExpense12MonthLegendPaint}">
-            </lvc:CartesianChart>
+            <lvc:CartesianChart
+                Grid.Row="0"
+                Height="400"
+                Series="{Binding ViewModel.IncomeExpense12MonthSeries}"
+                XAxes="{Binding ViewModel.IncomeExpense12MonthXAxes}"
+                LegendPosition="Bottom"
+                YAxes="{Binding ViewModel.IncomeExpense12MonthYAxes}"
+                LegendTextPaint="{Binding ViewModel.IncomeExpense12MonthLegendPaint}"
+            ></lvc:CartesianChart>
         </ui:Card>
 
         <ui:Card Grid.Row="1" Margin="0,0,0,24">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="250"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="250" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
                 <StackPanel Margin="0,0,0,8">
                     <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,8">Net Worth</ui:TextBlock>
-                    <ui:TextBlock FontTypography="Title" Text="{Binding ViewModel.TotalNetWorth}"/>
+                    <ui:TextBlock FontTypography="Title" Text="{Binding ViewModel.TotalNetWorth}" />
                 </StackPanel>
 
-                <ComboBox Grid.Column="1" VerticalAlignment="Top" Width="150" SelectedIndex="{Binding ViewModel.NetWorthPeriodIndex}">
-                    <ComboBoxItem Content="7 Days"/>
-                    <ComboBoxItem Content="Week to Date"/>
-                    <ComboBoxItem Content="30 Days"/>
-                    <ComboBoxItem Content="Month to Date"/>
-                    <ComboBoxItem Content="90 Days"/>
-                    <ComboBoxItem Content="365 Days"/>
-                    <ComboBoxItem Content="Year to Date"/>
+                <ComboBox
+                    Grid.Column="1"
+                    VerticalAlignment="Top"
+                    Width="150"
+                    SelectedIndex="{Binding ViewModel.NetWorthPeriodIndex}"
+                >
+                    <ComboBoxItem Content="7 Days" />
+                    <ComboBoxItem Content="Week to Date" />
+                    <ComboBoxItem Content="30 Days" />
+                    <ComboBoxItem Content="Month to Date" />
+                    <ComboBoxItem Content="90 Days" />
+                    <ComboBoxItem Content="365 Days" />
+                    <ComboBoxItem Content="Year to Date" />
                 </ComboBox>
 
-                <lvc:CartesianChart Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Stretch"
-                                    Series="{Binding ViewModel.NetWorthSeries}"
-                                    XAxes="{Binding ViewModel.NetWorthXAxes}"
-                                    YAxes="{Binding ViewModel.NetWorthYAxes}"/>
+                <lvc:CartesianChart
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    VerticalAlignment="Stretch"
+                    Series="{Binding ViewModel.NetWorthSeries}"
+                    XAxes="{Binding ViewModel.NetWorthXAxes}"
+                    YAxes="{Binding ViewModel.NetWorthYAxes}"
+                />
 
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding ViewModel.NetWorthStartDate}"/>
-                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding ViewModel.NetWorthEndDate}" HorizontalAlignment="Right"/>
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding ViewModel.NetWorthStartDate}" />
+                <TextBlock
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    Text="{Binding ViewModel.NetWorthEndDate}"
+                    HorizontalAlignment="Right"
+                />
             </Grid>
         </ui:Card>
     </Grid>

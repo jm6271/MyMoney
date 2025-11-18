@@ -1,7 +1,7 @@
-﻿using MyMoney.Core.Models;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows.Controls;
 using System.Windows.Media;
+using MyMoney.Core.Models;
 using Wpf.Ui.Appearance;
 
 namespace MyMoney.Views.Controls
@@ -16,9 +16,12 @@ namespace MyMoney.Views.Controls
             InitializeComponent();
         }
 
-        public static readonly DependencyProperty CategoryProperty =
-            DependencyProperty.Register(nameof(Category), 
-                typeof(string), typeof(BudgetSummaryItem), new PropertyMetadata(string.Empty));
+        public static readonly DependencyProperty CategoryProperty = DependencyProperty.Register(
+            nameof(Category),
+            typeof(string),
+            typeof(BudgetSummaryItem),
+            new PropertyMetadata(string.Empty)
+        );
 
         public string Category
         {
@@ -26,9 +29,12 @@ namespace MyMoney.Views.Controls
             set { SetValue(CategoryProperty, value); }
         }
 
-        public static readonly DependencyProperty BudgetedAmountProperty =
-            DependencyProperty.Register(nameof(BudgetedAmount), 
-                typeof(Currency), typeof(BudgetSummaryItem), new PropertyMetadata(new Currency(0m), OnValueChanged));
+        public static readonly DependencyProperty BudgetedAmountProperty = DependencyProperty.Register(
+            nameof(BudgetedAmount),
+            typeof(Currency),
+            typeof(BudgetSummaryItem),
+            new PropertyMetadata(new Currency(0m), OnValueChanged)
+        );
 
         public Currency BudgetedAmount
         {
@@ -36,10 +42,12 @@ namespace MyMoney.Views.Controls
             set { SetValue(BudgetedAmountProperty, value); }
         }
 
-        public static readonly DependencyProperty ActualAmountProperty =
-            DependencyProperty.Register(nameof(ActualAmount), 
-                typeof(Currency), typeof(BudgetSummaryItem), new PropertyMetadata(new Currency(0m), OnValueChanged));
-
+        public static readonly DependencyProperty ActualAmountProperty = DependencyProperty.Register(
+            nameof(ActualAmount),
+            typeof(Currency),
+            typeof(BudgetSummaryItem),
+            new PropertyMetadata(new Currency(0m), OnValueChanged)
+        );
 
         private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -52,8 +60,8 @@ namespace MyMoney.Views.Controls
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged(string propertyName)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        protected void OnPropertyChanged(string propertyName) =>
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         public Currency ActualAmount
         {
@@ -61,9 +69,12 @@ namespace MyMoney.Views.Controls
             set { SetValue(ActualAmountProperty, value); }
         }
 
-        public static readonly DependencyProperty RemainingAmountProperty =
-            DependencyProperty.Register(nameof(RemainingAmount),
-                typeof(Currency), typeof(BudgetSummaryItem), new PropertyMetadata(new Currency(0m), OnValueChanged));
+        public static readonly DependencyProperty RemainingAmountProperty = DependencyProperty.Register(
+            nameof(RemainingAmount),
+            typeof(Currency),
+            typeof(BudgetSummaryItem),
+            new PropertyMetadata(new Currency(0m), OnValueChanged)
+        );
 
         public Currency RemainingAmount
         {
@@ -71,9 +82,12 @@ namespace MyMoney.Views.Controls
             set { SetValue(RemainingAmountProperty, value); }
         }
 
-        public static readonly DependencyProperty IsExpenseProperty =
-            DependencyProperty.Register(nameof(IsExpense),
-                typeof(bool), typeof(BudgetSummaryItem), new PropertyMetadata(false, OnValueChanged));
+        public static readonly DependencyProperty IsExpenseProperty = DependencyProperty.Register(
+            nameof(IsExpense),
+            typeof(bool),
+            typeof(BudgetSummaryItem),
+            new PropertyMetadata(false, OnValueChanged)
+        );
 
         public bool IsExpense
         {

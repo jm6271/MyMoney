@@ -1,10 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace MyMoney.Core.Models
 {
@@ -54,9 +54,8 @@ namespace MyMoney.Core.Models
                 Spent = new Currency(0.0m),
                 BudgetedAmount = new(this.BudgetedAmount.Value),
                 Transactions = [],
-                CategoryHash = this.CategoryHash
+                CategoryHash = this.CategoryHash,
             };
         }
-
     }
 }

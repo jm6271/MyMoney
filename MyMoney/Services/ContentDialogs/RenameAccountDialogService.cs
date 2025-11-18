@@ -1,7 +1,7 @@
 ﻿using MyMoney.ViewModels.ContentDialogs;
-using Wpf.Ui.Controls;
-using Wpf.Ui;
 using MyMoney.Views.ContentDialogs;
+using Wpf.Ui;
+using Wpf.Ui.Controls;
 
 namespace MyMoney.Services.ContentDialogs
 {
@@ -11,9 +11,11 @@ namespace MyMoney.Services.ContentDialogs
         public RenameAccountViewModel GetViewModel();
         public Task<ContentDialogResult> ShowDialogAsync(IContentDialogService dialogService);
     }
+
     public class RenameAccountDialogService : IRenameAccountDialogService
     {
         private RenameAccountViewModel _viewModel = new();
+
         public RenameAccountViewModel GetViewModel()
         {
             return _viewModel;
@@ -33,7 +35,7 @@ namespace MyMoney.Services.ContentDialogs
             RenameAccountDialog renameAccountDialog = new(host, _viewModel)
             {
                 PrimaryButtonText = "Rename",
-                CloseButtonText = "Cancel"
+                CloseButtonText = "Cancel",
             };
             return await dialogService.ShowAsync(renameAccountDialog, CancellationToken.None);
         }

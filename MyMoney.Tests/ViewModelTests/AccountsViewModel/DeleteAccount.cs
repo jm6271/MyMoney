@@ -1,10 +1,10 @@
+using Moq;
+using MyMoney.Core.Database;
 using MyMoney.Core.Models;
+using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.Pages;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
-using Moq;
-using MyMoney.Services.ContentDialogs;
-using MyMoney.Core.Database;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -36,8 +36,7 @@ public class DeleteAccountTests
         _mockUpdateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
 
         // Setup empty accounts collection by default
-        _mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts"))
-            .Returns([]);
+        _mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts")).Returns([]);
     }
 
     [TestMethod]
@@ -51,8 +50,10 @@ public class DeleteAccountTests
         _viewModel.DeleteAccountCommand.Execute(null);
 
         // Assert
-        _mockMessageBoxService.Verify(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(),
-            It.IsAny<string>(), It.IsAny<string>()), Times.Never());
+        _mockMessageBoxService.Verify(
+            x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Never()
+        );
     }
 
     [TestMethod]
@@ -60,7 +61,12 @@ public class DeleteAccountTests
     {
         // Arrange
         _viewModel = CreateViewModel();
-        var account = new Account { AccountName = "Test", Total = new Currency(1000m), Id = 1 };
+        var account = new Account
+        {
+            AccountName = "Test",
+            Total = new Currency(1000m),
+            Id = 1,
+        };
         _viewModel.Accounts.Add(account);
         _viewModel.SelectedAccountIndex = 0;
 
@@ -80,8 +86,18 @@ public class DeleteAccountTests
     {
         // Arrange
         _viewModel = CreateViewModel();
-        var account1 = new Account { AccountName = "Test1", Total = new Currency(1000m), Id = 1 };
-        var account2 = new Account { AccountName = "Test2", Total = new Currency(2000m), Id = 2 };
+        var account1 = new Account
+        {
+            AccountName = "Test1",
+            Total = new Currency(1000m),
+            Id = 1,
+        };
+        var account2 = new Account
+        {
+            AccountName = "Test2",
+            Total = new Currency(2000m),
+            Id = 2,
+        };
         _viewModel.Accounts.Add(account1);
         _viewModel.Accounts.Add(account2);
         _viewModel.SelectedAccountIndex = 0;

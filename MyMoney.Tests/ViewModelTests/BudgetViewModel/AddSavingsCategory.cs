@@ -35,8 +35,7 @@ public class AddSavingsCategoryTests
         _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
 
         // Setup database reader to return empty collection
-        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
-            .Returns(new List<Budget>());
+        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
 
         _viewModel = new(
             _mockContentDialogService.Object,
@@ -59,8 +58,10 @@ public class AddSavingsCategoryTests
         await _viewModel.AddSavingsCategoryCommand.ExecuteAsync(null);
 
         // Assert
-        _mockSavingsCategoryDialogService.Verify(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
-            It.IsAny<string>()), Times.Never);
+        _mockSavingsCategoryDialogService.Verify(
+            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()),
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -74,8 +75,10 @@ public class AddSavingsCategoryTests
         await _viewModel.AddSavingsCategoryCommand.ExecuteAsync(null);
 
         // Assert
-        _mockSavingsCategoryDialogService.Verify(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
-            It.IsAny<string>()), Times.Never);
+        _mockSavingsCategoryDialogService.Verify(
+            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()),
+            Times.Never
+        );
     }
 
     [TestMethod]
@@ -85,8 +88,9 @@ public class AddSavingsCategoryTests
         _viewModel.CurrentBudget = new Budget();
         var dialogViewModel = new SavingsCategoryDialogViewModel();
 
-        _mockSavingsCategoryDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
-            It.IsAny<string>())).ReturnsAsync(ContentDialogResult.Secondary);
+        _mockSavingsCategoryDialogService
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+            .ReturnsAsync(ContentDialogResult.Secondary);
         _mockSavingsCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
 
         // Act
@@ -104,11 +108,12 @@ public class AddSavingsCategoryTests
         var dialogViewModel = new SavingsCategoryDialogViewModel
         {
             Category = "Test Savings",
-            Planned = new Currency(200m)
+            Planned = new Currency(200m),
         };
 
-        _mockSavingsCategoryDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
-            It.IsAny<string>())).ReturnsAsync(ContentDialogResult.Primary);
+        _mockSavingsCategoryDialogService
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+            .ReturnsAsync(ContentDialogResult.Primary);
         _mockSavingsCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
 
         // Act
@@ -125,30 +130,29 @@ public class AddSavingsCategoryTests
     {
         // Arrange
         _viewModel.CurrentBudget = new Budget();
-        _viewModel.CurrentBudget.BudgetSavingsCategories.Add(new BudgetSavingsCategory
-        {
-            CategoryName = "Existing Savings",
-            BudgetedAmount = new Currency(100m)
-        });
+        _viewModel.CurrentBudget.BudgetSavingsCategories.Add(
+            new BudgetSavingsCategory { CategoryName = "Existing Savings", BudgetedAmount = new Currency(100m) }
+        );
 
         var dialogViewModel = new SavingsCategoryDialogViewModel
         {
             Category = "Existing Savings",
-            Planned = new Currency(200m)
+            Planned = new Currency(200m),
         };
 
-        _mockSavingsCategoryDialogService.Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), 
-            It.IsAny<string>())).ReturnsAsync(ContentDialogResult.Primary);
+        _mockSavingsCategoryDialogService
+            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+            .ReturnsAsync(ContentDialogResult.Primary);
         _mockSavingsCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
 
         // Act
         await _viewModel.AddSavingsCategoryCommand.ExecuteAsync(null);
 
         // Assert
-        _mockMessageBoxService.Verify(x => x.ShowInfoAsync(
-            It.IsAny<string>(),
-            It.IsAny<string>(), It.IsAny<string>()
-        ), Times.Once);
+        _mockMessageBoxService.Verify(
+            x => x.ShowInfoAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+            Times.Once
+        );
         Assert.HasCount(1, _viewModel.CurrentBudget.BudgetSavingsCategories);
     }
 }

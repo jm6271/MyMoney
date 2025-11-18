@@ -1,7 +1,7 @@
-﻿using MyMoney.ViewModels.ContentDialogs;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -11,7 +11,8 @@ namespace MyMoney.Views.ContentDialogs
     /// </summary>
     public partial class SavingsCategoryDialog : Wpf.Ui.Controls.ContentDialog
     {
-        public SavingsCategoryDialog(ContentPresenter dialogHost, SavingsCategoryDialogViewModel viewModel) : base(dialogHost)
+        public SavingsCategoryDialog(ContentPresenter dialogHost, SavingsCategoryDialogViewModel viewModel)
+            : base(dialogHost)
         {
             InitializeComponent();
             DataContext = viewModel;
@@ -48,14 +49,16 @@ namespace MyMoney.Views.ContentDialogs
             TxtBalance.SelectAll();
         }
 
-        private void ContentDialog_Closing(Wpf.Ui.Controls.ContentDialog sender, Wpf.Ui.Controls.ContentDialogClosingEventArgs args)
+        private void ContentDialog_Closing(
+            Wpf.Ui.Controls.ContentDialog sender,
+            Wpf.Ui.Controls.ContentDialogClosingEventArgs args
+        )
         {
-            if (args.Result != ContentDialogResult.Primary) return;
+            if (args.Result != ContentDialogResult.Primary)
+                return;
 
             TxtCategory.Focus();
-            TxtCategory.MoveFocus(
-                new TraversalRequest(FocusNavigationDirection.Next));
-            
+            TxtCategory.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 
             // validate the user data, and if it is invalid, prevent the dialog from closing
 
@@ -68,9 +71,12 @@ namespace MyMoney.Views.ContentDialogs
             TxtCategoryBorder.BorderBrush = Brushes.Transparent;
 
             // validate
-            if (!invalidCategory
-                              && plannedValidationErrors is not { Count: > 0 }
-                              && balanceValidationErrors is not { Count: > 0 }) return;
+            if (
+                !invalidCategory
+                && plannedValidationErrors is not { Count: > 0 }
+                && balanceValidationErrors is not { Count: > 0 }
+            )
+                return;
             args.Cancel = true;
 
             if (invalidCategory)

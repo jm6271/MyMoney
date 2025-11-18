@@ -1,4 +1,7 @@
-﻿using LiveChartsCore;
+﻿using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Windows.Media;
+using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.Painting;
 using LiveChartsCore.SkiaSharpView;
@@ -8,9 +11,6 @@ using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
 using SkiaSharp;
-using System.Collections.ObjectModel;
-using System.Globalization;
-using System.Windows.Media;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
 using Wpf.Ui.Controls;
@@ -69,7 +69,7 @@ namespace MyMoney.ViewModels.Pages
         {
             Text = "Income vs. Expenses",
             TextSize = 25,
-            Padding = new LiveChartsCore.Drawing.Padding(15)
+            Padding = new LiveChartsCore.Drawing.Padding(15),
         };
 
         [ObservableProperty]
@@ -81,18 +81,12 @@ namespace MyMoney.ViewModels.Pages
                 LabelsRotation = 0,
                 TicksAtCenter = true,
                 ForceStepToMin = true,
-                MinStep = 1
-            }
+                MinStep = 1,
+            },
         ];
 
         [ObservableProperty]
-        private Axis[] _yAxes =
-        [
-            new()
-            {
-                Labeler = Labelers.Currency,
-            }
-        ];
+        private Axis[] _yAxes = [new() { Labeler = Labelers.Currency }];
 
         #endregion
 
@@ -133,21 +127,11 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private Axis[] _netWorthXAxes =
         [
-            new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString("MMM dd"))
-            {
-                LabelsPaint = null,
-            }
+            new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString("MMM dd")) { LabelsPaint = null },
         ];
 
         [ObservableProperty]
-        private Axis[] _netWorthYAxes =
-        [
-            new ()
-            {
-                LabelsPaint = null,
-                ShowSeparatorLines = false,
-            }
-        ];
+        private Axis[] _netWorthYAxes = [new() { LabelsPaint = null, ShowSeparatorLines = false }];
 
         #endregion
 
@@ -166,8 +150,10 @@ namespace MyMoney.ViewModels.Pages
                 {
                     return double.PositiveInfinity;
                 }
-                var percentage = Math.Round((double)((CashFlowTotal.Value - lastMonthCashFlow.Value) / Math.Abs(lastMonthCashFlow.Value) * 100), 1);
-
+                var percentage = Math.Round(
+                    (double)((CashFlowTotal.Value - lastMonthCashFlow.Value) / Math.Abs(lastMonthCashFlow.Value) * 100),
+                    1
+                );
 
                 return percentage;
             }
@@ -274,7 +260,14 @@ namespace MyMoney.ViewModels.Pages
                     return double.PositiveInfinity;
                 }
 
-                var percentage = Math.Round((double)((TotalSpending.Value - lastMonthTotalSpending.Value) / Math.Abs(lastMonthTotalSpending.Value) * 100), 1);
+                var percentage = Math.Round(
+                    (double)(
+                        (TotalSpending.Value - lastMonthTotalSpending.Value)
+                        / Math.Abs(lastMonthTotalSpending.Value)
+                        * 100
+                    ),
+                    1
+                );
                 return percentage;
             }
         }
@@ -338,7 +331,11 @@ namespace MyMoney.ViewModels.Pages
                 BudgetReportItems.Clear();
         }
 
-        private (List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) LoadReportItems()
+        private (
+            List<BudgetReportItem> income,
+            List<BudgetReportItem> expense,
+            List<SavingsCategoryReportItem> savings
+        ) LoadReportItems()
         {
             var reportItems = BudgetReportCalculator.CalculateBudgetReport(DateTime.Today, _databaseReader);
             var incomeTotal = CalculateTotal(reportItems.income);
@@ -350,11 +347,16 @@ namespace MyMoney.ViewModels.Pages
             Expenses = (double)expenseTotal.Actual.Value;
             DifferenceTotal = incomeTotal.Actual - expenseTotal.Actual;
 
-
             return reportItems;
         }
 
-        private void UpdateReportCollections((List<BudgetReportItem> income, List<BudgetReportItem> expense, List<SavingsCategoryReportItem> savings) items)
+        private void UpdateReportCollections(
+            (
+                List<BudgetReportItem> income,
+                List<BudgetReportItem> expense,
+                List<SavingsCategoryReportItem> savings
+            ) items
+        )
         {
             lock (_incomeItemsLock)
                 BudgetReportIncomeItems = new ObservableCollection<BudgetReportItem>(items.income);
@@ -385,7 +387,7 @@ namespace MyMoney.ViewModels.Pages
                         Budgeted = item.Saved,
                         Actual = item.Spent,
                         Remaining = item.Balance,
-                        IsExpense = false
+                        IsExpense = false,
                     };
 
                     BudgetReportItems.Add(savingsItem);
@@ -427,12 +429,15 @@ namespace MyMoney.ViewModels.Pages
             var expenseTotal = past12MonthsExpenses.Count > 0 ? past12MonthsExpenses[^1] : 0.0;
 
             var accentColor = ApplicationAccentColorManager.GetColorizationColor();
-            return [new ColumnSeries<double>
-            {
-                Values = [incomeTotal, expenseTotal],
-                Fill = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B)),
-                Stroke = null,
-            }];
+            return
+            [
+                new ColumnSeries<double>
+                {
+                    Values = [incomeTotal, expenseTotal],
+                    Fill = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B)),
+                    Stroke = null,
+                },
+            ];
         }
 
         private ISeries[] UpdateExpenseBreakdownSeries()
@@ -444,50 +449,46 @@ namespace MyMoney.ViewModels.Pages
             var savingsCategories = BudgetReportCalculator.CalculateSavingsReportItems(DateTime.Now, _databaseReader);
             foreach (var savings in savingsCategories)
             {
-                expenseCategories.Add(new BudgetReportItem
-                {
-                    Category = savings.Category,
-                    Actual = savings.Saved,
-                });
+                expenseCategories.Add(new BudgetReportItem { Category = savings.Category, Actual = savings.Saved });
             }
 
-            var expenseTotals = GetNonZeroTotals(expenseCategories,
-                item => item.Actual.Value,
-                item => item.Category
-            );
+            var expenseTotals = GetNonZeroTotals(expenseCategories, item => item.Actual.Value, item => item.Category);
 
             return CreatePieSeries(expenseTotals);
         }
 
-        private static Dictionary<string, double> GetNonZeroTotals<T>(IEnumerable<T> items,
-                                                                      Func<T, decimal> valueSelector,
-                                                                      Func<T, string> categorySelector)
+        private static Dictionary<string, double> GetNonZeroTotals<T>(
+            IEnumerable<T> items,
+            Func<T, decimal> valueSelector,
+            Func<T, string> categorySelector
+        )
         {
             return items
                 .Where(item => valueSelector(item) != 0m)
-                .ToDictionary(
-                    item => categorySelector(item),
-                    item => (double)valueSelector(item));
+                .ToDictionary(item => categorySelector(item), item => (double)valueSelector(item));
         }
 
         private static ISeries[] CreatePieSeries(Dictionary<string, double> totals)
         {
-            return [.. totals.Select(item =>
-                new PieSeries<double>
+            return
+            [
+                .. totals.Select(item => new PieSeries<double>
                 {
                     Values = [item.Value],
                     Name = item.Key,
                     DataLabelsFormatter = point => point.Model.ToString("C", CultureInfo.CurrentCulture),
                     ToolTipLabelFormatter = point => point.Model.ToString("C", CultureInfo.CurrentCulture),
                     MaxRadialColumnWidth = 25,
-                })];
+                }),
+            ];
         }
 
         private void UpdateChartTheme()
         {
-            ChartTextColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
-                ? new SKColor(0x33, 0x33, 0x33)
-                : new SKColor(0xff, 0xff, 0xff);
+            ChartTextColor =
+                ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
+                    ? new SKColor(0x33, 0x33, 0x33)
+                    : new SKColor(0xff, 0xff, 0xff);
 
             var textPaint = new SolidColorPaint(ChartTextColor);
             XAxes[0].LabelsPaint = textPaint;
@@ -495,9 +496,10 @@ namespace MyMoney.ViewModels.Pages
             YAxes[0].NamePaint = textPaint;
             ChartTitle.Paint = textPaint;
 
-            ExpenseBreakdownForeColor = ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
-                ? new SolidColorPaint(new SKColor(0x33, 0x33, 0x33))
-                : new SolidColorPaint(new SKColor(0xff, 0xff, 0xff));
+            ExpenseBreakdownForeColor =
+                ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
+                    ? new SolidColorPaint(new SKColor(0x33, 0x33, 0x33))
+                    : new SolidColorPaint(new SKColor(0xff, 0xff, 0xff));
         }
 
         public async Task OnNavigatedToAsync()
@@ -527,10 +529,7 @@ namespace MyMoney.ViewModels.Pages
 
         private void AddAccountTotalItem()
         {
-            var totalItem = new AccountDashboardDisplayItem
-            {
-                AccountName = "Total"
-            };
+            var totalItem = new AccountDashboardDisplayItem { AccountName = "Total" };
 
             foreach (var account in Accounts)
             {
@@ -567,8 +566,10 @@ namespace MyMoney.ViewModels.Pages
                     GeometrySize = 0,
                     Stroke = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B), 2),
                     LineSmoothness = 0,
-                    Fill = new SolidColorPaint(new SKColor(lighterAccentColor.R, lighterAccentColor.G, lighterAccentColor.B, 100)),
-                }
+                    Fill = new SolidColorPaint(
+                        new SKColor(lighterAccentColor.R, lighterAccentColor.G, lighterAccentColor.B, 100)
+                    ),
+                },
             ];
         }
 

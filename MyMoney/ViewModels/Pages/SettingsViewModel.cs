@@ -1,8 +1,8 @@
-﻿using Microsoft.Win32;
+﻿using System.Reflection;
+using Microsoft.Win32;
 using MyMoney.Core.Database;
 using MyMoney.Helpers.RadioButtonConverters;
 using MyMoney.Services.ContentDialogs;
-using System.Reflection;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
 
@@ -124,8 +124,10 @@ namespace MyMoney.ViewModels.Pages
 
         private static string GetVersionString()
         {
-            var version = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
-                .InformationalVersion?.Split('+')[0];
+            var version = Assembly
+                .GetExecutingAssembly()
+                .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                ?.InformationalVersion?.Split('+')[0];
             return version ?? "";
         }
 
@@ -140,10 +142,11 @@ namespace MyMoney.ViewModels.Pages
             {
                 "theme_light" when CurrentTheme != ApplicationTheme.Light => ApplicationTheme.Light,
                 _ when CurrentTheme != ApplicationTheme.Dark => ApplicationTheme.Dark,
-                _ => CurrentTheme
+                _ => CurrentTheme,
             };
 
-            if (newTheme == CurrentTheme) return;
+            if (newTheme == CurrentTheme)
+                return;
 
             ApplyTheme(newTheme);
             SaveTheme();
@@ -153,13 +156,11 @@ namespace MyMoney.ViewModels.Pages
         {
             ApplicationThemeManager.Apply(theme);
             CurrentTheme = theme;
-            
-            var resourceKey = theme == ApplicationTheme.Light 
-                ? "LayerFillColorDefaultColorLight" 
-                : "LayerFillColorDefaultColorDark";
 
-            Application.Current.Resources["LayerFillColorDefaultColor"] = 
-                Application.Current.Resources[resourceKey];
+            var resourceKey =
+                theme == ApplicationTheme.Light ? "LayerFillColorDefaultColorLight" : "LayerFillColorDefaultColorDark";
+
+            Application.Current.Resources["LayerFillColorDefaultColor"] = Application.Current.Resources[resourceKey];
         }
 
         private void SaveTheme()
@@ -176,13 +177,14 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private void SaveBackupSettings()
         {
-            if (!_backupSettingsLoaded) return;
+            if (!_backupSettingsLoaded)
+                return;
 
             var settings = GetSettings();
             settings["BackupMode"] = ((int)BackupMode).ToString();
             settings["BackupLocation"] = BackupLocation;
             settings["BackupStorageDuration"] = BackupDurationIndex.ToString();
-            
+
             SaveSettings(settings);
         }
 
@@ -204,8 +206,7 @@ namespace MyMoney.ViewModels.Pages
 
         private void TrySetBackupMode(string value)
         {
-            if (int.TryParse(value, out var mode) && 
-                Enum.IsDefined(typeof(BackupModeRadioButtonGroup), mode))
+            if (int.TryParse(value, out var mode) && Enum.IsDefined(typeof(BackupModeRadioButtonGroup), mode))
             {
                 BackupMode = (BackupModeRadioButtonGroup)mode;
             }
@@ -213,8 +214,7 @@ namespace MyMoney.ViewModels.Pages
 
         private void TrySetBackupDuration(string value)
         {
-            if (int.TryParse(value, out var duration) && 
-                Enum.IsDefined(typeof(BackupStorageDuration), duration))
+            if (int.TryParse(value, out var duration) && Enum.IsDefined(typeof(BackupStorageDuration), duration))
             {
                 BackupDurationIndex = duration;
             }
@@ -227,7 +227,7 @@ namespace MyMoney.ViewModels.Pages
             {
                 Filter = "MyMoney Databases|*.db",
                 Title = "Choose backup location...",
-                FileName = $"mymoney-backup-{DateTime.Now:MM-dd-yyyy-HH_mm}.db"
+                FileName = $"mymoney-backup-{DateTime.Now:MM-dd-yyyy-HH_mm}.db",
             };
 
             if (dialog.ShowDialog() == true)
@@ -242,25 +242,29 @@ namespace MyMoney.ViewModels.Pages
             var dialog = new OpenFileDialog
             {
                 Filter = "MyMoney Databases|*.db",
-                Title = "Choose backup file to restore from..."
+                Title = "Choose backup file to restore from...",
             };
 
-            if (dialog.ShowDialog() != true) return;
+            if (dialog.ShowDialog() != true)
+                return;
 
             var confirmed = await _messageBoxService.ShowAsync(
-                "Really Backup?", 
+                "Really Backup?",
                 "Are you sure you want to restore the backup? This will OVERWRITE all of your data and replace it with the data in the backup.",
-                "Yes", 
-                "No");
+                "Yes",
+                "No"
+            );
 
-            if (confirmed != Wpf.Ui.Controls.MessageBoxResult.Primary) return;
+            if (confirmed != Wpf.Ui.Controls.MessageBoxResult.Primary)
+                return;
 
             DatabaseBackup.RestoreDatabaseBackup(dialog.FileName);
 
             await _messageBoxService.ShowInfoAsync(
                 "Restore Successful",
                 "The backup was restored successfully. The application will now close.",
-                "Close");
+                "Close"
+            );
 
             Application.Current.Shutdown();
         }

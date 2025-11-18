@@ -1,11 +1,11 @@
-using MyMoney.ViewModels.Pages;
-using Moq;
-using MyMoney.Core.Models;
-using MyMoney.Core.Database;
-using MyMoney.Services.ContentDialogs;
-using Wpf.Ui.Controls;
-using Wpf.Ui;
 using System.Collections.ObjectModel;
+using Moq;
+using MyMoney.Core.Database;
+using MyMoney.Core.Models;
+using MyMoney.Services.ContentDialogs;
+using MyMoney.ViewModels.Pages;
+using Wpf.Ui;
+using Wpf.Ui.Controls;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -41,8 +41,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 BudgetTitle = DateTime.Now.ToString("MMMM, yyyy"),
             };
 
-            _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets"))
-                .Returns(new List<Budget> { testBudget });
+            _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget> { testBudget });
 
             _viewModel = new ViewModels.Pages.BudgetViewModel(
                 _mockContentDialogService.Object,
@@ -64,11 +63,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             // Arrange
             var expenseCategory = new BudgetExpenseCategory { CategoryName = "Test Category" };
             _viewModel.CurrentBudget?.BudgetExpenseItems.Add(expenseCategory);
-            _mockMessageBoxService.Setup(x => x.ShowAsync(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>()))
+            _mockMessageBoxService
+                .Setup(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(MessageBoxResult.Primary);
 
             // Act
@@ -90,11 +86,10 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             await _viewModel.DeleteExpenseGroupCommand.ExecuteAsync(expenseCategory);
 
             // Assert
-            _mockMessageBoxService.Verify(x => x.ShowAsync(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>()), Times.Never);
+            _mockMessageBoxService.Verify(
+                x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+                Times.Never
+            );
         }
 
         [TestMethod]
@@ -108,11 +103,10 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             await _viewModel.DeleteExpenseGroupCommand.ExecuteAsync(expenseCategory);
 
             // Assert
-            _mockMessageBoxService.Verify(x => x.ShowAsync(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>()), Times.Never);
+            _mockMessageBoxService.Verify(
+                x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()),
+                Times.Never
+            );
         }
 
         [TestMethod]
@@ -121,11 +115,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             // Arrange
             var expenseCategory = new BudgetExpenseCategory { CategoryName = "Test Category" };
             _viewModel.CurrentBudget?.BudgetExpenseItems.Add(expenseCategory);
-            _mockMessageBoxService.Setup(x => x.ShowAsync(
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>(),
-                It.IsAny<string>()))
+            _mockMessageBoxService
+                .Setup(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(MessageBoxResult.Secondary);
 
             // Act
