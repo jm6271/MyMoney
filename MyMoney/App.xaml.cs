@@ -63,33 +63,33 @@ namespace MyMoney
 
                     services.AddSingleton<DashboardPage>();
                     services.AddSingleton<DashboardViewModel>();
-                    services.AddSingleton<AccountsPage>();
-                    services.AddSingleton<AccountsViewModel>();
+                    services.AddTransient<AccountsPage>();
+                    services.AddTransient<AccountsViewModel>();
                     services.AddSingleton<BudgetPage>();
                     services.AddSingleton<BudgetViewModel>();
-                    services.AddSingleton<ReportsPage>();
-                    services.AddSingleton<ReportsViewModel>();
-                    services.AddSingleton<SettingsPage>();
-                    services.AddSingleton<SettingsViewModel>();
+                    services.AddTransient<ReportsPage>();
+                    services.AddTransient<ReportsViewModel>();
+                    services.AddTransient<SettingsPage>();
+                    services.AddTransient<SettingsViewModel>();
 
                     // Report pages
-                    services.AddSingleton<BudgetReportsPage>();
-                    services.AddSingleton<BudgetReportsViewModel>();
+                    services.AddTransient<BudgetReportsPage>();
+                    services.AddTransient<BudgetReportsViewModel>();
 
                     // Database
-                    services.AddSingleton<IDatabaseManager, DatabaseManager>();
+                    services.AddTransient<IDatabaseManager, DatabaseManager>();
 
                     // Custom content dialogs
-                    services.AddSingleton<INewAccountDialogService, NewAccountDialogService>();
-                    services.AddSingleton<ITransferDialogService, TransferDialogService>();
-                    services.AddSingleton<ITransactionDialogService, TransactionDialogService>();
-                    services.AddSingleton<IRenameAccountDialogService, RenameAccountDialogService>();
-                    services.AddSingleton<IMessageBoxService, MessageBoxService>();
-                    services.AddSingleton<INewBudgetDialogService, NewBudgetDialogService>();
-                    services.AddSingleton<IBudgetCategoryDialogService, BudgetCategoryDialogService>();
-                    services.AddSingleton<INewExpenseGroupDialogService, NewExpenseGroupDialogService>();
-                    services.AddSingleton<ISavingsCategoryDialogService, SavingsCategoryDialogService>();
-                    services.AddSingleton<IUpdateAccountBalanceDialogService, UpdateAccountBalanceDialogService>();
+                    services.AddTransient<INewAccountDialogService, NewAccountDialogService>();
+                    services.AddTransient<ITransferDialogService, TransferDialogService>();
+                    services.AddTransient<ITransactionDialogService, TransactionDialogService>();
+                    services.AddTransient<IRenameAccountDialogService, RenameAccountDialogService>();
+                    services.AddTransient<IMessageBoxService, MessageBoxService>();
+                    services.AddTransient<INewBudgetDialogService, NewBudgetDialogService>();
+                    services.AddTransient<IBudgetCategoryDialogService, BudgetCategoryDialogService>();
+                    services.AddTransient<INewExpenseGroupDialogService, NewExpenseGroupDialogService>();
+                    services.AddTransient<ISavingsCategoryDialogService, SavingsCategoryDialogService>();
+                    services.AddTransient<IUpdateAccountBalanceDialogService, UpdateAccountBalanceDialogService>();
                 }
             )
             .Build();
