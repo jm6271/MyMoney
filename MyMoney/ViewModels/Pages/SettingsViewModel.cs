@@ -1,8 +1,12 @@
-﻿using System.Reflection;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Reflection;
+using System.Windows.Media;
 using Microsoft.Win32;
 using MyMoney.Core.Database;
 using MyMoney.Helpers.RadioButtonConverters;
 using MyMoney.Services.ContentDialogs;
+using MyMoney.Themes;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
 
@@ -44,6 +48,12 @@ namespace MyMoney.ViewModels.Pages
         /// </summary>
         [ObservableProperty]
         private BackupStorageDuration _backupDuration = BackupStorageDuration.OneWeek;
+
+        [ObservableProperty]
+        private ObservableCollection<AccentColor> _accentColors;
+
+        [ObservableProperty]
+        private AccentColor _selectedAccentColor;
 
         #endregion
 
@@ -95,6 +105,10 @@ namespace MyMoney.ViewModels.Pages
         public SettingsViewModel(IMessageBoxService messageBoxService)
         {
             _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
+
+            AccentColors = new(PresetAccentColors.AccentColors);
+            SelectedAccentColor = AccentColors[0];
+            ApplicationAccentColorManager.Apply(SelectedAccentColor.BaseColor, ApplicationThemeManager.GetAppTheme());
         }
 
         #endregion
@@ -168,6 +182,20 @@ namespace MyMoney.ViewModels.Pages
             var settings = GetSettings();
             settings["AppTheme"] = CurrentTheme == ApplicationTheme.Light ? "Light" : "Dark";
             SaveSettings(settings);
+        }
+
+        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+            if (e.PropertyName == nameof(SelectedAccentColor))
+            {
+                if (SelectedAccentColor == null)
+                    return;
+                ApplicationAccentColorManager.Apply(
+                    SelectedAccentColor.BaseColor,
+                    ApplicationThemeManager.GetAppTheme()
+                );
+            }
         }
 
         #endregion
