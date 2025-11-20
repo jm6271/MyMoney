@@ -107,8 +107,18 @@ namespace MyMoney.ViewModels.Pages
             _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
 
             AccentColors = new(PresetAccentColors.AccentColors);
-            SelectedAccentColor = AccentColors[0];
-            ApplicationAccentColorManager.Apply(SelectedAccentColor.BaseColor, ApplicationThemeManager.GetAppTheme());
+
+            // Select the current accent color from settings
+            var settings = GetSettings();
+            if (settings.TryGetValue("AccentColor", out var accentColorName))
+            {
+                SelectedAccentColor = AccentColors.FirstOrDefault(ac => ac.Name == accentColorName)
+                                      ?? AccentColors[0];
+            }
+            else
+            {
+                SelectedAccentColor = AccentColors[0];
+            }
         }
 
         #endregion
@@ -175,12 +185,19 @@ namespace MyMoney.ViewModels.Pages
                 theme == ApplicationTheme.Light ? "LayerFillColorDefaultColorLight" : "LayerFillColorDefaultColorDark";
 
             Application.Current.Resources["LayerFillColorDefaultColor"] = Application.Current.Resources[resourceKey];
+
+            // Set accent color
+            ApplicationAccentColorManager.Apply(
+                SelectedAccentColor.BaseColor,
+                theme
+            );
         }
 
         private void SaveTheme()
         {
             var settings = GetSettings();
             settings["AppTheme"] = CurrentTheme == ApplicationTheme.Light ? "Light" : "Dark";
+            settings["AccentColor"] = SelectedAccentColor.Name;
             SaveSettings(settings);
         }
 
@@ -195,6 +212,8 @@ namespace MyMoney.ViewModels.Pages
                     SelectedAccentColor.BaseColor,
                     ApplicationThemeManager.GetAppTheme()
                 );
+
+                SaveTheme();
             }
         }
 

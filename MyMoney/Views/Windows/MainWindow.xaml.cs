@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MyMoney.Core.Database;
 using MyMoney.Helpers.RadioButtonConverters;
+using MyMoney.Themes;
 using MyMoney.ViewModels.Pages;
 using MyMoney.ViewModels.Windows;
 using Wpf.Ui;
@@ -85,6 +86,17 @@ namespace MyMoney.Views.Windows
             {
                 // Set to system theme by default
                 ApplicationThemeManager.ApplySystemTheme();
+            }
+
+            // Apply the accent color from the settings
+            if (SettingsDict != null && (SettingsDict.TryGetValue("AccentColor", out var accentColorName)))
+            {
+                var color = Themes.PresetAccentColors.AccentColors.FirstOrDefault(ac => ac.Name == accentColorName);
+
+                if (color != null)
+                {
+                    ApplicationAccentColorManager.Apply(color.BaseColor, ApplicationThemeManager.GetAppTheme());
+                }
             }
         }
 
