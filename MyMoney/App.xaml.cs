@@ -69,8 +69,8 @@ namespace MyMoney
                     services.AddSingleton<BudgetViewModel>();
                     services.AddTransient<ReportsPage>();
                     services.AddTransient<ReportsViewModel>();
-                    services.AddTransient<SettingsPage>();
-                    services.AddTransient<SettingsViewModel>();
+                    services.AddSingleton<SettingsPage>();
+                    services.AddSingleton<SettingsViewModel>();
 
                     // Report pages
                     services.AddTransient<BudgetReportsPage>();

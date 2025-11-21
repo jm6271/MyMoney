@@ -55,6 +55,9 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private AccentColor _selectedAccentColor;
 
+        [ObservableProperty]
+        private Visibility _accentColorAppliesOnRestartVisiblity = Visibility.Collapsed;
+
         #endregion
 
         #region State Management
@@ -112,8 +115,7 @@ namespace MyMoney.ViewModels.Pages
             var settings = GetSettings();
             if (settings.TryGetValue("AccentColor", out var accentColorName))
             {
-                SelectedAccentColor = AccentColors.FirstOrDefault(ac => ac.Name == accentColorName)
-                                      ?? AccentColors[0];
+                SelectedAccentColor = AccentColors.FirstOrDefault(ac => ac.Name == accentColorName) ?? AccentColors[0];
             }
             else
             {
@@ -185,12 +187,6 @@ namespace MyMoney.ViewModels.Pages
                 theme == ApplicationTheme.Light ? "LayerFillColorDefaultColorLight" : "LayerFillColorDefaultColorDark";
 
             Application.Current.Resources["LayerFillColorDefaultColor"] = Application.Current.Resources[resourceKey];
-
-            // Set accent color
-            ApplicationAccentColorManager.Apply(
-                SelectedAccentColor.BaseColor,
-                theme
-            );
         }
 
         private void SaveTheme()
@@ -204,16 +200,12 @@ namespace MyMoney.ViewModels.Pages
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
-            if (e.PropertyName == nameof(SelectedAccentColor))
+            if (e.PropertyName == nameof(SelectedAccentColor) && _isInitialized)
             {
                 if (SelectedAccentColor == null)
                     return;
-                ApplicationAccentColorManager.Apply(
-                    SelectedAccentColor.BaseColor,
-                    ApplicationThemeManager.GetAppTheme()
-                );
-
                 SaveTheme();
+                AccentColorAppliesOnRestartVisiblity = Visibility.Visible;
             }
         }
 
