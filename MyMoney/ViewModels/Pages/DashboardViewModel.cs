@@ -428,7 +428,7 @@ namespace MyMoney.ViewModels.Pages
             var incomeTotal = past12MonthsIncome.Count > 0 ? past12MonthsIncome[^1] : 0.0;
             var expenseTotal = past12MonthsExpenses.Count > 0 ? past12MonthsExpenses[^1] : 0.0;
 
-            var accentColor = ApplicationAccentColorManager.GetColorizationColor();
+            var accentColor = ApplicationAccentColorManager.PrimaryAccent;
             return
             [
                 new ColumnSeries<double>

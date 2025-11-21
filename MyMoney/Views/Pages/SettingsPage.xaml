@@ -68,6 +68,38 @@
                         IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, 
                                             ConverterParameter=Dark, Mode=OneWay}"
                     />
+
+                    <TextBlock Margin="0,12,0,0">Accent Color</TextBlock>
+                    <ui:ListView
+                        Margin="0,8,0,0"
+                        ItemsSource="{Binding ViewModel.AccentColors, Mode=OneWay}"
+                        SelectedItem="{Binding ViewModel.SelectedAccentColor}"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    >
+                        <ui:ListView.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ui:ListView.ItemsPanel>
+                        <ui:ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Rectangle Width="48" Height="48" Fill="{Binding BaseBrush}" RadiusX="4" RadiusY="4">
+                                    <Rectangle.ToolTip>
+                                        <ToolTip Content="{Binding Name}" />
+                                    </Rectangle.ToolTip>
+                                </Rectangle>
+                            </DataTemplate>
+                        </ui:ListView.ItemTemplate>
+                    </ui:ListView>
+
+                    <ui:TextBlock
+                        Margin="0,8,0,0"
+                        Visibility="{Binding ViewModel.AccentColorAppliesOnRestartVisiblity}"
+                        FontTypography="Caption"
+                    >
+                        New Accent color takes effect on restart
+                    </ui:TextBlock
+                    >
                 </StackPanel>
             </ui:CardExpander.Content>
         </ui:CardExpander>
