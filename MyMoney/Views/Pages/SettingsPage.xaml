@@ -74,6 +74,7 @@
                         Margin="0,8,0,0"
                         ItemsSource="{Binding ViewModel.AccentColors, Mode=OneWay}"
                         SelectedItem="{Binding ViewModel.SelectedAccentColor}"
+                        ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                     >
                         <ui:ListView.ItemsPanel>
                             <ItemsPanelTemplate>
