@@ -541,16 +541,16 @@
       },
       "WPF-UI": {
         "type": "Transitive",
-        "resolved": "4.0.3",
-        "contentHash": "izkG9uL33gYDkZkirpamlvk6v9ru5QL+97Dgqhr0rkGcwuJZOPd5zkhEUwlDOZ25OFX3Hbp2O/jpHILCYPNfiQ==",
+        "resolved": "4.1.0",
+        "contentHash": "bL+ehJIgRl9bh8imYFJ33DsJrqcU6xfmbEBPlghW/jaBYtbCEDLfuxsEAVITYQjAxTJjPy+DT5vll3XOSCmHgQ==",
         "dependencies": {
-          "WPF-UI.Abstractions": "4.0.3"
+          "WPF-UI.Abstractions": "4.1.0"
         }
       },
       "WPF-UI.Abstractions": {
         "type": "Transitive",
-        "resolved": "4.0.3",
-        "contentHash": "HyoPrc5TmasqzYqHk3UCvYFNWfBEj8GOI3ZXpX6Cl+BghHFWR5nMzjGkwJ2341ISs5HEt4Iun6DZgrYVZpwTXQ=="
+        "resolved": "4.1.0",
+        "contentHash": "SzwdKzoA9ZlNXitVPUBAp79Pao5iRM/miny7/yIQGJwKzfx5bojjzNG4jV9B861ub5zer/AioDwCDc2cUpCoMA=="
       },
       "mymoney": {
         "type": "Project",
@@ -560,7 +560,7 @@
           "LiveChartsCore.SkiaSharpView.WPF": "[2.0.0-rc5.4, )",
           "Microsoft.Extensions.Hosting": "[10.0.0, )",
           "MyMoney.Core": "[1.0.0, )",
-          "WPF-UI": "[4.0.3, )",
+          "WPF-UI": "[4.1.0, )",
           "gong-wpf-dragdrop": "[4.0.0, )"
         }
       },
