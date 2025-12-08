@@ -24,27 +24,12 @@ namespace MyMoney.Views.ContentDialogs
             TxtCategory.SelectAll();
         }
 
-        private void TxtCategory_GotMouseCapture(object sender, MouseEventArgs e)
-        {
-            TxtCategory.SelectAll();
-        }
-
         private void TxtPlanned_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             TxtPlanned.SelectAll();
         }
 
-        private void TxtPlanned_GotMouseCapture(object sender, MouseEventArgs e)
-        {
-            TxtPlanned.SelectAll();
-        }
-
         private void TxtBalance_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            TxtBalance.SelectAll();
-        }
-
-        private void TxtBalance_GotMouseCapture(object sender, MouseEventArgs e)
         {
             TxtBalance.SelectAll();
         }

@@ -41,16 +41,6 @@ namespace MyMoney.Views.ContentDialogs
             txtStartingBalance.SelectAll();
         }
 
-        private void TxtAccountName_GotMouseCapture(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            TxtAccountName.SelectAll();
-        }
-
-        private void txtStartingBalance_GotMouseCapture(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            txtStartingBalance.SelectAll();
-        }
-
         private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
         {
             TxtAccountName.Focus();

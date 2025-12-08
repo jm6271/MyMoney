@@ -40,11 +40,6 @@ namespace MyMoney.Views.ContentDialogs
             txtBalance.SelectAll();
         }
 
-        private void TextBox_GotMouseCapture(object sender, MouseEventArgs e)
-        {
-            txtBalance.SelectAll();
-        }
-
         private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
         {
             if (args.Result != ContentDialogResult.Primary)

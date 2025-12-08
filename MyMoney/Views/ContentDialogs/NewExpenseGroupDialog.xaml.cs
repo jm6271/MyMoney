@@ -34,11 +34,6 @@ namespace MyMoney.Views.ContentDialogs
             txtGroupName.SelectAll();
         }
 
-        private void txtGroupName_GotMouseCapture(object sender, MouseEventArgs e)
-        {
-            txtGroupName.SelectAll();
-        }
-
         private void txtGroupName_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
