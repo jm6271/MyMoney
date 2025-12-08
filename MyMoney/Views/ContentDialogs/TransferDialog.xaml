@@ -51,7 +51,6 @@
             Margin="1,0,1,0"
             GotKeyboardFocus="txtAmount_GotFocus"
             KeyDown="txtAmount_KeyDown"
-            GotMouseCapture="txtAmount_GotMouseCapture"
         />
     </StackPanel>
 </ui:ContentDialog>

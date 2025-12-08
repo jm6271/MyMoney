@@ -35,11 +35,6 @@ namespace MyMoney.Views.ContentDialogs
             }
         }
 
-        private void txtAmount_GotMouseCapture(object sender, System.Windows.Input.MouseEventArgs e)
-        {
-            txtAmount.SelectAll();
-        }
-
         private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
         {
             if (args.Result != ContentDialogResult.Primary)

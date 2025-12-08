@@ -24,7 +24,6 @@
             HorizontalAlignment="Stretch"
             Text="{Binding GroupName}"
             GotKeyboardFocus="txtGroupName_GotKeyboardFocus"
-            GotMouseCapture="txtGroupName_GotMouseCapture"
             KeyDown="txtGroupName_KeyDown"
         />
     </StackPanel>

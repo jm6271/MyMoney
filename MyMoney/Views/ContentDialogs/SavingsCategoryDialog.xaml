@@ -45,7 +45,6 @@
                 x:Name="TxtCategory"
                 Text="{Binding Category}"
                 GotKeyboardFocus="TxtCategory_GotKeyboardFocus"
-                GotMouseCapture="TxtCategory_GotMouseCapture"
                 LostFocus="TxtCategory_LostFocus"
             />
         </Border>
@@ -57,7 +56,6 @@
             Text="{Binding Planned, Converter={StaticResource CurrencyConverter}}"
             Margin="1,8,1,0"
             GotKeyboardFocus="TxtPlanned_GotKeyboardFocus"
-            GotMouseCapture="TxtPlanned_GotMouseCapture"
         />
 
         <ui:TextBlock Grid.Row="4" Margin="0,12,0,0">Current balance</ui:TextBlock>
@@ -67,7 +65,6 @@
             Text="{Binding CurrentBalance, Converter={StaticResource CurrencyConverter}}"
             Margin="1,8,1,0"
             GotKeyboardFocus="TxtBalance_GotKeyboardFocus"
-            GotMouseCapture="TxtBalance_GotMouseCapture"
         />
         <ui:TextBlock Margin="24,0,0,0" Grid.Column="1" Visibility="{Binding RecentTransactionsVisibility}"
             >Recent activity</ui:TextBlock

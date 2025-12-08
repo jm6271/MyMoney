@@ -27,7 +27,6 @@
                 Text="{Binding BudgetCategory}"
                 GotKeyboardFocus="TxtCategory_GotKeyboardFocus"
                 MinWidth="300"
-                GotMouseCapture="TxtCategory_GotMouseCapture"
                 LostKeyboardFocus="TxtCategory_LostKeyboardFocus"
                 LostMouseCapture="TxtCategory_LostMouseCapture"
             />
@@ -40,7 +39,6 @@
             Text="{Binding Path=BudgetAmount, Converter={StaticResource CurrencyConverter}}"
             GotKeyboardFocus="txtAmount_GotKeyboardFocus"
             KeyDown="txtAmount_KeyDown"
-            GotMouseCapture="txtAmount_GotMouseCapture"
         />
     </StackPanel>
 </ui:ContentDialog>

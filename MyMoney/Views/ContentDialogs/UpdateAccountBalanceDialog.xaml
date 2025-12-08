@@ -32,7 +32,6 @@
             Margin="1,0,1,0"
             Text="{Binding Balance, Converter={StaticResource CurrencyConverter}}"
             GotKeyboardFocus="TextBox_GotKeyboardFocus"
-            GotMouseCapture="TextBox_GotMouseCapture"
         />
     </StackPanel>
 </ui:ContentDialog>
