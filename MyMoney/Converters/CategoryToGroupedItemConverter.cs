@@ -8,7 +8,7 @@ using System.Windows.Data;
 using MyMoney.Core.Models;
 using MyMoney.Views.Controls;
 
-namespace MyMoney.Helpers
+namespace MyMoney.Converters
 {
     internal class CategoryToGroupedItemConverter : IValueConverter
     {

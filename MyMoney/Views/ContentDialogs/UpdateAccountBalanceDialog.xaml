@@ -7,7 +7,7 @@
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:local="clr-namespace:MyMoney.Views.ContentDialogs"
     xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs"
-    xmlns:helpers="clr-namespace:MyMoney.Helpers"
+    xmlns:converters="clr-namespace:MyMoney.Converters"
     d:DataContext="{d:DesignInstance Type=contentdialogs:UpdateAccountBalanceDialogViewModel}"
     ui:Design.Background="{ui:ThemeResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{ui:ThemeResource TextFillColorPrimaryBrush}"
@@ -23,7 +23,7 @@
             BasedOn="{StaticResource {x:Type ui:ContentDialog}}"
             TargetType="{x:Type local:UpdateAccountBalanceDialog}"
         />
-        <helpers:CurrencyConverter x:Key="CurrencyConverter" />
+        <converters:CurrencyConverter x:Key="CurrencyConverter" />
     </ui:ContentDialog.Resources>
     <StackPanel>
         <TextBlock Margin="0,0,0,8">New balance</TextBlock>

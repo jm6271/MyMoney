@@ -5,19 +5,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using MyMoney.Core.Models;
 
-namespace MyMoney.Helpers
+namespace MyMoney.Converters
 {
-    public class StartsWithPlusConverter : IValueConverter
+    public class LeftToBudgetTextConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is string stringValue)
+            if (value is Currency currency)
             {
-                return stringValue.StartsWith('+');
+                if (currency.Value >= 0)
+                    return " left to budget";
+                else
+                    return " over budget";
             }
-
-            return false;
+            return DependencyProperty.UnsetValue;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

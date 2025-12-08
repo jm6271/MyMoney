@@ -7,7 +7,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:MyMoney.Views.ContentDialogs"
     xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs"
-    xmlns:helpers="clr-namespace:MyMoney.Helpers"
+    xmlns:converters="clr-namespace:MyMoney.Converters"
     d:DataContext="{d:DesignInstance Type=contentdialogs:BudgetCategoryDialogViewModel}"
     mc:Ignorable="d"
     d:DesignHeight="450"
@@ -16,7 +16,7 @@
     Closing="ContentDialog_Closing"
 >
     <ui:ContentDialog.Resources>
-        <helpers:CurrencyConverter x:Key="CurrencyConverter" />
+        <converters:CurrencyConverter x:Key="CurrencyConverter" />
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:BudgetCategoryDialog}" />
     </ui:ContentDialog.Resources>
     <StackPanel>

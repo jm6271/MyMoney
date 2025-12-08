@@ -6,7 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:MyMoney.Views.ContentDialogs"
-    xmlns:helpers="clr-namespace:MyMoney.Helpers"
+    xmlns:converters="clr-namespace:MyMoney.Converters"
     xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs"
     xmlns:Controls="clr-namespace:MyMoney.Views.Controls"
     xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
@@ -20,8 +20,8 @@
     DialogMaxHeight="500"
 >
     <ui:ContentDialog.Resources>
-        <helpers:CurrencyConverter x:Key="CurrencyConverter" />
-        <helpers:StartsWithPlusConverter x:Key="StartsWithPlusConverter" />
+        <converters:CurrencyConverter x:Key="CurrencyConverter" />
+        <converters:StartsWithPlusConverter x:Key="StartsWithPlusConverter" />
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:SavingsCategoryDialog}" />
     </ui:ContentDialog.Resources>
     <Grid>

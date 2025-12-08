@@ -5,22 +5,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using System.Windows.Media;
 using MyMoney.Core.Models;
+using Wpf.Ui.Appearance;
 
-namespace MyMoney.Helpers
+namespace MyMoney.Converters
 {
-    public class CurrencyAbsoluteValueConverter : IValueConverter
+    public class NegativeCurrencyToRedColorConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is Currency currency)
+            if (value is Currency currency && currency.Value < 0)
             {
-                if (currency.Value < 0)
-                    return new Currency(Math.Abs(currency.Value));
-                else
-                    return currency;
+                return new SolidColorBrush(Color.FromArgb(255, 255, 0, 0));
             }
-            return DependencyProperty.UnsetValue;
+            else
+            {
+                return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
+            }
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

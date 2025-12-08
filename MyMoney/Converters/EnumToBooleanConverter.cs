@@ -3,7 +3,7 @@ using System.Windows.Data;
 using MyMoney.ViewModels.Pages;
 using Wpf.Ui.Appearance;
 
-namespace MyMoney.Helpers
+namespace MyMoney.Converters
 {
     internal class EnumToBooleanConverter : IValueConverter
     {

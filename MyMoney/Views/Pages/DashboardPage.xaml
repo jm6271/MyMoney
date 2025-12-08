@@ -8,7 +8,7 @@
     xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
     xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
     xmlns:Controls="clr-namespace:MyMoney.Views.Controls"
-    xmlns:helpers="clr-namespace:MyMoney.Helpers"
+    xmlns:converters="clr-namespace:MyMoney.Converters"
     x:Class="MyMoney.Views.Pages.DashboardPage"
     Title="DashboardPage"
     d:DataContext="{d:DesignInstance {x:Type local:DashboardPage}, IsDesignTimeCreatable=False}"
@@ -21,8 +21,8 @@
     SizeChanged="Page_SizeChanged"
 >
     <Page.Resources>
-        <helpers:IsLastItemConverter x:Key="IsLastItemConverter" />
-        <helpers:DoubleToUpDownIconConverter x:Key="DoubleToUpDownIconConverter" />
+        <converters:IsLastItemConverter x:Key="IsLastItemConverter" />
+        <converters:DoubleToUpDownIconConverter x:Key="DoubleToUpDownIconConverter" />
     </Page.Resources>
 
     <Grid>

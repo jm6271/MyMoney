@@ -1,4 +1,4 @@
-﻿namespace MyMoney.Helpers.RadioButtonConverters
+﻿namespace MyMoney.Converters.RadioButtonConverters
 {
     public enum BackupModeRadioButtonGroup
     {

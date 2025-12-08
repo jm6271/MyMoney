@@ -55,10 +55,6 @@
             <MkDocsFiles Include="$(ProjectDir)../Docs/site\**\*" />
         </ItemGroup>
 
-        <Copy
-            SourceFiles="@(MkDocsFiles)"
-            DestinationFolder="$(OutDir)site\%(RecursiveDir)"
-            Condition="'$(UvFound)' == '0'"
-        />
+        <Copy SourceFiles="@(MkDocsFiles)" DestinationFolder="$(OutDir)site\%(RecursiveDir)" Condition="'$(UvFound)' == '0'" />
     </Target>
 </Project>

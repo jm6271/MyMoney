@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace MyMoney.Helpers
+namespace MyMoney.Converters
 {
     public class IsLastItemConverter : IMultiValueConverter
     {

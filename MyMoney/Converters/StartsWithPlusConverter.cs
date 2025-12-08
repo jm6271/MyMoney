@@ -6,18 +6,23 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace MyMoney.Helpers.RadioButtonConverters
+namespace MyMoney.Converters
 {
-    public class RadioButtonEnumToBooleanConverter : IValueConverter
+    public class StartsWithPlusConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value?.Equals(parameter) ?? false;
+            if (value is string stringValue)
+            {
+                return stringValue.StartsWith('+');
+            }
+
+            return false;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return (bool)value ? parameter : Binding.DoNothing;
+            throw new NotImplementedException();
         }
     }
 }
