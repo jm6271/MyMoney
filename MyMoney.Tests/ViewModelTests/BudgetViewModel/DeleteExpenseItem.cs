@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Moq;
 using MyMoney.Core.Models;
+using MyMoney.Services;
 using MyMoney.Services.ContentDialogs;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
@@ -19,6 +20,7 @@ public class DeleteExpenseItemTests
     private Mock<Core.Database.IDatabaseManager> _databaseReaderMock;
     private Mock<INewExpenseGroupDialogService> _expenseGroupDialogServiceMock;
     private Mock<ISavingsCategoryDialogService> _savingsCategoryDialogServiceMock;
+    private Mock<IContentDialogFactory> _mockContentDialogFactory;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
 
     [TestInitialize]
@@ -31,6 +33,7 @@ public class DeleteExpenseItemTests
         _databaseReaderMock = new Mock<Core.Database.IDatabaseManager>();
         _expenseGroupDialogServiceMock = new Mock<INewExpenseGroupDialogService>();
         _savingsCategoryDialogServiceMock = new Mock<ISavingsCategoryDialogService>();
+        _mockContentDialogFactory = new Mock<IContentDialogFactory>();
 
         _databaseReaderMock.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
 
@@ -41,7 +44,8 @@ public class DeleteExpenseItemTests
             _newBudgetDialogServiceMock.Object,
             _budgetCategoryDialogServiceMock.Object,
             _expenseGroupDialogServiceMock.Object,
-            _savingsCategoryDialogServiceMock.Object
+            _savingsCategoryDialogServiceMock.Object,
+            _mockContentDialogFactory.Object
         );
     }
 

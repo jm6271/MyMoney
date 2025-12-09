@@ -80,6 +80,8 @@ namespace MyMoney
                     services.AddTransient<IDatabaseManager, DatabaseManager>();
 
                     // Custom content dialogs
+                    services.AddSingleton<IContentDialogFactory, ContentDialogFactory>();
+
                     services.AddTransient<INewAccountDialogService, NewAccountDialogService>();
                     services.AddTransient<ITransferDialogService, TransferDialogService>();
                     services.AddTransient<ITransactionDialogService, TransactionDialogService>();

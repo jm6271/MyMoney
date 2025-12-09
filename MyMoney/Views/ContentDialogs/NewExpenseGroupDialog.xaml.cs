@@ -22,11 +22,9 @@ namespace MyMoney.Views.ContentDialogs
     /// </summary>
     public partial class NewExpenseGroupDialog : ContentDialog
     {
-        public NewExpenseGroupDialog(ContentPresenter host, NewExpenseGroupDialogViewModel viewModel)
-            : base(host)
+        public NewExpenseGroupDialog()
         {
             InitializeComponent();
-            DataContext = viewModel;
         }
 
         private void txtGroupName_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)

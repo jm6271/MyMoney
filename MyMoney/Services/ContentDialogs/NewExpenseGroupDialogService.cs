@@ -45,7 +45,7 @@ namespace MyMoney.Services.ContentDialogs
             if (host == null)
                 return ContentDialogResult.None;
 
-            NewExpenseGroupDialog newExpenseGroupDialog = new(host, _viewModel)
+            NewExpenseGroupDialog newExpenseGroupDialog = new()
             {
                 PrimaryButtonText = acceptButtonText,
                 CloseButtonText = "Cancel",

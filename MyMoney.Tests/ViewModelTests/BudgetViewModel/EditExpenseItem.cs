@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Moq;
 using MyMoney.Core.Models;
+using MyMoney.Services;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui;
@@ -19,6 +20,7 @@ public class EditExpenseItem
     private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
     private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
     private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService;
+    private Mock<IContentDialogFactory> _mockContentDialogFactory;
     private Mock<Core.Database.IDatabaseManager> _mockDatabaseReader;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
 
@@ -31,6 +33,7 @@ public class EditExpenseItem
         _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
         _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
         _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
+        _mockContentDialogFactory = new Mock<IContentDialogFactory>();
         _mockDatabaseReader = new Mock<Core.Database.IDatabaseManager>();
 
         _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
@@ -42,7 +45,8 @@ public class EditExpenseItem
             _mockNewBudgetDialogService.Object,
             _mockBudgetCategoryDialogService.Object,
             _mockExpenseGroupDialogService.Object,
-            _mockSavingsCategoryDialogService.Object
+            _mockSavingsCategoryDialogService.Object,
+            _mockContentDialogFactory.Object
         );
     }
 

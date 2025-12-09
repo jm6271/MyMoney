@@ -2,6 +2,7 @@
 using Moq;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
+using MyMoney.Services;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.Pages;
 using Wpf.Ui;
@@ -20,6 +21,7 @@ public class DeleteIncomeItemTests
     private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
     private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
     private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService;
+    private Mock<IContentDialogFactory> _mockContentDialogFactory;
     private Mock<IDatabaseManager> _mockDatabaseReader;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
     private Budget _testBudget;
@@ -35,6 +37,7 @@ public class DeleteIncomeItemTests
         _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
         _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
         _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
+        _mockContentDialogFactory = new Mock<IContentDialogFactory>();
         _mockDatabaseReader = new Mock<IDatabaseManager>();
 
         // Setup test budget with income items
@@ -76,7 +79,8 @@ public class DeleteIncomeItemTests
             _mockNewBudgetDialogService.Object,
             _mockBudgetCategoryDialogService.Object,
             _mockExpenseGroupDialogService.Object,
-            _mockSavingsCategoryDialogService.Object
+            _mockSavingsCategoryDialogService.Object,
+            _mockContentDialogFactory.Object
         );
 
         await _viewModel.OnNavigatedToAsync();

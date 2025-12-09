@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Moq;
 using MyMoney.Core.Models;
+using MyMoney.Services;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui;
@@ -20,6 +21,7 @@ public class AddExpenseGroupTests
     private Mock<INewExpenseGroupDialogService> _mockNewExpenseGroupDialogService;
     private Mock<Core.Database.IDatabaseManager> _mockDatabaseReader;
     private Mock<ISavingsCategoryDialogService> _savingsCategoryDialogService;
+    private Mock<IContentDialogFactory> _mockContentDialogFactory;
 
     [TestInitialize]
     public void Setup()
@@ -31,11 +33,12 @@ public class AddExpenseGroupTests
         _mockNewExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
         _savingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
         _mockDatabaseReader = new Mock<Core.Database.IDatabaseManager>();
+        _mockContentDialogFactory = new Mock<IContentDialogFactory>();
 
         _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
     }
 
-    [TestMethod]
+    [STATestMethod]
     public async Task AddExpenseGroup_WhenSuccessful_AddsNewGroupToBudget()
     {
         // Arrange
@@ -46,16 +49,21 @@ public class AddExpenseGroupTests
             _mockNewBudgetDialogService.Object,
             _mockBudgetCategoryDialogService.Object,
             _mockNewExpenseGroupDialogService.Object,
-            _savingsCategoryDialogService.Object
+            _savingsCategoryDialogService.Object,
+            _mockContentDialogFactory.Object
         );
 
         viewModel.CurrentBudget = new Budget { BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>() };
 
-        var dialogViewModel = new NewExpenseGroupDialogViewModel { GroupName = "Test Group" };
-        _mockNewExpenseGroupDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
-        _mockNewExpenseGroupDialogService
-            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>(), It.IsAny<string>()))
+        _mockContentDialogService.Setup(s => s.ShowAsync(It.IsAny<ContentDialog>(), It.IsAny<CancellationToken>()))
+            .Callback<ContentDialog, CancellationToken>((dlg, ct) =>
+            {
+                var vm = dlg.DataContext as NewExpenseGroupDialogViewModel;
+                vm?.GroupName = "Test Group";
+            })
             .ReturnsAsync(ContentDialogResult.Primary);
+
+        _mockContentDialogFactory.Setup(x => x.Create<ContentDialog>()).Returns(new ContentDialog());
 
         // Act
         await viewModel.AddExpenseGroupCommand.ExecuteAsync(null);
@@ -76,7 +84,8 @@ public class AddExpenseGroupTests
             _mockNewBudgetDialogService.Object,
             _mockBudgetCategoryDialogService.Object,
             _mockNewExpenseGroupDialogService.Object,
-            _savingsCategoryDialogService.Object
+            _savingsCategoryDialogService.Object,
+            _mockContentDialogFactory.Object
         );
 
         // Act
@@ -100,7 +109,8 @@ public class AddExpenseGroupTests
             _mockNewBudgetDialogService.Object,
             _mockBudgetCategoryDialogService.Object,
             _mockNewExpenseGroupDialogService.Object,
-            _savingsCategoryDialogService.Object
+            _savingsCategoryDialogService.Object,
+            _mockContentDialogFactory.Object
         );
 
         viewModel.CurrentBudget = new Budget();
@@ -116,7 +126,7 @@ public class AddExpenseGroupTests
         );
     }
 
-    [TestMethod]
+    [STATestMethod]
     public async Task AddExpenseGroup_GroupAlreadyExists_ShowMessage()
     {
         // Arrange
@@ -127,16 +137,21 @@ public class AddExpenseGroupTests
             _mockNewBudgetDialogService.Object,
             _mockBudgetCategoryDialogService.Object,
             _mockNewExpenseGroupDialogService.Object,
-            _savingsCategoryDialogService.Object
+            _savingsCategoryDialogService.Object,
+            _mockContentDialogFactory.Object
         );
 
         viewModel.CurrentBudget = new Budget { BudgetExpenseItems = [new() { CategoryName = "Test Group" }] };
 
-        var dialogViewModel = new NewExpenseGroupDialogViewModel { GroupName = "Test Group" };
-        _mockNewExpenseGroupDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
-        _mockNewExpenseGroupDialogService
-            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>(), It.IsAny<string>()))
+        _mockContentDialogService.Setup(s => s.ShowAsync(It.IsAny<ContentDialog>(), It.IsAny<CancellationToken>()))
+            .Callback<ContentDialog, CancellationToken>((dlg, ct) =>
+            {
+                var vm = dlg.DataContext as NewExpenseGroupDialogViewModel;
+                vm?.GroupName = "Test Group";
+            })
             .ReturnsAsync(ContentDialogResult.Primary);
+
+        _mockContentDialogFactory.Setup(x => x.Create<ContentDialog>()).Returns(new ContentDialog());
 
         // Act
         await viewModel.AddExpenseGroupCommand.ExecuteAsync(null);

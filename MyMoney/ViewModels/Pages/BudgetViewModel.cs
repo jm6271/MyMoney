@@ -10,8 +10,10 @@ using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
 using MyMoney.Helpers.DropHandlers;
+using MyMoney.Services;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
+using MyMoney.Views.ContentDialogs;
 using SkiaSharp;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions.Controls;
@@ -99,6 +101,7 @@ namespace MyMoney.ViewModels.Pages
         private readonly IBudgetCategoryDialogService _budgetCategoryDialogService;
         private readonly INewExpenseGroupDialogService _newExpenseGroupDialogService;
         private readonly ISavingsCategoryDialogService _savingsCategoryDialogService;
+        private readonly IContentDialogFactory _contentDialogFactory;
         private readonly IDatabaseManager _databaseManager;
 
         public BudgetViewModel(
@@ -108,7 +111,8 @@ namespace MyMoney.ViewModels.Pages
             INewBudgetDialogService newBudgetDialogService,
             IBudgetCategoryDialogService budgetCategoryDialogService,
             INewExpenseGroupDialogService newExpenseGroupDialogService,
-            ISavingsCategoryDialogService savingsCategoryDialogService
+            ISavingsCategoryDialogService savingsCategoryDialogService,
+            IContentDialogFactory contentDialogFactory
         )
         {
             _contentDialogService = contentDialogService;
@@ -117,6 +121,7 @@ namespace MyMoney.ViewModels.Pages
             _budgetCategoryDialogService = budgetCategoryDialogService;
             _newExpenseGroupDialogService = newExpenseGroupDialogService;
             _savingsCategoryDialogService = savingsCategoryDialogService;
+            _contentDialogFactory = contentDialogFactory;
             _databaseManager = databaseManager;
 
             // Set up drop handlers
@@ -463,13 +468,13 @@ namespace MyMoney.ViewModels.Pages
                 return;
 
             var viewModel = new NewExpenseGroupDialogViewModel();
-            _newExpenseGroupDialogService.SetViewModel(viewModel);
-            var result = await _newExpenseGroupDialogService.ShowDialogAsync(
-                _contentDialogService,
-                "New Expense Group",
-                "Add"
-            );
-            viewModel = _newExpenseGroupDialogService.GetViewModel();
+
+            var dialog = _contentDialogFactory.Create<NewExpenseGroupDialog>();
+            dialog.Title = "New Expense Group";
+            dialog.PrimaryButtonText = "Add";
+            dialog.DataContext = viewModel;
+
+            var result = await _contentDialogService.ShowAsync(dialog, CancellationToken.None);
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
@@ -483,7 +488,7 @@ namespace MyMoney.ViewModels.Pages
                     );
                     return;
                 }
-
+                
                 // Add a new expense group
                 BudgetExpenseCategory expenseGroup = new();
                 expenseGroup.CategoryName = viewModel.GroupName;
