@@ -19,10 +19,6 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
     {
         private Mock<IContentDialogService> _mockContentDialogService;
         private Mock<IMessageBoxService> _mockMessageBoxService;
-        private Mock<INewBudgetDialogService> _mockNewBudgetDialogService;
-        private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
-        private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
-        private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService;
         private Mock<IContentDialogFactory> _mockContentDialogFactory;
         private Mock<IDatabaseManager> _mockDatabaseReader;
         private ViewModels.Pages.BudgetViewModel _viewModel;
@@ -32,10 +28,6 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
         {
             _mockContentDialogService = new Mock<IContentDialogService>();
             _mockMessageBoxService = new Mock<IMessageBoxService>();
-            _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
-            _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
-            _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
-            _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
             _mockContentDialogFactory = new Mock<IContentDialogFactory>();
             _mockDatabaseReader = new Mock<IDatabaseManager>();
 
@@ -52,10 +44,6 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockContentDialogService.Object,
                 _mockDatabaseReader.Object,
                 _mockMessageBoxService.Object,
-                _mockNewBudgetDialogService.Object,
-                _mockBudgetCategoryDialogService.Object,
-                _mockExpenseGroupDialogService.Object,
-                _mockSavingsCategoryDialogService.Object,
                 _mockContentDialogFactory.Object
             );
 
@@ -113,40 +101,6 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
 
             // Assert
             Assert.AreEqual(originalName, parameter.CategoryName);
-        }
-
-        [TestMethod]
-        public async Task EditExpenseGroup_WhenCurrentBudgetIsNull_ReturnsEarly()
-        {
-            // Arrange
-            _viewModel.CurrentBudget = null;
-            var parameter = new BudgetExpenseCategory { CategoryName = "Test" };
-
-            // Act
-            await _viewModel.EditExpenseGroupCommand.ExecuteAsync(parameter);
-
-            // Assert
-            _mockExpenseGroupDialogService.Verify(
-                x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>(), It.IsAny<string>()),
-                Times.Never
-            );
-        }
-
-        [TestMethod]
-        public async Task EditExpenseGroup_WhenEditingIsDisabled_ReturnsEarly()
-        {
-            // Arrange
-            _viewModel.IsEditingEnabled = false;
-            var parameter = new BudgetExpenseCategory { CategoryName = "Test" };
-
-            // Act
-            await _viewModel.EditExpenseGroupCommand.ExecuteAsync(parameter);
-
-            // Assert
-            _mockExpenseGroupDialogService.Verify(
-                x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>(), It.IsAny<string>()),
-                Times.Never
-            );
         }
     }
 }

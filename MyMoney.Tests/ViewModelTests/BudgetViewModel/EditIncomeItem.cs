@@ -18,10 +18,6 @@ public class EditIncomeItemTests
     private Mock<IContentDialogService> _mockContentDialogService = null!;
     private Mock<IDatabaseManager> _mockDatabaseReader = null!;
     private Mock<IMessageBoxService> _mockMessageBoxService = null!;
-    private Mock<INewBudgetDialogService> _mockNewBudgetDialogService = null!;
-    private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService = null!;
-    private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService = null!;
-    private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService = null!;
     private Mock<IContentDialogFactory> _mockContentDialogFactory = null!;
     private ViewModels.Pages.BudgetViewModel _viewModel = null!;
 
@@ -31,10 +27,6 @@ public class EditIncomeItemTests
         _mockContentDialogService = new Mock<IContentDialogService>();
         _mockDatabaseReader = new Mock<IDatabaseManager>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
-        _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
-        _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
-        _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
-        _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
         _mockContentDialogFactory = new Mock<IContentDialogFactory>();
 
         // Setup mock database with a test budget
@@ -54,10 +46,6 @@ public class EditIncomeItemTests
             _mockContentDialogService.Object,
             _mockDatabaseReader.Object,
             _mockMessageBoxService.Object,
-            _mockNewBudgetDialogService.Object,
-            _mockBudgetCategoryDialogService.Object,
-            _mockExpenseGroupDialogService.Object,
-            _mockSavingsCategoryDialogService.Object,
             _mockContentDialogFactory.Object
         );
 
@@ -93,38 +81,6 @@ public class EditIncomeItemTests
         Assert.AreEqual(newCategory, _viewModel.CurrentBudget!.BudgetIncomeItems[0].Category);
         Assert.AreEqual(newAmount.Value, _viewModel.CurrentBudget.BudgetIncomeItems[0].Amount.Value);
         Assert.AreEqual(newAmount.Value, _viewModel.IncomeTotal.Value);
-    }
-
-    [TestMethod]
-    public async Task EditIncomeItem_NullCurrentBudget_MakesNoChanges()
-    {
-        // Arrange
-        _viewModel.CurrentBudget = null;
-
-        // Act
-        await _viewModel.EditIncomeItemCommand.ExecuteAsync(null);
-
-        // Assert
-        _mockBudgetCategoryDialogService.Verify(
-            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()),
-            Times.Never
-        );
-    }
-
-    [TestMethod]
-    public async Task EditIncomeItem_EditingDisabled_MakesNoChanges()
-    {
-        // Arrange
-        _viewModel.IsEditingEnabled = false;
-
-        // Act
-        await _viewModel.EditIncomeItemCommand.ExecuteAsync(null);
-
-        // Assert
-        _mockBudgetCategoryDialogService.Verify(
-            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()),
-            Times.Never
-        );
     }
 
     [TestMethod]

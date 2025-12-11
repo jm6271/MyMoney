@@ -97,10 +97,6 @@ namespace MyMoney.ViewModels.Pages
         // Content dialog service
         private readonly IContentDialogService _contentDialogService;
         private readonly IMessageBoxService _messageBoxService;
-        private readonly INewBudgetDialogService _newBudgetDialogService;
-        private readonly IBudgetCategoryDialogService _budgetCategoryDialogService;
-        private readonly INewExpenseGroupDialogService _newExpenseGroupDialogService;
-        private readonly ISavingsCategoryDialogService _savingsCategoryDialogService;
         private readonly IContentDialogFactory _contentDialogFactory;
         private readonly IDatabaseManager _databaseManager;
 
@@ -108,19 +104,11 @@ namespace MyMoney.ViewModels.Pages
             IContentDialogService contentDialogService,
             IDatabaseManager databaseManager,
             IMessageBoxService messageBoxService,
-            INewBudgetDialogService newBudgetDialogService,
-            IBudgetCategoryDialogService budgetCategoryDialogService,
-            INewExpenseGroupDialogService newExpenseGroupDialogService,
-            ISavingsCategoryDialogService savingsCategoryDialogService,
             IContentDialogFactory contentDialogFactory
         )
         {
             _contentDialogService = contentDialogService;
             _messageBoxService = messageBoxService;
-            _newBudgetDialogService = newBudgetDialogService;
-            _budgetCategoryDialogService = budgetCategoryDialogService;
-            _newExpenseGroupDialogService = newExpenseGroupDialogService;
-            _savingsCategoryDialogService = savingsCategoryDialogService;
             _contentDialogFactory = contentDialogFactory;
             _databaseManager = databaseManager;
 

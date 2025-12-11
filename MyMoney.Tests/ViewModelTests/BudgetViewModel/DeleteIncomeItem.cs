@@ -17,10 +17,6 @@ public class DeleteIncomeItemTests
 {
     private Mock<IContentDialogService> _mockContentDialogService;
     private Mock<IMessageBoxService> _mockMessageBoxService;
-    private Mock<INewBudgetDialogService> _mockNewBudgetDialogService;
-    private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
-    private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
-    private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService;
     private Mock<IContentDialogFactory> _mockContentDialogFactory;
     private Mock<IDatabaseManager> _mockDatabaseReader;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
@@ -33,10 +29,6 @@ public class DeleteIncomeItemTests
     {
         _mockContentDialogService = new Mock<IContentDialogService>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
-        _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
-        _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
-        _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
-        _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
         _mockContentDialogFactory = new Mock<IContentDialogFactory>();
         _mockDatabaseReader = new Mock<IDatabaseManager>();
 
@@ -76,10 +68,6 @@ public class DeleteIncomeItemTests
             _mockContentDialogService.Object,
             _mockDatabaseReader.Object,
             _mockMessageBoxService.Object,
-            _mockNewBudgetDialogService.Object,
-            _mockBudgetCategoryDialogService.Object,
-            _mockExpenseGroupDialogService.Object,
-            _mockSavingsCategoryDialogService.Object,
             _mockContentDialogFactory.Object
         );
 

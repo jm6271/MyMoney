@@ -87,10 +87,6 @@ namespace MyMoney
                     services.AddTransient<ITransactionDialogService, TransactionDialogService>();
                     services.AddTransient<IRenameAccountDialogService, RenameAccountDialogService>();
                     services.AddTransient<IMessageBoxService, MessageBoxService>();
-                    services.AddTransient<INewBudgetDialogService, NewBudgetDialogService>();
-                    services.AddTransient<IBudgetCategoryDialogService, BudgetCategoryDialogService>();
-                    services.AddTransient<INewExpenseGroupDialogService, NewExpenseGroupDialogService>();
-                    services.AddTransient<ISavingsCategoryDialogService, SavingsCategoryDialogService>();
                     services.AddTransient<IUpdateAccountBalanceDialogService, UpdateAccountBalanceDialogService>();
                 }
             )

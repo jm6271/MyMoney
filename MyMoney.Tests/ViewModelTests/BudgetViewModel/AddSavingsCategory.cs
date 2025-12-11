@@ -23,10 +23,6 @@ public class AddSavingsCategoryTests
     private Mock<IContentDialogService> _mockContentDialogService;
     private Mock<IDatabaseManager> _mockDatabaseReader;
     private Mock<IMessageBoxService> _mockMessageBoxService;
-    private Mock<INewBudgetDialogService> _mockNewBudgetDialogService;
-    private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
-    private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
-    private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService;
     private Mock<IContentDialogFactory> _mockContentDialogFactory;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
 
@@ -36,10 +32,6 @@ public class AddSavingsCategoryTests
         _mockContentDialogService = new Mock<IContentDialogService>();
         _mockDatabaseReader = new Mock<IDatabaseManager>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
-        _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
-        _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
-        _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
-        _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
         _mockContentDialogFactory = new Mock<IContentDialogFactory>();
 
         // Setup database reader to return empty collection
@@ -49,10 +41,6 @@ public class AddSavingsCategoryTests
             _mockContentDialogService.Object,
             _mockDatabaseReader.Object,
             _mockMessageBoxService.Object,
-            _mockNewBudgetDialogService.Object,
-            _mockBudgetCategoryDialogService.Object,
-            _mockExpenseGroupDialogService.Object,
-            _mockSavingsCategoryDialogService.Object,
             _mockContentDialogFactory.Object
         );
     }
