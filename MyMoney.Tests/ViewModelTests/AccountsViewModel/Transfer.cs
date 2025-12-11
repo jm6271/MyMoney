@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using Moq;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
+using MyMoney.Services;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.ViewModels.Pages;
@@ -19,10 +20,10 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         private Mock<IDatabaseManager> _mockDatabaseReader;
         private Mock<INewAccountDialogService> _mockNewAccountDialogService;
         private Mock<ITransferDialogService> _mockTransferDialogService;
-        private Mock<ITransactionDialogService> _mockTransactionDialogService;
         private Mock<IRenameAccountDialogService> _mockRenameAccountDialogService;
         private Mock<IMessageBoxService> _mockMessageBoxService;
         private Mock<IUpdateAccountBalanceDialogService> _mockUpdateAccountBalanceDialogService;
+        private Mock<IContentDialogFactory> _mockContentDialogFactory;
         private MyMoney.ViewModels.Pages.AccountsViewModel _viewModel;
 
         [TestInitialize]
@@ -32,10 +33,10 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _mockDatabaseReader = new Mock<IDatabaseManager>();
             _mockNewAccountDialogService = new Mock<INewAccountDialogService>();
             _mockTransferDialogService = new Mock<ITransferDialogService>();
-            _mockTransactionDialogService = new Mock<ITransactionDialogService>();
             _mockRenameAccountDialogService = new Mock<IRenameAccountDialogService>();
             _mockMessageBoxService = new Mock<IMessageBoxService>();
             _mockUpdateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
+            _mockContentDialogFactory = new Mock<IContentDialogFactory>();
 
             // Set up empty accounts collection in database reader
             _mockDatabaseReader.Setup(x => x.GetCollection<Account>("Accounts")).Returns(new List<Account>());
@@ -45,10 +46,10 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
                 _mockDatabaseReader.Object,
                 _mockNewAccountDialogService.Object,
                 _mockTransferDialogService.Object,
-                _mockTransactionDialogService.Object,
                 _mockRenameAccountDialogService.Object,
                 _mockMessageBoxService.Object,
-                _mockUpdateAccountBalanceDialogService.Object
+                _mockUpdateAccountBalanceDialogService.Object,
+                _mockContentDialogFactory.Object
             );
         }
 

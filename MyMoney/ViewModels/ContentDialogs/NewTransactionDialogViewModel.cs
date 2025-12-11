@@ -41,7 +41,7 @@ namespace MyMoney.ViewModels.ContentDialogs
         private bool _newTransactionIsIncome;
 
         [ObservableProperty]
-        private ObservableCollection<string> _autoSuggestPayees = [];
+        private List<string> _autoSuggestPayees = [];
 
         [ObservableProperty]
         private int _selectedAccountIndex = 0;

@@ -1,6 +1,7 @@
 using Moq;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
+using MyMoney.Services;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui;
@@ -16,10 +17,10 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         private Mock<IDatabaseManager> _databaseReader;
         private Mock<INewAccountDialogService> _newAccountDialogService;
         private Mock<ITransferDialogService> _transferDialogService;
-        private Mock<ITransactionDialogService> _transactionDialogService;
         private Mock<IRenameAccountDialogService> _renameAccountDialogService;
         private Mock<IMessageBoxService> _messageBoxService;
         private Mock<IUpdateAccountBalanceDialogService> _updateAccountBalanceDialogService;
+        private Mock<IContentDialogFactory> _contentDialogFactory;
 
         private ViewModels.Pages.AccountsViewModel _viewModel;
 
@@ -31,20 +32,20 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _databaseReader.Setup(x => x.GetCollection<Account>("Accounts")).Returns(new List<Account>());
             _newAccountDialogService = new Mock<INewAccountDialogService>();
             _transferDialogService = new Mock<ITransferDialogService>();
-            _transactionDialogService = new Mock<ITransactionDialogService>();
             _renameAccountDialogService = new Mock<IRenameAccountDialogService>();
             _messageBoxService = new Mock<IMessageBoxService>();
             _updateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
+            _contentDialogFactory = new Mock<IContentDialogFactory>();
 
             _viewModel = new ViewModels.Pages.AccountsViewModel(
                 _contentDialogService.Object,
                 _databaseReader.Object,
                 _newAccountDialogService.Object,
                 _transferDialogService.Object,
-                _transactionDialogService.Object,
                 _renameAccountDialogService.Object,
                 _messageBoxService.Object,
-                _updateAccountBalanceDialogService.Object
+                _updateAccountBalanceDialogService.Object,
+                _contentDialogFactory.Object
             );
         }
 

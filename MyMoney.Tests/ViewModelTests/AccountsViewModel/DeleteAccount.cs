@@ -1,6 +1,7 @@
 using Moq;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
+using MyMoney.Services;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.Pages;
 using Wpf.Ui;
@@ -16,7 +17,6 @@ public class DeleteAccountTests
     private Mock<IContentDialogService> _mockContentDialogService;
     private Mock<IDatabaseManager> _mockDatabaseService;
     private Mock<INewAccountDialogService> _mockNewAccountDialogService;
-    private Mock<ITransactionDialogService> _mockTransactionDialogService;
     private Mock<IRenameAccountDialogService> _mockRenameAccountDialogService;
     private Mock<ITransferDialogService> _mockTransferDialogService;
     private Mock<IMessageBoxService> _mockMessageBoxService;
@@ -30,7 +30,6 @@ public class DeleteAccountTests
         _mockDatabaseService = new Mock<IDatabaseManager>();
         _mockNewAccountDialogService = new Mock<INewAccountDialogService>();
         _mockTransferDialogService = new Mock<ITransferDialogService>();
-        _mockTransactionDialogService = new Mock<ITransactionDialogService>();
         _mockRenameAccountDialogService = new Mock<IRenameAccountDialogService>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
         _mockUpdateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
@@ -122,10 +121,10 @@ public class DeleteAccountTests
             _mockDatabaseService.Object,
             _mockNewAccountDialogService.Object,
             _mockTransferDialogService.Object,
-            _mockTransactionDialogService.Object,
             _mockRenameAccountDialogService.Object,
             _mockMessageBoxService.Object,
-            _mockUpdateAccountBalanceDialogService.Object
+            _mockUpdateAccountBalanceDialogService.Object,
+            Mock.Of<IContentDialogFactory>()
         );
     }
 }

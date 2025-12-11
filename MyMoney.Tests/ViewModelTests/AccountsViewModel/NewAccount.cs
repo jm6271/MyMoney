@@ -1,6 +1,7 @@
 ﻿using Moq;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
+using MyMoney.Services;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.ViewModels.Pages;
@@ -17,7 +18,6 @@ public class NewAccountTest
     private Mock<IContentDialogService> _mockContentDialogService;
     private Mock<IDatabaseManager> _mockDatabaseService;
     private Mock<INewAccountDialogService> _mockNewAccountDialogService;
-    private Mock<ITransactionDialogService> _mockTransactionDialogService;
     private Mock<IRenameAccountDialogService> _mockRenameAccountDialogService;
     private MyMoney.ViewModels.Pages.AccountsViewModel _viewModel;
     private Mock<ITransferDialogService> _mockTransferDialogService;
@@ -31,7 +31,6 @@ public class NewAccountTest
         _mockDatabaseService = new Mock<IDatabaseManager>();
         _mockNewAccountDialogService = new Mock<INewAccountDialogService>();
         _mockTransferDialogService = new Mock<ITransferDialogService>();
-        _mockTransactionDialogService = new Mock<ITransactionDialogService>();
         _mockRenameAccountDialogService = new Mock<IRenameAccountDialogService>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
         _mockUpdateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
@@ -57,10 +56,10 @@ public class NewAccountTest
             _mockDatabaseService.Object,
             _mockNewAccountDialogService.Object,
             _mockTransferDialogService.Object,
-            _mockTransactionDialogService.Object,
             _mockRenameAccountDialogService.Object,
             _mockMessageBoxService.Object,
-            _mockUpdateAccountBalanceDialogService.Object
+            _mockUpdateAccountBalanceDialogService.Object,
+            Mock.Of<IContentDialogFactory>()
         );
         _viewModel.CreateNewAccountCommand.Execute(null);
 
@@ -89,10 +88,10 @@ public class NewAccountTest
             _mockDatabaseService.Object,
             _mockNewAccountDialogService.Object,
             _mockTransferDialogService.Object,
-            _mockTransactionDialogService.Object,
             _mockRenameAccountDialogService.Object,
             _mockMessageBoxService.Object,
-            _mockUpdateAccountBalanceDialogService.Object
+            _mockUpdateAccountBalanceDialogService.Object,
+            Mock.Of<IContentDialogFactory>()
         );
         _viewModel.CreateNewAccountCommand.Execute(null);
 
@@ -115,10 +114,10 @@ public class NewAccountTest
             _mockDatabaseService.Object,
             _mockNewAccountDialogService.Object,
             _mockTransferDialogService.Object,
-            _mockTransactionDialogService.Object,
             _mockRenameAccountDialogService.Object,
             _mockMessageBoxService.Object,
-            _mockUpdateAccountBalanceDialogService.Object
+            _mockUpdateAccountBalanceDialogService.Object,
+            Mock.Of<IContentDialogFactory>()
         );
         _viewModel.CreateNewAccountCommand.Execute(null);
 
@@ -147,10 +146,10 @@ public class NewAccountTest
             _mockDatabaseService.Object,
             _mockNewAccountDialogService.Object,
             _mockTransferDialogService.Object,
-            _mockTransactionDialogService.Object,
             _mockRenameAccountDialogService.Object,
             _mockMessageBoxService.Object,
-            _mockUpdateAccountBalanceDialogService.Object
+            _mockUpdateAccountBalanceDialogService.Object,
+            Mock.Of<IContentDialogFactory>()
         );
 
         // Act - Create first account
@@ -187,10 +186,10 @@ public class NewAccountTest
             _mockDatabaseService.Object,
             _mockNewAccountDialogService.Object,
             _mockTransferDialogService.Object,
-            _mockTransactionDialogService.Object,
             _mockRenameAccountDialogService.Object,
             _mockMessageBoxService.Object,
-            _mockUpdateAccountBalanceDialogService.Object
+            _mockUpdateAccountBalanceDialogService.Object,
+            Mock.Of<IContentDialogFactory>()
         );
         Assert.IsFalse(_viewModel.TransactionsEnabled); // Initially disabled
 

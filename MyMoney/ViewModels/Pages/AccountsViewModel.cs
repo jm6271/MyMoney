@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
+using MyMoney.Services;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Views.ContentDialogs;
@@ -54,10 +55,10 @@ namespace MyMoney.ViewModels.Pages
         private readonly IDatabaseManager _databaseManager;
         private readonly INewAccountDialogService _newAccountDialogService;
         private readonly ITransferDialogService _transferDialogService;
-        private readonly ITransactionDialogService _transactionDialogService;
         private readonly IRenameAccountDialogService _renameAccountDialogService;
         private readonly IMessageBoxService _messageBoxService;
         private readonly IUpdateAccountBalanceDialogService _updateAccountBalanceDialogService;
+        private readonly IContentDialogFactory _contentDialogFactory;
 
         // Database lock object
         private readonly object _databaseLockObject = new();
@@ -77,10 +78,10 @@ namespace MyMoney.ViewModels.Pages
             IDatabaseManager databaseManager,
             INewAccountDialogService newAccountDialogService,
             ITransferDialogService transferDialogService,
-            ITransactionDialogService transactionDialogService,
             IRenameAccountDialogService renameAccountDialogService,
             IMessageBoxService messageBoxService,
-            IUpdateAccountBalanceDialogService updateAccountBalanceDialogService
+            IUpdateAccountBalanceDialogService updateAccountBalanceDialogService,
+            IContentDialogFactory contentDialogFactory
         )
         {
             _contentDialogService =
@@ -90,14 +91,14 @@ namespace MyMoney.ViewModels.Pages
                 newAccountDialogService ?? throw new ArgumentNullException(nameof(newAccountDialogService));
             _transferDialogService =
                 transferDialogService ?? throw new ArgumentNullException(nameof(transferDialogService));
-            _transactionDialogService =
-                transactionDialogService ?? throw new ArgumentNullException(nameof(transactionDialogService));
             _renameAccountDialogService =
                 renameAccountDialogService ?? throw new ArgumentNullException(nameof(renameAccountDialogService));
             _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
             _updateAccountBalanceDialogService =
                 updateAccountBalanceDialogService
                 ?? throw new ArgumentNullException(nameof(updateAccountBalanceDialogService));
+
+            _contentDialogFactory = contentDialogFactory;
 
             LoadAccounts();
         }
@@ -341,33 +342,37 @@ namespace MyMoney.ViewModels.Pages
                 SelectedAccountIndex = 0;
             }
 
-            _transactionDialogService.SetViewModel(viewModel);
-            _transactionDialogService.SetTitle(isEdit ? "Edit Transaction" : "New Transaction");
-            var result = await _transactionDialogService.ShowDialogAsync(_contentDialogService);
-            var returnedViewModel = _transactionDialogService.GetViewModel();
+            var dialog = _contentDialogFactory.Create<NewTransactionDialog>();
+            dialog.Title = isEdit ? "Edit Transaction" : "New Transaction";
+            dialog.PrimaryButtonText = "OK";
+            dialog.CloseButtonText = "Cancel";
+            dialog.DataContext = viewModel;
+            dialog.DialogHost = _contentDialogService.GetDialogHost();
+
+            var result = await dialog.ShowAsync();
 
             // If dialog was not confirmed or the service returned null, treat as cancel
-            if (result != ContentDialogResult.Primary || returnedViewModel == null)
+            if (result != ContentDialogResult.Primary)
             {
                 return (false, null);
             }
 
-            var amount = returnedViewModel.NewTransactionAmount;
-            if (returnedViewModel.NewTransactionIsExpense)
+            var amount = viewModel.NewTransactionAmount;
+            if (viewModel.NewTransactionIsExpense)
             {
                 amount = new Currency(-amount.Value);
             }
 
             var transaction = new Transaction(
-                returnedViewModel.NewTransactionDate,
-                _transactionDialogService.GetSelectedPayee(),
-                returnedViewModel.NewTransactionCategory,
+                viewModel.NewTransactionDate,
+                viewModel.NewTransactionPayee,
+                viewModel.NewTransactionCategory,
                 amount,
-                returnedViewModel.NewTransactionMemo
+                viewModel.NewTransactionMemo
             );
 
             // make sure there's enough money in the account for this transaction
-            if (returnedViewModel.NewTransactionIsExpense)
+            if (viewModel.NewTransactionIsExpense)
             {
                 if (SelectedAccount == null)
                 {
@@ -633,11 +638,14 @@ namespace MyMoney.ViewModels.Pages
             };
         }
 
-        private ObservableCollection<string> GetAllPayees()
+        private List<string> GetAllPayees()
         {
-            return new ObservableCollection<string>(
-                Accounts.SelectMany(a => a.Transactions).Select(t => t.Payee).Distinct()
-            );
+            return [.. Accounts
+                        .SelectMany(a => a.Transactions)
+                        .Select(t => t.Payee)
+                        .Where(p => p != null)
+                        .Distinct()
+            ];
         }
 
         partial void OnSelectedAccountChanged(Account? value)

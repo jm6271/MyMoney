@@ -84,7 +84,6 @@ namespace MyMoney
 
                     services.AddTransient<INewAccountDialogService, NewAccountDialogService>();
                     services.AddTransient<ITransferDialogService, TransferDialogService>();
-                    services.AddTransient<ITransactionDialogService, TransactionDialogService>();
                     services.AddTransient<IRenameAccountDialogService, RenameAccountDialogService>();
                     services.AddTransient<IMessageBoxService, MessageBoxService>();
                     services.AddTransient<IUpdateAccountBalanceDialogService, UpdateAccountBalanceDialogService>();

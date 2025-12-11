@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MyMoney.Abstractions;
 using MyMoney.Core.Models;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.ViewModels.Pages;
@@ -22,15 +23,29 @@ namespace MyMoney.Views.ContentDialogs
     /// <summary>
     /// Interaction logic for NewTransactionDialog.xaml
     /// </summary>
-    public partial class NewTransactionDialog : ContentDialog
+    public partial class NewTransactionDialog : ContentDialog, IContentDialog
     {
-        public NewTransactionDialog(ContentPresenter dialogHost, NewTransactionDialogViewModel viewModel)
-            : base(dialogHost)
+        public NewTransactionDialog()
         {
             InitializeComponent();
-            DataContext = viewModel;
-            txtPayee.Text = viewModel.NewTransactionPayee;
-            cmbCategory.ItemsSource = viewModel.CategoryNames;
+        }
+
+        public new async Task<ContentDialogResult> ShowAsync(CancellationToken cancellationToken = default)
+        {
+            if (DataContext is NewTransactionDialogViewModel viewModel)
+            {
+                txtPayee.Text = viewModel.NewTransactionPayee;
+                cmbCategory.ItemsSource = viewModel.CategoryNames;
+            }
+
+            var result = await base.ShowAsync(cancellationToken);
+
+            if (DataContext is NewTransactionDialogViewModel vm)
+            {
+                vm.NewTransactionPayee = SelectedPayee;
+            }
+
+            return result;
         }
 
         private void ContentDialog_Loaded(object sender, RoutedEventArgs e)

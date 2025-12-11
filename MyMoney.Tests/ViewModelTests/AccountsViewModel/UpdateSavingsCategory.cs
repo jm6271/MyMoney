@@ -1,7 +1,11 @@
 using Moq;
+using MyMoney.Abstractions;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
+using MyMoney.Services;
 using MyMoney.Services.ContentDialogs;
+using MyMoney.ViewModels.ContentDialogs;
+using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -16,10 +20,10 @@ public class UpdateSavingsCategoryTests
     private Mock<IDatabaseManager> _databaseReaderMock;
     private Mock<INewAccountDialogService> _newAccountDialogServiceMock;
     private Mock<ITransferDialogService> _transferDialogServiceMock;
-    private Mock<ITransactionDialogService> _transactionDialogServiceMock;
     private Mock<IRenameAccountDialogService> _renameAccountDialogService;
     private Mock<IMessageBoxService> _messageBoxServiceMock;
     private Mock<IUpdateAccountBalanceDialogService> _updateAccountBalanceDialogServiceMock;
+    private Mock<IContentDialogFactory> _contentDialogFactoryMock;
     private ViewModels.Pages.AccountsViewModel _viewModel;
 
     // Common test objects
@@ -34,10 +38,10 @@ public class UpdateSavingsCategoryTests
         _databaseReaderMock = new Mock<IDatabaseManager>();
         _newAccountDialogServiceMock = new Mock<INewAccountDialogService>();
         _transferDialogServiceMock = new Mock<ITransferDialogService>();
-        _transactionDialogServiceMock = new Mock<ITransactionDialogService>();
         _renameAccountDialogService = new Mock<IRenameAccountDialogService>();
         _messageBoxServiceMock = new Mock<IMessageBoxService>();
         _updateAccountBalanceDialogServiceMock = new Mock<IUpdateAccountBalanceDialogService>();
+        _contentDialogFactoryMock = new Mock<IContentDialogFactory>();
 
         _databaseReaderMock.Setup(x => x.GetCollection<Account>("Accounts")).Returns([]);
 
@@ -46,10 +50,10 @@ public class UpdateSavingsCategoryTests
             _databaseReaderMock.Object,
             _newAccountDialogServiceMock.Object,
             _transferDialogServiceMock.Object,
-            _transactionDialogServiceMock.Object,
             _renameAccountDialogService.Object,
             _messageBoxServiceMock.Object,
-            _updateAccountBalanceDialogServiceMock.Object
+            _updateAccountBalanceDialogServiceMock.Object,
+            _contentDialogFactoryMock.Object
         );
 
         // Initialize common test objects
@@ -75,10 +79,12 @@ public class UpdateSavingsCategoryTests
                 }
             );
 
-        // Common transaction dialog setup
-        _transactionDialogServiceMock
-            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+        var fake = new Mock<IContentDialog>();
+        fake.SetupAllProperties();
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(ContentDialogResult.Primary);
+
+        _contentDialogFactoryMock.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);
 
         // Common view model selection setup
         _viewModel.SelectedAccountIndex = 0;
@@ -89,21 +95,22 @@ public class UpdateSavingsCategoryTests
     public async Task Test_UpdateSavingsCategory_NewTransaction_UpdatesSavingsCategory()
     {
         // Arrange
-        _transactionDialogServiceMock
-            .Setup(x => x.GetViewModel())
-            .Returns(
-                new ViewModels.ContentDialogs.NewTransactionDialogViewModel(_databaseReaderMock.Object)
-                {
-                    NewTransactionAmount = new(100),
-                    NewTransactionCategory = new() { Group = "Savings", Name = "Test Category" },
-                    NewTransactionDate = DateTime.Today,
-                    NewTransactionIsExpense = true,
-                    NewTransactionIsIncome = false,
-                    NewTransactionPayee = "Test Payee",
-                }
-            );
+        var fake = new Mock<IContentDialog>();
+        fake.SetupAllProperties();
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>((ct) =>
+            {
+                var vm = fake.Object.DataContext as NewTransactionDialogViewModel;
+                vm?.NewTransactionAmount = new Currency(100);
+                vm?.NewTransactionIsExpense = true;
+                vm?.NewTransactionIsIncome = false;
+                vm?.NewTransactionDate = DateTime.Today;
+                vm?.NewTransactionCategory = new() { Name = "Test Category", Group = "Savings" };
+                vm?.NewTransactionPayee = "Test Payee";
+            })
+            .ReturnsAsync(ContentDialogResult.Primary);
 
-        _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee()).Returns("Test Payee");
+        _contentDialogFactoryMock.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);
 
         // Act
         await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
@@ -135,22 +142,24 @@ public class UpdateSavingsCategoryTests
         _testAccount.Transactions.Add(originalTransaction);
         _testBudget.BudgetSavingsCategories[0].Transactions.Add(originalTransaction);
 
-        _transactionDialogServiceMock
-            .Setup(x => x.GetViewModel())
-            .Returns(
-                new ViewModels.ContentDialogs.NewTransactionDialogViewModel(_databaseReaderMock.Object)
-                {
-                    NewTransactionAmount = new(100),
-                    NewTransactionCategory = new() { Group = "Savings", Name = "Test Category" },
-                    NewTransactionDate = DateTime.Today,
-                    NewTransactionIsExpense = true,
-                    NewTransactionIsIncome = false,
-                    NewTransactionPayee = "New Payee",
-                    NewTransactionMemo = "New Memo",
-                }
-            );
 
-        _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee()).Returns("New Payee");
+        var fake = new Mock<IContentDialog>();
+        fake.SetupAllProperties();
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>((ct) =>
+            {
+                var vm = fake.Object.DataContext as NewTransactionDialogViewModel;
+                vm?.NewTransactionAmount = new Currency(100);
+                vm?.NewTransactionIsExpense = true;
+                vm?.NewTransactionIsIncome = false;
+                vm?.NewTransactionDate = DateTime.Today;
+                vm?.NewTransactionCategory = new() { Name = "Test Category", Group = "Savings" };
+                vm?.NewTransactionPayee = "New Payee";
+                vm?.NewTransactionMemo = "New Memo";
+            })
+            .ReturnsAsync(ContentDialogResult.Primary);
+
+        _contentDialogFactoryMock.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);
 
         _viewModel.SelectedTransactionIndex = 0;
         _viewModel.SelectedTransaction = _viewModel.Accounts[0].Transactions[0];
@@ -195,22 +204,23 @@ public class UpdateSavingsCategoryTests
         _testAccount.Transactions.Add(originalTransaction);
         _testBudget.BudgetSavingsCategories[0].Transactions.Add(originalTransaction);
 
-        _transactionDialogServiceMock
-            .Setup(x => x.GetViewModel())
-            .Returns(
-                new ViewModels.ContentDialogs.NewTransactionDialogViewModel(_databaseReaderMock.Object)
-                {
-                    NewTransactionAmount = new(100),
-                    NewTransactionCategory = new() { Group = "Savings", Name = "Other Category" },
-                    NewTransactionDate = DateTime.Today,
-                    NewTransactionIsExpense = true,
-                    NewTransactionIsIncome = false,
-                    NewTransactionPayee = "New Payee",
-                    NewTransactionMemo = "New Memo",
-                }
-            );
+        var fake = new Mock<IContentDialog>();
+        fake.SetupAllProperties();
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>((ct) =>
+            {
+                var vm = fake.Object.DataContext as NewTransactionDialogViewModel;
+                vm?.NewTransactionAmount = new Currency(100);
+                vm?.NewTransactionIsExpense = true;
+                vm?.NewTransactionIsIncome = false;
+                vm?.NewTransactionDate = DateTime.Today;
+                vm?.NewTransactionCategory = new() { Name = "Other Category", Group = "Savings" };
+                vm?.NewTransactionPayee = "Test Payee";
+                vm?.NewTransactionMemo = "New Memo";
+            })
+            .ReturnsAsync(ContentDialogResult.Primary);
 
-        _transactionDialogServiceMock.Setup(x => x.GetSelectedPayee()).Returns("New Payee");
+        _contentDialogFactoryMock.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);
 
         _viewModel.SelectedTransactionIndex = 0;
         _viewModel.SelectedTransaction = _viewModel.Accounts[0].Transactions[0];
