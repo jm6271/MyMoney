@@ -32,7 +32,7 @@ namespace MyMoney.Services.ContentDialogs
             if (host == null)
                 return ContentDialogResult.None;
 
-            BudgetCategoryDialog budgetCategoryDialog = new(host, _viewModel)
+            BudgetCategoryDialog budgetCategoryDialog = new()
             {
                 PrimaryButtonText = "OK",
                 CloseButtonText = "Cancel",

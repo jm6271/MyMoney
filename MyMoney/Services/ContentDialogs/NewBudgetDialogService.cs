@@ -37,8 +37,9 @@ namespace MyMoney.Services.ContentDialogs
             if (host == null)
                 return ContentDialogResult.None;
 
-            NewBudgetDialog newBudgetDialog = new(host, _viewModel)
+            NewBudgetDialog newBudgetDialog = new()
             {
+                DataContext = _viewModel,
                 PrimaryButtonText = "OK",
                 CloseButtonText = "Cancel",
             };

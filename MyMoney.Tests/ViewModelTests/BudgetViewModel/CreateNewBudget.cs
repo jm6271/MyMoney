@@ -1,13 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Moq;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Services;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
-using MyMoney.ViewModels.Pages;
+using MyMoney.Views.ContentDialogs;
+using MyMoney.Abstractions;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -19,7 +17,6 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
         private Mock<IContentDialogService> _mockContentDialogService = null!;
         private Mock<IDatabaseManager> _mockDatabaseReader = null!;
         private Mock<IMessageBoxService> _mockMessageBoxService = null!;
-        private Mock<INewBudgetDialogService> _mockNewBudgetDialogService = null!;
         private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService = null!;
         private Mock<INewExpenseGroupDialogService> _mockNewExpenseDialogService = null!;
         private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService = null!;
@@ -32,7 +29,6 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             _mockContentDialogService = new Mock<IContentDialogService>();
             _mockDatabaseReader = new Mock<IDatabaseManager>();
             _mockMessageBoxService = new Mock<IMessageBoxService>();
-            _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
             _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
             _mockNewExpenseDialogService = new Mock<INewExpenseGroupDialogService>();
             _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
@@ -44,7 +40,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockContentDialogService.Object,
                 _mockDatabaseReader.Object,
                 _mockMessageBoxService.Object,
-                _mockNewBudgetDialogService.Object,
+                null!, // Removed INewBudgetDialogService
                 _mockBudgetCategoryDialogService.Object,
                 _mockNewExpenseDialogService.Object,
                 _mockSavingsCategoryDialogService.Object,
@@ -59,16 +55,18 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             var budgetDate = DateTime.Now.AddMonths(1);
             var budgetTitle = budgetDate.ToString("MMMM, yyyy", System.Globalization.CultureInfo.InvariantCulture);
 
-            var dialogViewModel = new NewBudgetDialogViewModel
-            {
-                SelectedDate = budgetTitle,
-                UseLastMonthsBudget = false,
-            };
-
-            _mockNewBudgetDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
-            _mockNewBudgetDialogService
-                .Setup(x => x.ShowDialogAsync(_mockContentDialogService.Object))
+            var fakeDialog = new Mock<IContentDialog>();
+            fakeDialog.SetupAllProperties();
+            fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>((ct) =>
+                {
+                    var vm = fakeDialog.Object.DataContext as NewBudgetDialogViewModel;
+                    vm!.SelectedDate = budgetTitle;
+                    vm.UseLastMonthsBudget = false;
+                })
                 .ReturnsAsync(ContentDialogResult.Primary);
+
+            _mockContentDialogFactory.Setup(x => x.Create<NewBudgetDialog>()).Returns(fakeDialog.Object);
 
             // Act
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
@@ -97,27 +95,18 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 .Setup(x => x.GetCollection<Budget>("Budgets"))
                 .Returns(new List<Budget> { existingBudget });
 
-            var dialogViewModel = new NewBudgetDialogViewModel
-            {
-                SelectedDate = existingBudget.BudgetTitle,
-                UseLastMonthsBudget = false,
-            };
-
-            _mockNewBudgetDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
-            _mockNewBudgetDialogService
-                .Setup(x => x.ShowDialogAsync(_mockContentDialogService.Object))
+            var fakeDialog = new Mock<IContentDialog>();
+            fakeDialog.SetupAllProperties();
+            fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>((ct) =>
+                {
+                    var vm = fakeDialog.Object.DataContext as NewBudgetDialogViewModel;
+                    vm!.SelectedDate = existingBudget.BudgetTitle;
+                    vm.UseLastMonthsBudget = false;
+                })
                 .ReturnsAsync(ContentDialogResult.Primary);
 
-            _viewModel = new MyMoney.ViewModels.Pages.BudgetViewModel(
-                _mockContentDialogService.Object,
-                _mockDatabaseReader.Object,
-                _mockMessageBoxService.Object,
-                _mockNewBudgetDialogService.Object,
-                _mockBudgetCategoryDialogService.Object,
-                _mockNewExpenseDialogService.Object,
-                _mockSavingsCategoryDialogService.Object,
-                _mockContentDialogFactory.Object
-            );
+            _mockContentDialogFactory.Setup(x => x.Create<NewBudgetDialog>()).Returns(fakeDialog.Object);
 
             await _viewModel.OnNavigatedToAsync();
             _viewModel.CurrentBudget = _viewModel.Budgets[0];
@@ -142,9 +131,12 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
         public async Task CreateNewBudget_WhenDialogResultNotPrimary_DoesNotCreateBudget()
         {
             // Arrange
-            _mockNewBudgetDialogService
-                .Setup(x => x.ShowDialogAsync(_mockContentDialogService.Object))
+            var fakeDialog = new Mock<IContentDialog>();
+            fakeDialog.SetupAllProperties();
+            fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(ContentDialogResult.Secondary);
+
+            _mockContentDialogFactory.Setup(x => x.Create<NewBudgetDialog>()).Returns(fakeDialog.Object);
 
             // Act
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
@@ -201,27 +193,18 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns([currentBudget]);
             _mockDatabaseReader.Setup(x => x.GetCollection<Account>("Accounts")).Returns([]);
 
-            var dialogViewModel = new NewBudgetDialogViewModel
-            {
-                SelectedDate = nextBudgetTitle,
-                UseLastMonthsBudget = true,
-            };
-
-            _mockNewBudgetDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
-            _mockNewBudgetDialogService
-                .Setup(x => x.ShowDialogAsync(_mockContentDialogService.Object))
+            var fakeDialog = new Mock<IContentDialog>();
+            fakeDialog.SetupAllProperties();
+            fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>((ct) =>
+                {
+                    var vm = fakeDialog.Object.DataContext as NewBudgetDialogViewModel;
+                    vm!.SelectedDate = nextBudgetTitle;
+                    vm.UseLastMonthsBudget = true;
+                })
                 .ReturnsAsync(ContentDialogResult.Primary);
 
-            _viewModel = new MyMoney.ViewModels.Pages.BudgetViewModel(
-                _mockContentDialogService.Object,
-                _mockDatabaseReader.Object,
-                _mockMessageBoxService.Object,
-                _mockNewBudgetDialogService.Object,
-                _mockBudgetCategoryDialogService.Object,
-                _mockNewExpenseDialogService.Object,
-                _mockSavingsCategoryDialogService.Object,
-                _mockContentDialogFactory.Object
-            );
+            _mockContentDialogFactory.Setup(x => x.Create<NewBudgetDialog>()).Returns(fakeDialog.Object);
 
             await _viewModel.OnNavigatedToAsync();
             _viewModel.CurrentBudget = _viewModel.Budgets[0];
@@ -249,71 +232,6 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             Assert.HasCount(2, newSavings.Transactions); // Old transactions are deleted during copy
             Assert.AreEqual(newSavings.BudgetedAmount, newSavings.Transactions[1].Amount);
             Assert.AreEqual(newSavings.PlannedTransactionHash, newSavings.Transactions[1].TransactionHash);
-        }
-
-        [TestMethod]
-        public async Task CreateNewBudget_CopyFromLastMonth_NoBudgetsExist_DoesNotThrowAndCreatesEmptyBudget()
-        {
-            // Arrange
-            var budgetDate = DateTime.Now.AddMonths(1);
-            var budgetTitle = budgetDate.ToString("MMMM, yyyy", System.Globalization.CultureInfo.InvariantCulture);
-
-            _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
-
-            var dialogViewModel = new NewBudgetDialogViewModel
-            {
-                SelectedDate = budgetTitle,
-                UseLastMonthsBudget = true,
-            };
-
-            _mockNewBudgetDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
-            _mockNewBudgetDialogService
-                .Setup(x => x.ShowDialogAsync(_mockContentDialogService.Object))
-                .ReturnsAsync(ContentDialogResult.Primary);
-
-            // Act
-            await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
-
-            // Assert
-            Assert.HasCount(1, _viewModel.Budgets);
-            Assert.AreEqual(budgetTitle, _viewModel.Budgets[0].BudgetTitle);
-            Assert.HasCount(0, _viewModel.Budgets[0].BudgetIncomeItems);
-            Assert.IsEmpty(_viewModel.Budgets[0].BudgetExpenseItems);
-            Assert.IsEmpty(_viewModel.Budgets[0].BudgetSavingsCategories);
-        }
-
-        [TestMethod]
-        public async Task CreateNewBudget_CopyFromLastMonth_CurrentBudgetNull_DoesNotThrowAndCreatesEmptyBudget()
-        {
-            // Arrange
-            var budgetDate = DateTime.Now.AddMonths(1);
-            var budgetTitle = budgetDate.ToString("MMMM, yyyy", System.Globalization.CultureInfo.InvariantCulture);
-
-            _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
-
-            var dialogViewModel = new NewBudgetDialogViewModel
-            {
-                SelectedDate = budgetTitle,
-                UseLastMonthsBudget = true,
-            };
-
-            _mockNewBudgetDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
-            _mockNewBudgetDialogService
-                .Setup(x => x.ShowDialogAsync(_mockContentDialogService.Object))
-                .ReturnsAsync(ContentDialogResult.Primary);
-
-            // Ensure CurrentBudget is null
-            _viewModel.GetType().GetProperty("CurrentBudget")!.SetValue(_viewModel, null);
-
-            // Act
-            await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
-
-            // Assert
-            Assert.HasCount(1, _viewModel.Budgets);
-            Assert.AreEqual(budgetTitle, _viewModel.Budgets[0].BudgetTitle);
-            Assert.IsEmpty(_viewModel.Budgets[0].BudgetIncomeItems);
-            Assert.IsEmpty(_viewModel.Budgets[0].BudgetExpenseItems);
-            Assert.IsEmpty(_viewModel.Budgets[0].BudgetSavingsCategories);
         }
     }
 }

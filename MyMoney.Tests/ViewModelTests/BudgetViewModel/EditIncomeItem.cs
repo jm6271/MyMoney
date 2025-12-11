@@ -1,10 +1,12 @@
 using System.Collections.ObjectModel;
 using Moq;
+using MyMoney.Abstractions;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Services;
 using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
+using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -71,17 +73,18 @@ public class EditIncomeItemTests
         var newCategory = "Updated Income";
         var newAmount = new Currency(2000m);
 
-        var dialogViewModel = new BudgetCategoryDialogViewModel
-        {
-            BudgetCategory = newCategory,
-            BudgetAmount = newAmount,
-        };
-
-        _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
-
-        _mockBudgetCategoryDialogService
-            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+        var fake = new Mock<IContentDialog>();
+        fake.SetupAllProperties();
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>((ct) =>
+            {
+                var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
+                vm?.BudgetCategory = newCategory;
+                vm?.BudgetAmount = newAmount;
+            })
             .ReturnsAsync(ContentDialogResult.Primary);
+
+        _mockContentDialogFactory.Setup(x => x.Create<BudgetCategoryDialog>()).Returns(fake.Object);
 
         // Act
         await _viewModel.EditIncomeItemCommand.ExecuteAsync(null);
@@ -132,9 +135,18 @@ public class EditIncomeItemTests
         var originalCategory = _viewModel.CurrentBudget!.BudgetIncomeItems[0].Category;
         var originalAmount = _viewModel.CurrentBudget.BudgetIncomeItems[0].Amount;
 
-        _mockBudgetCategoryDialogService
-            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+        var fake = new Mock<IContentDialog>();
+        fake.SetupAllProperties();
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>((ct) =>
+            {
+                var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
+                vm?.BudgetCategory = "Test Category";
+                vm?.BudgetAmount = new Currency(150m);
+            })
             .ReturnsAsync(ContentDialogResult.Secondary);
+
+        _mockContentDialogFactory.Setup(x => x.Create<BudgetCategoryDialog>()).Returns(fake.Object);
 
         // Act
         await _viewModel.EditIncomeItemCommand.ExecuteAsync(null);
@@ -153,17 +165,18 @@ public class EditIncomeItemTests
         var newCategory = "Test Income 2";
         var newAmount = new Currency(2000m);
 
-        var dialogViewModel = new BudgetCategoryDialogViewModel
-        {
-            BudgetCategory = newCategory,
-            BudgetAmount = newAmount,
-        };
-
-        _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
-
-        _mockBudgetCategoryDialogService
-            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+        var fake = new Mock<IContentDialog>();
+        fake.SetupAllProperties();
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>((ct) =>
+            {
+                var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
+                vm?.BudgetCategory = newCategory;
+                vm?.BudgetAmount = newAmount;
+            })
             .ReturnsAsync(ContentDialogResult.Primary);
+
+        _mockContentDialogFactory.Setup(x => x.Create<BudgetCategoryDialog>()).Returns(fake.Object);
 
         // Act
         await _viewModel.EditIncomeItemCommand.ExecuteAsync(null);

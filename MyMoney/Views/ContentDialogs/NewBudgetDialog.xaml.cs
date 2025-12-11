@@ -1,19 +1,18 @@
 ﻿using System.Windows.Controls;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
+using MyMoney.Abstractions;
 
 namespace MyMoney.Views.ContentDialogs
 {
     /// <summary>
     /// Interaction logic for NewBudgetDialog.xaml
     /// </summary>
-    public partial class NewBudgetDialog : ContentDialog
+    public partial class NewBudgetDialog : ContentDialog, IContentDialog
     {
-        public NewBudgetDialog(ContentPresenter dialogHost, NewBudgetDialogViewModel viewModel)
-            : base(dialogHost)
+        public NewBudgetDialog()
         {
             InitializeComponent();
-            DataContext = viewModel;
             cmbBudgetDates.Focus();
         }
 

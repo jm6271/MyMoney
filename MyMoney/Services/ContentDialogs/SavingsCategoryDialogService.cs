@@ -37,11 +37,12 @@ namespace MyMoney.Services.ContentDialogs
             if (host == null)
                 return ContentDialogResult.None;
 
-            SavingsCategoryDialog dialog = new(host, _viewModel)
+            SavingsCategoryDialog dialog = new()
             {
+                DataContext = _viewModel,
+                Title = title,
                 PrimaryButtonText = "OK",
                 CloseButtonText = "Cancel",
-                Title = title,
             };
             return await dialogService.ShowAsync(dialog, CancellationToken.None);
         }
