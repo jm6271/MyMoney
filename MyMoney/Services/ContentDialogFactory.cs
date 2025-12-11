@@ -1,16 +1,17 @@
-﻿using Wpf.Ui.Controls;
+﻿using MyMoney.Abstractions;
+using Wpf.Ui.Controls;
 
 namespace MyMoney.Services
 {
     public interface IContentDialogFactory
     {
-        ContentDialog Create<T>() where T : ContentDialog, new();
+        IContentDialog Create<T>() where T : IContentDialog, new();
     }
 
     public class ContentDialogFactory : IContentDialogFactory
     {
-        public ContentDialog Create<T>()
-            where T : ContentDialog, new()
+        public IContentDialog Create<T>()
+            where T : IContentDialog, new()
         {
             var dialog = new T();
 

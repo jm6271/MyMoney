@@ -472,9 +472,11 @@ namespace MyMoney.ViewModels.Pages
             var dialog = _contentDialogFactory.Create<NewExpenseGroupDialog>();
             dialog.Title = "New Expense Group";
             dialog.PrimaryButtonText = "Add";
+            dialog.CloseButtonText = "Cancel";
             dialog.DataContext = viewModel;
+            dialog.DialogHost = _contentDialogService.GetDialogHost();
 
-            var result = await _contentDialogService.ShowAsync(dialog, CancellationToken.None);
+            var result = await dialog.ShowAsync();
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
@@ -766,13 +768,14 @@ namespace MyMoney.ViewModels.Pages
 
             var viewModel = new NewExpenseGroupDialogViewModel { GroupName = parameter.CategoryName };
 
-            _newExpenseGroupDialogService.SetViewModel(viewModel);
-            var result = await _newExpenseGroupDialogService.ShowDialogAsync(
-                _contentDialogService,
-                "Edit Group Name",
-                "Edit"
-            );
-            viewModel = _newExpenseGroupDialogService.GetViewModel();
+            var dialog = _contentDialogFactory.Create<NewExpenseGroupDialog>();
+            dialog.Title = "Edit Group Name";
+            dialog.PrimaryButtonText = "Edit";
+            dialog.CloseButtonText = "Cancel";
+            dialog.DataContext = viewModel;
+            dialog.DialogHost = _contentDialogService.GetDialogHost();
+
+            var result = await dialog.ShowAsync();
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
