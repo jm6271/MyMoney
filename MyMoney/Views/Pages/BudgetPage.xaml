@@ -9,7 +9,7 @@
     xmlns:local="clr-namespace:MyMoney.Views.Pages"
     xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
     xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-    xmlns:helpers="clr-namespace:MyMoney.Helpers"
+    xmlns:converters="clr-namespace:MyMoney.Converters"
     xmlns:dd="urn:gong-wpf-dragdrop"
     mc:Ignorable="d"
     d:DesignHeight="600"
@@ -24,9 +24,9 @@
     SizeChanged="Page_SizeChanged"
 >
     <Page.Resources>
-        <helpers:LeftToBudgetTextConverter x:Key="LeftToBudgetTextConverter" />
-        <helpers:CurrencyAbsoluteValueConverter x:Key="CurrencyAbsoluteValueConverter" />
-        <helpers:NegativeCurrencyToRedColorConverter x:Key="NegativeCurrencyToRedColorConverter" />
+        <converters:LeftToBudgetTextConverter x:Key="LeftToBudgetTextConverter" />
+        <converters:CurrencyAbsoluteValueConverter x:Key="CurrencyAbsoluteValueConverter" />
+        <converters:NegativeCurrencyToRedColorConverter x:Key="NegativeCurrencyToRedColorConverter" />
     </Page.Resources>
 
     <Grid>

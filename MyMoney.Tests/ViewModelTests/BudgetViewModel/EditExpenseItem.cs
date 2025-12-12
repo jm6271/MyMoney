@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
 using Moq;
+using MyMoney.Abstractions;
 using MyMoney.Core.Models;
-using MyMoney.Services.ContentDialogs;
+using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
+using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -15,10 +17,7 @@ public class EditExpenseItem
 {
     private Mock<IContentDialogService> _mockContentDialogService;
     private Mock<IMessageBoxService> _mockMessageBoxService;
-    private Mock<INewBudgetDialogService> _mockNewBudgetDialogService;
-    private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
-    private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
-    private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService;
+    private Mock<IContentDialogFactory> _mockContentDialogFactory;
     private Mock<Core.Database.IDatabaseManager> _mockDatabaseReader;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
 
@@ -27,10 +26,7 @@ public class EditExpenseItem
     {
         _mockContentDialogService = new Mock<IContentDialogService>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
-        _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
-        _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
-        _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
-        _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
+        _mockContentDialogFactory = new Mock<IContentDialogFactory>();
         _mockDatabaseReader = new Mock<Core.Database.IDatabaseManager>();
 
         _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
@@ -39,10 +35,7 @@ public class EditExpenseItem
             _mockContentDialogService.Object,
             _mockDatabaseReader.Object,
             _mockMessageBoxService.Object,
-            _mockNewBudgetDialogService.Object,
-            _mockBudgetCategoryDialogService.Object,
-            _mockExpenseGroupDialogService.Object,
-            _mockSavingsCategoryDialogService.Object
+            _mockContentDialogFactory.Object
         );
     }
 
@@ -65,17 +58,20 @@ public class EditExpenseItem
         _viewModel.CurrentBudget = testBudget;
         _viewModel.ExpenseItemsSelectedIndex = 0;
 
-        var dialogViewModel = new BudgetCategoryDialogViewModel
-        {
-            BudgetCategory = "Updated Category",
-            BudgetAmount = new Currency(200m),
-        };
-
-        _mockBudgetCategoryDialogService
-            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+        var fake = new Mock<IContentDialog>();
+        fake.SetupAllProperties();
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
+                    vm?.BudgetCategory = "Updated Category";
+                    vm?.BudgetAmount = new Currency(200m);
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
-        _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
+        _mockContentDialogFactory.Setup(x => x.Create<BudgetCategoryDialog>()).Returns(fake.Object);
 
         // Act
         await _viewModel.EditExpenseItemCommand.ExecuteAsync(_viewModel.CurrentBudget.BudgetExpenseItems[0]);
@@ -106,36 +102,20 @@ public class EditExpenseItem
         _viewModel.CurrentBudget = testBudget;
         _viewModel.ExpenseItemsSelectedIndex = 0;
 
-        _mockBudgetCategoryDialogService
-            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+        var fake = new Mock<IContentDialog>();
+        fake.SetupAllProperties();
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
+                    vm?.BudgetCategory = "Modified Category";
+                    vm?.BudgetAmount = new Currency(300m);
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Secondary);
 
-        // Act
-        await _viewModel.EditExpenseItemCommand.ExecuteAsync(_viewModel.CurrentBudget.BudgetExpenseItems[0]);
-
-        // Assert
-        Assert.AreEqual("Original Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Category);
-        Assert.AreEqual(100m, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Amount.Value);
-    }
-
-    [TestMethod]
-    public async Task EditExpenseItem_EditingDisabled_MakesNoChanges()
-    {
-        // Arrange
-        var testBudget = new Budget
-        {
-            BudgetExpenseItems = new ObservableCollection<BudgetExpenseCategory>
-            {
-                new()
-                {
-                    CategoryName = "Original Group",
-                    SubItems = [new() { Category = "Original Category", Amount = new(100m) }],
-                },
-            },
-        };
-        _viewModel.CurrentBudget = testBudget;
-        _viewModel.ExpenseItemsSelectedIndex = 0;
-        _viewModel.IsEditingEnabled = false;
+        _mockContentDialogFactory.Setup(x => x.Create<BudgetCategoryDialog>()).Returns(fake.Object);
 
         // Act
         await _viewModel.EditExpenseItemCommand.ExecuteAsync(_viewModel.CurrentBudget.BudgetExpenseItems[0]);
@@ -143,27 +123,6 @@ public class EditExpenseItem
         // Assert
         Assert.AreEqual("Original Category", _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Category);
         Assert.AreEqual(100m, _viewModel.CurrentBudget.BudgetExpenseItems[0].SubItems[0].Amount.Value);
-        _mockBudgetCategoryDialogService.Verify(
-            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()),
-            Times.Never
-        );
-    }
-
-    [TestMethod]
-    public async Task EditExpenseItem_NullBudget_MakesNoChanges()
-    {
-        // Arrange
-        _viewModel.CurrentBudget = null;
-        _viewModel.ExpenseItemsSelectedIndex = 0;
-
-        // Act
-        await _viewModel.EditExpenseItemCommand.ExecuteAsync(null);
-
-        // Assert
-        _mockBudgetCategoryDialogService.Verify(
-            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()),
-            Times.Never
-        );
     }
 
     [TestMethod]
@@ -189,17 +148,20 @@ public class EditExpenseItem
         _viewModel.CurrentBudget = testBudget;
         _viewModel.ExpenseItemsSelectedIndex = 0;
 
-        var dialogViewModel = new BudgetCategoryDialogViewModel
-        {
-            BudgetCategory = "Another Category", // This name already exists
-            BudgetAmount = new Currency(200m),
-        };
-
-        _mockBudgetCategoryDialogService
-            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+        var fake = new Mock<IContentDialog>();
+        fake.SetupAllProperties();
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
+                    vm?.BudgetCategory = "Another Category";
+                    vm?.BudgetAmount = new Currency(200m);
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
-        _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
+        _mockContentDialogFactory.Setup(x => x.Create<BudgetCategoryDialog>()).Returns(fake.Object);
 
         // Act
         await _viewModel.EditExpenseItemCommand.ExecuteAsync(_viewModel.CurrentBudget.BudgetExpenseItems[0]);

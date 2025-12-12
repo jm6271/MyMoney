@@ -2,7 +2,7 @@
 using System.Windows.Data;
 using MyMoney.Core.Models;
 
-namespace MyMoney.Helpers
+namespace MyMoney.Converters
 {
     public class CurrencyConverter : IValueConverter
     {

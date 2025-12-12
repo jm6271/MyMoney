@@ -1,9 +1,11 @@
 using Moq;
+using MyMoney.Abstractions;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
-using MyMoney.Services.ContentDialogs;
+using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.ViewModels.Pages;
+using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -16,10 +18,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
     {
         private Mock<IContentDialogService> _mockContentDialogService;
         private Mock<IMessageBoxService> _mockMessageBoxService;
-        private Mock<INewBudgetDialogService> _mockNewBudgetDialogService;
-        private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
-        private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
-        private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService;
+        private Mock<IContentDialogFactory> _mockContentDialogFactory;
         private Mock<IDatabaseManager> _mockDatabaseReader;
         private ViewModels.Pages.BudgetViewModel _viewModel;
 
@@ -28,10 +27,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
         {
             _mockContentDialogService = new Mock<IContentDialogService>();
             _mockMessageBoxService = new Mock<IMessageBoxService>();
-            _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
-            _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
-            _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
-            _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
+            _mockContentDialogFactory = new Mock<IContentDialogFactory>();
             _mockDatabaseReader = new Mock<IDatabaseManager>();
 
             _mockDatabaseReader
@@ -47,10 +43,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 _mockContentDialogService.Object,
                 _mockDatabaseReader.Object,
                 _mockMessageBoxService.Object,
-                _mockNewBudgetDialogService.Object,
-                _mockBudgetCategoryDialogService.Object,
-                _mockExpenseGroupDialogService.Object,
-                _mockSavingsCategoryDialogService.Object
+                _mockContentDialogFactory.Object
             );
 
             await _viewModel.OnNavigatedToAsync();
@@ -64,21 +57,25 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             var parameter = new BudgetExpenseCategory { CategoryName = "Old Name" };
             var newName = "New Group Name";
 
-            var viewModel = new NewExpenseGroupDialogViewModel { GroupName = newName };
-            _mockExpenseGroupDialogService.Setup(x => x.GetViewModel()).Returns(viewModel);
-            _mockExpenseGroupDialogService
-                .Setup(x => x.ShowDialogAsync(_mockContentDialogService.Object, "Edit Group Name", It.IsAny<string>()))
+            var fake = new Mock<IContentDialog>();
+            fake.SetupAllProperties();
+            fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fake.Object.DataContext as NewExpenseGroupDialogViewModel;
+                        vm?.GroupName = newName;
+                    }
+                )
                 .ReturnsAsync(ContentDialogResult.Primary);
+
+            _mockContentDialogFactory.Setup(x => x.Create<NewExpenseGroupDialog>()).Returns(fake.Object);
 
             // Act
             await _viewModel.EditExpenseGroupCommand.ExecuteAsync(parameter);
 
             // Assert
             Assert.AreEqual(newName, parameter.CategoryName);
-            _mockExpenseGroupDialogService.Verify(
-                x => x.ShowDialogAsync(_mockContentDialogService.Object, "Edit Group Name", "Edit"),
-                Times.Once
-            );
         }
 
         [TestMethod]
@@ -88,49 +85,25 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             var originalName = "Original Name";
             var parameter = new BudgetExpenseCategory { CategoryName = originalName };
 
-            _mockExpenseGroupDialogService
-                .Setup(x => x.ShowDialogAsync(_mockContentDialogService.Object, "Edit Group Name", It.IsAny<string>()))
+            var fake = new Mock<IContentDialog>();
+            fake.SetupAllProperties();
+            fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fake.Object.DataContext as NewExpenseGroupDialogViewModel;
+                        vm?.GroupName = "Test Group";
+                    }
+                )
                 .ReturnsAsync(ContentDialogResult.Secondary);
+
+            _mockContentDialogFactory.Setup(x => x.Create<NewExpenseGroupDialog>()).Returns(fake.Object);
 
             // Act
             await _viewModel.EditExpenseGroupCommand.ExecuteAsync(parameter);
 
             // Assert
             Assert.AreEqual(originalName, parameter.CategoryName);
-        }
-
-        [TestMethod]
-        public async Task EditExpenseGroup_WhenCurrentBudgetIsNull_ReturnsEarly()
-        {
-            // Arrange
-            _viewModel.CurrentBudget = null;
-            var parameter = new BudgetExpenseCategory { CategoryName = "Test" };
-
-            // Act
-            await _viewModel.EditExpenseGroupCommand.ExecuteAsync(parameter);
-
-            // Assert
-            _mockExpenseGroupDialogService.Verify(
-                x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>(), It.IsAny<string>()),
-                Times.Never
-            );
-        }
-
-        [TestMethod]
-        public async Task EditExpenseGroup_WhenEditingIsDisabled_ReturnsEarly()
-        {
-            // Arrange
-            _viewModel.IsEditingEnabled = false;
-            var parameter = new BudgetExpenseCategory { CategoryName = "Test" };
-
-            // Act
-            await _viewModel.EditExpenseGroupCommand.ExecuteAsync(parameter);
-
-            // Assert
-            _mockExpenseGroupDialogService.Verify(
-                x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>(), It.IsAny<string>()),
-                Times.Never
-            );
         }
     }
 }

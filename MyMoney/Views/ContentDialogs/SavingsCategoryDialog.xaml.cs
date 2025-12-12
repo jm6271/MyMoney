@@ -1,6 +1,7 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using MyMoney.Abstractions;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
 
@@ -9,13 +10,11 @@ namespace MyMoney.Views.ContentDialogs
     /// <summary>
     /// Interaction logic for SavingsCategoryDialog.xaml
     /// </summary>
-    public partial class SavingsCategoryDialog : Wpf.Ui.Controls.ContentDialog
+    public partial class SavingsCategoryDialog : Wpf.Ui.Controls.ContentDialog, IContentDialog
     {
-        public SavingsCategoryDialog(ContentPresenter dialogHost, SavingsCategoryDialogViewModel viewModel)
-            : base(dialogHost)
+        public SavingsCategoryDialog()
         {
             InitializeComponent();
-            DataContext = viewModel;
             TxtCategory.Focus();
         }
 

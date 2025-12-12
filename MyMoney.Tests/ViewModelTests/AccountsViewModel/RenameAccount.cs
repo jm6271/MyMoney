@@ -1,9 +1,11 @@
 ﻿using Moq;
+using MyMoney.Abstractions;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
-using MyMoney.Services.ContentDialogs;
+using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.ViewModels.Pages;
+using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -16,12 +18,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
     {
         private Mock<IContentDialogService> _contentDialogService;
         private Mock<IDatabaseManager> _databaseReader;
-        private Mock<INewAccountDialogService> _newAccountDialogService;
-        private Mock<ITransferDialogService> _transferDialogService;
-        private Mock<ITransactionDialogService> _transactionDialogService;
-        private Mock<IRenameAccountDialogService> _renameAccountDialogService;
         private Mock<IMessageBoxService> _messageBoxService;
-        private Mock<IUpdateAccountBalanceDialogService> _updateAccountBalanceDialogService;
+        private Mock<IContentDialogFactory> _contentDialogFactory;
 
         [TestInitialize]
         public void Setup()
@@ -29,12 +27,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _contentDialogService = new Mock<IContentDialogService>();
             _databaseReader = new Mock<IDatabaseManager>();
             _databaseReader.Setup(x => x.GetCollection<Account>("Accounts")).Returns(new List<Account>());
-            _newAccountDialogService = new Mock<INewAccountDialogService>();
-            _transferDialogService = new Mock<ITransferDialogService>();
-            _transactionDialogService = new Mock<ITransactionDialogService>();
-            _renameAccountDialogService = new Mock<IRenameAccountDialogService>();
             _messageBoxService = new Mock<IMessageBoxService>();
-            _updateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
+            _contentDialogFactory = new Mock<IContentDialogFactory>();
         }
 
         [TestMethod]
@@ -44,23 +38,27 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             var viewModel = new MyMoney.ViewModels.Pages.AccountsViewModel(
                 _contentDialogService.Object,
                 _databaseReader.Object,
-                _newAccountDialogService.Object,
-                _transferDialogService.Object,
-                _transactionDialogService.Object,
-                _renameAccountDialogService.Object,
                 _messageBoxService.Object,
-                _updateAccountBalanceDialogService.Object
+                _contentDialogFactory.Object
             );
 
             var account = new Account { AccountName = "Old Name" };
             viewModel.Accounts.Add(account);
             viewModel.SelectedAccountIndex = 0;
 
-            var renameViewModel = new RenameAccountViewModel { NewName = "New Name" };
-            _renameAccountDialogService.Setup(x => x.GetViewModel()).Returns(renameViewModel);
-            _renameAccountDialogService
-                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+            var fake = new Mock<IContentDialog>();
+            fake.SetupAllProperties();
+            fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fake.Object.DataContext as RenameAccountViewModel;
+                        vm?.NewName = "New Name";
+                    }
+                )
                 .ReturnsAsync(ContentDialogResult.Primary);
+
+            _contentDialogFactory.Setup(x => x.Create<RenameAccountDialog>()).Returns(fake.Object);
 
             // Act
             await viewModel.RenameAccountCommand.ExecuteAsync(null);
@@ -76,23 +74,27 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             var viewModel = new MyMoney.ViewModels.Pages.AccountsViewModel(
                 _contentDialogService.Object,
                 _databaseReader.Object,
-                _newAccountDialogService.Object,
-                _transferDialogService.Object,
-                _transactionDialogService.Object,
-                _renameAccountDialogService.Object,
                 _messageBoxService.Object,
-                _updateAccountBalanceDialogService.Object
+                _contentDialogFactory.Object
             );
 
             var account = new Account { AccountName = "Original Name" };
             viewModel.Accounts.Add(account);
             viewModel.SelectedAccountIndex = 0;
 
-            var renameViewModel = new RenameAccountViewModel { NewName = "New Name" };
-            _renameAccountDialogService.Setup(x => x.GetViewModel()).Returns(renameViewModel);
-            _renameAccountDialogService
-                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
-                .ReturnsAsync(ContentDialogResult.None);
+            var fake = new Mock<IContentDialog>();
+            fake.SetupAllProperties();
+            fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fake.Object.DataContext as RenameAccountViewModel;
+                        vm?.NewName = "New Name";
+                    }
+                )
+                .ReturnsAsync(ContentDialogResult.Secondary);
+
+            _contentDialogFactory.Setup(x => x.Create<RenameAccountDialog>()).Returns(fake.Object);
 
             // Act
             await viewModel.RenameAccountCommand.ExecuteAsync(null);

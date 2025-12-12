@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MyMoney.Abstractions;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
 
@@ -20,13 +21,11 @@ namespace MyMoney.Views.ContentDialogs
     /// <summary>
     /// Interaction logic for NewExpenseGroupDialog.xaml
     /// </summary>
-    public partial class NewExpenseGroupDialog : ContentDialog
+    public partial class NewExpenseGroupDialog : ContentDialog, IContentDialog
     {
-        public NewExpenseGroupDialog(ContentPresenter host, NewExpenseGroupDialogViewModel viewModel)
-            : base(host)
+        public NewExpenseGroupDialog()
         {
             InitializeComponent();
-            DataContext = viewModel;
         }
 
         private void txtGroupName_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)

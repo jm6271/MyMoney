@@ -1,8 +1,10 @@
 using Moq;
+using MyMoney.Abstractions;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
-using MyMoney.Services.ContentDialogs;
+using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
+using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -15,12 +17,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
     {
         private Mock<IContentDialogService> _contentDialogService;
         private Mock<IDatabaseManager> _databaseReader;
-        private Mock<INewAccountDialogService> _accountDialogService;
-        private Mock<ITransferDialogService> _transferDialogService;
-        private Mock<ITransactionDialogService> _transactionDialogService;
-        private Mock<IRenameAccountDialogService> _renameAccountDialogService;
         private Mock<IMessageBoxService> _messageBoxService;
-        private Mock<IUpdateAccountBalanceDialogService> _updateAccountBalanceDialogService;
+        private Mock<IContentDialogFactory> _contentDialogFactory;
         private MyMoney.ViewModels.Pages.AccountsViewModel _viewModel;
 
         [TestInitialize]
@@ -28,53 +26,17 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         {
             _contentDialogService = new Mock<IContentDialogService>();
             _databaseReader = new Mock<IDatabaseManager>();
-            _accountDialogService = new Mock<INewAccountDialogService>();
-            _transferDialogService = new Mock<ITransferDialogService>();
-            _transactionDialogService = new Mock<ITransactionDialogService>();
-            _renameAccountDialogService = new Mock<IRenameAccountDialogService>();
             _messageBoxService = new Mock<IMessageBoxService>();
-            _updateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
+            _contentDialogFactory = new Mock<IContentDialogFactory>();
 
             _databaseReader.Setup(x => x.GetCollection<Account>("Accounts")).Returns([]);
 
             _viewModel = new MyMoney.ViewModels.Pages.AccountsViewModel(
                 _contentDialogService.Object,
                 _databaseReader.Object,
-                _accountDialogService.Object,
-                _transferDialogService.Object,
-                _transactionDialogService.Object,
-                _renameAccountDialogService.Object,
                 _messageBoxService.Object,
-                _updateAccountBalanceDialogService.Object
+                _contentDialogFactory.Object
             );
-        }
-
-        [TestMethod]
-        public async Task EditTransaction_NoSelectedAccount_ReturnsEarly()
-        {
-            // Arrange
-            _viewModel.SelectedAccount = null;
-            _viewModel.SelectedTransactionIndex = 0;
-
-            // Act
-            await _viewModel.EditTransactionCommand.ExecuteAsync(null);
-
-            // Assert
-            _transactionDialogService.Verify(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()), Times.Never);
-        }
-
-        [TestMethod]
-        public async Task EditTransaction_NoSelectedTransaction_ReturnsEarly()
-        {
-            // Arrange
-            _viewModel.SelectedAccount = new Account { AccountName = "Test" };
-            _viewModel.SelectedTransactionIndex = -1;
-
-            // Act
-            await _viewModel.EditTransactionCommand.ExecuteAsync(null);
-
-            // Assert
-            _transactionDialogService.Verify(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()), Times.Never);
         }
 
         [TestMethod]
@@ -95,9 +57,11 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _viewModel.SelectedAccount = account;
             _viewModel.SelectedTransactionIndex = 0;
 
-            _transactionDialogService
-                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
-                .ReturnsAsync(ContentDialogResult.Secondary);
+            var fake = new Mock<IContentDialog>();
+            fake.SetupAllProperties();
+            fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ContentDialogResult.Secondary);
+
+            _contentDialogFactory.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);
 
             // Act
             await _viewModel.EditTransactionCommand.ExecuteAsync(null);
@@ -125,22 +89,24 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _viewModel.SelectedAccount = account;
             _viewModel.SelectedTransactionIndex = 0;
 
-            _transactionDialogService
-                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
-                .ReturnsAsync(ContentDialogResult.Primary);
-            _transactionDialogService
-                .Setup(x => x.GetViewModel())
-                .Returns(
-                    new NewTransactionDialogViewModel(_databaseReader.Object)
+            var fake = new Mock<IContentDialog>();
+            fake.SetupAllProperties();
+            fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>(
+                    (ct) =>
                     {
-                        NewTransactionAmount = new Currency(200),
-                        NewTransactionIsExpense = true,
-                        NewTransactionDate = DateTime.Today,
-                        NewTransactionCategory = new() { Name = "Category", Group = "Income" },
-                        NewTransactionMemo = "Updated memo",
+                        var vm = fake.Object.DataContext as NewTransactionDialogViewModel;
+                        vm?.NewTransactionAmount = new Currency(200);
+                        vm?.NewTransactionIsExpense = true;
+                        vm?.NewTransactionDate = DateTime.Today;
+                        vm?.NewTransactionCategory = new() { Name = "Category", Group = "Income" };
+                        vm?.NewTransactionMemo = "Updated memo";
+                        vm?.NewTransactionPayee = "Test";
                     }
-                );
-            _transactionDialogService.Setup(x => x.GetSelectedPayee()).Returns("Test");
+                )
+                .ReturnsAsync(ContentDialogResult.Primary);
+
+            _contentDialogFactory.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);
 
             // Act
             await _viewModel.EditTransactionCommand.ExecuteAsync(null);

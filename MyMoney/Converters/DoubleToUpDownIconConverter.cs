@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Data;
 
-namespace MyMoney.Helpers
+namespace MyMoney.Converters
 {
     class DoubleToUpDownIconConverter : IValueConverter
     {

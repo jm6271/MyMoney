@@ -2,7 +2,7 @@
 using Moq;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
-using MyMoney.Services.ContentDialogs;
+using MyMoney.Services;
 using MyMoney.ViewModels.Pages;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
@@ -16,10 +16,7 @@ public class DeleteIncomeItemTests
 {
     private Mock<IContentDialogService> _mockContentDialogService;
     private Mock<IMessageBoxService> _mockMessageBoxService;
-    private Mock<INewBudgetDialogService> _mockNewBudgetDialogService;
-    private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService;
-    private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService;
-    private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService;
+    private Mock<IContentDialogFactory> _mockContentDialogFactory;
     private Mock<IDatabaseManager> _mockDatabaseReader;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
     private Budget _testBudget;
@@ -31,10 +28,7 @@ public class DeleteIncomeItemTests
     {
         _mockContentDialogService = new Mock<IContentDialogService>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
-        _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
-        _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
-        _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
-        _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
+        _mockContentDialogFactory = new Mock<IContentDialogFactory>();
         _mockDatabaseReader = new Mock<IDatabaseManager>();
 
         // Setup test budget with income items
@@ -73,10 +67,7 @@ public class DeleteIncomeItemTests
             _mockContentDialogService.Object,
             _mockDatabaseReader.Object,
             _mockMessageBoxService.Object,
-            _mockNewBudgetDialogService.Object,
-            _mockBudgetCategoryDialogService.Object,
-            _mockExpenseGroupDialogService.Object,
-            _mockSavingsCategoryDialogService.Object
+            _mockContentDialogFactory.Object
         );
 
         await _viewModel.OnNavigatedToAsync();

@@ -10,7 +10,7 @@
     xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
     xmlns:Controls="clr-namespace:MyMoney.Views.Controls"
     x:Class="MyMoney.Views.Pages.AccountsPage"
-    xmlns:helpers="clr-namespace:MyMoney.Helpers"
+    xmlns:converters="clr-namespace:MyMoney.Converters"
     mc:Ignorable="d"
     d:DesignHeight="800"
     d:DesignWidth="1200"
@@ -24,8 +24,8 @@
 >
     <Page.Resources>
         <ResourceDictionary>
-            <helpers:CurrencyConverter x:Key="CurrencyConverter" />
-            <helpers:StartsWithPlusConverter x:Key="StartsWithPlusConverter" />
+            <converters:CurrencyConverter x:Key="CurrencyConverter" />
+            <converters:StartsWithPlusConverter x:Key="StartsWithPlusConverter" />
             <StackPanel x:Key="RenameDialogContent">
                 <TextBlock Margin="0,0,0,8">Rename account to</TextBlock>
                 <TextBox HorizontalAlignment="Stretch" />

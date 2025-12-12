@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using MyMoney.Core.Models;
 
-namespace MyMoney.Helpers
+namespace MyMoney.Converters
 {
-    public class LeftToBudgetTextConverter : IValueConverter
+    public class CurrencyAbsoluteValueConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is Currency currency)
             {
-                if (currency.Value >= 0)
-                    return " left to budget";
+                if (currency.Value < 0)
+                    return new Currency(Math.Abs(currency.Value));
                 else
-                    return " over budget";
+                    return currency;
             }
             return DependencyProperty.UnsetValue;
         }

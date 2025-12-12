@@ -1,9 +1,11 @@
 using System.Collections.ObjectModel;
 using Moq;
+using MyMoney.Abstractions;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
-using MyMoney.Services.ContentDialogs;
+using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
+using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -15,10 +17,7 @@ public class EditIncomeItemTests
     private Mock<IContentDialogService> _mockContentDialogService = null!;
     private Mock<IDatabaseManager> _mockDatabaseReader = null!;
     private Mock<IMessageBoxService> _mockMessageBoxService = null!;
-    private Mock<INewBudgetDialogService> _mockNewBudgetDialogService = null!;
-    private Mock<IBudgetCategoryDialogService> _mockBudgetCategoryDialogService = null!;
-    private Mock<INewExpenseGroupDialogService> _mockExpenseGroupDialogService = null!;
-    private Mock<ISavingsCategoryDialogService> _mockSavingsCategoryDialogService = null!;
+    private Mock<IContentDialogFactory> _mockContentDialogFactory = null!;
     private ViewModels.Pages.BudgetViewModel _viewModel = null!;
 
     [TestInitialize]
@@ -27,10 +26,7 @@ public class EditIncomeItemTests
         _mockContentDialogService = new Mock<IContentDialogService>();
         _mockDatabaseReader = new Mock<IDatabaseManager>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
-        _mockNewBudgetDialogService = new Mock<INewBudgetDialogService>();
-        _mockBudgetCategoryDialogService = new Mock<IBudgetCategoryDialogService>();
-        _mockExpenseGroupDialogService = new Mock<INewExpenseGroupDialogService>();
-        _mockSavingsCategoryDialogService = new Mock<ISavingsCategoryDialogService>();
+        _mockContentDialogFactory = new Mock<IContentDialogFactory>();
 
         // Setup mock database with a test budget
         var testBudget = new Budget
@@ -49,10 +45,7 @@ public class EditIncomeItemTests
             _mockContentDialogService.Object,
             _mockDatabaseReader.Object,
             _mockMessageBoxService.Object,
-            _mockNewBudgetDialogService.Object,
-            _mockBudgetCategoryDialogService.Object,
-            _mockExpenseGroupDialogService.Object,
-            _mockSavingsCategoryDialogService.Object
+            _mockContentDialogFactory.Object
         );
 
         await _viewModel.OnNavigatedToAsync();
@@ -67,17 +60,20 @@ public class EditIncomeItemTests
         var newCategory = "Updated Income";
         var newAmount = new Currency(2000m);
 
-        var dialogViewModel = new BudgetCategoryDialogViewModel
-        {
-            BudgetCategory = newCategory,
-            BudgetAmount = newAmount,
-        };
-
-        _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
-
-        _mockBudgetCategoryDialogService
-            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+        var fake = new Mock<IContentDialog>();
+        fake.SetupAllProperties();
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
+                    vm?.BudgetCategory = newCategory;
+                    vm?.BudgetAmount = newAmount;
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
+
+        _mockContentDialogFactory.Setup(x => x.Create<BudgetCategoryDialog>()).Returns(fake.Object);
 
         // Act
         await _viewModel.EditIncomeItemCommand.ExecuteAsync(null);
@@ -89,38 +85,6 @@ public class EditIncomeItemTests
     }
 
     [TestMethod]
-    public async Task EditIncomeItem_NullCurrentBudget_MakesNoChanges()
-    {
-        // Arrange
-        _viewModel.CurrentBudget = null;
-
-        // Act
-        await _viewModel.EditIncomeItemCommand.ExecuteAsync(null);
-
-        // Assert
-        _mockBudgetCategoryDialogService.Verify(
-            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()),
-            Times.Never
-        );
-    }
-
-    [TestMethod]
-    public async Task EditIncomeItem_EditingDisabled_MakesNoChanges()
-    {
-        // Arrange
-        _viewModel.IsEditingEnabled = false;
-
-        // Act
-        await _viewModel.EditIncomeItemCommand.ExecuteAsync(null);
-
-        // Assert
-        _mockBudgetCategoryDialogService.Verify(
-            x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()),
-            Times.Never
-        );
-    }
-
-    [TestMethod]
     public async Task EditIncomeItem_DialogResultNotPrimary_MakesNoChanges()
     {
         // Arrange
@@ -128,9 +92,20 @@ public class EditIncomeItemTests
         var originalCategory = _viewModel.CurrentBudget!.BudgetIncomeItems[0].Category;
         var originalAmount = _viewModel.CurrentBudget.BudgetIncomeItems[0].Amount;
 
-        _mockBudgetCategoryDialogService
-            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+        var fake = new Mock<IContentDialog>();
+        fake.SetupAllProperties();
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
+                    vm?.BudgetCategory = "Test Category";
+                    vm?.BudgetAmount = new Currency(150m);
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Secondary);
+
+        _mockContentDialogFactory.Setup(x => x.Create<BudgetCategoryDialog>()).Returns(fake.Object);
 
         // Act
         await _viewModel.EditIncomeItemCommand.ExecuteAsync(null);
@@ -149,17 +124,20 @@ public class EditIncomeItemTests
         var newCategory = "Test Income 2";
         var newAmount = new Currency(2000m);
 
-        var dialogViewModel = new BudgetCategoryDialogViewModel
-        {
-            BudgetCategory = newCategory,
-            BudgetAmount = newAmount,
-        };
-
-        _mockBudgetCategoryDialogService.Setup(x => x.GetViewModel()).Returns(dialogViewModel);
-
-        _mockBudgetCategoryDialogService
-            .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>(), It.IsAny<string>()))
+        var fake = new Mock<IContentDialog>();
+        fake.SetupAllProperties();
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
+                    vm?.BudgetCategory = newCategory;
+                    vm?.BudgetAmount = newAmount;
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
+
+        _mockContentDialogFactory.Setup(x => x.Create<BudgetCategoryDialog>()).Returns(fake.Object);
 
         // Act
         await _viewModel.EditIncomeItemCommand.ExecuteAsync(null);

@@ -1,10 +1,13 @@
 using System.Collections.ObjectModel;
+using System.Windows.Automation;
 using Moq;
+using MyMoney.Abstractions;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
-using MyMoney.Services.ContentDialogs;
+using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.ViewModels.Pages;
+using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -17,12 +20,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
     {
         private Mock<IContentDialogService> _mockContentDialogService;
         private Mock<IDatabaseManager> _mockDatabaseReader;
-        private Mock<INewAccountDialogService> _mockNewAccountDialogService;
-        private Mock<ITransferDialogService> _mockTransferDialogService;
-        private Mock<ITransactionDialogService> _mockTransactionDialogService;
-        private Mock<IRenameAccountDialogService> _mockRenameAccountDialogService;
         private Mock<IMessageBoxService> _mockMessageBoxService;
-        private Mock<IUpdateAccountBalanceDialogService> _mockUpdateAccountBalanceDialogService;
+        private Mock<IContentDialogFactory> _mockContentDialogFactory;
         private MyMoney.ViewModels.Pages.AccountsViewModel _viewModel;
 
         [TestInitialize]
@@ -30,12 +29,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         {
             _mockContentDialogService = new Mock<IContentDialogService>();
             _mockDatabaseReader = new Mock<IDatabaseManager>();
-            _mockNewAccountDialogService = new Mock<INewAccountDialogService>();
-            _mockTransferDialogService = new Mock<ITransferDialogService>();
-            _mockTransactionDialogService = new Mock<ITransactionDialogService>();
-            _mockRenameAccountDialogService = new Mock<IRenameAccountDialogService>();
             _mockMessageBoxService = new Mock<IMessageBoxService>();
-            _mockUpdateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
+            _mockContentDialogFactory = new Mock<IContentDialogFactory>();
 
             // Set up empty accounts collection in database reader
             _mockDatabaseReader.Setup(x => x.GetCollection<Account>("Accounts")).Returns(new List<Account>());
@@ -43,12 +38,8 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _viewModel = new MyMoney.ViewModels.Pages.AccountsViewModel(
                 _mockContentDialogService.Object,
                 _mockDatabaseReader.Object,
-                _mockNewAccountDialogService.Object,
-                _mockTransferDialogService.Object,
-                _mockTransactionDialogService.Object,
-                _mockRenameAccountDialogService.Object,
                 _mockMessageBoxService.Object,
-                _mockUpdateAccountBalanceDialogService.Object
+                _mockContentDialogFactory.Object
             );
         }
 
@@ -61,19 +52,21 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _viewModel.Accounts.Add(account1);
             _viewModel.Accounts.Add(account2);
 
-            var transferViewModel = new TransferDialogViewModel(
-                new ObservableCollection<string> { "Checking", "Savings" }
-            )
-            {
-                TransferFrom = "Checking",
-                TransferTo = "Savings",
-                Amount = new Currency(100m),
-            };
-
-            _mockTransferDialogService
-                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+            var fake = new Mock<IContentDialog>();
+            fake.SetupAllProperties();
+            fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fake.Object.DataContext as TransferDialogViewModel;
+                        vm?.TransferFrom = "Checking";
+                        vm?.TransferTo = "Savings";
+                        vm?.Amount = new Currency(100m);
+                    }
+                )
                 .ReturnsAsync(ContentDialogResult.Primary);
-            _mockTransferDialogService.Setup(x => x.GetViewModel()).Returns(transferViewModel);
+
+            _mockContentDialogFactory.Setup(x => x.Create<TransferDialog>()).Returns(fake.Object);
 
             // Act
             _viewModel.TransferBetweenAccountsCommand.Execute(null);
@@ -108,9 +101,21 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _viewModel.Accounts.Add(account1);
             _viewModel.Accounts.Add(account2);
 
-            _mockTransferDialogService
-                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
-                .ReturnsAsync(ContentDialogResult.None); // User cancels dialog
+            var fake = new Mock<IContentDialog>();
+            fake.SetupAllProperties();
+            fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fake.Object.DataContext as TransferDialogViewModel;
+                        vm?.TransferFrom = "Checking";
+                        vm?.TransferTo = "Savings";
+                        vm?.Amount = new Currency(100m);
+                    }
+                )
+                .ReturnsAsync(ContentDialogResult.Secondary);
+
+            _mockContentDialogFactory.Setup(x => x.Create<TransferDialog>()).Returns(fake.Object);
 
             // Act
             _viewModel.TransferBetweenAccountsCommand.Execute(null);
@@ -131,19 +136,21 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _viewModel.Accounts.Add(account1);
             _viewModel.Accounts.Add(account2);
 
-            var transferViewModel = new TransferDialogViewModel(
-                new ObservableCollection<string> { "Checking", "Savings" }
-            )
-            {
-                TransferFrom = "Checking",
-                TransferTo = "Savings",
-                Amount = new Currency(100m),
-            };
-
-            _mockTransferDialogService
-                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+            var fake = new Mock<IContentDialog>();
+            fake.SetupAllProperties();
+            fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fake.Object.DataContext as TransferDialogViewModel;
+                        vm?.TransferFrom = "Checking";
+                        vm?.TransferTo = "Savings";
+                        vm?.Amount = new Currency(100m);
+                    }
+                )
                 .ReturnsAsync(ContentDialogResult.Primary);
-            _mockTransferDialogService.Setup(x => x.GetViewModel()).Returns(transferViewModel);
+
+            _mockContentDialogFactory.Setup(x => x.Create<TransferDialog>()).Returns(fake.Object);
 
             // Act
             _viewModel.TransferBetweenAccountsCommand.Execute(null);
@@ -162,19 +169,21 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _viewModel.Accounts.Add(account1);
             _viewModel.Accounts.Add(account2);
 
-            var transferViewModel = new TransferDialogViewModel(
-                new ObservableCollection<string> { "Checking", "Savings" }
-            )
-            {
-                TransferFrom = "Checking",
-                TransferTo = "Savings",
-                Amount = new Currency(100m), // More than available in Checking
-            };
-
-            _mockTransferDialogService
-                .Setup(x => x.ShowDialogAsync(It.IsAny<IContentDialogService>()))
+            var fake = new Mock<IContentDialog>();
+            fake.SetupAllProperties();
+            fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fake.Object.DataContext as TransferDialogViewModel;
+                        vm?.TransferFrom = "Checking";
+                        vm?.TransferTo = "Savings";
+                        vm?.Amount = new Currency(100m);
+                    }
+                )
                 .ReturnsAsync(ContentDialogResult.Primary);
-            _mockTransferDialogService.Setup(x => x.GetViewModel()).Returns(transferViewModel);
+
+            _mockContentDialogFactory.Setup(x => x.Create<TransferDialog>()).Returns(fake.Object);
 
             // Act
             _viewModel.TransferBetweenAccountsCommand.Execute(null);

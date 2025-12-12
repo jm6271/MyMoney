@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyMoney.Core.Database;
 using MyMoney.Services;
-using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.Pages;
 using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Pages;
@@ -79,17 +78,9 @@ namespace MyMoney
                     // Database
                     services.AddTransient<IDatabaseManager, DatabaseManager>();
 
-                    // Custom content dialogs
-                    services.AddTransient<INewAccountDialogService, NewAccountDialogService>();
-                    services.AddTransient<ITransferDialogService, TransferDialogService>();
-                    services.AddTransient<ITransactionDialogService, TransactionDialogService>();
-                    services.AddTransient<IRenameAccountDialogService, RenameAccountDialogService>();
+                    services.AddSingleton<IContentDialogFactory, ContentDialogFactory>();
+
                     services.AddTransient<IMessageBoxService, MessageBoxService>();
-                    services.AddTransient<INewBudgetDialogService, NewBudgetDialogService>();
-                    services.AddTransient<IBudgetCategoryDialogService, BudgetCategoryDialogService>();
-                    services.AddTransient<INewExpenseGroupDialogService, NewExpenseGroupDialogService>();
-                    services.AddTransient<ISavingsCategoryDialogService, SavingsCategoryDialogService>();
-                    services.AddTransient<IUpdateAccountBalanceDialogService, UpdateAccountBalanceDialogService>();
                 }
             )
             .Build();

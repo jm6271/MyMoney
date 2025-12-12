@@ -11,7 +11,7 @@
     d:DesignWidth="800"
     xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
     xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
-    xmlns:helpers="clr-namespace:MyMoney.Helpers"
+    xmlns:converters="clr-namespace:MyMoney.Converters"
     xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs"
     xmlns:pages="clr-namespace:MyMoney.ViewModels.Pages"
     xmlns:controls="clr-namespace:MyMoney.Views.Controls"
@@ -24,8 +24,8 @@
     Closing="ContentDialog_Closing"
 >
     <ui:ContentDialog.Resources>
-        <helpers:CurrencyConverter x:Key="CurrencyConverter" />
-        <helpers:CategoryToGroupedItemConverter x:Key="CategoryToGroupedItemConverter" />
+        <converters:CurrencyConverter x:Key="CurrencyConverter" />
+        <converters:CategoryToGroupedItemConverter x:Key="CategoryToGroupedItemConverter" />
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:NewTransactionDialog}" />
     </ui:ContentDialog.Resources>
 

@@ -10,8 +10,9 @@ using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
 using MyMoney.Helpers.DropHandlers;
-using MyMoney.Services.ContentDialogs;
+using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
+using MyMoney.Views.ContentDialogs;
 using SkiaSharp;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions.Controls;
@@ -95,28 +96,19 @@ namespace MyMoney.ViewModels.Pages
         // Content dialog service
         private readonly IContentDialogService _contentDialogService;
         private readonly IMessageBoxService _messageBoxService;
-        private readonly INewBudgetDialogService _newBudgetDialogService;
-        private readonly IBudgetCategoryDialogService _budgetCategoryDialogService;
-        private readonly INewExpenseGroupDialogService _newExpenseGroupDialogService;
-        private readonly ISavingsCategoryDialogService _savingsCategoryDialogService;
+        private readonly IContentDialogFactory _contentDialogFactory;
         private readonly IDatabaseManager _databaseManager;
 
         public BudgetViewModel(
             IContentDialogService contentDialogService,
             IDatabaseManager databaseManager,
             IMessageBoxService messageBoxService,
-            INewBudgetDialogService newBudgetDialogService,
-            IBudgetCategoryDialogService budgetCategoryDialogService,
-            INewExpenseGroupDialogService newExpenseGroupDialogService,
-            ISavingsCategoryDialogService savingsCategoryDialogService
+            IContentDialogFactory contentDialogFactory
         )
         {
             _contentDialogService = contentDialogService;
             _messageBoxService = messageBoxService;
-            _newBudgetDialogService = newBudgetDialogService;
-            _budgetCategoryDialogService = budgetCategoryDialogService;
-            _newExpenseGroupDialogService = newExpenseGroupDialogService;
-            _savingsCategoryDialogService = savingsCategoryDialogService;
+            _contentDialogFactory = contentDialogFactory;
             _databaseManager = databaseManager;
 
             // Set up drop handlers
@@ -365,9 +357,15 @@ namespace MyMoney.ViewModels.Pages
                 return;
 
             var viewModel = new BudgetCategoryDialogViewModel();
-            _budgetCategoryDialogService.SetViewModel(viewModel);
-            var result = await _budgetCategoryDialogService.ShowDialogAsync(_contentDialogService, "New Income Item");
-            viewModel = _budgetCategoryDialogService.GetViewModel();
+
+            var dialog = _contentDialogFactory.Create<BudgetCategoryDialog>();
+            dialog.Title = "New Income Item";
+            dialog.PrimaryButtonText = "OK";
+            dialog.CloseButtonText = "Cancel";
+            dialog.DataContext = viewModel;
+            dialog.DialogHost = _contentDialogService.GetDialogHost();
+
+            var result = await dialog.ShowAsync();
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
@@ -405,12 +403,15 @@ namespace MyMoney.ViewModels.Pages
             {
                 RecentTransactionsVisibility = Visibility.Collapsed,
             };
-            _savingsCategoryDialogService.SetViewModel(viewModel);
-            var result = await _savingsCategoryDialogService.ShowDialogAsync(
-                _contentDialogService,
-                "New Savings Category"
-            );
-            viewModel = _savingsCategoryDialogService.GetViewModel();
+
+            var dialog = _contentDialogFactory.Create<SavingsCategoryDialog>();
+            dialog.DataContext = viewModel;
+            dialog.Title = "New Savings Category";
+            dialog.PrimaryButtonText = "OK";
+            dialog.CloseButtonText = "Cancel";
+            dialog.DialogHost = _contentDialogService.GetDialogHost();
+
+            var result = await dialog.ShowAsync();
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
@@ -463,13 +464,15 @@ namespace MyMoney.ViewModels.Pages
                 return;
 
             var viewModel = new NewExpenseGroupDialogViewModel();
-            _newExpenseGroupDialogService.SetViewModel(viewModel);
-            var result = await _newExpenseGroupDialogService.ShowDialogAsync(
-                _contentDialogService,
-                "New Expense Group",
-                "Add"
-            );
-            viewModel = _newExpenseGroupDialogService.GetViewModel();
+
+            var dialog = _contentDialogFactory.Create<NewExpenseGroupDialog>();
+            dialog.Title = "New Expense Group";
+            dialog.PrimaryButtonText = "Add";
+            dialog.CloseButtonText = "Cancel";
+            dialog.DataContext = viewModel;
+            dialog.DialogHost = _contentDialogService.GetDialogHost();
+
+            var result = await dialog.ShowAsync();
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
@@ -503,9 +506,15 @@ namespace MyMoney.ViewModels.Pages
                 return;
 
             var viewModel = new BudgetCategoryDialogViewModel();
-            _budgetCategoryDialogService.SetViewModel(viewModel);
-            var result = await _budgetCategoryDialogService.ShowDialogAsync(_contentDialogService, "New Expense Item");
-            viewModel = _budgetCategoryDialogService.GetViewModel();
+
+            var dialog = _contentDialogFactory.Create<BudgetCategoryDialog>();
+            dialog.Title = "New Expense Item";
+            dialog.PrimaryButtonText = "OK";
+            dialog.CloseButtonText = "Cancel";
+            dialog.DataContext = viewModel;
+            dialog.DialogHost = _contentDialogService.GetDialogHost();
+
+            var result = await dialog.ShowAsync();
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
@@ -547,9 +556,14 @@ namespace MyMoney.ViewModels.Pages
                 BudgetAmount = CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex].Amount,
             };
 
-            _budgetCategoryDialogService.SetViewModel(viewModel);
-            var result = await _budgetCategoryDialogService.ShowDialogAsync(_contentDialogService, "Edit Income Item");
-            viewModel = _budgetCategoryDialogService.GetViewModel();
+            var dialog = _contentDialogFactory.Create<BudgetCategoryDialog>();
+            dialog.Title = "Edit Income Item";
+            dialog.PrimaryButtonText = "OK";
+            dialog.CloseButtonText = "Cancel";
+            dialog.DataContext = viewModel;
+            dialog.DialogHost = _contentDialogService.GetDialogHost();
+
+            var result = await dialog.ShowAsync();
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
@@ -632,12 +646,14 @@ namespace MyMoney.ViewModels.Pages
             };
             viewModel.SortTransactions();
 
-            _savingsCategoryDialogService.SetViewModel(viewModel);
-            var result = await _savingsCategoryDialogService.ShowDialogAsync(
-                _contentDialogService,
-                "Edit Savings Category"
-            );
-            viewModel = _savingsCategoryDialogService.GetViewModel();
+            var dialog = _contentDialogFactory.Create<SavingsCategoryDialog>();
+            dialog.DataContext = viewModel;
+            dialog.Title = "Edit Savings Category";
+            dialog.PrimaryButtonText = "OK";
+            dialog.CloseButtonText = "Cancel";
+            dialog.DialogHost = _contentDialogService.GetDialogHost();
+
+            var result = await dialog.ShowAsync();
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
@@ -761,13 +777,14 @@ namespace MyMoney.ViewModels.Pages
 
             var viewModel = new NewExpenseGroupDialogViewModel { GroupName = parameter.CategoryName };
 
-            _newExpenseGroupDialogService.SetViewModel(viewModel);
-            var result = await _newExpenseGroupDialogService.ShowDialogAsync(
-                _contentDialogService,
-                "Edit Group Name",
-                "Edit"
-            );
-            viewModel = _newExpenseGroupDialogService.GetViewModel();
+            var dialog = _contentDialogFactory.Create<NewExpenseGroupDialog>();
+            dialog.Title = "Edit Group Name";
+            dialog.PrimaryButtonText = "Edit";
+            dialog.CloseButtonText = "Cancel";
+            dialog.DataContext = viewModel;
+            dialog.DialogHost = _contentDialogService.GetDialogHost();
+
+            var result = await dialog.ShowAsync();
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
@@ -802,9 +819,14 @@ namespace MyMoney.ViewModels.Pages
                 BudgetAmount = parameter.SubItems[parameter.SelectedSubItemIndex].Amount,
             };
 
-            _budgetCategoryDialogService.SetViewModel(viewModel);
-            var result = await _budgetCategoryDialogService.ShowDialogAsync(_contentDialogService, "Edit Expense Item");
-            viewModel = _budgetCategoryDialogService.GetViewModel();
+            var dialog = _contentDialogFactory.Create<BudgetCategoryDialog>();
+            dialog.Title = "Edit Expense Item";
+            dialog.PrimaryButtonText = "OK";
+            dialog.CloseButtonText = "Cancel";
+            dialog.DataContext = viewModel;
+            dialog.DialogHost = _contentDialogService.GetDialogHost();
+
+            var result = await dialog.ShowAsync();
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
@@ -828,7 +850,7 @@ namespace MyMoney.ViewModels.Pages
                 // assign the selected index of the list with the new item
                 parameter.SubItems[parameter.SelectedSubItemIndex] = expenseItem;
 
-                // Recalulate the spent properties of all the items in the budget
+                // Recalute the spent properties of all the items in the budget
                 _ = Task.Run(() => AddActualSpentToCurrentBudget());
 
                 // Recalculate the total of the expense items
@@ -899,9 +921,14 @@ namespace MyMoney.ViewModels.Pages
         private async Task CreateNewBudget()
         {
             // Create the new budget dialog
+            var dialog = _contentDialogFactory.Create<NewBudgetDialog>();
             var viewModel = new NewBudgetDialogViewModel();
-            _newBudgetDialogService.SetViewModel(viewModel);
-            var result = await _newBudgetDialogService.ShowDialogAsync(_contentDialogService);
+            dialog.DataContext = viewModel;
+            dialog.PrimaryButtonText = "OK";
+            dialog.CloseButtonText = "Cancel";
+            dialog.DialogHost = _contentDialogService.GetDialogHost();
+
+            var result = await dialog.ShowAsync();
 
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {

@@ -1,5 +1,6 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Input;
+using MyMoney.Abstractions;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
 
@@ -8,13 +9,11 @@ namespace MyMoney.Views.ContentDialogs
     /// <summary>
     /// Interaction logic for NewAccountDialog.xaml
     /// </summary>
-    public partial class NewAccountDialog : ContentDialog
+    public partial class NewAccountDialog : ContentDialog, IContentDialog
     {
-        public NewAccountDialog(ContentPresenter dialogHost, NewAccountDialogViewModel viewModel)
-            : base(dialogHost)
+        public NewAccountDialog()
         {
             InitializeComponent();
-            DataContext = viewModel;
 
             TxtAccountName.Focus();
         }
