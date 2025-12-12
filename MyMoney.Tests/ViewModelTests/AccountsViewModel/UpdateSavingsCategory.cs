@@ -68,8 +68,7 @@ public class UpdateSavingsCategoryTests
 
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
-        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(ContentDialogResult.Primary);
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ContentDialogResult.Primary);
 
         _contentDialogFactoryMock.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);
 
@@ -85,16 +84,18 @@ public class UpdateSavingsCategoryTests
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
         fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .Callback<CancellationToken>((ct) =>
-            {
-                var vm = fake.Object.DataContext as NewTransactionDialogViewModel;
-                vm?.NewTransactionAmount = new Currency(100);
-                vm?.NewTransactionIsExpense = true;
-                vm?.NewTransactionIsIncome = false;
-                vm?.NewTransactionDate = DateTime.Today;
-                vm?.NewTransactionCategory = new() { Name = "Test Category", Group = "Savings" };
-                vm?.NewTransactionPayee = "Test Payee";
-            })
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as NewTransactionDialogViewModel;
+                    vm?.NewTransactionAmount = new Currency(100);
+                    vm?.NewTransactionIsExpense = true;
+                    vm?.NewTransactionIsIncome = false;
+                    vm?.NewTransactionDate = DateTime.Today;
+                    vm?.NewTransactionCategory = new() { Name = "Test Category", Group = "Savings" };
+                    vm?.NewTransactionPayee = "Test Payee";
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
         _contentDialogFactoryMock.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);
@@ -129,21 +130,22 @@ public class UpdateSavingsCategoryTests
         _testAccount.Transactions.Add(originalTransaction);
         _testBudget.BudgetSavingsCategories[0].Transactions.Add(originalTransaction);
 
-
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
         fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .Callback<CancellationToken>((ct) =>
-            {
-                var vm = fake.Object.DataContext as NewTransactionDialogViewModel;
-                vm?.NewTransactionAmount = new Currency(100);
-                vm?.NewTransactionIsExpense = true;
-                vm?.NewTransactionIsIncome = false;
-                vm?.NewTransactionDate = DateTime.Today;
-                vm?.NewTransactionCategory = new() { Name = "Test Category", Group = "Savings" };
-                vm?.NewTransactionPayee = "New Payee";
-                vm?.NewTransactionMemo = "New Memo";
-            })
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as NewTransactionDialogViewModel;
+                    vm?.NewTransactionAmount = new Currency(100);
+                    vm?.NewTransactionIsExpense = true;
+                    vm?.NewTransactionIsIncome = false;
+                    vm?.NewTransactionDate = DateTime.Today;
+                    vm?.NewTransactionCategory = new() { Name = "Test Category", Group = "Savings" };
+                    vm?.NewTransactionPayee = "New Payee";
+                    vm?.NewTransactionMemo = "New Memo";
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
         _contentDialogFactoryMock.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);
@@ -194,17 +196,19 @@ public class UpdateSavingsCategoryTests
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
         fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .Callback<CancellationToken>((ct) =>
-            {
-                var vm = fake.Object.DataContext as NewTransactionDialogViewModel;
-                vm?.NewTransactionAmount = new Currency(100);
-                vm?.NewTransactionIsExpense = true;
-                vm?.NewTransactionIsIncome = false;
-                vm?.NewTransactionDate = DateTime.Today;
-                vm?.NewTransactionCategory = new() { Name = "Other Category", Group = "Savings" };
-                vm?.NewTransactionPayee = "Test Payee";
-                vm?.NewTransactionMemo = "New Memo";
-            })
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as NewTransactionDialogViewModel;
+                    vm?.NewTransactionAmount = new Currency(100);
+                    vm?.NewTransactionIsExpense = true;
+                    vm?.NewTransactionIsIncome = false;
+                    vm?.NewTransactionDate = DateTime.Today;
+                    vm?.NewTransactionCategory = new() { Name = "Other Category", Group = "Savings" };
+                    vm?.NewTransactionPayee = "Test Payee";
+                    vm?.NewTransactionMemo = "New Memo";
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
         _contentDialogFactoryMock.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);

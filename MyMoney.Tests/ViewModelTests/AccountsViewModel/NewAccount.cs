@@ -92,8 +92,7 @@ public class NewAccountTest
         // Arrange
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
-        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(ContentDialogResult.Secondary);
+        fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ContentDialogResult.Secondary);
 
         _mockContentDialogFactory.Setup(x => x.Create<NewAccountDialog>()).Returns(fake.Object);
 
@@ -181,12 +180,14 @@ public class NewAccountTest
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
         fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .Callback<CancellationToken>((ct) =>
-            {
-                var vm = fake.Object.DataContext as NewAccountDialogViewModel;
-                vm?.AccountName = dialogViewModel.AccountName;
-                vm?.StartingBalance = dialogViewModel.StartingBalance;
-            })
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as NewAccountDialogViewModel;
+                    vm?.AccountName = dialogViewModel.AccountName;
+                    vm?.StartingBalance = dialogViewModel.StartingBalance;
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
         _mockContentDialogFactory.Setup(x => x.Create<NewAccountDialog>()).Returns(fake.Object);

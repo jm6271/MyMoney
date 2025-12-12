@@ -486,7 +486,7 @@ namespace MyMoney.ViewModels.Pages
                     );
                     return;
                 }
-                
+
                 // Add a new expense group
                 BudgetExpenseCategory expenseGroup = new();
                 expenseGroup.CategoryName = viewModel.GroupName;

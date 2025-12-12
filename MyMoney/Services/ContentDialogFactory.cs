@@ -5,7 +5,8 @@ namespace MyMoney.Services
 {
     public interface IContentDialogFactory
     {
-        IContentDialog Create<T>() where T : IContentDialog, new();
+        IContentDialog Create<T>()
+            where T : IContentDialog, new();
     }
 
     public class ContentDialogFactory : IContentDialogFactory

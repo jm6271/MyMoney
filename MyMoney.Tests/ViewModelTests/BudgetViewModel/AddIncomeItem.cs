@@ -50,12 +50,14 @@ public class AddIncomeItemTests
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
         fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .Callback<CancellationToken>((ct) =>
-            {
-                var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
-                vm?.BudgetCategory = "Test Category";
-                vm?.BudgetAmount = new Currency(100m);
-            })
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
+                    vm?.BudgetCategory = "Test Category";
+                    vm?.BudgetAmount = new Currency(100m);
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Secondary);
 
         _mockContentDialogFactory.Setup(x => x.Create<BudgetCategoryDialog>()).Returns(fake.Object);
@@ -76,12 +78,14 @@ public class AddIncomeItemTests
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
         fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .Callback<CancellationToken>((ct) =>
-            {
-                var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
-                vm?.BudgetCategory = "Test Category";
-                vm?.BudgetAmount = new Currency(100m);
-            })
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
+                    vm?.BudgetCategory = "Test Category";
+                    vm?.BudgetAmount = new Currency(100m);
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
         _mockContentDialogFactory.Setup(x => x.Create<BudgetCategoryDialog>()).Returns(fake.Object);
@@ -106,12 +110,14 @@ public class AddIncomeItemTests
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
         fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .Callback<CancellationToken>((ct) =>
-            {
-                var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
-                vm?.BudgetCategory = "Existing Category";
-                vm?.BudgetAmount = new Currency(90m);
-            })
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
+                    vm?.BudgetCategory = "Existing Category";
+                    vm?.BudgetAmount = new Currency(90m);
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
         _mockContentDialogFactory.Setup(x => x.Create<BudgetCategoryDialog>()).Returns(fake.Object);

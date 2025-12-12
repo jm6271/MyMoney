@@ -1,12 +1,12 @@
 using Moq;
+using MyMoney.Abstractions;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
+using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Views.ContentDialogs;
-using MyMoney.Abstractions;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
-using MyMoney.Services;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor.
 
@@ -56,8 +56,7 @@ public class EditSavingsCategoryTests
 
         var fakeDialog = new Mock<IContentDialog>();
         fakeDialog.SetupAllProperties();
-        fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(ContentDialogResult.Secondary);
+        fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ContentDialogResult.Secondary);
 
         _mockContentDialogFactory.Setup(x => x.Create<SavingsCategoryDialog>()).Returns(fakeDialog.Object);
 
@@ -85,13 +84,16 @@ public class EditSavingsCategoryTests
 
         var fakeDialog = new Mock<IContentDialog>();
         fakeDialog.SetupAllProperties();
-        fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .Callback<CancellationToken>((ct) =>
-            {
-                var vm = fakeDialog.Object.DataContext as SavingsCategoryDialogViewModel;
-                vm!.Category = "Savings 2";
-                vm.Planned = new Currency(100m);
-            })
+        fakeDialog
+            .Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fakeDialog.Object.DataContext as SavingsCategoryDialogViewModel;
+                    vm!.Category = "Savings 2";
+                    vm.Planned = new Currency(100m);
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
         _mockContentDialogFactory.Setup(x => x.Create<SavingsCategoryDialog>()).Returns(fakeDialog.Object);
@@ -123,14 +125,17 @@ public class EditSavingsCategoryTests
 
         var fakeDialog = new Mock<IContentDialog>();
         fakeDialog.SetupAllProperties();
-        fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .Callback<CancellationToken>((ct) =>
-            {
-                var vm = fakeDialog.Object.DataContext as SavingsCategoryDialogViewModel;
-                vm!.Category = "Test Savings";
-                vm.Planned = new Currency(100m);
-                vm.CurrentBalance = new Currency(600m);
-            })
+        fakeDialog
+            .Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fakeDialog.Object.DataContext as SavingsCategoryDialogViewModel;
+                    vm!.Category = "Test Savings";
+                    vm.Planned = new Currency(100m);
+                    vm.CurrentBalance = new Currency(600m);
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
         _mockContentDialogFactory.Setup(x => x.Create<SavingsCategoryDialog>()).Returns(fakeDialog.Object);
@@ -175,14 +180,17 @@ public class EditSavingsCategoryTests
 
         var fakeDialog = new Mock<IContentDialog>();
         fakeDialog.SetupAllProperties();
-        fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .Callback<CancellationToken>((ct) =>
-            {
-                var vm = fakeDialog.Object.DataContext as SavingsCategoryDialogViewModel;
-                vm!.Category = "Test Savings";
-                vm.Planned = new Currency(200m);
-                vm.CurrentBalance = new Currency(500m);
-            })
+        fakeDialog
+            .Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fakeDialog.Object.DataContext as SavingsCategoryDialogViewModel;
+                    vm!.Category = "Test Savings";
+                    vm.Planned = new Currency(200m);
+                    vm.CurrentBalance = new Currency(500m);
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
         _mockContentDialogFactory.Setup(x => x.Create<SavingsCategoryDialog>()).Returns(fakeDialog.Object);

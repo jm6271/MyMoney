@@ -78,7 +78,6 @@ namespace MyMoney
                     // Database
                     services.AddTransient<IDatabaseManager, DatabaseManager>();
 
-
                     services.AddSingleton<IContentDialogFactory, ContentDialogFactory>();
 
                     services.AddTransient<IMessageBoxService, MessageBoxService>();

@@ -1,7 +1,7 @@
 ﻿using System.Windows.Controls;
+using MyMoney.Abstractions;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
-using MyMoney.Abstractions;
 
 namespace MyMoney.Views.ContentDialogs
 {

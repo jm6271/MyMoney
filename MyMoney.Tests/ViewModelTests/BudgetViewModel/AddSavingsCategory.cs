@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Moq;
+using MyMoney.Abstractions;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.ViewModels.Pages;
 using MyMoney.Views.ContentDialogs;
-using MyMoney.Abstractions;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -51,8 +51,7 @@ public class AddSavingsCategoryTests
         _viewModel.CurrentBudget = new Budget();
         var fakeDialog = new Mock<IContentDialog>();
         fakeDialog.SetupAllProperties();
-        fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(ContentDialogResult.Secondary);
+        fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ContentDialogResult.Secondary);
 
         _mockContentDialogFactory.Setup(x => x.Create<SavingsCategoryDialog>()).Returns(fakeDialog.Object);
 
@@ -70,13 +69,16 @@ public class AddSavingsCategoryTests
         _viewModel.CurrentBudget = new Budget();
         var fakeDialog = new Mock<IContentDialog>();
         fakeDialog.SetupAllProperties();
-        fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .Callback<CancellationToken>((ct) =>
-            {
-                var vm = fakeDialog.Object.DataContext as SavingsCategoryDialogViewModel;
-                vm!.Category = "Test Savings";
-                vm.Planned = new Currency(200m);
-            })
+        fakeDialog
+            .Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fakeDialog.Object.DataContext as SavingsCategoryDialogViewModel;
+                    vm!.Category = "Test Savings";
+                    vm.Planned = new Currency(200m);
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
         _mockContentDialogFactory.Setup(x => x.Create<SavingsCategoryDialog>()).Returns(fakeDialog.Object);
@@ -101,13 +103,16 @@ public class AddSavingsCategoryTests
 
         var fakeDialog = new Mock<IContentDialog>();
         fakeDialog.SetupAllProperties();
-        fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .Callback<CancellationToken>((ct) =>
-            {
-                var vm = fakeDialog.Object.DataContext as SavingsCategoryDialogViewModel;
-                vm!.Category = "Existing Savings";
-                vm.Planned = new Currency(200m);
-            })
+        fakeDialog
+            .Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fakeDialog.Object.DataContext as SavingsCategoryDialogViewModel;
+                    vm!.Category = "Existing Savings";
+                    vm.Planned = new Currency(200m);
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
         _mockContentDialogFactory.Setup(x => x.Create<SavingsCategoryDialog>()).Returns(fakeDialog.Object);

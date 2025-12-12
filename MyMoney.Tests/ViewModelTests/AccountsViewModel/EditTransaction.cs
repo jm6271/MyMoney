@@ -59,8 +59,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
 
             var fake = new Mock<IContentDialog>();
             fake.SetupAllProperties();
-            fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-                .ReturnsAsync(ContentDialogResult.Secondary);
+            fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ContentDialogResult.Secondary);
 
             _contentDialogFactory.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);
 
@@ -93,16 +92,18 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             var fake = new Mock<IContentDialog>();
             fake.SetupAllProperties();
             fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-                .Callback<CancellationToken>((ct) =>
-                {
-                    var vm = fake.Object.DataContext as NewTransactionDialogViewModel;
-                    vm?.NewTransactionAmount = new Currency(200);
-                    vm?.NewTransactionIsExpense = true;
-                    vm?.NewTransactionDate = DateTime.Today;
-                    vm?.NewTransactionCategory = new() { Name = "Category", Group = "Income" };
-                    vm?.NewTransactionMemo = "Updated memo";
-                    vm?.NewTransactionPayee = "Test";
-                })
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fake.Object.DataContext as NewTransactionDialogViewModel;
+                        vm?.NewTransactionAmount = new Currency(200);
+                        vm?.NewTransactionIsExpense = true;
+                        vm?.NewTransactionDate = DateTime.Today;
+                        vm?.NewTransactionCategory = new() { Name = "Category", Group = "Income" };
+                        vm?.NewTransactionMemo = "Updated memo";
+                        vm?.NewTransactionPayee = "Test";
+                    }
+                )
                 .ReturnsAsync(ContentDialogResult.Primary);
 
             _contentDialogFactory.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);

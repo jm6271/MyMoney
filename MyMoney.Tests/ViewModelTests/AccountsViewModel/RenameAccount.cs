@@ -49,11 +49,13 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             var fake = new Mock<IContentDialog>();
             fake.SetupAllProperties();
             fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-                .Callback<CancellationToken>((ct) =>
-                {
-                    var vm = fake.Object.DataContext as RenameAccountViewModel;
-                    vm?.NewName = "New Name";
-                })
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fake.Object.DataContext as RenameAccountViewModel;
+                        vm?.NewName = "New Name";
+                    }
+                )
                 .ReturnsAsync(ContentDialogResult.Primary);
 
             _contentDialogFactory.Setup(x => x.Create<RenameAccountDialog>()).Returns(fake.Object);
@@ -83,11 +85,13 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             var fake = new Mock<IContentDialog>();
             fake.SetupAllProperties();
             fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-                .Callback<CancellationToken>((ct) =>
-                {
-                    var vm = fake.Object.DataContext as RenameAccountViewModel;
-                    vm?.NewName = "New Name";
-                })
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fake.Object.DataContext as RenameAccountViewModel;
+                        vm?.NewName = "New Name";
+                    }
+                )
                 .ReturnsAsync(ContentDialogResult.Secondary);
 
             _contentDialogFactory.Setup(x => x.Create<RenameAccountDialog>()).Returns(fake.Object);

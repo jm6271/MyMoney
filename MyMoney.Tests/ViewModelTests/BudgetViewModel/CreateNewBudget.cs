@@ -1,10 +1,10 @@
 using Moq;
+using MyMoney.Abstractions;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Views.ContentDialogs;
-using MyMoney.Abstractions;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
@@ -46,13 +46,16 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
 
             var fakeDialog = new Mock<IContentDialog>();
             fakeDialog.SetupAllProperties();
-            fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-                .Callback<CancellationToken>((ct) =>
-                {
-                    var vm = fakeDialog.Object.DataContext as NewBudgetDialogViewModel;
-                    vm!.SelectedDate = budgetTitle;
-                    vm.UseLastMonthsBudget = false;
-                })
+            fakeDialog
+                .Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fakeDialog.Object.DataContext as NewBudgetDialogViewModel;
+                        vm!.SelectedDate = budgetTitle;
+                        vm.UseLastMonthsBudget = false;
+                    }
+                )
                 .ReturnsAsync(ContentDialogResult.Primary);
 
             _mockContentDialogFactory.Setup(x => x.Create<NewBudgetDialog>()).Returns(fakeDialog.Object);
@@ -86,13 +89,16 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
 
             var fakeDialog = new Mock<IContentDialog>();
             fakeDialog.SetupAllProperties();
-            fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-                .Callback<CancellationToken>((ct) =>
-                {
-                    var vm = fakeDialog.Object.DataContext as NewBudgetDialogViewModel;
-                    vm!.SelectedDate = existingBudget.BudgetTitle;
-                    vm.UseLastMonthsBudget = false;
-                })
+            fakeDialog
+                .Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fakeDialog.Object.DataContext as NewBudgetDialogViewModel;
+                        vm!.SelectedDate = existingBudget.BudgetTitle;
+                        vm.UseLastMonthsBudget = false;
+                    }
+                )
                 .ReturnsAsync(ContentDialogResult.Primary);
 
             _mockContentDialogFactory.Setup(x => x.Create<NewBudgetDialog>()).Returns(fakeDialog.Object);
@@ -122,7 +128,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             // Arrange
             var fakeDialog = new Mock<IContentDialog>();
             fakeDialog.SetupAllProperties();
-            fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+            fakeDialog
+                .Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
                 .ReturnsAsync(ContentDialogResult.Secondary);
 
             _mockContentDialogFactory.Setup(x => x.Create<NewBudgetDialog>()).Returns(fakeDialog.Object);
@@ -184,13 +191,16 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
 
             var fakeDialog = new Mock<IContentDialog>();
             fakeDialog.SetupAllProperties();
-            fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-                .Callback<CancellationToken>((ct) =>
-                {
-                    var vm = fakeDialog.Object.DataContext as NewBudgetDialogViewModel;
-                    vm!.SelectedDate = nextBudgetTitle;
-                    vm.UseLastMonthsBudget = true;
-                })
+            fakeDialog
+                .Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fakeDialog.Object.DataContext as NewBudgetDialogViewModel;
+                        vm!.SelectedDate = nextBudgetTitle;
+                        vm.UseLastMonthsBudget = true;
+                    }
+                )
                 .ReturnsAsync(ContentDialogResult.Primary);
 
             _mockContentDialogFactory.Setup(x => x.Create<NewBudgetDialog>()).Returns(fakeDialog.Object);

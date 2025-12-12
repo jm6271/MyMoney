@@ -51,11 +51,13 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             var fake = new Mock<IContentDialog>();
             fake.SetupAllProperties();
             fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-                .Callback<CancellationToken>((ct) =>
-                {
-                    var vm = fake.Object.DataContext as UpdateAccountBalanceDialogViewModel;
-                    vm?.Balance = new Currency(150);
-                })
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fake.Object.DataContext as UpdateAccountBalanceDialogViewModel;
+                        vm?.Balance = new Currency(150);
+                    }
+                )
                 .ReturnsAsync(ContentDialogResult.Primary);
 
             _contentDialogFactory.Setup(x => x.Create<UpdateAccountBalanceDialog>()).Returns(fake.Object);

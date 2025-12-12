@@ -639,12 +639,7 @@ namespace MyMoney.ViewModels.Pages
 
         private List<string> GetAllPayees()
         {
-            return [.. Accounts
-                        .SelectMany(a => a.Transactions)
-                        .Select(t => t.Payee)
-                        .Where(p => p != null)
-                        .Distinct()
-            ];
+            return [.. Accounts.SelectMany(a => a.Transactions).Select(t => t.Payee).Where(p => p != null).Distinct()];
         }
 
         partial void OnSelectedAccountChanged(Account? value)

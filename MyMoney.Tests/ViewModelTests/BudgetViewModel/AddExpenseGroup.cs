@@ -47,11 +47,13 @@ public class AddExpenseGroupTests
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
         fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .Callback<CancellationToken>((ct) =>
-            {
-                var vm = fake.Object.DataContext as NewExpenseGroupDialogViewModel;
-                vm?.GroupName = "Test Group";
-            })
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as NewExpenseGroupDialogViewModel;
+                    vm?.GroupName = "Test Group";
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
         _mockContentDialogFactory.Setup(x => x.Create<NewExpenseGroupDialog>()).Returns(fake.Object);
@@ -80,11 +82,13 @@ public class AddExpenseGroupTests
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
         fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-            .Callback<CancellationToken>((ct) =>
-            {
-                var vm = fake.Object.DataContext as NewExpenseGroupDialogViewModel;
-                vm?.GroupName = "Test Group";
-            })
+            .Callback<CancellationToken>(
+                (ct) =>
+                {
+                    var vm = fake.Object.DataContext as NewExpenseGroupDialogViewModel;
+                    vm?.GroupName = "Test Group";
+                }
+            )
             .ReturnsAsync(ContentDialogResult.Primary);
 
         _mockContentDialogFactory.Setup(x => x.Create<NewExpenseGroupDialog>()).Returns(fake.Object);
