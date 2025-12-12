@@ -1,6 +1,4 @@
-﻿using System;
-using System.Windows.Controls;
-using MyMoney.ViewModels.ContentDialogs;
+﻿using MyMoney.Abstractions;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -8,14 +6,11 @@ namespace MyMoney.Views.ContentDialogs
     /// <summary>
     /// Interaction logic for RenameAccountDialog.xaml
     /// </summary>
-    public partial class RenameAccountDialog : ContentDialog
+    public partial class RenameAccountDialog : ContentDialog, IContentDialog
     {
-        public RenameAccountDialog(ContentPresenter dialogHost, RenameAccountViewModel viewModel)
-            : base(dialogHost)
+        public RenameAccountDialog()
         {
             InitializeComponent();
-
-            DataContext = viewModel;
         }
 
         private void ContentDialog_Loaded(object sender, RoutedEventArgs e)

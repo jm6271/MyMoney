@@ -16,11 +16,7 @@ public class DeleteAccountTests
 {
     private Mock<IContentDialogService> _mockContentDialogService;
     private Mock<IDatabaseManager> _mockDatabaseService;
-    private Mock<INewAccountDialogService> _mockNewAccountDialogService;
-    private Mock<IRenameAccountDialogService> _mockRenameAccountDialogService;
-    private Mock<ITransferDialogService> _mockTransferDialogService;
     private Mock<IMessageBoxService> _mockMessageBoxService;
-    private Mock<IUpdateAccountBalanceDialogService> _mockUpdateAccountBalanceDialogService;
     private MyMoney.ViewModels.Pages.AccountsViewModel _viewModel;
 
     [TestInitialize]
@@ -28,11 +24,7 @@ public class DeleteAccountTests
     {
         _mockContentDialogService = new Mock<IContentDialogService>();
         _mockDatabaseService = new Mock<IDatabaseManager>();
-        _mockNewAccountDialogService = new Mock<INewAccountDialogService>();
-        _mockTransferDialogService = new Mock<ITransferDialogService>();
-        _mockRenameAccountDialogService = new Mock<IRenameAccountDialogService>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
-        _mockUpdateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
 
         // Setup empty accounts collection by default
         _mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts")).Returns([]);
@@ -119,11 +111,7 @@ public class DeleteAccountTests
         return new(
             _mockContentDialogService.Object,
             _mockDatabaseService.Object,
-            _mockNewAccountDialogService.Object,
-            _mockTransferDialogService.Object,
-            _mockRenameAccountDialogService.Object,
             _mockMessageBoxService.Object,
-            _mockUpdateAccountBalanceDialogService.Object,
             Mock.Of<IContentDialogFactory>()
         );
     }

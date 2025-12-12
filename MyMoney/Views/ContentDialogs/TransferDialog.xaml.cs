@@ -1,6 +1,7 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using MyMoney.Abstractions;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
 
@@ -9,13 +10,11 @@ namespace MyMoney.Views.ContentDialogs
     /// <summary>
     /// Interaction logic for TransferDialog.xaml
     /// </summary>
-    public partial class TransferDialog : ContentDialog
+    public partial class TransferDialog : ContentDialog, IContentDialog
     {
-        public TransferDialog(ContentPresenter dialogHost, TransferDialogViewModel viewModel)
-            : base(dialogHost)
+        public TransferDialog()
         {
             InitializeComponent();
-            DataContext = viewModel;
             cmbFrom.Focus();
         }
 

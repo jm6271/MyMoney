@@ -79,14 +79,10 @@ namespace MyMoney
                     // Database
                     services.AddTransient<IDatabaseManager, DatabaseManager>();
 
-                    // Custom content dialogs
+
                     services.AddSingleton<IContentDialogFactory, ContentDialogFactory>();
 
-                    services.AddTransient<INewAccountDialogService, NewAccountDialogService>();
-                    services.AddTransient<ITransferDialogService, TransferDialogService>();
-                    services.AddTransient<IRenameAccountDialogService, RenameAccountDialogService>();
                     services.AddTransient<IMessageBoxService, MessageBoxService>();
-                    services.AddTransient<IUpdateAccountBalanceDialogService, UpdateAccountBalanceDialogService>();
                 }
             )
             .Build();

@@ -18,11 +18,7 @@ public class UpdateSavingsCategoryTests
 {
     private Mock<IContentDialogService> _contentDialogServiceMock;
     private Mock<IDatabaseManager> _databaseReaderMock;
-    private Mock<INewAccountDialogService> _newAccountDialogServiceMock;
-    private Mock<ITransferDialogService> _transferDialogServiceMock;
-    private Mock<IRenameAccountDialogService> _renameAccountDialogService;
     private Mock<IMessageBoxService> _messageBoxServiceMock;
-    private Mock<IUpdateAccountBalanceDialogService> _updateAccountBalanceDialogServiceMock;
     private Mock<IContentDialogFactory> _contentDialogFactoryMock;
     private ViewModels.Pages.AccountsViewModel _viewModel;
 
@@ -36,11 +32,7 @@ public class UpdateSavingsCategoryTests
     {
         _contentDialogServiceMock = new Mock<IContentDialogService>();
         _databaseReaderMock = new Mock<IDatabaseManager>();
-        _newAccountDialogServiceMock = new Mock<INewAccountDialogService>();
-        _transferDialogServiceMock = new Mock<ITransferDialogService>();
-        _renameAccountDialogService = new Mock<IRenameAccountDialogService>();
         _messageBoxServiceMock = new Mock<IMessageBoxService>();
-        _updateAccountBalanceDialogServiceMock = new Mock<IUpdateAccountBalanceDialogService>();
         _contentDialogFactoryMock = new Mock<IContentDialogFactory>();
 
         _databaseReaderMock.Setup(x => x.GetCollection<Account>("Accounts")).Returns([]);
@@ -48,11 +40,7 @@ public class UpdateSavingsCategoryTests
         _viewModel = new ViewModels.Pages.AccountsViewModel(
             _contentDialogServiceMock.Object,
             _databaseReaderMock.Object,
-            _newAccountDialogServiceMock.Object,
-            _transferDialogServiceMock.Object,
-            _renameAccountDialogService.Object,
             _messageBoxServiceMock.Object,
-            _updateAccountBalanceDialogServiceMock.Object,
             _contentDialogFactoryMock.Object
         );
 

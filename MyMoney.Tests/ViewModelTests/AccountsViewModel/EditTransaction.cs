@@ -18,11 +18,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
     {
         private Mock<IContentDialogService> _contentDialogService;
         private Mock<IDatabaseManager> _databaseReader;
-        private Mock<INewAccountDialogService> _accountDialogService;
-        private Mock<ITransferDialogService> _transferDialogService;
-        private Mock<IRenameAccountDialogService> _renameAccountDialogService;
         private Mock<IMessageBoxService> _messageBoxService;
-        private Mock<IUpdateAccountBalanceDialogService> _updateAccountBalanceDialogService;
         private Mock<IContentDialogFactory> _contentDialogFactory;
         private MyMoney.ViewModels.Pages.AccountsViewModel _viewModel;
 
@@ -31,11 +27,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         {
             _contentDialogService = new Mock<IContentDialogService>();
             _databaseReader = new Mock<IDatabaseManager>();
-            _accountDialogService = new Mock<INewAccountDialogService>();
-            _transferDialogService = new Mock<ITransferDialogService>();
-            _renameAccountDialogService = new Mock<IRenameAccountDialogService>();
             _messageBoxService = new Mock<IMessageBoxService>();
-            _updateAccountBalanceDialogService = new Mock<IUpdateAccountBalanceDialogService>();
             _contentDialogFactory = new Mock<IContentDialogFactory>();
 
             _databaseReader.Setup(x => x.GetCollection<Account>("Accounts")).Returns([]);
@@ -43,11 +35,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _viewModel = new MyMoney.ViewModels.Pages.AccountsViewModel(
                 _contentDialogService.Object,
                 _databaseReader.Object,
-                _accountDialogService.Object,
-                _transferDialogService.Object,
-                _renameAccountDialogService.Object,
                 _messageBoxService.Object,
-                _updateAccountBalanceDialogService.Object,
                 _contentDialogFactory.Object
             );
         }
