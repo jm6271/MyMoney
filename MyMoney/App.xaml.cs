@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyMoney.Core.Database;
 using MyMoney.Services;
-using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.Pages;
 using MyMoney.ViewModels.Windows;
 using MyMoney.Views.Pages;

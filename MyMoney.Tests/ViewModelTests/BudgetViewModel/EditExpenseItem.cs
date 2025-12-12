@@ -3,7 +3,6 @@ using Moq;
 using MyMoney.Abstractions;
 using MyMoney.Core.Models;
 using MyMoney.Services;
-using MyMoney.Services.ContentDialogs;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;

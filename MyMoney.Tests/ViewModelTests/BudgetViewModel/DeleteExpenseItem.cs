@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using Moq;
 using MyMoney.Core.Models;
 using MyMoney.Services;
-using MyMoney.Services.ContentDialogs;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 

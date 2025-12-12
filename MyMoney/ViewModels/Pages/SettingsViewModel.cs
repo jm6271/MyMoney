@@ -5,7 +5,7 @@ using System.Windows.Media;
 using Microsoft.Win32;
 using MyMoney.Converters.RadioButtonConverters;
 using MyMoney.Core.Database;
-using MyMoney.Services.ContentDialogs;
+using MyMoney.Services;
 using MyMoney.Themes;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;

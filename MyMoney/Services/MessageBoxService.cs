@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MyMoney.Services.ContentDialogs
+namespace MyMoney.Services
 {
     public interface IMessageBoxService
     {

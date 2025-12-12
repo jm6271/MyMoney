@@ -36,6 +36,9 @@
         <Resource Include="Assets\MyMoney-icon-256.png" />
         <Resource Include="Assets\MyMoney-Banner.png" />
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Services\ContentDialogs\" />
+    </ItemGroup>
 
     <!-- Target to build MkDocs documentation and copy it to output directory -->
     <Target Name="BuildMkDocs" BeforeTargets="Build">
