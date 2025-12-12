@@ -10,7 +10,7 @@
         <Title>MyMoney</Title>
         <AssemblyVersion>1.0.0</AssemblyVersion>
         <FileVersion>1.0.0</FileVersion>
-        <InformationalVersion>1.0.0-rc1</InformationalVersion>
+        <InformationalVersion>1.0.0-rc2</InformationalVersion>
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
     <ItemGroup>
