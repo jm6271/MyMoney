@@ -63,11 +63,11 @@
       },
       "WPF-UI": {
         "type": "Direct",
-        "requested": "[4.1.0, )",
-        "resolved": "4.1.0",
-        "contentHash": "bL+ehJIgRl9bh8imYFJ33DsJrqcU6xfmbEBPlghW/jaBYtbCEDLfuxsEAVITYQjAxTJjPy+DT5vll3XOSCmHgQ==",
+        "requested": "[4.0.3, )",
+        "resolved": "4.0.3",
+        "contentHash": "izkG9uL33gYDkZkirpamlvk6v9ru5QL+97Dgqhr0rkGcwuJZOPd5zkhEUwlDOZ25OFX3Hbp2O/jpHILCYPNfiQ==",
         "dependencies": {
-          "WPF-UI.Abstractions": "4.1.0"
+          "WPF-UI.Abstractions": "4.0.3"
         }
       },
       "HarfBuzzSharp": {
@@ -415,8 +415,8 @@
       },
       "WPF-UI.Abstractions": {
         "type": "Transitive",
-        "resolved": "4.1.0",
-        "contentHash": "SzwdKzoA9ZlNXitVPUBAp79Pao5iRM/miny7/yIQGJwKzfx5bojjzNG4jV9B861ub5zer/AioDwCDc2cUpCoMA=="
+        "resolved": "4.0.3",
+        "contentHash": "HyoPrc5TmasqzYqHk3UCvYFNWfBEj8GOI3ZXpX6Cl+BghHFWR5nMzjGkwJ2341ISs5HEt4Iun6DZgrYVZpwTXQ=="
       },
       "mymoney.core": {
         "type": "Project",
