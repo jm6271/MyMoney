@@ -98,8 +98,9 @@
                     HorizontalAlignment="Stretch"
                     Command="{Binding ViewModel.TransferBetweenAccountsCommand}"
                     IsEnabled="{Binding ViewModel.TransactionsEnabled}"
-                    >Transfer</ui:Button
                 >
+                    Transfer
+                </ui:Button>
             </StackPanel>
         </ui:Card>
 

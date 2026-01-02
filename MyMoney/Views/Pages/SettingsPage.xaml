@@ -98,8 +98,7 @@
                         FontTypography="Caption"
                     >
                         New Accent color takes effect on restart
-                    </ui:TextBlock
-                    >
+                    </ui:TextBlock>
                 </StackPanel>
             </ui:CardExpander.Content>
         </ui:CardExpander>
