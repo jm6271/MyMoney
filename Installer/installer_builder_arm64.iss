@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "MyMoney"
-#define MyAppVersion "1.0.0-rc2"
+#define MyAppVersion "1.0.0"
 #define MyAppPublisher "jm6271"
 #define MyAppURL "github.com/jm6271/mymoney"
 #define MyAppExeName "MyMoney.exe"
@@ -25,7 +25,7 @@ LicenseFile=..\LICENSE.txt
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 OutputDir=.
-OutputBaseFilename=mymoney-setup-1.0.0rc2-win-arm64
+OutputBaseFilename=mymoney-setup-1.0.0-win-arm64
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern

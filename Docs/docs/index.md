@@ -2,10 +2,6 @@
 
 MyMoney is a personal finance program designed to help you manage your finances with ease. Track your accounts, monitor transactions, create a budget, and gain insights into your spending habits, all in one simple and intuitive application.
 
-## Pre-release Warning
-
-**Important:** This is a pre-release of MyMoney. It may contain bugs. Please use at your own risk.
-
 ## Quick actions
 - [Get started →](getting-started.md)
 - [Create a budget →](tasks/new-budget.md)
