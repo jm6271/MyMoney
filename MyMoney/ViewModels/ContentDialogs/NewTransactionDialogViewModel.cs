@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Views.Controls;
@@ -56,13 +57,19 @@ namespace MyMoney.ViewModels.ContentDialogs
         private Visibility _accountsVisibility = Visibility.Visible;
 
         [ObservableProperty]
-        private ObservableCollection<GroupedComboBox.GroupedComboBoxItem> _categoryNames;
+        private ObservableCollection<BudgetCategory> _categoryNames;
+
+        public ICollectionView CategoriesView { get; }
 
         public NewTransactionDialogViewModel(IDatabaseManager databaseManager)
         {
             _databaseManager = databaseManager ?? throw new ArgumentNullException(nameof(databaseManager));
 
             CategoryNames = BudgetCategoryNames;
+
+            CategoriesView = CollectionViewSource.GetDefaultView(CategoryNames);
+            CategoriesView.GroupDescriptions.Add(
+                new PropertyGroupDescription(nameof(BudgetCategory.Group)));
         }
 
         public void SetSelectedCategoryByName(string categoryName)
@@ -90,11 +97,11 @@ namespace MyMoney.ViewModels.ContentDialogs
             }
         }
 
-        public ObservableCollection<GroupedComboBox.GroupedComboBoxItem> BudgetCategoryNames
+        public ObservableCollection<BudgetCategory> BudgetCategoryNames
         {
             get
             {
-                var categories = new ObservableCollection<GroupedComboBox.GroupedComboBoxItem>();
+                var categories = new ObservableCollection<BudgetCategory>();
 
                 BudgetCollection budgetCollection;
                 lock (_databaseLockObject)
@@ -129,14 +136,14 @@ namespace MyMoney.ViewModels.ContentDialogs
         }
 
         private void AddCategoriesToCollection(
-            ObservableCollection<GroupedComboBox.GroupedComboBoxItem> collection,
+            ObservableCollection<BudgetCategory> collection,
             string group,
             IEnumerable<string> items
         )
         {
             foreach (var item in items)
             {
-                collection.Add(new GroupedComboBox.GroupedComboBoxItem { Group = group, Item = item });
+                collection.Add(new BudgetCategory { Group = group, Item = item });
             }
         }
     }

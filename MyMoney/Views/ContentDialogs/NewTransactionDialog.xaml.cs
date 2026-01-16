@@ -63,11 +63,18 @@ namespace MyMoney.Views.ContentDialogs
         {
             get
             {
-                return new()
+                if (cmbCategory.SelectedItem is BudgetCategory category)
                 {
-                    Name = cmbCategory.SelectedItem?.Item.ToString() ?? "",
-                    Group = cmbCategory.SelectedItem?.Group ?? "",
-                };
+                    return new()
+                    {
+                        Name = category.Item.ToString() ?? "",
+                        Group = category.Group
+                    };
+                }
+                else
+                {
+                    return new();
+                }
             }
         }
 

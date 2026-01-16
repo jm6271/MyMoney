@@ -89,7 +89,7 @@
         <ui:TextBlock Margin="0,0,0,4">Category</ui:TextBlock>
 
         <Border x:Name="CategoryBorder" BorderThickness="1" BorderBrush="Transparent" Margin="0,0,0,16">
-            <controls:GroupedComboBox
+            <!--controls:GroupedComboBox
                 x:Name="cmbCategory"
                 ItemsSource="{Binding CategoryNames}"
                 SelectedItem="{Binding NewTransactionCategory, 
@@ -97,7 +97,22 @@
                 SelectedIndex="{Binding NewTransactionCategorySelectedIndex}"
                 SelectionChanged="cmbCategory_SelectionChanged_1"
                 LostFocus="cmbCategory_LostFocus"
-            ></controls:GroupedComboBox>
+            ></controls:GroupedComboBox-->
+
+            <ComboBox x:Name="cmbCategory" ItemsSource="{Binding CategoriesView}"
+                      DisplayMemberPath="Item">
+                <ComboBox.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"
+                                           FontWeight="Bold"
+                                           Margin="0,4,0,2" />
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ComboBox.GroupStyle>
+            </ComboBox>
         </Border>
 
         <ui:TextBlock Margin="0,0,0,4" Visibility="{Binding AccountsVisibility}">Account</ui:TextBlock>
