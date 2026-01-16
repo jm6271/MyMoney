@@ -68,11 +68,11 @@ public class LoadCategoryNames
 
         // Assert
         Assert.HasCount(5, categoryNames);
-        Assert.AreEqual("Salary", categoryNames[0].Item.ToString());
-        Assert.AreEqual("Bonus", categoryNames[1].Item.ToString());
-        Assert.AreEqual("Groceries", categoryNames[2].Item.ToString());
-        Assert.AreEqual("Fast Food", categoryNames[3].Item.ToString());
-        Assert.AreEqual("Utilities", categoryNames[4].Item.ToString());
+        Assert.AreEqual("Salary", categoryNames[0].Name.ToString());
+        Assert.AreEqual("Bonus", categoryNames[1].Name.ToString());
+        Assert.AreEqual("Groceries", categoryNames[2].Name.ToString());
+        Assert.AreEqual("Fast Food", categoryNames[3].Name.ToString());
+        Assert.AreEqual("Utilities", categoryNames[4].Name.ToString());
     }
 
     [TestMethod]
@@ -102,7 +102,7 @@ public class LoadCategoryNames
 
         // Assert
         Assert.HasCount(2, secondAccess);
-        Assert.AreEqual(1, secondAccess.Count(x => x.Item.ToString() == "Salary"));
-        Assert.AreEqual(1, secondAccess.Count(x => x.Item.ToString() == "Groceries"));
+        Assert.AreEqual(1, secondAccess.Count(x => x.Name.ToString() == "Salary"));
+        Assert.AreEqual(1, secondAccess.Count(x => x.Name.ToString() == "Groceries"));
     }
 }

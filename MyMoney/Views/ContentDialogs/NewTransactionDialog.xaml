@@ -25,7 +25,6 @@
 >
     <ui:ContentDialog.Resources>
         <converters:CurrencyConverter x:Key="CurrencyConverter" />
-        <converters:CategoryToGroupedItemConverter x:Key="CategoryToGroupedItemConverter" />
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:NewTransactionDialog}" />
     </ui:ContentDialog.Resources>
 
@@ -89,25 +88,20 @@
         <ui:TextBlock Margin="0,0,0,4">Category</ui:TextBlock>
 
         <Border x:Name="CategoryBorder" BorderThickness="1" BorderBrush="Transparent" Margin="0,0,0,16">
-            <!--controls:GroupedComboBox
-                x:Name="cmbCategory"
-                ItemsSource="{Binding CategoryNames}"
-                SelectedItem="{Binding NewTransactionCategory, 
-                                        Converter={StaticResource CategoryToGroupedItemConverter}}"
-                SelectedIndex="{Binding NewTransactionCategorySelectedIndex}"
-                SelectionChanged="cmbCategory_SelectionChanged_1"
-                LostFocus="cmbCategory_LostFocus"
-            ></controls:GroupedComboBox-->
-
             <ComboBox x:Name="cmbCategory" ItemsSource="{Binding CategoriesView}"
-                      DisplayMemberPath="Item">
+                      DisplayMemberPath="Name"
+                      SelectedItem="{Binding NewTransactionCategory}"
+                      SelectedIndex="{Binding NewTransactionCategorySelectedIndex}">
                 <ComboBox.GroupStyle>
                     <GroupStyle>
                         <GroupStyle.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="{Binding Name}"
-                                           FontWeight="Bold"
-                                           Margin="0,4,0,2" />
+                                <ui:TextBlock
+                                        Margin="4,0,4,0"
+                                        FontWeight="Bold"
+                                        Text="{Binding Name}"
+                                        Foreground="{DynamicResource AccentTextFillColorTertiaryBrush}"
+                                    />
                             </DataTemplate>
                         </GroupStyle.HeaderTemplate>
                     </GroupStyle>

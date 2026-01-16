@@ -57,7 +57,7 @@ namespace MyMoney.ViewModels.ContentDialogs
         private Visibility _accountsVisibility = Visibility.Visible;
 
         [ObservableProperty]
-        private ObservableCollection<BudgetCategory> _categoryNames;
+        private ObservableCollection<Category> _categoryNames;
 
         public ICollectionView CategoriesView { get; }
 
@@ -69,12 +69,12 @@ namespace MyMoney.ViewModels.ContentDialogs
 
             CategoriesView = CollectionViewSource.GetDefaultView(CategoryNames);
             CategoriesView.GroupDescriptions.Add(
-                new PropertyGroupDescription(nameof(BudgetCategory.Group)));
+                new PropertyGroupDescription(nameof(Category.Group)));
         }
 
         public void SetSelectedCategoryByName(string categoryName)
         {
-            var categoryItem = CategoryNames.FirstOrDefault(c => c.Item.ToString() == categoryName);
+            var categoryItem = CategoryNames.FirstOrDefault(c => c.Name == categoryName);
 
             if (categoryItem is not null)
             {
@@ -97,11 +97,11 @@ namespace MyMoney.ViewModels.ContentDialogs
             }
         }
 
-        public ObservableCollection<BudgetCategory> BudgetCategoryNames
+        public ObservableCollection<Category> BudgetCategoryNames
         {
             get
             {
-                var categories = new ObservableCollection<BudgetCategory>();
+                var categories = new ObservableCollection<Category>();
 
                 BudgetCollection budgetCollection;
                 lock (_databaseLockObject)
@@ -136,14 +136,14 @@ namespace MyMoney.ViewModels.ContentDialogs
         }
 
         private void AddCategoriesToCollection(
-            ObservableCollection<BudgetCategory> collection,
+            ObservableCollection<Category> collection,
             string group,
             IEnumerable<string> items
         )
         {
             foreach (var item in items)
             {
-                collection.Add(new BudgetCategory { Group = group, Item = item });
+                collection.Add(new Category { Group = group, Name = item });
             }
         }
     }

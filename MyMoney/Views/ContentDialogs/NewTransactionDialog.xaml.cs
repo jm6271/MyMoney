@@ -59,25 +59,6 @@ namespace MyMoney.Views.ContentDialogs
             get { return txtPayee.Text; }
         }
 
-        public Category SelectedCategory
-        {
-            get
-            {
-                if (cmbCategory.SelectedItem is BudgetCategory category)
-                {
-                    return new()
-                    {
-                        Name = category.Item.ToString() ?? "",
-                        Group = category.Group
-                    };
-                }
-                else
-                {
-                    return new();
-                }
-            }
-        }
-
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
             // tab to next control (OK button) and press enter on it (submit the dialog) when enter is pressed
