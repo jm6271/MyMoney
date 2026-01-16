@@ -68,8 +68,7 @@ namespace MyMoney.ViewModels.ContentDialogs
             CategoryNames = BudgetCategoryNames;
 
             CategoriesView = CollectionViewSource.GetDefaultView(CategoryNames);
-            CategoriesView.GroupDescriptions.Add(
-                new PropertyGroupDescription(nameof(Category.Group)));
+            CategoriesView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Category.Group)));
         }
 
         public void SetSelectedCategoryByName(string categoryName)
