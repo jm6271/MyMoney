@@ -59,18 +59,6 @@ namespace MyMoney.Views.ContentDialogs
             get { return txtPayee.Text; }
         }
 
-        public Category SelectedCategory
-        {
-            get
-            {
-                return new()
-                {
-                    Name = cmbCategory.SelectedItem?.Item.ToString() ?? "",
-                    Group = cmbCategory.SelectedItem?.Group ?? "",
-                };
-            }
-        }
-
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
             // tab to next control (OK button) and press enter on it (submit the dialog) when enter is pressed
@@ -132,15 +120,10 @@ namespace MyMoney.Views.ContentDialogs
             PayeeBorder.BorderBrush = string.IsNullOrEmpty(txtPayee.Text) ? Brushes.Red : Brushes.Transparent;
         }
 
-        private void cmbCategory_SelectionChanged_1(object sender, RoutedEventArgs e)
-        {
-            CategoryBorder.BorderBrush = Brushes.Transparent;
-        }
-
         private void cmbCategory_LostFocus(object sender, RoutedEventArgs e)
         {
             // Validate
-            if (cmbCategory.SelectedIndex == -1)
+            if (cmbCategory.SelectedIndex == -1 && !cmbCategory.IsDropDownOpen)
             {
                 CategoryBorder.BorderBrush = Brushes.Red;
             }
