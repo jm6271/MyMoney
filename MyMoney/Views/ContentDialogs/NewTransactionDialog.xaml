@@ -91,7 +91,8 @@
             <ComboBox x:Name="cmbCategory" ItemsSource="{Binding CategoriesView}"
                       DisplayMemberPath="Name"
                       SelectedItem="{Binding NewTransactionCategory}"
-                      SelectedIndex="{Binding NewTransactionCategorySelectedIndex}">
+                      SelectedIndex="{Binding NewTransactionCategorySelectedIndex}"
+                      LostFocus="cmbCategory_LostFocus">
                 <ComboBox.GroupStyle>
                     <GroupStyle>
                         <GroupStyle.HeaderTemplate>

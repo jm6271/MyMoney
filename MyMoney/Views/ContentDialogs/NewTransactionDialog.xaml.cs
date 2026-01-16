@@ -120,15 +120,10 @@ namespace MyMoney.Views.ContentDialogs
             PayeeBorder.BorderBrush = string.IsNullOrEmpty(txtPayee.Text) ? Brushes.Red : Brushes.Transparent;
         }
 
-        private void cmbCategory_SelectionChanged_1(object sender, RoutedEventArgs e)
-        {
-            CategoryBorder.BorderBrush = Brushes.Transparent;
-        }
-
         private void cmbCategory_LostFocus(object sender, RoutedEventArgs e)
         {
             // Validate
-            if (cmbCategory.SelectedIndex == -1)
+            if (cmbCategory.SelectedIndex == -1 && !cmbCategory.IsDropDownOpen)
             {
                 CategoryBorder.BorderBrush = Brushes.Red;
             }
