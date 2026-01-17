@@ -20,9 +20,11 @@
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Background="Transparent"
     xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
     SizeChanged="Page_SizeChanged"
->
+    PreviewMouseDown="Page_PreviewMouseDown">
+    
     <Page.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
