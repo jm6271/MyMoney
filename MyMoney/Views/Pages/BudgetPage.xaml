@@ -24,9 +24,16 @@
     SizeChanged="Page_SizeChanged"
 >
     <Page.Resources>
-        <converters:LeftToBudgetTextConverter x:Key="LeftToBudgetTextConverter" />
-        <converters:CurrencyAbsoluteValueConverter x:Key="CurrencyAbsoluteValueConverter" />
-        <converters:NegativeCurrencyToRedColorConverter x:Key="NegativeCurrencyToRedColorConverter" />
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Views/Controls/InlineEditTextBoxStyle.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+
+            <converters:LeftToBudgetTextConverter x:Key="LeftToBudgetTextConverter" />
+            <converters:CurrencyAbsoluteValueConverter x:Key="CurrencyAbsoluteValueConverter" />
+            <converters:NegativeCurrencyToRedColorConverter x:Key="NegativeCurrencyToRedColorConverter" />
+            <converters:CurrencyConverter x:Key="CurrencyConverter"/>
+        </ResourceDictionary>
     </Page.Resources>
 
     <Grid>
@@ -147,10 +154,16 @@
                 >
                     <ui:ListView.Resources>
                         <DataTemplate x:Key="CategoryItemTemplate">
-                            <ui:TextBlock Text="{Binding Category}" Margin="0,5,0,5" />
+                            <TextBox Text="{Binding Category}" Grid.Column="1" 
+                                     Style="{StaticResource InlineEditTextBoxStyle}"
+                                     Padding="4" Margin="-5,0,0,0">
+                            </TextBox>
                         </DataTemplate>
                         <DataTemplate x:Key="BudgetedItemTemplate">
-                            <ui:TextBlock Text="{Binding Amount}" Margin="0,5,0,5" />
+                            <TextBox Text="{Binding Amount, Converter={StaticResource CurrencyConverter}}" 
+                                     Style="{StaticResource InlineEditTextBoxStyle}"
+                                     Padding="4" Margin="-5,0,0,0">
+                            </TextBox>
                         </DataTemplate>
                         <DataTemplate x:Key="ActualItemTemplate">
                             <ui:TextBlock Text="{Binding Actual}" Margin="0,5,5,5" />
