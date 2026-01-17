@@ -363,7 +363,7 @@ namespace MyMoney.ViewModels.Pages
             dialog.PrimaryButtonText = "OK";
             dialog.CloseButtonText = "Cancel";
             dialog.DataContext = viewModel;
-            dialog.DialogHost = _contentDialogService.GetDialogHost();
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
 
             var result = await dialog.ShowAsync();
 
@@ -409,7 +409,7 @@ namespace MyMoney.ViewModels.Pages
             dialog.Title = "New Savings Category";
             dialog.PrimaryButtonText = "OK";
             dialog.CloseButtonText = "Cancel";
-            dialog.DialogHost = _contentDialogService.GetDialogHost();
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
 
             var result = await dialog.ShowAsync();
 
@@ -470,7 +470,7 @@ namespace MyMoney.ViewModels.Pages
             dialog.PrimaryButtonText = "Add";
             dialog.CloseButtonText = "Cancel";
             dialog.DataContext = viewModel;
-            dialog.DialogHost = _contentDialogService.GetDialogHost();
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
 
             var result = await dialog.ShowAsync();
 
@@ -512,7 +512,7 @@ namespace MyMoney.ViewModels.Pages
             dialog.PrimaryButtonText = "OK";
             dialog.CloseButtonText = "Cancel";
             dialog.DataContext = viewModel;
-            dialog.DialogHost = _contentDialogService.GetDialogHost();
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
 
             var result = await dialog.ShowAsync();
 
@@ -561,7 +561,7 @@ namespace MyMoney.ViewModels.Pages
             dialog.PrimaryButtonText = "OK";
             dialog.CloseButtonText = "Cancel";
             dialog.DataContext = viewModel;
-            dialog.DialogHost = _contentDialogService.GetDialogHost();
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
 
             var result = await dialog.ShowAsync();
 
@@ -651,7 +651,7 @@ namespace MyMoney.ViewModels.Pages
             dialog.Title = "Edit Savings Category";
             dialog.PrimaryButtonText = "OK";
             dialog.CloseButtonText = "Cancel";
-            dialog.DialogHost = _contentDialogService.GetDialogHost();
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
 
             var result = await dialog.ShowAsync();
 
@@ -782,7 +782,7 @@ namespace MyMoney.ViewModels.Pages
             dialog.PrimaryButtonText = "Edit";
             dialog.CloseButtonText = "Cancel";
             dialog.DataContext = viewModel;
-            dialog.DialogHost = _contentDialogService.GetDialogHost();
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
 
             var result = await dialog.ShowAsync();
 
@@ -824,7 +824,7 @@ namespace MyMoney.ViewModels.Pages
             dialog.PrimaryButtonText = "OK";
             dialog.CloseButtonText = "Cancel";
             dialog.DataContext = viewModel;
-            dialog.DialogHost = _contentDialogService.GetDialogHost();
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
 
             var result = await dialog.ShowAsync();
 
@@ -926,7 +926,7 @@ namespace MyMoney.ViewModels.Pages
             dialog.DataContext = viewModel;
             dialog.PrimaryButtonText = "OK";
             dialog.CloseButtonText = "Cancel";
-            dialog.DialogHost = _contentDialogService.GetDialogHost();
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
 
             var result = await dialog.ShowAsync();
 

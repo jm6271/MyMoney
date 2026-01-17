@@ -299,7 +299,7 @@ namespace MyMoney.ViewModels.Pages
             dialog.PrimaryButtonText = "OK";
             dialog.CloseButtonText = "Cancel";
             dialog.DataContext = viewModel;
-            dialog.DialogHost = _contentDialogService.GetDialogHost();
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
 
             var result = await dialog.ShowAsync();
 
@@ -328,7 +328,7 @@ namespace MyMoney.ViewModels.Pages
             dialog.PrimaryButtonText = "OK";
             dialog.CloseButtonText = "Cancel";
             dialog.DataContext = viewModel;
-            dialog.DialogHost = _contentDialogService.GetDialogHost();
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
 
             var result = await dialog.ShowAsync();
 
@@ -439,7 +439,7 @@ namespace MyMoney.ViewModels.Pages
             dialog.PrimaryButtonText = "OK";
             dialog.CloseButtonText = "Cancel";
             dialog.DataContext = viewModel;
-            dialog.DialogHost = _contentDialogService.GetDialogHost();
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
 
             var result = await dialog.ShowAsync();
 
@@ -544,7 +544,7 @@ namespace MyMoney.ViewModels.Pages
             dialog.PrimaryButtonText = "Rename";
             dialog.CloseButtonText = "Cancel";
             dialog.DataContext = viewModel;
-            dialog.DialogHost = _contentDialogService.GetDialogHost();
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
 
             var result = await dialog.ShowAsync();
 
@@ -567,7 +567,7 @@ namespace MyMoney.ViewModels.Pages
             dialog.PrimaryButtonText = "Update";
             dialog.CloseButtonText = "Cancel";
             dialog.DataContext = viewModel;
-            dialog.DialogHost = _contentDialogService.GetDialogHost();
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
 
             var result = await dialog.ShowAsync();
 
