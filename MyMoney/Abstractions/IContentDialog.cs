@@ -13,7 +13,7 @@ namespace MyMoney.Abstractions
         public string SecondaryButtonText { get; set; }
         public string CloseButtonText { get; set; }
 
-        public ContentPresenter? DialogHost { get; set; }
+        public ContentDialogHost? DialogHostEx { get; set; }
 
         public Task<ContentDialogResult> ShowAsync(CancellationToken cancellationToken = default);
     }
