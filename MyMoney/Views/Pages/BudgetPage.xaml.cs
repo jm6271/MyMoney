@@ -1,5 +1,6 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using MyMoney.Core.Models;
 using MyMoney.Helpers;
 using MyMoney.ViewAdapters.Pages;
@@ -141,6 +142,14 @@ namespace MyMoney.Views.Pages
                         Source = sender,
                     }
                 );
+            }
+        }
+
+        private void Page_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (Keyboard.FocusedElement is System.Windows.Controls.TextBox)
+            {
+                Keyboard.ClearFocus();
             }
         }
     }
