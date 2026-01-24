@@ -129,13 +129,21 @@
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
 
+                    <ui:ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel
+                                Grid.IsSharedSizeScope="True" />
+                        </ItemsPanelTemplate>
+                    </ui:ListView.ItemsPanel>
+
                     <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:Transaction}">
                             <Grid Margin="0,2,0,2">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="1*" />
-                                    <ColumnDefinition Width="5*" />
-                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="gridDateColumn"/>
+                                    <ColumnDefinition Width="Auto" SharedSizeGroup="gridReconciledColumn"/>
+                                    <ColumnDefinition Width="5*"/>
+                                    <ColumnDefinition Width="1*"/>
                                 </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -150,23 +158,29 @@
                                     Margin="16,0,0,0"
                                 />
 
+                                <CheckBox Grid.Column="1" VerticalAlignment="Center" Margin="16,0"
+                                          Grid.Row="0" Grid.RowSpan="2"
+                                          IsChecked="{Binding Reconciled}"
+                                          Command="{Binding DataContext.ViewModel.ReconcileTransactionCommand, 
+                                    RelativeSource={RelativeSource AncestorType=ui:ListView}}"/>
+
                                 <ui:TextBlock
                                     Grid.Row="0"
-                                    Grid.Column="1"
+                                    Grid.Column="2"
                                     FontSize="16"
                                     HorizontalAlignment="Left"
                                     Text="{Binding Payee}"
                                 />
                                 <ui:TextBlock
                                     Grid.Row="1"
-                                    Grid.Column="1"
+                                    Grid.Column="2"
                                     HorizontalAlignment="Left"
                                     Text="{Binding Category.Name}"
                                 />
 
                                 <TextBlock
                                     Grid.Row="0"
-                                    Grid.Column="2"
+                                    Grid.Column="3"
                                     Grid.RowSpan="2"
                                     FontSize="24"
                                     FontWeight="SemiBold"

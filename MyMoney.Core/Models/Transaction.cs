@@ -41,6 +41,9 @@ public partial class Transaction : ObservableObject
     [ObservableProperty]
     private DateTime _date;
 
+    [ObservableProperty]
+    private bool _reconciled = false;
+
     public string DateFormatted
     {
         get { return Date.ToShortDateString(); }

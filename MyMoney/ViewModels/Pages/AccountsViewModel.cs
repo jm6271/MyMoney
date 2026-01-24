@@ -593,6 +593,12 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
+        [RelayCommand]
+        private void ReconcileTransaction()
+        {
+            SaveAccountsToDatabase();
+        }
+
         private bool EnsureAccountSelected()
         {
             if (SelectedAccount != null)
