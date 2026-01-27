@@ -1,11 +1,12 @@
 ﻿using System.Collections;
+using System.Threading;
 using LiteDB;
 
 namespace MyMoney.Core.Database
 {
     public interface IDatabaseManager
     {
-        public void WriteCollection<T>(string collectionName, List<T> collection);
+        public void WriteCollection<T>(string collectionName, IReadOnlyList<T> collection);
         public void WriteSettingsDictionary(string collectionName, Dictionary<string, string> collection);
         public List<T> GetCollection<T>(string collectionName);
         public Dictionary<string, string> GetSettingsDictionary(string collectionName);
@@ -17,7 +18,7 @@ namespace MyMoney.Core.Database
 
     public class DatabaseManager : IDatabaseManager
     {
-        private static readonly Lock _databaseLock = new();
+        private static readonly SemaphoreSlim _databaseLock = new(1);
 
         /// <summary>
         /// Read a collection from the database
@@ -29,7 +30,8 @@ namespace MyMoney.Core.Database
         {
             List<T> result = [];
 
-            lock (_databaseLock)
+            _databaseLock.Wait();
+            try
             {
                 using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
                 var collection = db.GetCollection<T>(collectionName);
@@ -40,6 +42,10 @@ namespace MyMoney.Core.Database
                     result.Add(collection.FindById(i));
                 }
             }
+            finally
+            {
+                _databaseLock.Release();
+            }
 
             return result;
         }
@@ -49,12 +55,17 @@ namespace MyMoney.Core.Database
             Dictionary<string, string> dict = [];
             List<KeyValuePair<string, string>> settingsList;
 
-            lock (_databaseLock)
+            _databaseLock.Wait();
+            try
             {
                 using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
 
                 var dbCollection = db.GetCollection<KeyValuePair<string, string>>(collectionName);
                 settingsList = [.. dbCollection.FindAll()];
+            }
+            finally
+            {
+                _databaseLock.Release();
             }
 
             foreach (var item in settingsList)
@@ -65,22 +76,23 @@ namespace MyMoney.Core.Database
             return dict;
         }
 
-        public void WriteCollection<T>(string collectionName, List<T> collection)
+        public void WriteCollection<T>(string collectionName, IReadOnlyList<T> collection)
         {
-            lock (_databaseLock)
+            _databaseLock.Wait();
+            try
             {
                 using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
+                db.BeginTrans();
 
-                var dbCollection = db.GetCollection<T>(collectionName);
+                var col = db.GetCollection<T>(collectionName);
+                col.DeleteAll();
+                col.InsertBulk(collection);
 
-                // clear the database collection
-                dbCollection.DeleteAll();
-
-                // add the new items to the database
-                foreach (var item in collection)
-                {
-                    dbCollection.Insert(item);
-                }
+                db.Commit();
+            }
+            finally
+            {
+                _databaseLock.Release();
             }
 
             // Invalidate parts of the cache that were affected by this write
@@ -90,7 +102,8 @@ namespace MyMoney.Core.Database
 
         public void WriteSettingsDictionary(string collectionName, Dictionary<string, string> collection)
         {
-            lock (_databaseLock)
+            _databaseLock.Wait();
+            try
             {
                 // Open or create a database file
                 using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
@@ -107,6 +120,10 @@ namespace MyMoney.Core.Database
                 dbCollection.Insert(dictList);
                 dbCollection.EnsureIndex(x => x.Key);
             }
+            finally
+            {
+                _databaseLock.Release();
+            }
         }
 
         public Dictionary<TKey, TValue> ReadDictionary<TKey, TValue>(string dictName)
@@ -114,7 +131,8 @@ namespace MyMoney.Core.Database
         {
             Dictionary<TKey, TValue> dict = [];
 
-            lock (_databaseLock)
+            _databaseLock.Wait();
+            try
             {
                 using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
 
@@ -126,13 +144,18 @@ namespace MyMoney.Core.Database
                     dict.TryAdd(item.Key, item.Value);
                 }
             }
+            finally
+            {
+                _databaseLock.Release();
+            }
             return dict;
         }
 
         public void WriteDictionary<TKey, TValue>(string dictName, Dictionary<TKey, TValue> dictionary)
             where TKey : notnull
         {
-            lock (_databaseLock)
+            _databaseLock.Wait();
+            try
             {
                 // Open or create a database file
                 using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
@@ -148,6 +171,10 @@ namespace MyMoney.Core.Database
 
                 dbCollection.Insert(dictList);
                 dbCollection.EnsureIndex(x => x.Key);
+            }
+            finally
+            {
+                _databaseLock.Release();
             }
         }
     }
