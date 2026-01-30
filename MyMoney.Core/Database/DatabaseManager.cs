@@ -14,6 +14,8 @@ namespace MyMoney.Core.Database
             where TKey : notnull;
         public void WriteDictionary<TKey, TValue>(string dictName, Dictionary<TKey, TValue> dictionary)
             where TKey : notnull;
+
+        public Task ExecuteAsync(Func<LiteDatabase, Task> action);
     }
 
     public class DatabaseManager : IDatabaseManager
@@ -171,6 +173,21 @@ namespace MyMoney.Core.Database
 
                 dbCollection.Insert(dictList);
                 dbCollection.EnsureIndex(x => x.Key);
+            }
+            finally
+            {
+                _databaseLock.Release();
+            }
+        }
+
+        public async Task ExecuteAsync(Func<LiteDatabase, Task> action)
+        {
+            await _databaseLock.WaitAsync();
+            try
+            {
+                using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
+                await action(db);
+
             }
             finally
             {

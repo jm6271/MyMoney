@@ -120,6 +120,12 @@
                     ItemsSource="{Binding ViewModel.SelectedAccountTransactions}"
                     SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}"
                     SelectedItem="{Binding ViewModel.SelectedTransaction}"
+                    VirtualizingPanel.IsVirtualizing="True"
+                    VirtualizingPanel.VirtualizationMode="Recycling"
+                    VirtualizingPanel.ScrollUnit="Pixel"
+                    ScrollViewer.PanningMode="VerticalFirst"
+                    ScrollViewer.PanningRatio="1.5"
+                    ScrollViewer.PanningDeceleration="0.001"
                     VerticalAlignment="Top"
                 >
                     <ui:ListView.ContextMenu>
