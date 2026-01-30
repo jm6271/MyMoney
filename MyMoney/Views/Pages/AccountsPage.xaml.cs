@@ -1,6 +1,7 @@
 ﻿using System.Windows.Controls;
 using MyMoney.ViewModels.Pages;
 using Wpf.Ui;
+using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.Pages
@@ -8,7 +9,7 @@ namespace MyMoney.Views.Pages
     /// <summary>
     /// Interaction logic for Accounts.xaml
     /// </summary>
-    public partial class AccountsPage : Page
+    public partial class AccountsPage : INavigableView<AccountsViewModel>
     {
         // Cache the “wide” padding so we can restore it
         private Thickness _wideTransactionMargin;
