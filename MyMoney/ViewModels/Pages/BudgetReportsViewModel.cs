@@ -158,7 +158,7 @@ namespace MyMoney.ViewModels.Pages
         public async Task CalculateReport(DateTime date)
         {
             ClearReports();
-            var reportData = BudgetReportCalculator.CalculateBudgetReport(date, _databaseReader);
+            var reportData = await BudgetReportCalculator.CalculateBudgetReport(date, _databaseReader);
 
             var (incomeTotal, expenseTotal, reportTotal) = await CalculateReportTotals(
                 reportData.income,

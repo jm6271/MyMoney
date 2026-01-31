@@ -24,8 +24,7 @@ namespace MyMoney.ViewModels.Pages
         /// <summary>
         /// Transactions for the currently selected account
         /// </summary>
-        public ObservableCollection<Transaction> SelectedAccountTransactions =>
-            SelectedAccount?.Transactions ?? new ObservableCollection<Transaction>();
+        public ObservableCollection<Transaction> SelectedAccountTransactions { get; set; } = [];
 
         // Observable properties
         [ObservableProperty]
@@ -101,16 +100,20 @@ namespace MyMoney.ViewModels.Pages
             TransactionsEnabled = Accounts.Count > 0;
         }
 
-        private void SortTransactions()
+        public async Task LoadTransactions()
         {
-            if (SelectedAccount == null)
-                return;
-
-            var sorted = SelectedAccountTransactions.OrderByDescending(p => p.Date).ToList();
-            SelectedAccountTransactions.Clear();
-            foreach (var transaction in sorted)
+            if (SelectedAccount != null)
             {
-                SelectedAccountTransactions.Add(transaction);
+                await _databaseManager.ExecuteAsync(async db =>
+                {
+                    var transactionCollection = db.GetCollection<Transaction>("Transactions");
+                    var transactions = transactionCollection.Query()
+                        .Where(t => t.AccountId == SelectedAccount.Id)
+                        .OrderByDescending(p => p.Date)
+                        .ToList();
+                    SelectedAccountTransactions = new(transactions);
+                    OnPropertyChanged(nameof(SelectedAccountTransactions));
+                });
             }
         }
 
@@ -147,14 +150,6 @@ namespace MyMoney.ViewModels.Pages
             if (newTransaction != null)
             {
                 account.Total += newTransaction.Amount;
-            }
-        }
-
-        private void UpdateAccountIds()
-        {
-            for (var i = 0; i < Accounts.Count; i++)
-            {
-                Accounts[i].Id = i + 1;
             }
         }
 
@@ -343,6 +338,7 @@ namespace MyMoney.ViewModels.Pages
                 amount,
                 viewModel.NewTransactionMemo
             );
+            transaction.AccountId = viewModel.SelectedAccount!.Id;
 
             // make sure there's enough money in the account for this transaction
             if (viewModel.NewTransactionIsExpense)
@@ -378,7 +374,7 @@ namespace MyMoney.ViewModels.Pages
                 SelectedAccountIndex = SelectedAccountIndex,
                 Accounts = Accounts,
                 SelectedAccount = SelectedAccount,
-                AutoSuggestPayees = await Task.Run(() => GetAllPayees())
+                AutoSuggestPayees = await GetAllPayees()
             };
 
             var categories = await Task.Run(() => viewModel.GetBudgetCategoryNames());
@@ -392,9 +388,15 @@ namespace MyMoney.ViewModels.Pages
             UpdateAccountBalance(SelectedAccount!, null, transaction);
             SelectedAccountTransactions.Add(transaction);
 
+            // Write the new transaction to the database
+            await _databaseManager.ExecuteAsync(async db =>
+            {
+                var transactionCollection = db.GetCollection<Transaction>("Transactions");
+                transactionCollection.Insert(transaction);
+            });
+
             UpdateSavingsCategory(transaction, TransactionOperation.Add);
 
-            SortTransactions();
             SaveAccountsToDatabase();
         }
 
@@ -405,7 +407,7 @@ namespace MyMoney.ViewModels.Pages
                 return;
 
             var oldTransaction = SelectedAccountTransactions[SelectedTransactionIndex];
-            var viewModel = CreateTransactionViewModel(oldTransaction);
+            var viewModel = await CreateTransactionViewModel(oldTransaction);
 
             var categories = await Task.Run(() => viewModel.GetBudgetCategoryNames());
             viewModel.SetCategoryNames(categories);
@@ -419,9 +421,16 @@ namespace MyMoney.ViewModels.Pages
             UpdateAccountBalance(SelectedAccount!, oldTransaction, transaction);
             SelectedAccountTransactions[SelectedTransactionIndex] = transaction;
 
+            // Update the transaction in the database
+            await _databaseManager.ExecuteAsync(async db =>
+            {
+                var transactionCollection = db.GetCollection<Transaction>("Transactions");
+                transactionCollection.Delete(oldTransaction.Id);
+                transactionCollection.Insert(transaction);
+            });
+
             UpdateSavingsCategory(transaction, TransactionOperation.Edit, oldTransaction);
 
-            SortTransactions();
             SaveAccountsToDatabase();
         }
 
@@ -453,13 +462,11 @@ namespace MyMoney.ViewModels.Pages
             if (!await ValidateTransactionAmount(viewModel.Amount, fromAccount))
                 return;
 
-            ExecuteTransfer(fromAccount, toAccount, viewModel.Amount);
+            await ExecuteTransfer(fromAccount, toAccount, viewModel.Amount);
             SaveAccountsToDatabase();
-
-            OnPropertyChanged(nameof(SelectedAccountTransactions));
         }
 
-        private void ExecuteTransfer(Account fromAccount, Account toAccount, Currency amount)
+        private async Task ExecuteTransfer(Account fromAccount, Account toAccount, Currency amount)
         {
             var fromTransaction = new Transaction(
                 DateTime.Today,
@@ -468,6 +475,7 @@ namespace MyMoney.ViewModels.Pages
                 new(-amount.Value),
                 "Transfer"
             );
+            fromTransaction.AccountId = fromAccount.Id;
 
             var toTransaction = new Transaction(
                 DateTime.Today,
@@ -476,9 +484,24 @@ namespace MyMoney.ViewModels.Pages
                 amount,
                 "Transfer"
             );
+            toTransaction.AccountId = toAccount.Id;
 
-            fromAccount.Transactions.Add(fromTransaction);
-            toAccount.Transactions.Add(toTransaction);
+            // Write the new transactions to the database
+            await _databaseManager.ExecuteAsync(async db =>
+            {
+                var transactionCollection = db.GetCollection<Transaction>("Transactions");
+                transactionCollection.Insert(fromTransaction);
+                transactionCollection.Insert(toTransaction);
+            });
+
+            // Reload transactions if one of the accounts is currently selected
+            if (SelectedAccount != null)
+            {
+                if (SelectedAccount.Id == fromAccount.Id || SelectedAccount.Id == toAccount.Id)
+                {
+                    await LoadTransactions();
+                }
+            }
 
             fromAccount.Total += fromTransaction.Amount;
             toAccount.Total += toTransaction.Amount;
@@ -508,6 +531,12 @@ namespace MyMoney.ViewModels.Pages
             UpdateSavingsCategory(transaction, TransactionOperation.Delete);
 
             SelectedAccountTransactions.RemoveAt(SelectedTransactionIndex);
+            await _databaseManager.ExecuteAsync(async db =>
+            {
+                var transactionCollection = db.GetCollection<Transaction>("Transactions");
+                transactionCollection.Delete(transaction.Id);
+            });
+
             SaveAccountsToDatabase();
         }
 
@@ -526,7 +555,6 @@ namespace MyMoney.ViewModels.Pages
                 return;
 
             Accounts.RemoveAt(SelectedAccountIndex);
-            UpdateAccountIds();
             SaveAccountsToDatabase();
             TransactionsEnabled = Accounts.Count > 0;
         }
@@ -583,11 +611,16 @@ namespace MyMoney.ViewModels.Pages
                     balanceChange,
                     "Balance update"
                 );
-                SelectedAccount.Transactions.Add(balanceTransaction);
+                balanceTransaction.AccountId = SelectedAccount.Id;
+                SelectedAccountTransactions.Add(balanceTransaction);
+                await _databaseManager.ExecuteAsync(async db =>
+                {
+                    var transactionCollection = db.GetCollection<Transaction>("Transactions");
+                    transactionCollection.Insert(balanceTransaction);
+                });
 
                 SelectedAccount.Total = newBalance;
 
-                SortTransactions();
                 SaveAccountsToDatabase();
             }
         }
@@ -624,7 +657,7 @@ namespace MyMoney.ViewModels.Pages
             return result == Wpf.Ui.Controls.MessageBoxResult.Primary;
         }
 
-        private NewTransactionDialogViewModel CreateTransactionViewModel(Transaction transaction)
+        private async Task<NewTransactionDialogViewModel> CreateTransactionViewModel(Transaction transaction)
         {
             return new NewTransactionDialogViewModel(_databaseManager)
             {
@@ -634,7 +667,7 @@ namespace MyMoney.ViewModels.Pages
                 NewTransactionIsIncome = transaction.Amount.Value >= 0m,
                 NewTransactionMemo = transaction.Memo,
                 NewTransactionPayee = transaction.Payee,
-                AutoSuggestPayees = GetAllPayees(),
+                AutoSuggestPayees = await GetAllPayees(),
                 SelectedAccountIndex = SelectedAccountIndex,
                 Accounts = Accounts,
                 SelectedAccount = SelectedAccount,
@@ -642,16 +675,23 @@ namespace MyMoney.ViewModels.Pages
             };
         }
 
-        private List<string> GetAllPayees()
+        private async Task<List<string>> GetAllPayees()
         {
-            return [.. Accounts.SelectMany(a => a.Transactions).Select(t => t.Payee).Where(p => p != null).Distinct()];
+            var transactions = new List<string>();
+            await _databaseManager.ExecuteAsync(async db =>
+            {
+                var transactionCollection = db.GetCollection<Transaction>("Transactions");
+                transactions = [.. transactionCollection.FindAll()
+                    .Select(t => t.Payee)
+                    .Where(p => p != null)
+                    .Distinct()];
+            });
+            return transactions;
         }
 
         partial void OnSelectedAccountChanged(Account? value)
         {
-            OnPropertyChanged(nameof(SelectedAccountTransactions));
             IsInputEnabled = value != null;
-            SortTransactions();
         }
 
         public void OnPageNavigatedTo()

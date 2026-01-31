@@ -70,5 +70,10 @@ namespace MyMoney.Views.Pages
 
             UpdateTransactionsMaxHeight();
         }
+
+        private async void AccountsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            await ViewModel.LoadTransactions();
+        }
     }
 }

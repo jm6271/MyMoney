@@ -17,7 +17,7 @@ public class NetWorthCalculator
     /// </summary>
     /// <param name="startDate">The earliest date to include in the net worth data</param>
     /// <returns>A list of currency values, with each item representing each day since the start date</returns>
-    public Dictionary<DateTime, decimal> GetNetWorthSinceStartDate(DateTime startDate)
+    public async Task<Dictionary<DateTime, decimal>> GetNetWorthSinceStartDate(DateTime startDate)
     {
         if (startDate > DateTime.Today)
         {
@@ -29,11 +29,15 @@ public class NetWorthCalculator
 
         // Each account has its own transactions, but we need
         // to take all of them and put them in a single list, sorted by date from oldest to newest
-        var allTransactions = accounts
-            .SelectMany(account => account.Transactions)
-            .Where(transaction => transaction.Date >= startDate)
-            .OrderBy(transaction => transaction.Date)
-            .ToList();
+        List<Transaction> allTransactions = [];
+        await _dbManager.ExecuteAsync(async db =>
+        {
+            var transactionCollection = db.GetCollection<Transaction>("Transactions");
+            allTransactions.AddRange(transactionCollection.Query().
+                Where(t => t.Date >= startDate)
+                .OrderBy(transaction => transaction.Date)
+                .ToList());
+        });
 
         // Since we have no way of knowing the total balance of the accounts at the start date,
         // we will have to start with the most recent transaction and work backwards

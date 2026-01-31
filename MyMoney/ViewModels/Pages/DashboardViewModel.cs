@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows.Media;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
@@ -140,18 +141,19 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private Currency _cashFlowTotal = new(0m);
 
+        [ObservableProperty]
+        private Currency _lastMonthCashFlowTotal = new(0m);
+
         public double CashFlowPercentVsLastMonth
         {
             get
             {
-                var lastMonthCashFlow = GetCashFlowTotal(DateTime.Now.AddMonths(-1));
-
-                if (lastMonthCashFlow.Value == 0m)
+                if (LastMonthCashFlowTotal.Value == 0m)
                 {
                     return double.PositiveInfinity;
                 }
                 var percentage = Math.Round(
-                    (double)((CashFlowTotal.Value - lastMonthCashFlow.Value) / Math.Abs(lastMonthCashFlow.Value) * 100),
+                    (double)((CashFlowTotal.Value - LastMonthCashFlowTotal.Value) / Math.Abs(LastMonthCashFlowTotal.Value) * 100),
                     1
                 );
 
@@ -249,21 +251,23 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private Currency _totalSpending = new(0m);
 
+        [ObservableProperty]
+        private Currency _lastMonthTotalSpending = new(0m);
+
         public double SpendingVsLastMonthPercentage
         {
             get
             {
-                Currency lastMonthTotalSpending = GetSpendingTotal(DateTime.Now.AddMonths(-1));
 
-                if (lastMonthTotalSpending.Value == 0m)
+                if (LastMonthTotalSpending.Value == 0m)
                 {
                     return double.PositiveInfinity;
                 }
 
                 var percentage = Math.Round(
                     (double)(
-                        (TotalSpending.Value - lastMonthTotalSpending.Value)
-                        / Math.Abs(lastMonthTotalSpending.Value)
+                        (TotalSpending.Value - LastMonthTotalSpending.Value)
+                        / Math.Abs(LastMonthTotalSpending.Value)
                         * 100
                     ),
                     1
@@ -296,17 +300,17 @@ namespace MyMoney.ViewModels.Pages
         public DashboardViewModel(IDatabaseManager databaseReader)
         {
             _databaseReader = databaseReader ?? throw new ArgumentNullException(nameof(databaseReader));
-            Series = UpdateChartSeries();
         }
 
         private async Task CalculateBudgetReport()
         {
             ClearReports();
-            var reportItems = await Task.Run(LoadReportItems);
+            var reportItems = await LoadReportItems();
             UpdateReportCollections(reportItems);
             await UpdateChartDisplay();
 
-            CashFlowTotal = GetCashFlowTotal(DateTime.Now);
+            CashFlowTotal = await GetCashFlowTotal(DateTime.Now);
+            LastMonthCashFlowTotal = await GetCashFlowTotal(DateTime.Now.AddMonths(-1));
             OnPropertyChanged(nameof(CashFlowPercentVsLastMonth));
             OnPropertyChanged(nameof(CashFlowTotalFormatted));
             OnPropertyChanged(nameof(CashFlowTotalColorBrush));
@@ -314,7 +318,8 @@ namespace MyMoney.ViewModels.Pages
 
             OnPropertyChanged(nameof(BudgetHealthText));
 
-            TotalSpending = GetSpendingTotal(DateTime.Now);
+            TotalSpending = await GetSpendingTotal(DateTime.Now);
+            LastMonthTotalSpending = await GetSpendingTotal(DateTime.Now.AddMonths(-1));
             OnPropertyChanged(nameof(SpendingVsLastMonthPercentage));
             OnPropertyChanged(nameof(SpendingPercentageColorBrush));
         }
@@ -331,13 +336,13 @@ namespace MyMoney.ViewModels.Pages
                 BudgetReportItems.Clear();
         }
 
-        private (
+        private async Task<(
             List<BudgetReportItem> income,
             List<BudgetReportItem> expense,
             List<SavingsCategoryReportItem> savings
-        ) LoadReportItems()
+        )> LoadReportItems()
         {
-            var reportItems = BudgetReportCalculator.CalculateBudgetReport(DateTime.Today, _databaseReader);
+            var reportItems = await BudgetReportCalculator.CalculateBudgetReport(DateTime.Today, _databaseReader);
             var incomeTotal = CalculateTotal(reportItems.income);
             var expenseTotal = CalculateTotal(reportItems.expenses);
             //reportItems.income.Add(incomeTotal);
@@ -414,16 +419,16 @@ namespace MyMoney.ViewModels.Pages
 
         private async Task UpdateChartDisplay()
         {
-            Series = UpdateChartSeries();
-            ExpensePercentagesSeries = UpdateExpenseBreakdownSeries();
+            Series = await UpdateChartSeries();
+            ExpensePercentagesSeries = await UpdateExpenseBreakdownSeries();
             await UpdateNetWorthChart();
             UpdateChartTheme();
         }
 
-        private ISeries[] UpdateChartSeries()
+        private async Task<ISeries[]> UpdateChartSeries()
         {
-            var past12MonthsIncome = IncomeExpense12MonthCalculator.GetPast12MonthsIncome();
-            var past12MonthsExpenses = IncomeExpense12MonthCalculator.GetPast12MonthsExpenses();
+            var past12MonthsIncome = await IncomeExpense12MonthCalculator.GetPast12MonthsIncome();
+            var past12MonthsExpenses = await IncomeExpense12MonthCalculator.GetPast12MonthsExpenses();
 
             var incomeTotal = past12MonthsIncome.Count > 0 ? past12MonthsIncome[^1] : 0.0;
             var expenseTotal = past12MonthsExpenses.Count > 0 ? past12MonthsExpenses[^1] : 0.0;
@@ -440,13 +445,13 @@ namespace MyMoney.ViewModels.Pages
             ];
         }
 
-        private ISeries[] UpdateExpenseBreakdownSeries()
+        private async Task<ISeries[]> UpdateExpenseBreakdownSeries()
         {
             // Get expense categories
-            var expenseCategories = BudgetReportCalculator.CalculateExpenseReportItems(DateTime.Now, _databaseReader);
+            var expenseCategories = await BudgetReportCalculator.CalculateExpenseReportItems(DateTime.Now, _databaseReader);
 
             // Include savings with expenses
-            var savingsCategories = BudgetReportCalculator.CalculateSavingsReportItems(DateTime.Now, _databaseReader);
+            var savingsCategories = await BudgetReportCalculator.CalculateSavingsReportItems(DateTime.Now, _databaseReader);
             foreach (var savings in savingsCategories)
             {
                 expenseCategories.Add(new BudgetReportItem { Category = savings.Category, Actual = savings.Saved });
@@ -542,9 +547,7 @@ namespace MyMoney.ViewModels.Pages
         private async Task UpdateNetWorthChart()
         {
             var netWorthCalculator = new NetWorthCalculator(_databaseReader);
-            var netWorthData = await Task.Run(() =>
-                netWorthCalculator.GetNetWorthSinceStartDate(DateTime.Today.AddDays(-30))
-            );
+            var netWorthData = await netWorthCalculator.GetNetWorthSinceStartDate(DateTime.Today.AddDays(-30));
 
             // Convert to a list of DateTimePoint
             List<DateTimePoint> dateTimePoints = [];
@@ -573,10 +576,10 @@ namespace MyMoney.ViewModels.Pages
             ];
         }
 
-        private Currency GetCashFlowTotal(DateTime month)
+        private async Task<Currency> GetCashFlowTotal(DateTime month)
         {
             // Get a budget report for the specified month
-            var report = BudgetReportCalculator.CalculateBudgetReport(month, _databaseReader);
+            var report = await BudgetReportCalculator.CalculateBudgetReport(month, _databaseReader);
 
             Currency income = new(0m);
             foreach (var item in report.income)
@@ -593,9 +596,9 @@ namespace MyMoney.ViewModels.Pages
             return income - expense;
         }
 
-        private Currency GetSpendingTotal(DateTime month)
+        private async Task<Currency> GetSpendingTotal(DateTime month)
         {
-            var report = BudgetReportCalculator.CalculateExpenseReportItems(month, _databaseReader);
+            var report = await BudgetReportCalculator.CalculateExpenseReportItems(month, _databaseReader);
             Currency totalSpending = new(0m);
             foreach (var item in report)
             {

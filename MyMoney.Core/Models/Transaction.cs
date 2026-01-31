@@ -24,6 +24,9 @@ public partial class Transaction : ObservableObject
     public string TransactionHash { get; private set; } = "";
 
     [ObservableProperty]
+    private int _id;
+
+    [ObservableProperty]
     private string _payee;
 
     [ObservableProperty]
@@ -43,6 +46,9 @@ public partial class Transaction : ObservableObject
 
     [ObservableProperty]
     private bool _reconciled = false;
+
+    [ObservableProperty]
+    private int _accountId = -1;
 
     public string DateFormatted
     {

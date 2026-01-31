@@ -128,7 +128,7 @@ namespace MyMoney.ViewModels.Pages
 
         private async Task Update12MonthIncomeExpenseChart()
         {
-            var (incomeSeries, expenseSeries) = await Task.Run(GetChartData);
+            var (incomeSeries, expenseSeries) = await GetChartData();
             UpdateChartSeries(incomeSeries, expenseSeries);
             UpdateChartAxes();
             UpdateChartLegend();
@@ -138,10 +138,9 @@ namespace MyMoney.ViewModels.Pages
         {
             DatabaseManager dbManager = new();
             var netWorthCalculator = new NetWorthCalculator(dbManager);
-            var netWorthData = await Task.Run(() =>
+            var netWorthData = await
                 netWorthCalculator.GetNetWorthSinceStartDate(
                     DateTime.Today.AddDays(-GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex) + 1)
-                )
             );
 
             // Convert to a list of DateTimePoint
@@ -191,11 +190,11 @@ namespace MyMoney.ViewModels.Pages
             };
         }
 
-        private static (List<double> income, List<double> expenses) GetChartData()
+        private static async Task<(List<double> income, List<double> expenses)> GetChartData()
         {
             return (
-                IncomeExpense12MonthCalculator.GetPast12MonthsIncome(),
-                IncomeExpense12MonthCalculator.GetPast12MonthsExpenses()
+                await IncomeExpense12MonthCalculator.GetPast12MonthsIncome(),
+                await IncomeExpense12MonthCalculator.GetPast12MonthsExpenses()
             );
         }
 

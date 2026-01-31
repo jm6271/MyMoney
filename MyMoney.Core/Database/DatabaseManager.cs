@@ -39,10 +39,7 @@ namespace MyMoney.Core.Database
                 var collection = db.GetCollection<T>(collectionName);
 
                 // Create list from collection
-                for (int i = 1; i <= collection.Count(); i++)
-                {
-                    result.Add(collection.FindById(i));
-                }
+                result = [.. collection.FindAll()];
             }
             finally
             {
