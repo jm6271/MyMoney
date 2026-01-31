@@ -21,6 +21,21 @@ namespace MyMoney.Core.Database
     public class DatabaseManager : IDatabaseManager
     {
         private static readonly SemaphoreSlim _databaseLock = new(1);
+        private readonly LiteDatabase _db;
+
+        private readonly string _dataFilePath;
+
+        public DatabaseManager()
+        {
+            _dataFilePath = DataFileLocationGetter.GetDataFilePath();
+            _db = new LiteDatabase(_dataFilePath);
+        }
+
+        public DatabaseManager(string dataFilePath)
+        {
+            _dataFilePath = dataFilePath;
+            _db = new LiteDatabase(_dataFilePath);
+        }
 
         /// <summary>
         /// Read a collection from the database
@@ -35,8 +50,7 @@ namespace MyMoney.Core.Database
             _databaseLock.Wait();
             try
             {
-                using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
-                var collection = db.GetCollection<T>(collectionName);
+                var collection = _db.GetCollection<T>(collectionName);
 
                 // Create list from collection
                 result = [.. collection.FindAll()];
@@ -57,9 +71,7 @@ namespace MyMoney.Core.Database
             _databaseLock.Wait();
             try
             {
-                using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
-
-                var dbCollection = db.GetCollection<KeyValuePair<string, string>>(collectionName);
+                var dbCollection = _db.GetCollection<KeyValuePair<string, string>>(collectionName);
                 settingsList = [.. dbCollection.FindAll()];
             }
             finally
@@ -80,14 +92,13 @@ namespace MyMoney.Core.Database
             _databaseLock.Wait();
             try
             {
-                using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
-                db.BeginTrans();
+                _db.BeginTrans();
 
-                var col = db.GetCollection<T>(collectionName);
+                var col = _db.GetCollection<T>(collectionName);
                 col.DeleteAll();
                 col.InsertBulk(collection);
 
-                db.Commit();
+                _db.Commit();
             }
             finally
             {
@@ -104,17 +115,14 @@ namespace MyMoney.Core.Database
             _databaseLock.Wait();
             try
             {
-                // Open or create a database file
-                using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
-
                 // Get a list version
                 var dictList = collection.ToList();
 
                 // Clear the old collection
-                if (db.CollectionExists(collectionName))
-                    db.DropCollection(collectionName);
+                if (_db.CollectionExists(collectionName))
+                    _db.DropCollection(collectionName);
 
-                var dbCollection = db.GetCollection<KeyValuePair<string, string>>(collectionName);
+                var dbCollection = _db.GetCollection<KeyValuePair<string, string>>(collectionName);
 
                 dbCollection.Insert(dictList);
                 dbCollection.EnsureIndex(x => x.Key);
@@ -133,9 +141,7 @@ namespace MyMoney.Core.Database
             _databaseLock.Wait();
             try
             {
-                using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
-
-                var dbCollection = db.GetCollection<KeyValuePair<TKey, TValue>>(dictName);
+                var dbCollection = _db.GetCollection<KeyValuePair<TKey, TValue>>(dictName);
                 var settingsList = dbCollection.FindAll().ToList();
 
                 foreach (var item in settingsList)
@@ -156,17 +162,14 @@ namespace MyMoney.Core.Database
             _databaseLock.Wait();
             try
             {
-                // Open or create a database file
-                using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
-
                 // Get a list version
                 var dictList = dictionary.ToList();
 
                 // Clear the old collection
-                if (db.CollectionExists(dictName))
-                    db.DropCollection(dictName);
+                if (_db.CollectionExists(dictName))
+                    _db.DropCollection(dictName);
 
-                var dbCollection = db.GetCollection<KeyValuePair<TKey, TValue>>(dictName);
+                var dbCollection = _db.GetCollection<KeyValuePair<TKey, TValue>>(dictName);
 
                 dbCollection.Insert(dictList);
                 dbCollection.EnsureIndex(x => x.Key);
@@ -182,9 +185,7 @@ namespace MyMoney.Core.Database
             await _databaseLock.WaitAsync();
             try
             {
-                using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
-                await action(db);
-
+                await action(_db);
             }
             finally
             {

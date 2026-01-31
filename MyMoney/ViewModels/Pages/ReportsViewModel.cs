@@ -96,7 +96,14 @@ namespace MyMoney.ViewModels.Pages
 
         #endregion
 
+        private readonly IDatabaseManager _databaseManager;
+
         #region Public Methods
+
+        public ReportsViewModel(IDatabaseManager databaseManager)
+        {
+            _databaseManager = databaseManager;
+        }
 
         public async Task OnNavigatedToAsync()
         {
@@ -136,8 +143,7 @@ namespace MyMoney.ViewModels.Pages
 
         private async Task UpdateNetWorthChart()
         {
-            DatabaseManager dbManager = new();
-            var netWorthCalculator = new NetWorthCalculator(dbManager);
+            var netWorthCalculator = new NetWorthCalculator(_databaseManager);
             var netWorthData = await
                 netWorthCalculator.GetNetWorthSinceStartDate(
                     DateTime.Today.AddDays(-GetNetWorthPeriodNumberOfDays((NetWorthPeriod)NetWorthPeriodIndex) + 1)
@@ -190,11 +196,11 @@ namespace MyMoney.ViewModels.Pages
             };
         }
 
-        private static async Task<(List<double> income, List<double> expenses)> GetChartData()
+        private async Task<(List<double> income, List<double> expenses)> GetChartData()
         {
             return (
-                await IncomeExpense12MonthCalculator.GetPast12MonthsIncome(),
-                await IncomeExpense12MonthCalculator.GetPast12MonthsExpenses()
+                await IncomeExpense12MonthCalculator.GetPast12MonthsIncome(_databaseManager),
+                await IncomeExpense12MonthCalculator.GetPast12MonthsExpenses(_databaseManager)
             );
         }
 

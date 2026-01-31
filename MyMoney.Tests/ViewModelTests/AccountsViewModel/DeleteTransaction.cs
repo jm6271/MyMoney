@@ -1,10 +1,11 @@
-﻿using Moq;
+using Moq;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Services;
 using MyMoney.ViewModels.Pages;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
+using MyMoney.Tests;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -71,17 +72,30 @@ public class DeleteTransactionTest
     {
         // Arrange
         _viewModel = CreateViewModel();
-        var account = new Account { AccountName = "Test", Total = new Currency(1000m) };
+        var account = new Account { AccountName = "Test", Total = new Currency(1000m), Id = 1 };
         var transaction = new Transaction(
             DateTime.Today,
             "Test",
             new() { Name = "Category", Group = "Income" },
             new Currency(100m),
             "Memo"
-        );
-        account.Transactions.Add(transaction);
+        )
+        {
+            AccountId = account.Id
+        };
+        
+        // Setup accounts and transactions
+        var transactions = new List<Transaction> { transaction };
+        Utils.SetupTransactionsMock(_mockDatabaseService, transactions);
+        
+        _mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts"))
+            .Returns(new List<Account> { account });
+
         _viewModel.Accounts.Add(account);
         _viewModel.SelectedAccount = account;
+        
+        // Load transactions for the account
+        _viewModel.LoadTransactions().Wait();
         _viewModel.SelectedTransactionIndex = 0;
 
         _mockMessageBoxService
@@ -92,7 +106,7 @@ public class DeleteTransactionTest
         _viewModel.DeleteTransactionCommand.Execute(null);
 
         // Assert
-        Assert.HasCount(1, account.Transactions);
+        Assert.HasCount(1, _viewModel.SelectedAccountTransactions);
         Assert.AreEqual(1000m, account.Total.Value);
     }
 
@@ -101,17 +115,30 @@ public class DeleteTransactionTest
     {
         // Arrange
         _viewModel = CreateViewModel();
-        var account = new Account { AccountName = "Test", Total = new Currency(1000m) };
+        var account = new Account { AccountName = "Test", Total = new Currency(1000m), Id = 1 };
         var transaction = new Transaction(
             DateTime.Today,
             "Test",
             new() { Name = "Category", Group = "Income" },
             new Currency(100m),
             "Memo"
-        );
-        account.Transactions.Add(transaction);
+        )
+        {
+            AccountId = account.Id
+        };
+        
+        // Setup accounts and transactions
+        var transactions = new List<Transaction> { transaction };
+        Utils.SetupTransactionsMock(_mockDatabaseService, transactions);
+        
+        _mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts"))
+            .Returns(new List<Account> { account });
+
         _viewModel.Accounts.Add(account);
         _viewModel.SelectedAccount = account;
+        
+        // Load transactions for the account
+        _viewModel.LoadTransactions().Wait();
         _viewModel.SelectedTransactionIndex = 0;
 
         _mockMessageBoxService
@@ -122,7 +149,7 @@ public class DeleteTransactionTest
         _viewModel.DeleteTransactionCommand.Execute(null);
 
         // Assert
-        Assert.HasCount(0, account.Transactions);
+        Assert.HasCount(0, _viewModel.SelectedAccountTransactions);
         Assert.AreEqual(900m, account.Total.Value); // 1000 - 100
     }
 
@@ -131,17 +158,30 @@ public class DeleteTransactionTest
     {
         // Arrange
         _viewModel = CreateViewModel();
-        var account = new Account { AccountName = "Test", Total = new Currency(1000m) };
+        var account = new Account { AccountName = "Test", Total = new Currency(1000m), Id = 1 };
         var transaction = new Transaction(
             DateTime.Today,
             "Test",
             new() { Name = "Category", Group = "Income" },
             new Currency(-100m),
             "Memo"
-        );
-        account.Transactions.Add(transaction);
+        )
+        {
+            AccountId = account.Id
+        };
+        
+        // Setup accounts and transactions
+        var transactions = new List<Transaction> { transaction };
+        Utils.SetupTransactionsMock(_mockDatabaseService, transactions);
+        
+        _mockDatabaseService.Setup(service => service.GetCollection<Account>("Accounts"))
+            .Returns(new List<Account> { account });
+
         _viewModel.Accounts.Add(account);
         _viewModel.SelectedAccount = account;
+        
+        // Load transactions for the account
+        _viewModel.LoadTransactions().Wait();
         _viewModel.SelectedTransactionIndex = 0;
 
         _mockMessageBoxService
@@ -152,7 +192,7 @@ public class DeleteTransactionTest
         _viewModel.DeleteTransactionCommand.Execute(null);
 
         // Assert
-        Assert.IsEmpty(account.Transactions);
+        Assert.IsEmpty(_viewModel.SelectedAccountTransactions);
         Assert.AreEqual(1100m, account.Total.Value); // 1000 - (-100)
     }
 

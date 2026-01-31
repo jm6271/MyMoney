@@ -117,6 +117,16 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
+        private void SortTransactions()
+        {
+            if (SelectedAccount == null)
+                return;
+
+            var sorted = SelectedAccountTransactions.OrderByDescending(p => p.Date).ToList();
+            SelectedAccountTransactions = new(sorted);
+            OnPropertyChanged(nameof(SelectedAccountTransactions));
+        }
+
         private void SaveAccountsToDatabase()
         {
             _databaseManager.WriteCollection("Accounts", [.. Accounts]);
@@ -387,6 +397,7 @@ namespace MyMoney.ViewModels.Pages
             SelectedAccountIndex = viewModel.SelectedAccountIndex;
             UpdateAccountBalance(SelectedAccount!, null, transaction);
             SelectedAccountTransactions.Add(transaction);
+            await Task.Run(() => SortTransactions());
 
             // Write the new transaction to the database
             await _databaseManager.ExecuteAsync(async db =>
@@ -420,6 +431,7 @@ namespace MyMoney.ViewModels.Pages
 
             UpdateAccountBalance(SelectedAccount!, oldTransaction, transaction);
             SelectedAccountTransactions[SelectedTransactionIndex] = transaction;
+            await Task.Run(() => SortTransactions());
 
             // Update the transaction in the database
             await _databaseManager.ExecuteAsync(async db =>
@@ -626,9 +638,13 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private void ReconcileTransaction()
+        private async Task ReconcileTransaction(Transaction transaction)
         {
-            SaveAccountsToDatabase();
+            await _databaseManager.ExecuteAsync(async db =>
+            {
+                var transactionCollection = db.GetCollection<Transaction>("Transactions");
+                transactionCollection.Update(transaction);
+            });
         }
 
         private bool EnsureAccountSelected()

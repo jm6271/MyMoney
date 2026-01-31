@@ -30,6 +30,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _contentDialogFactory = new Mock<IContentDialogFactory>();
 
             _databaseReader.Setup(x => x.GetCollection<Account>("Accounts")).Returns([]);
+            Utils.SetupTransactionsMock(_databaseReader, []);
 
             _viewModel = new MyMoney.ViewModels.Pages.AccountsViewModel(
                 _contentDialogService.Object,
@@ -51,7 +52,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
                 new Currency(-100),
                 "Memo"
             );
-            account.Transactions.Add(transaction);
+            _viewModel.SelectedAccountTransactions.Add(transaction);
 
             _viewModel.Accounts.Add(account);
             _viewModel.SelectedAccount = account;
@@ -67,7 +68,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             await _viewModel.EditTransactionCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.HasCount(1, account.Transactions);
+            Assert.HasCount(1, _viewModel.SelectedAccountTransactions);
             Assert.AreEqual(1000, account.Total.Value);
         }
 
@@ -75,18 +76,27 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
         public async Task EditTransaction_UpdatesAmountAndBalance()
         {
             // Arrange
-            var account = new Account { AccountName = "Test", Total = new Currency(1000) };
+            var account = new Account { AccountName = "Test", Total = new Currency(1000), Id = 1 };
             var oldTransaction = new Transaction(
                 DateTime.Today,
                 "Test",
                 new() { Name = "Category", Group = "Income" },
                 new Currency(-100),
                 "Memo"
-            );
-            account.Transactions.Add(oldTransaction);
+            )
+            {
+                AccountId = account.Id
+            };
+            
+            var transactions = new List<Transaction> { oldTransaction };
+            Utils.SetupTransactionsMock(_databaseReader, transactions);
+            
+            _databaseReader.Setup(x => x.GetCollection<Account>("Accounts"))
+                .Returns(new List<Account> { account });
 
             _viewModel.Accounts.Add(account);
             _viewModel.SelectedAccount = account;
+            _viewModel.LoadTransactions().Wait();
             _viewModel.SelectedTransactionIndex = 0;
 
             var fake = new Mock<IContentDialog>();
@@ -112,7 +122,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             await _viewModel.EditTransactionCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.AreEqual(-200, account.Transactions[0].Amount.Value);
+            Assert.AreEqual(-200, _viewModel.SelectedAccountTransactions[0].Amount.Value);
             Assert.AreEqual(900, account.Total.Value);
         }
     }

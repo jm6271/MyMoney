@@ -1,9 +1,11 @@
 using System.Collections.ObjectModel;
+using LiteDB;
 using Moq;
 using MyMoney.Abstractions;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Services;
+using MyMoney.Tests;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.ViewModels.Pages;
 using MyMoney.Views.ContentDialogs;
@@ -45,9 +47,12 @@ public class NewTransactionTests
     public async Task CreateNewTransaction_NoSelectedAccountButAccountsExist_SelectsFirstAccount()
     {
         // Arrange
-        var account = new Account { AccountName = "Test Account", Total = new Currency(1000) };
+        var account = new Account { AccountName = "Test Account", Total = new Currency(1000), Id = 1 };
         _viewModel.Accounts.Add(account);
         Assert.IsNull(_viewModel.SelectedAccount);
+        
+        var transactions = new List<Transaction>();
+        Utils.SetupTransactionsMock(_databaseReaderMock, transactions);
 
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
@@ -94,7 +99,7 @@ public class NewTransactionTests
         await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.IsEmpty(account.Transactions);
+        Assert.IsEmpty(_viewModel.SelectedAccountTransactions);
         Assert.AreEqual(1000, account.Total.Value);
     }
 
@@ -130,10 +135,10 @@ public class NewTransactionTests
         await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.HasCount(1, account.Transactions);
+        Assert.HasCount(1, _viewModel.SelectedAccountTransactions);
         Assert.AreEqual(500, account.Total.Value); // 1000 - 500
 
-        var transaction = account.Transactions[0];
+        var transaction = _viewModel.SelectedAccountTransactions[0];
         Assert.AreEqual("Test Payee", transaction.Payee);
         Assert.AreEqual("Test Category", transaction.Category.Name);
         Assert.AreEqual("Income", transaction.Category.Group);
@@ -174,10 +179,10 @@ public class NewTransactionTests
         await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.HasCount(1, account.Transactions);
+        Assert.HasCount(1, _viewModel.SelectedAccountTransactions);
         Assert.AreEqual(1500, account.Total.Value); // 1000 + 500
 
-        var transaction = account.Transactions[0];
+        var transaction = _viewModel.SelectedAccountTransactions[0];
         Assert.AreEqual("Employer", transaction.Payee);
         Assert.AreEqual("Income", transaction.Category.Name);
         Assert.AreEqual("Income", transaction.Category.Group);
@@ -217,7 +222,7 @@ public class NewTransactionTests
         await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
 
         // Assert
-        Assert.IsEmpty(account.Transactions);
+        Assert.IsEmpty(_viewModel.SelectedAccountTransactions);
         Assert.AreEqual(1000, account.Total.Value);
 
         // Verify message box was shown for insufficient funds

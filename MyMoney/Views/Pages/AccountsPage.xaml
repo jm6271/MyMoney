@@ -169,7 +169,8 @@
                                           Grid.Row="0" Grid.RowSpan="2"
                                           IsChecked="{Binding Reconciled}"
                                           Command="{Binding DataContext.ViewModel.ReconcileTransactionCommand, 
-                                    RelativeSource={RelativeSource AncestorType=ui:ListView}}"/>
+                                    RelativeSource={RelativeSource AncestorType=ui:ListView}}"
+                                          CommandParameter="{Binding}"/>
 
                                 <ui:TextBlock
                                     Grid.Row="0"

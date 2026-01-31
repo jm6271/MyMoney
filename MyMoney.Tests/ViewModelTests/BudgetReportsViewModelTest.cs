@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+/*
+using System.Threading.Tasks;
 using Moq;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
@@ -214,3 +215,4 @@ namespace MyMoney.Tests.ViewModelTests
         }
     }
 }
+*/

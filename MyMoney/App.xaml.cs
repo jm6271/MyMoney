@@ -76,7 +76,7 @@ namespace MyMoney
                     services.AddTransient<BudgetReportsViewModel>();
 
                     // Database
-                    services.AddTransient<IDatabaseManager, DatabaseManager>();
+                    services.AddSingleton<IDatabaseManager, DatabaseManager>();
 
                     services.AddSingleton<IContentDialogFactory, ContentDialogFactory>();
 

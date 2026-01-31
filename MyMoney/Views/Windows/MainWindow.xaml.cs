@@ -24,11 +24,14 @@ namespace MyMoney.Views.Windows
 
         private bool _isWindowLoaded;
 
+        private readonly IDatabaseManager _databaseManager;
+
         public MainWindow(
             MainWindowViewModel viewModel,
             INavigationViewPageProvider pageService,
             INavigationService navigationService,
-            IContentDialogService contentDialogService
+            IContentDialogService contentDialogService,
+            IDatabaseManager databaseManager
         )
         {
             ViewModel = viewModel;
@@ -42,8 +45,8 @@ namespace MyMoney.Views.Windows
             contentDialogService.SetDialogHost(RootContentDialog);
 
             // Load the database and make sure the data is in the right format for this version of the application
-            DatabaseManager dbReader = new();
-            DataVersionManager dataVersionManager = new(dbReader);
+            _databaseManager = databaseManager;
+            DataVersionManager dataVersionManager = new(_databaseManager);
             if (!dataVersionManager.EnsureDataVersion())
             {
                 // The database version is newer than the application version, we can't read it.
@@ -59,7 +62,7 @@ namespace MyMoney.Views.Windows
             }
 
             // Load the theme from settings
-            var SettingsDict = dbReader.GetSettingsDictionary("ApplicationSettings");
+            var SettingsDict = _databaseManager.GetSettingsDictionary("ApplicationSettings");
 
             if (SettingsDict != null && SettingsDict.Count > 0 && SettingsDict.ContainsKey("AppTheme"))
             {
@@ -145,8 +148,7 @@ namespace MyMoney.Views.Windows
         private async void FluentWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             // Check settings to see if we need to do a backup
-            var databaseReader = new DatabaseManager();
-            var settingsDict = databaseReader.GetSettingsDictionary("ApplicationSettings");
+            var settingsDict = _databaseManager.GetSettingsDictionary("ApplicationSettings");
 
             BackupModeRadioButtonGroup BackupMode = BackupModeRadioButtonGroup.Manual;
             string BackupLocation = "";

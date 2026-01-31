@@ -427,8 +427,8 @@ namespace MyMoney.ViewModels.Pages
 
         private async Task<ISeries[]> UpdateChartSeries()
         {
-            var past12MonthsIncome = await IncomeExpense12MonthCalculator.GetPast12MonthsIncome();
-            var past12MonthsExpenses = await IncomeExpense12MonthCalculator.GetPast12MonthsExpenses();
+            var past12MonthsIncome = await IncomeExpense12MonthCalculator.GetPast12MonthsIncome(_databaseReader);
+            var past12MonthsExpenses = await IncomeExpense12MonthCalculator.GetPast12MonthsExpenses(_databaseReader);
 
             var incomeTotal = past12MonthsIncome.Count > 0 ? past12MonthsIncome[^1] : 0.0;
             var expenseTotal = past12MonthsExpenses.Count > 0 ? past12MonthsExpenses[^1] : 0.0;
