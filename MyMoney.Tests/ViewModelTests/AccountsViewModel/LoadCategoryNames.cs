@@ -1,4 +1,4 @@
-/*using Moq;
+using Moq;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.ViewModels.ContentDialogs; // Added missing namespace
@@ -31,7 +31,7 @@ public class LoadCategoryNames
         _databaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
 
         // Act
-        var categoryNames = _viewModel.BudgetCategoryNames;
+        var categoryNames = _viewModel.GetBudgetCategoryNames();
 
         // Assert
         Assert.IsFalse(categoryNames.Any());
@@ -64,7 +64,7 @@ public class LoadCategoryNames
         _databaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget> { budget });
 
         // Act
-        var categoryNames = _viewModel.BudgetCategoryNames;
+        var categoryNames = _viewModel.GetBudgetCategoryNames();
 
         // Assert
         Assert.HasCount(5, categoryNames);
@@ -97,8 +97,8 @@ public class LoadCategoryNames
         _databaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget> { budget });
 
         // Act
-        var firstAccess = _viewModel.BudgetCategoryNames;
-        var secondAccess = _viewModel.BudgetCategoryNames;
+        var firstAccess = _viewModel.GetBudgetCategoryNames();
+        var secondAccess = _viewModel.GetBudgetCategoryNames();
 
         // Assert
         Assert.HasCount(2, secondAccess);
@@ -106,4 +106,4 @@ public class LoadCategoryNames
         Assert.AreEqual(1, secondAccess.Count(x => x.Name.ToString() == "Groceries"));
     }
 }
-*/
+

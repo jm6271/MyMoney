@@ -16,48 +16,59 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
     public class EditTransactionTests
     {
         private Mock<IContentDialogService> _contentDialogService;
-        private Mock<IDatabaseManager> _databaseReader;
         private Mock<IMessageBoxService> _messageBoxService;
         private Mock<IContentDialogFactory> _contentDialogFactory;
         private MyMoney.ViewModels.Pages.AccountsViewModel _viewModel;
 
+        private DatabaseManager _databaseManager;
+
         [TestInitialize]
-        public void Setup()
+        public async Task Setup()
         {
             _contentDialogService = new Mock<IContentDialogService>();
-            _databaseReader = new Mock<IDatabaseManager>();
             _messageBoxService = new Mock<IMessageBoxService>();
             _contentDialogFactory = new Mock<IContentDialogFactory>();
 
-            _databaseReader.Setup(x => x.GetCollection<Account>("Accounts")).Returns([]);
-            Utils.SetupTransactionsMock(_databaseReader, []);
+            _databaseManager = new(":memory:");
+
+            _databaseManager.WriteCollection("Accounts", [
+                new Account { AccountName = "Test", Total = new Currency(1000m), Id = 1 },
+            ]);
+
+            _databaseManager.WriteCollection<Transaction>("Transactions", [
+                new Transaction(
+                    DateTime.Today,
+                    "Test",
+                    new() { Name = "Category", Group = "Income" },
+                    new Currency(-100m),
+                    "Memo"
+                )
+                {
+                    AccountId = 1
+                },
+            ]);
 
             _viewModel = new MyMoney.ViewModels.Pages.AccountsViewModel(
                 _contentDialogService.Object,
-                _databaseReader.Object,
+                _databaseManager,
                 _messageBoxService.Object,
                 _contentDialogFactory.Object
             );
+
+            _viewModel.SelectedAccount = _viewModel.Accounts[0];
+            _viewModel.SelectedAccountIndex = 0;
+
+            await _viewModel.OnNavigatedToAsync();
+            await _viewModel.LoadTransactions();
+
+            _viewModel.SelectedTransactionIndex = 0;
+            _viewModel.SelectedTransaction = _viewModel.SelectedAccountTransactions[0];
         }
 
         [TestMethod]
         public async Task EditTransaction_DialogCanceled_DoesNotUpdateTransaction()
         {
             // Arrange
-            var account = new Account { AccountName = "Test", Total = new Currency(1000) };
-            var transaction = new Transaction(
-                DateTime.Today,
-                "Test",
-                new() { Name = "Category", Group = "Income" },
-                new Currency(-100),
-                "Memo"
-            );
-            _viewModel.SelectedAccountTransactions.Add(transaction);
-
-            _viewModel.Accounts.Add(account);
-            _viewModel.SelectedAccount = account;
-            _viewModel.SelectedTransactionIndex = 0;
-
             var fake = new Mock<IContentDialog>();
             fake.SetupAllProperties();
             fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ContentDialogResult.Secondary);
@@ -69,36 +80,13 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
 
             // Assert
             Assert.HasCount(1, _viewModel.SelectedAccountTransactions);
-            Assert.AreEqual(1000, account.Total.Value);
+            Assert.AreEqual(1000, _viewModel.Accounts[0].Total.Value);
         }
 
         [TestMethod]
         public async Task EditTransaction_UpdatesAmountAndBalance()
         {
             // Arrange
-            var account = new Account { AccountName = "Test", Total = new Currency(1000), Id = 1 };
-            var oldTransaction = new Transaction(
-                DateTime.Today,
-                "Test",
-                new() { Name = "Category", Group = "Income" },
-                new Currency(-100),
-                "Memo"
-            )
-            {
-                AccountId = account.Id
-            };
-            
-            var transactions = new List<Transaction> { oldTransaction };
-            Utils.SetupTransactionsMock(_databaseReader, transactions);
-            
-            _databaseReader.Setup(x => x.GetCollection<Account>("Accounts"))
-                .Returns(new List<Account> { account });
-
-            _viewModel.Accounts.Add(account);
-            _viewModel.SelectedAccount = account;
-            _viewModel.LoadTransactions().Wait();
-            _viewModel.SelectedTransactionIndex = 0;
-
             var fake = new Mock<IContentDialog>();
             fake.SetupAllProperties();
             fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
@@ -123,7 +111,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
 
             // Assert
             Assert.AreEqual(-200, _viewModel.SelectedAccountTransactions[0].Amount.Value);
-            Assert.AreEqual(900, account.Total.Value);
+            Assert.AreEqual(900, _viewModel.Accounts[0].Total.Value);
         }
     }
 }

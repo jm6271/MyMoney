@@ -1,4 +1,4 @@
-/*
+using System.Threading.Tasks;
 using LiteDB;
 using Moq;
 using MyMoney.Abstractions;
@@ -19,55 +19,40 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel;
 public class UpdateSavingsCategoryTests
 {
     private Mock<IContentDialogService> _contentDialogServiceMock;
-    private Mock<IDatabaseManager> _databaseReaderMock;
     private Mock<IMessageBoxService> _messageBoxServiceMock;
     private Mock<IContentDialogFactory> _contentDialogFactoryMock;
     private ViewModels.Pages.AccountsViewModel _viewModel;
 
     // Common test objects
-    private List<Budget> _finalBudgetCollection;
-    private Budget _testBudget;
-    private Account _testAccount;
+    private DatabaseManager _databaseManager;
 
     [TestInitialize]
-    public void Setup()
+    public async Task Setup()
     {
         _contentDialogServiceMock = new Mock<IContentDialogService>();
-        _databaseReaderMock = new Mock<IDatabaseManager>();
         _messageBoxServiceMock = new Mock<IMessageBoxService>();
         _contentDialogFactoryMock = new Mock<IContentDialogFactory>();
 
-        _databaseReaderMock.Setup(x => x.GetCollection<Account>("Accounts")).Returns([]);
+        _databaseManager = new(":memory:");
+        _databaseManager.WriteCollection("Accounts", [
+            new Account() { AccountName = "Test Account", Total = new(1000), Id = 1 }
+        ]);
+
+        _databaseManager.WriteCollection("Budgets", [
+            new Budget()
+            {
+                BudgetDate = DateTime.Today,
+                BudgetTitle = DateTime.Today.ToString("MMMM, yyyy"),
+                BudgetSavingsCategories = [new() { CategoryName = "Test Category", CurrentBalance = new(500) }],
+            }
+        ]);
 
         _viewModel = new ViewModels.Pages.AccountsViewModel(
             _contentDialogServiceMock.Object,
-            _databaseReaderMock.Object,
+            _databaseManager,
             _messageBoxServiceMock.Object,
             _contentDialogFactoryMock.Object
         );
-
-        // Initialize common test objects
-        _finalBudgetCollection = [];
-        _testAccount = new Account() { AccountName = "Test Account", Total = new(1000) };
-        _viewModel.Accounts.Add(_testAccount);
-
-        _testBudget = new Budget()
-        {
-            BudgetDate = DateTime.Today,
-            BudgetTitle = DateTime.Today.ToString("MMMM, yyyy"),
-            BudgetSavingsCategories = [new() { CategoryName = "Test Category", CurrentBalance = new(500) }],
-        };
-
-        _databaseReaderMock.Setup(x => x.GetCollection<Budget>("Budgets")).Returns([_testBudget]);
-
-        _databaseReaderMock
-            .Setup(x => x.WriteCollection("Budgets", It.IsAny<List<Budget>>()))
-            .Callback<string, List<Budget>>(
-                (collectionName, collection) =>
-                {
-                    _finalBudgetCollection = collection;
-                }
-            );
 
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
@@ -76,6 +61,7 @@ public class UpdateSavingsCategoryTests
         _contentDialogFactoryMock.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);
 
         // Common view model selection setup
+        await _viewModel.OnNavigatedToAsync();
         _viewModel.SelectedAccountIndex = 0;
         _viewModel.SelectedAccount = _viewModel.Accounts[0];
     }
@@ -106,16 +92,18 @@ public class UpdateSavingsCategoryTests
         // Act
         await _viewModel.CreateNewTransactionCommand.ExecuteAsync(null);
 
+        var finalBudgetCollection = new BudgetCollection(_databaseManager);
+
         // Assert
-        Assert.HasCount(1, _finalBudgetCollection);
-        Account account = _viewModel.Accounts[0];
-        Assert.HasCount(1, account.Transactions);
-        Assert.HasCount(1, _finalBudgetCollection[0].BudgetSavingsCategories[0].Transactions);
+        Assert.HasCount(1, finalBudgetCollection.Budgets);
+        await _viewModel.LoadTransactions();
+        Assert.HasCount(1, _viewModel.SelectedAccountTransactions);
+        Assert.HasCount(1, finalBudgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions);
         Assert.AreEqual(
-            account.Transactions[0].TransactionHash,
-            _finalBudgetCollection[0].BudgetSavingsCategories[0].Transactions[0].TransactionHash
+            _viewModel.SelectedAccountTransactions[0].TransactionHash,
+            finalBudgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions[0].TransactionHash
         );
-        Assert.AreEqual(new(400), _finalBudgetCollection[0].BudgetSavingsCategories[0].CurrentBalance);
+        Assert.AreEqual(new(400), finalBudgetCollection.Budgets[0].BudgetSavingsCategories[0].CurrentBalance);
     }
 
     [TestMethod]
@@ -130,8 +118,11 @@ public class UpdateSavingsCategoryTests
             new(-200),
             "Original Memo"
         );
-        _testAccount.Transactions.Add(originalTransaction);
-        _testBudget.BudgetSavingsCategories[0].Transactions.Add(originalTransaction);
+        _viewModel.SelectedAccountTransactions.Add(originalTransaction);
+
+        var budgetCollection = new BudgetCollection(_databaseManager);
+        budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions.Add(originalTransaction);
+        budgetCollection.SaveBudgetCollection();
 
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
@@ -154,36 +145,35 @@ public class UpdateSavingsCategoryTests
         _contentDialogFactoryMock.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);
 
         _viewModel.SelectedTransactionIndex = 0;
-        _viewModel.SelectedTransaction = _viewModel.Accounts[0].Transactions[0];
+        _viewModel.SelectedTransaction = _viewModel.SelectedAccountTransactions[0];
 
         // Act
         await _viewModel.EditTransactionCommand.ExecuteAsync(null);
 
+        budgetCollection = new(_databaseManager);
+
         // Assert
         Assert.HasCount(1, _viewModel.Accounts);
-        var account = _viewModel.Accounts[0];
-        Assert.HasCount(1, account.Transactions);
-        Assert.HasCount(1, _finalBudgetCollection);
-        Assert.HasCount(1, _finalBudgetCollection[0].BudgetSavingsCategories[0].Transactions);
+        Assert.HasCount(1, _viewModel.SelectedAccountTransactions);
+        Assert.HasCount(1, budgetCollection.Budgets);
+        Assert.HasCount(1, budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions);
         Assert.AreEqual(
-            account.Transactions[0].TransactionHash,
-            _finalBudgetCollection[0].BudgetSavingsCategories[0].Transactions[0].TransactionHash
+            _viewModel.SelectedAccountTransactions[0].TransactionHash,
+            budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions[0].TransactionHash
         );
-        Assert.AreEqual(-100m, account.Transactions[0].Amount.Value);
-        Assert.AreEqual(-100m, _finalBudgetCollection[0].BudgetSavingsCategories[0].Transactions[0].Amount.Value);
-        Assert.AreEqual(600m, _finalBudgetCollection[0].BudgetSavingsCategories[0].CurrentBalance.Value);
+        Assert.AreEqual(-100m, _viewModel.SelectedAccountTransactions[0].Amount.Value);
+        Assert.AreEqual(-100m, budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions[0].Amount.Value);
+        Assert.AreEqual(600m, budgetCollection.Budgets[0].BudgetSavingsCategories[0].CurrentBalance.Value);
     }
 
     [TestMethod]
     public async Task UpdateSavingsCategory_EditTransaction_DifferentCategoryName_UpdatesSavingsCategory()
     {
         // Arrange
+
         // Modify the test budget to have two categories
-        _testBudget.BudgetSavingsCategories =
-        [
-            new() { CategoryName = "Test Category", CurrentBalance = new(400) },
-            new() { CategoryName = "Other Category", CurrentBalance = new(1000) },
-        ];
+        var budgetCollection = new BudgetCollection(_databaseManager);
+        budgetCollection.Budgets[0].BudgetSavingsCategories.Add(new() { CategoryName = "Other Category", CurrentBalance = new(1000) });
 
         // Add a transaction to edit
         Transaction originalTransaction = new(
@@ -193,8 +183,9 @@ public class UpdateSavingsCategoryTests
             new(-100),
             "Original Memo"
         );
-        _testAccount.Transactions.Add(originalTransaction);
-        _testBudget.BudgetSavingsCategories[0].Transactions.Add(originalTransaction);
+        _viewModel.SelectedAccountTransactions.Add(originalTransaction);
+        budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions.Add(originalTransaction);
+        budgetCollection.SaveBudgetCollection();
 
         var fake = new Mock<IContentDialog>();
         fake.SetupAllProperties();
@@ -217,34 +208,34 @@ public class UpdateSavingsCategoryTests
         _contentDialogFactoryMock.Setup(x => x.Create<NewTransactionDialog>()).Returns(fake.Object);
 
         _viewModel.SelectedTransactionIndex = 0;
-        _viewModel.SelectedTransaction = _viewModel.Accounts[0].Transactions[0];
+        _viewModel.SelectedTransaction = _viewModel.SelectedAccountTransactions[0];
 
         // Act
         await _viewModel.EditTransactionCommand.ExecuteAsync(null);
 
+        budgetCollection = new(_databaseManager);
+
         // Assert
         Assert.HasCount(1, _viewModel.Accounts);
         var account = _viewModel.Accounts[0];
-        Assert.HasCount(1, account.Transactions);
-        Assert.HasCount(1, _finalBudgetCollection);
-        Assert.HasCount(0, _finalBudgetCollection[0].BudgetSavingsCategories[0].Transactions);
-        Assert.HasCount(1, _finalBudgetCollection[0].BudgetSavingsCategories[1].Transactions);
+        Assert.HasCount(1, _viewModel.SelectedAccountTransactions);
+        Assert.HasCount(1, budgetCollection.Budgets);
+        Assert.HasCount(0, budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions);
+        Assert.HasCount(1, budgetCollection.Budgets[0].BudgetSavingsCategories[1].Transactions);
         Assert.AreEqual(
-            account.Transactions[0].TransactionHash,
-            _finalBudgetCollection[0].BudgetSavingsCategories[1].Transactions[0].TransactionHash
+            _viewModel.SelectedAccountTransactions[0].TransactionHash,
+            budgetCollection.Budgets[0].BudgetSavingsCategories[1].Transactions[0].TransactionHash
         );
-        Assert.AreEqual(-100m, account.Transactions[0].Amount.Value);
-        Assert.AreEqual(-100m, _finalBudgetCollection[0].BudgetSavingsCategories[1].Transactions[0].Amount.Value);
-        Assert.AreEqual(500m, _finalBudgetCollection[0].BudgetSavingsCategories[0].CurrentBalance.Value);
-        Assert.AreEqual(900m, _finalBudgetCollection[0].BudgetSavingsCategories[1].CurrentBalance.Value);
+        Assert.AreEqual(-100m, _viewModel.SelectedAccountTransactions[0].Amount.Value);
+        Assert.AreEqual(-100m, budgetCollection.Budgets[0].BudgetSavingsCategories[1].Transactions[0].Amount.Value);
+        Assert.AreEqual(600m, budgetCollection.Budgets[0].BudgetSavingsCategories[0].CurrentBalance.Value);
+        Assert.AreEqual(900m, budgetCollection.Budgets[0].BudgetSavingsCategories[1].CurrentBalance.Value);
     }
 
     [TestMethod]
     public async Task UpdateSavingsCategory_DeleteTransaction_UpdatesSavingsCategory()
     {
         // Arrange
-        // Reset budget to default state with one category
-        _testBudget.BudgetSavingsCategories = [new() { CategoryName = "Test Category", CurrentBalance = new(500) }];
 
         // Add a transaction to delete
         Transaction transactionToDelete = new(
@@ -254,26 +245,27 @@ public class UpdateSavingsCategoryTests
             new(-200),
             "Memo"
         );
-        _testAccount.Transactions.Add(transactionToDelete);
-        _testBudget.BudgetSavingsCategories[0].Transactions.Add(transactionToDelete);
+        _viewModel.SelectedAccountTransactions.Add(transactionToDelete);
+        BudgetCollection budgetCollection = new(_databaseManager);
+        budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions.Add(transactionToDelete);
+        budgetCollection.SaveBudgetCollection();
 
         _messageBoxServiceMock
             .Setup(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync(MessageBoxResult.Primary);
 
         _viewModel.SelectedTransactionIndex = 0;
-        _viewModel.SelectedTransaction = _viewModel.Accounts[0].Transactions[0];
+        _viewModel.SelectedTransaction = _viewModel.SelectedAccountTransactions[0];
 
         // Act
         await _viewModel.DeleteTransactionCommand.ExecuteAsync(null);
 
+        budgetCollection = new(_databaseManager);
+
         // Assert
-        Assert.HasCount(1, _viewModel.Accounts);
-        var account = _viewModel.Accounts[0];
-        Assert.HasCount(0, account.Transactions);
-        Assert.HasCount(1, _finalBudgetCollection);
-        Assert.HasCount(0, _finalBudgetCollection[0].BudgetSavingsCategories[0].Transactions);
-        Assert.AreEqual(700m, _finalBudgetCollection[0].BudgetSavingsCategories[0].CurrentBalance.Value);
+        Assert.HasCount(0, _viewModel.SelectedAccountTransactions);
+        Assert.HasCount(1, budgetCollection.Budgets);
+        Assert.HasCount(0, budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions);
+        Assert.AreEqual(700m, budgetCollection.Budgets[0].BudgetSavingsCategories[0].CurrentBalance.Value);
     }
 }
-*/
