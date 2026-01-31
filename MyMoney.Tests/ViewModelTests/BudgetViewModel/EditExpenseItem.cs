@@ -30,6 +30,7 @@ public class EditExpenseItem
         _mockDatabaseReader = new Mock<Core.Database.IDatabaseManager>();
 
         _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
+        _mockDatabaseReader.Setup(x => x.ReadDictionary<string, object>("ReportsCache")).Returns(new Dictionary<string, object>());
 
         _viewModel = new MyMoney.ViewModels.Pages.BudgetViewModel(
             _mockContentDialogService.Object,

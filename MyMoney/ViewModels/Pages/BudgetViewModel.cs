@@ -1215,15 +1215,12 @@ namespace MyMoney.ViewModels.Pages
                 _databaseManager
             );
 
-            await Application.Current.Dispatcher.BeginInvoke(() =>
-            {
-                if (CurrentBudget == null || CurrentBudget != budget)
-                    return; // Ensure budget hasn't changed
+            if (CurrentBudget == null || CurrentBudget != budget)
+                return; // Ensure budget hasn't changed
 
-                UpdateIncomeActuals(income);
-                UpdateSavingsActuals(savings);
-                UpdateExpenseActuals(expenses);
-            });
+            UpdateIncomeActuals(income);
+            UpdateSavingsActuals(savings);
+            UpdateExpenseActuals(expenses);
         }
 
         private void UpdateIncomeActuals(List<BudgetReportItem> incomeItems)

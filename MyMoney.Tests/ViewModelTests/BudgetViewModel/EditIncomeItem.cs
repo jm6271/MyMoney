@@ -40,6 +40,7 @@ public class EditIncomeItemTests
         };
 
         _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns([testBudget]);
+        _mockDatabaseReader.Setup(x => x.ReadDictionary<string, object>("ReportsCache")).Returns(new Dictionary<string, object>());
 
         _viewModel = new ViewModels.Pages.BudgetViewModel(
             _mockContentDialogService.Object,
