@@ -21,7 +21,7 @@ public partial class Transaction : ObservableObject
         }
     }
 
-    public string TransactionHash { get; private set; } = "";
+    public string TransactionHash { get; set; } = "";
 
     [ObservableProperty]
     private int _id;
