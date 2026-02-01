@@ -48,6 +48,11 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private bool _isInputEnabled;
 
+        private bool _isLoadingTransactions = false;
+        private DateTime? _oldestLoadedDate;
+        private int _oldestLoadedId;
+        private const int PageSize = 25;
+
         // Dependencies
         private readonly IContentDialogService _contentDialogService;
         private readonly IDatabaseManager _databaseManager;
@@ -102,19 +107,66 @@ namespace MyMoney.ViewModels.Pages
 
         public async Task LoadTransactions()
         {
-            if (SelectedAccount != null)
+            if (_isLoadingTransactions)
+                return;
+            _isLoadingTransactions = true;
+
+            try
             {
-                await _databaseManager.ExecuteAsync(async db =>
+                if (SelectedAccount != null)
                 {
-                    var transactionCollection = db.GetCollection<Transaction>("Transactions");
-                    var transactions = transactionCollection.Query()
-                        .Where(t => t.AccountId == SelectedAccount.Id)
-                        .OrderByDescending(p => p.Date)
-                        .ToList();
-                    SelectedAccountTransactions = new(transactions);
-                    OnPropertyChanged(nameof(SelectedAccountTransactions));
-                });
+                    var page = await GetTransactionsPage(
+                        SelectedAccount.Id,
+                        _oldestLoadedDate,
+                        _oldestLoadedId,
+                        PageSize
+                    );
+                    
+                    foreach (var transaction in page)
+                    {
+                        SelectedAccountTransactions.Add(transaction);
+                    }
+
+                    if (page.Count > 0)
+                    {
+                        _oldestLoadedId = page[page.Count - 1].Id;
+                        _oldestLoadedDate = page[page.Count - 1].Date;
+                    } 
+                }
             }
+            finally
+            {
+                _isLoadingTransactions = false;
+            }
+        }
+
+        public async Task<IReadOnlyList<Transaction>> GetTransactionsPage(
+            int accountId,
+            DateTime? before,
+            int beforeId,
+            int pageSize)
+        {
+            List<Transaction> transactions = [];
+
+            await _databaseManager.ExecuteAsync(async db =>
+            {
+                var transactionCollection = db.GetCollection<Transaction>("Transactions");
+                var query = transactionCollection.Query()
+                    .Where(t => t.AccountId == accountId);
+
+                if (before.HasValue)
+                {
+                    query = query.Where(t => t.Date < before.Value ||
+                        (t.Date == before.Value && t.Id < beforeId));
+                }
+
+                transactions = query
+                    .OrderByDescending(t => t.Date)
+                    .Limit(pageSize)
+                    .ToList();
+            });
+
+            return transactions;
         }
 
         private void SortTransactions()
@@ -705,9 +757,13 @@ namespace MyMoney.ViewModels.Pages
             return transactions;
         }
 
-        partial void OnSelectedAccountChanged(Account? value)
+        public async Task SelectedAccountChanged()
         {
-            IsInputEnabled = value != null;
+            IsInputEnabled = SelectedAccount != null;
+            SelectedAccountTransactions.Clear();
+            _oldestLoadedDate = null;
+            _oldestLoadedId = 0;
+            await LoadTransactions();
         }
 
         public void OnPageNavigatedTo()

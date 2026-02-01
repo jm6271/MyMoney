@@ -128,6 +128,7 @@
                     ScrollViewer.PanningRatio="1.5"
                     ScrollViewer.PanningDeceleration="0.001"
                     VerticalAlignment="Top"
+                    ScrollViewer.ScrollChanged="TransactionsList_ScrollChanged"
                 >
                     <ui:ListView.ContextMenu>
                         <ContextMenu>

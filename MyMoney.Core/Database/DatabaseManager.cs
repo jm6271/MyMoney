@@ -29,12 +29,21 @@ namespace MyMoney.Core.Database
         {
             _dataFilePath = DataFileLocationGetter.GetDataFilePath();
             _db = new LiteDatabase(_dataFilePath);
+            EnsureIndexes();
         }
 
         public DatabaseManager(string dataFilePath)
         {
             _dataFilePath = dataFilePath;
             _db = new LiteDatabase(_dataFilePath);
+            EnsureIndexes();
+        }
+
+        private void EnsureIndexes()
+        {
+            var transactions = _db.GetCollection<Core.Models.Transaction>("Transactions");
+            transactions.EnsureIndex(x => x.Date);
+            transactions.EnsureIndex(x => x.AccountId);
         }
 
         /// <summary>
