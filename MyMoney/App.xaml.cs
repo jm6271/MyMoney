@@ -116,6 +116,13 @@ namespace MyMoney
                 return;
             }
             _host.Start();
+
+            // Preload budget page when the application is idle
+            Dispatcher.BeginInvoke(new Action(async () =>
+            {
+                var page = GetService<BudgetPage>();
+                await page.ViewModel.OnNavigatedToAsync();
+            }), DispatcherPriority.ApplicationIdle);
         }
 
         /// <summary>

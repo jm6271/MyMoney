@@ -124,8 +124,10 @@ namespace MyMoney.ViewModels.Pages
         {
             if (Budgets.Count > 0)
             {
-                SelectedGroupedBudgetIndex = -1; // Trigger property changed
+                int oldIndex = SelectedGroupedBudgetIndex;
                 SelectedGroupedBudgetIndex = 0;
+                if (oldIndex  == 0)
+                    OnPropertyChanged(nameof(SelectedGroupedBudgetIndex));
             }
         }
 
@@ -137,7 +139,7 @@ namespace MyMoney.ViewModels.Pages
 
                 UpdateGroupedBudgetList();
             }
-            UpdateBudgetTotals();
+            UpdateBudgetTotals(false);
 
             if (Budgets.Count > 0)
                 SelectCurrentBudget();
@@ -228,7 +230,7 @@ namespace MyMoney.ViewModels.Pages
             _databaseManager.WriteCollection("Budgets", Budgets.ToList());
         }
 
-        private void UpdateBudgetTotals()
+        private void UpdateBudgetTotals(bool writeChanges = true)
         {
             if (CurrentBudget == null)
             {
@@ -238,7 +240,10 @@ namespace MyMoney.ViewModels.Pages
 
             UpdateIncomeTotals();
             UpdateExpenseTotals();
-            WriteToDatabase();
+
+            if (writeChanges)
+                WriteToDatabase();
+
             UpdateCharts();
             UpdateLeftToBudget();
         }
