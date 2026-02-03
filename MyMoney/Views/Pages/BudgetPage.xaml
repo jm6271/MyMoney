@@ -50,6 +50,9 @@
                     SelectedItem="{Binding ViewModel.SelectedGroupedBudget, Mode=TwoWay}"
                     SelectedIndex="{Binding ViewModel.SelectedGroupedBudgetIndex, Mode=TwoWay}"
                     x:Name="BudgetsListView"
+                    VirtualizingStackPanel.IsVirtualizing="True"
+                    VirtualizingStackPanel.VirtualizationMode="Recycling"
+                    VirtualizingPanel.IsVirtualizingWhenGrouping="True"
                 >
                     <ui:ListView.GroupStyle>
                         <GroupStyle>

@@ -18,16 +18,17 @@ using SkiaSharp;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
+using MyMoney.Helpers;
 
 namespace MyMoney.ViewModels.Pages
 {
     public partial class BudgetViewModel : ObservableObject, INavigationAware
     {
         [ObservableProperty]
-        private ObservableCollection<Budget> _budgets = [];
+        private BulkObservableCollection<Budget> _budgets = [];
 
         [ObservableProperty]
-        private ObservableCollection<GroupedBudget> _groupedBudgetsCollection = [];
+        private BulkObservableCollection<GroupedBudget> _groupedBudgetsCollection = [];
 
         [ObservableProperty]
         private GroupedBudget? _selectedGroupedBudget;
@@ -132,8 +133,7 @@ namespace MyMoney.ViewModels.Pages
         {
             if (Budgets.Count == 0)
             {
-                var budgets = await Task.Run(() => LoadBudgetCollection());
-                Budgets = budgets;
+                Budgets.AddRange(await LoadBudgetCollection());
 
                 UpdateGroupedBudgetList();
             }
@@ -151,22 +151,21 @@ namespace MyMoney.ViewModels.Pages
             return Task.CompletedTask;
         }
 
-        private ObservableCollection<Budget> LoadBudgetCollection()
+        private async Task<List<Budget>> LoadBudgetCollection()
         {
-            ObservableCollection<Budget> budgets = [];
+            List<Budget> budgets = [];
 
-            List<Budget> budgetCollection = _databaseManager.GetCollection<Budget>("Budgets");
-
-            foreach (var budget in budgetCollection.OfType<Budget>())
+            await _databaseManager.ExecuteAsync(async db =>
             {
-                budgets.Add(budget);
-            }
-
-            // Sort according to date
-            var sortedBudgets = budgets.OrderByDescending(x => x.BudgetDate).ToList();
-            budgets.Clear();
-            foreach (var item in sortedBudgets)
-                budgets.Add(item);
+                await Task.Run(() =>
+                {
+                    var budgetCollection = db.GetCollection<Budget>("Budgets");
+                    budgets = budgetCollection.Query()
+                        .OrderByDescending(b => b.BudgetDate)
+                        .Limit(14)
+                        .ToList();
+                });
+            });
 
             return budgets;
         }
@@ -188,16 +187,14 @@ namespace MyMoney.ViewModels.Pages
                 else
                 {
                     // Don't add a budget from more than 1 year ago
-                    if (budget.BudgetDate < DateTime.Now.AddYears(-1))
+                    if (budget.BudgetDate < DateTime.Now.AddYears(-1).AddMonths(-1))
                         continue;
 
                     groupedBudgets.Add(new GroupedBudget() { Group = "Old", Budget = budget });
                 }
             }
 
-            GroupedBudgetsCollection.Clear();
-            foreach (var budget in groupedBudgets)
-                GroupedBudgetsCollection.Add(budget);
+            GroupedBudgetsCollection.ReplaceAll(groupedBudgets);
         }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -1294,8 +1291,8 @@ namespace MyMoney.ViewModels.Pages
                         // Update begining balance
                         foreach (
                             var transaction in from Transaction transaction in currentSavingsCategory.Transactions
-                            where transaction.TransactionHash == currentSavingsCategory.BalanceTransactionHash
-                            select transaction
+                                               where transaction.TransactionHash == currentSavingsCategory.BalanceTransactionHash
+                                               select transaction
                         )
                         {
                             transaction.Amount += balanceDifference;
