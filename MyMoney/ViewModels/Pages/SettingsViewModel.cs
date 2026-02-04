@@ -66,7 +66,7 @@ namespace MyMoney.ViewModels.Pages
         private bool _backupSettingsLoaded;
         private readonly IMessageBoxService _messageBoxService;
         private const string SettingsKey = "ApplicationSettings";
-        private readonly IDatabaseManager _databaseManager;
+        private IDatabaseManager _databaseManager;
 
         #endregion
 
@@ -298,6 +298,10 @@ namespace MyMoney.ViewModels.Pages
 
             if (confirmed != Wpf.Ui.Controls.MessageBoxResult.Primary)
                 return;
+
+            // Close the connection with the DB so we don't throw an exception
+            _databaseManager.Dispose();
+            _databaseManager = new DatabaseManager(":memory:");
 
             DatabaseBackup.RestoreDatabaseBackup(dialog.FileName);
 

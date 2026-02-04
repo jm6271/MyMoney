@@ -4,7 +4,7 @@ using LiteDB;
 
 namespace MyMoney.Core.Database
 {
-    public interface IDatabaseManager
+    public interface IDatabaseManager: IDisposable
     {
         public void WriteCollection<T>(string collectionName, IReadOnlyList<T> collection);
         public void WriteSettingsDictionary(string collectionName, Dictionary<string, string> collection);
