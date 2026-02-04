@@ -62,12 +62,12 @@ namespace MyMoney
 
                     services.AddSingleton<DashboardPage>();
                     services.AddSingleton<DashboardViewModel>();
-                    services.AddTransient<AccountsPage>();
-                    services.AddTransient<AccountsViewModel>();
+                    services.AddSingleton<AccountsPage>();
+                    services.AddSingleton<AccountsViewModel>();
                     services.AddSingleton<BudgetPage>();
                     services.AddSingleton<BudgetViewModel>();
-                    services.AddTransient<ReportsPage>();
-                    services.AddTransient<ReportsViewModel>();
+                    services.AddSingleton<ReportsPage>();
+                    services.AddSingleton<ReportsViewModel>();
                     services.AddSingleton<SettingsPage>();
                     services.AddSingleton<SettingsViewModel>();
 
@@ -120,6 +120,7 @@ namespace MyMoney
             // Preload budget page when the application is idle
             Dispatcher.BeginInvoke(new Action(async () =>
             {
+                await Task.Delay(500);
                 var page = GetService<BudgetPage>();
                 await page.ViewModel.OnNavigatedToAsync();
             }), DispatcherPriority.ApplicationIdle);
