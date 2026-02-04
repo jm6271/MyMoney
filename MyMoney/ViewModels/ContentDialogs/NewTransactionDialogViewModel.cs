@@ -74,7 +74,7 @@ namespace MyMoney.ViewModels.ContentDialogs
             CategoriesView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Category.Group)));
         }
 
-        public void SetSelectedCategoryByName(string categoryName)
+        public void SetSelectedCategoryByName(string? categoryName)
         {
             var categoryItem = CategoryNames.FirstOrDefault(c => c.Name == categoryName);
 
@@ -89,7 +89,7 @@ namespace MyMoney.ViewModels.ContentDialogs
             if (oldValue.Month == newValue.Month && oldValue.Year == newValue.Year)
                 return;
 
-            var selectedCategory = NewTransactionCategory.Name;
+            var selectedCategory = NewTransactionCategory?.Name;
 
             CategoryNames.Clear();
 
