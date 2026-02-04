@@ -285,12 +285,11 @@ namespace MyMoney.Core.Reports
         {
             decimal actual = 0;
 
-            await databaseReader.ExecuteAsync(async (db) =>
+            await databaseReader.QueryAsync<Transaction>("Transactions", async (query) =>
             {
-                var transactionsCollection = db.GetCollection<Transaction>("Transactions");
-                var results = transactionsCollection.Find(t =>
+                var results = query.Where(t =>
                     t.Category.Name == category.Name && (t.Date.Year == month.Year && t.Date.Month == month.Month)
-                );
+                ).ToList();
 
                 foreach (var transaction in results)
                 {

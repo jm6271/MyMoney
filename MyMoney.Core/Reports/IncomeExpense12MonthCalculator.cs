@@ -129,10 +129,9 @@ namespace MyMoney.Core.Reports
         {
             List<Transaction> transactions = [];
 
-            await dbReader.ExecuteAsync(async db =>
+            await dbReader.QueryAsync<Transaction>("Transactions", async query =>
             {
-                var transactionCollection = db.GetCollection<Transaction>("Transactions");
-                transactions.AddRange(transactionCollection.Query().Where(t => (t.Date >= startDate && t.Date <= endDate)).ToList());
+                transactions.AddRange(query.Where(t => (t.Date >= startDate && t.Date <= endDate)).ToList());
             });
 
             return transactions;

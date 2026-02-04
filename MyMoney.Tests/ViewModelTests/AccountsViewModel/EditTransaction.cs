@@ -29,7 +29,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _messageBoxService = new Mock<IMessageBoxService>();
             _contentDialogFactory = new Mock<IContentDialogFactory>();
 
-            _databaseManager = new(":memory:");
+            _databaseManager = new(new MemoryStream());
 
             _databaseManager.WriteCollection("Accounts", [
                 new Account { AccountName = "Test", Total = new Currency(1000m), Id = 1 },

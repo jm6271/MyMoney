@@ -33,7 +33,7 @@ public class NewTransactionTests
         _messageBoxServiceMock = new Mock<IMessageBoxService>();
         _contentDialogFactoryMock = new Mock<IContentDialogFactory>();
 
-        _databaseManager = new(":memory:");
+        _databaseManager = new(new MemoryStream());
 
         _databaseManager.WriteCollection("Accounts", [
             new Account { AccountName = "Test Account", Total = new Currency(1000m), Id = 1 },

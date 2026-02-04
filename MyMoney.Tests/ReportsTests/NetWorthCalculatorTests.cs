@@ -17,7 +17,7 @@ public class NetWorthCalculatorTests
     [TestInitialize]
     public void Setup()
     {
-        _databaseManager = new(":memory:");
+        _databaseManager = new(new MemoryStream());
         _calculator = new NetWorthCalculator(_databaseManager);
     }
 

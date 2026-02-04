@@ -157,12 +157,11 @@ namespace MyMoney.ViewModels.Pages
         {
             List<Budget> budgets = [];
 
-            await _databaseManager.ExecuteAsync(async db =>
+            await _databaseManager.QueryAsync<Budget>("Budgets", async query =>
             {
                 await Task.Run(() =>
                 {
-                    var budgetCollection = db.GetCollection<Budget>("Budgets");
-                    budgets = budgetCollection.Query()
+                    budgets = query
                         .OrderByDescending(b => b.BudgetDate)
                         .Limit(14)
                         .ToList();

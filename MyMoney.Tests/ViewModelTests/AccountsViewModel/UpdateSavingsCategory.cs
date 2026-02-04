@@ -33,7 +33,7 @@ public class UpdateSavingsCategoryTests
         _messageBoxServiceMock = new Mock<IMessageBoxService>();
         _contentDialogFactoryMock = new Mock<IContentDialogFactory>();
 
-        _databaseManager = new(":memory:");
+        _databaseManager = new(new MemoryStream());
         _databaseManager.WriteCollection("Accounts", [
             new Account() { AccountName = "Test Account", Total = new(1000), Id = 1 }
         ]);
@@ -96,7 +96,7 @@ public class UpdateSavingsCategoryTests
 
         // Assert
         Assert.HasCount(1, finalBudgetCollection.Budgets);
-        await _viewModel.LoadTransactions();
+        await _viewModel.SelectedAccountChanged();
         Assert.HasCount(1, _viewModel.SelectedAccountTransactions);
         Assert.HasCount(1, finalBudgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions);
         Assert.AreEqual(

@@ -14,7 +14,7 @@ namespace MyMoney.Tests.ViewModelTests
         public async Task Test_CalculateBudgetReport()
         {
             // Arrange
-            var databaseManager = new DatabaseManager(":memory:");
+            var databaseManager = new DatabaseManager(new MemoryStream());
 
             databaseManager.WriteCollection("Budgets", [
                 new Budget

@@ -19,8 +19,9 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
         private Mock<IContentDialogService> _mockContentDialogService;
         private Mock<IMessageBoxService> _mockMessageBoxService;
         private Mock<IContentDialogFactory> _mockContentDialogFactory;
-        private Mock<IDatabaseManager> _mockDatabaseReader;
         private ViewModels.Pages.BudgetViewModel _viewModel;
+
+        private DatabaseManager _databaseManager;
 
         [TestInitialize]
         public async Task Setup()
@@ -28,20 +29,16 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             _mockContentDialogService = new Mock<IContentDialogService>();
             _mockMessageBoxService = new Mock<IMessageBoxService>();
             _mockContentDialogFactory = new Mock<IContentDialogFactory>();
-            _mockDatabaseReader = new Mock<IDatabaseManager>();
 
-            _mockDatabaseReader
-                .Setup(x => x.GetCollection<Budget>("Budgets"))
-                .Returns(
-                    new List<Budget>
-                    {
-                        new Budget { BudgetTitle = DateTime.Now.ToString("MMMM, yyyy"), BudgetDate = DateTime.Now },
-                    }
-                );
+            _databaseManager = new(new MemoryStream());
+
+            _databaseManager.WriteCollection("Budgets", [
+                new Budget { BudgetTitle = DateTime.Now.ToString("MMMM, yyyy"), BudgetDate = DateTime.Now },
+            ]);
 
             _viewModel = new ViewModels.Pages.BudgetViewModel(
                 _mockContentDialogService.Object,
-                _mockDatabaseReader.Object,
+                _databaseManager,
                 _mockMessageBoxService.Object,
                 _mockContentDialogFactory.Object
             );

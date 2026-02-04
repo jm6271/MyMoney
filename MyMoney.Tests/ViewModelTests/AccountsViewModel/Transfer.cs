@@ -35,7 +35,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _mockMessageBoxService = new Mock<IMessageBoxService>();
             _mockContentDialogFactory = new Mock<IContentDialogFactory>();
 
-            _databaseManager = new(":memory:");
+            _databaseManager = new(new MemoryStream());
 
             _databaseManager.WriteCollection<Account>("Accounts", [
                 new Account { AccountName = "Checking", Total = new Currency(1000m) },
@@ -94,21 +94,20 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
 
             // Verify FROM transaction details
             _viewModel.SelectedAccount = account1;
-            await _viewModel.LoadTransactions();
-            var fromTransactions = _viewModel.SelectedAccountTransactions.Where(t => t.AccountId == account1.Id).ToList();
-            Assert.HasCount(1, fromTransactions);
-            Assert.AreEqual(-100m, fromTransactions[0].Amount.Value);
-            Assert.AreEqual("Transfer to Savings", fromTransactions[0].Payee);
-            Assert.AreEqual("Transfer", fromTransactions[0].Memo);
+            await _viewModel.SelectedAccountChanged();
+            //var fromTransactions = _viewModel.SelectedAccountTransactions.Where(t => t.AccountId == account1.Id).ToList();
+            Assert.HasCount(1, _viewModel.SelectedAccountTransactions);
+            Assert.AreEqual(-100m, _viewModel.SelectedAccountTransactions[0].Amount.Value);
+            Assert.AreEqual("Transfer to Savings", _viewModel.SelectedAccountTransactions[0].Payee);
+            Assert.AreEqual("Transfer", _viewModel.SelectedAccountTransactions[0].Memo);
 
             // Verify TO transaction details
             _viewModel.SelectedAccount = account2;
-            await _viewModel.LoadTransactions();
-            var toTransactions = _viewModel.SelectedAccountTransactions.Where(t => t.AccountId == account2.Id).ToList();
-            Assert.HasCount(1, toTransactions);
-            Assert.AreEqual(100m, toTransactions[0].Amount.Value);
-            Assert.AreEqual("Transfer from Checking", toTransactions[0].Payee);
-            Assert.AreEqual("Transfer", toTransactions[0].Memo);
+            await _viewModel.SelectedAccountChanged();
+            Assert.HasCount(1, _viewModel.SelectedAccountTransactions);
+            Assert.AreEqual(100m, _viewModel.SelectedAccountTransactions[0].Amount.Value);
+            Assert.AreEqual("Transfer from Checking", _viewModel.SelectedAccountTransactions[0].Payee);
+            Assert.AreEqual("Transfer", _viewModel.SelectedAccountTransactions[0].Memo);
         }
 
         [TestMethod]
@@ -142,11 +141,11 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             Assert.AreEqual(500m, account2.Total.Value); // Should remain unchanged
 
             _viewModel.SelectedAccount = account1;
-            await _viewModel.LoadTransactions();
+            await _viewModel.SelectedAccountChanged();
             Assert.IsEmpty(_viewModel.SelectedAccountTransactions); // No transactions should be created
 
             _viewModel.SelectedAccount = account2;
-            await _viewModel.LoadTransactions();
+            await _viewModel.SelectedAccountChanged();
             Assert.IsEmpty(_viewModel.SelectedAccountTransactions);
         }
 
@@ -178,11 +177,11 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             var account2 = _viewModel.Accounts.First(a => a.AccountName == "Savings");
 
             _viewModel.SelectedAccount = account1;
-            await _viewModel.LoadTransactions();
+            await _viewModel.SelectedAccountChanged();
             Assert.AreEqual(DateTime.Today, _viewModel.SelectedAccountTransactions[0].Date);
 
             _viewModel.SelectedAccount = account2;
-            await _viewModel.LoadTransactions();
+            await _viewModel.SelectedAccountChanged();
             Assert.AreEqual(DateTime.Today, _viewModel.SelectedAccountTransactions[0].Date);
         }
 
@@ -217,11 +216,11 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             Assert.AreEqual(500m, account2.Total.Value); // Should remain unchanged
             
             _viewModel.SelectedAccount = account1;
-            await _viewModel.LoadTransactions();
+            await _viewModel.SelectedAccountChanged();
             Assert.IsEmpty(_viewModel.SelectedAccountTransactions);
             
             _viewModel.SelectedAccount = account2;
-            await _viewModel.LoadTransactions();
+            await _viewModel.SelectedAccountChanged();
             Assert.IsEmpty(_viewModel.SelectedAccountTransactions);
 
             // Verify message box was shown for insufficient funds

@@ -30,11 +30,9 @@ public class NetWorthCalculator
         // Each account has its own transactions, but we need
         // to take all of them and put them in a single list, sorted by date from oldest to newest
         List<Transaction> allTransactions = [];
-        await _dbManager.ExecuteAsync(async db =>
+        await _dbManager.QueryAsync<Transaction>("Transactions", async query =>
         {
-            var transactionCollection = db.GetCollection<Transaction>("Transactions");
-            allTransactions.AddRange(transactionCollection.Query().
-                Where(t => t.Date >= startDate)
+            allTransactions.AddRange(query.Where(t => t.Date >= startDate)
                 .OrderBy(transaction => transaction.Date)
                 .ToList());
         });

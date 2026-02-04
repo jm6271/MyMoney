@@ -14,25 +14,24 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
     public class CreateNewBudgetTests
     {
         private Mock<IContentDialogService> _mockContentDialogService = null!;
-        private Mock<IDatabaseManager> _mockDatabaseReader = null!;
         private Mock<IMessageBoxService> _mockMessageBoxService = null!;
         private Mock<IContentDialogFactory> _mockContentDialogFactory = null!;
         private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel = null!;
+
+        private DatabaseManager _databaseManager = null!;
 
         [TestInitialize]
         public void Setup()
         {
             _mockContentDialogService = new Mock<IContentDialogService>();
-            _mockDatabaseReader = new Mock<IDatabaseManager>();
             _mockMessageBoxService = new Mock<IMessageBoxService>();
             _mockContentDialogFactory = new Mock<IContentDialogFactory>();
 
-            _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
-            _mockDatabaseReader.Setup(x => x.ReadDictionary<string, object>("ReportsCache")).Returns(new Dictionary<string, object>());
+            _databaseManager = new(new MemoryStream());
 
             _viewModel = new MyMoney.ViewModels.Pages.BudgetViewModel(
                 _mockContentDialogService.Object,
-                _mockDatabaseReader.Object,
+                _databaseManager,
                 _mockMessageBoxService.Object,
                 _mockContentDialogFactory.Object
             );
@@ -84,9 +83,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 BudgetDate = DateTime.Now.AddMonths(1),
             };
 
-            _mockDatabaseReader
-                .Setup(x => x.GetCollection<Budget>("Budgets"))
-                .Returns(new List<Budget> { existingBudget });
+            _databaseManager.WriteCollection("Budgets", [existingBudget]);
 
             var fakeDialog = new Mock<IContentDialog>();
             fakeDialog.SetupAllProperties();
@@ -187,8 +184,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 },
             };
 
-            _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns([currentBudget]);
-            _mockDatabaseReader.Setup(x => x.GetCollection<Account>("Accounts")).Returns([]);
+            _databaseManager.WriteCollection("Budgets", [currentBudget]);
 
             var fakeDialog = new Mock<IContentDialog>();
             fakeDialog.SetupAllProperties();

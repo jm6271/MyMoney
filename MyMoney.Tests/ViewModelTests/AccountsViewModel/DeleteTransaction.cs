@@ -29,7 +29,7 @@ public class DeleteTransactionTest
         _mockMessageBoxService = new Mock<IMessageBoxService>();
         _mockContentDialogFactory = new Mock<IContentDialogFactory>();
 
-        _databaseManager = new(":memory:");
+        _databaseManager = new(new MemoryStream());
         _databaseManager.WriteCollection("Accounts", [
             new Account { AccountName = "Test", Total = new Currency(1000m), Id = 1 },
         ]);
@@ -71,6 +71,16 @@ public class DeleteTransactionTest
 
         _viewModel.SelectedTransactionIndex = 0;
         _viewModel.SelectedTransaction = _viewModel.SelectedAccountTransactions[0];
+    }
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        // This forces the in-memory DB to be destroyed
+        if (_databaseManager is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
     }
 
     [TestMethod]
