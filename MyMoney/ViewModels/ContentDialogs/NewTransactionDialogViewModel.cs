@@ -84,18 +84,16 @@ namespace MyMoney.ViewModels.ContentDialogs
             }
         }
 
-        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        partial void OnNewTransactionDateChanged(DateTime oldValue, DateTime newValue)
         {
-            base.OnPropertyChanged(e);
+            if (oldValue.Month == newValue.Month && oldValue.Year == newValue.Year)
+                return;
 
-            if (e.PropertyName == nameof(NewTransactionDate))
+            CategoryNames.Clear();
+
+            foreach (var item in GetBudgetCategoryNames())
             {
-                CategoryNames.Clear();
-
-                foreach (var item in GetBudgetCategoryNames())
-                {
-                    CategoryNames.Add(item);
-                }
+                CategoryNames.Add(item);
             }
         }
 
