@@ -6,6 +6,7 @@ using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
+using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.ViewModels.Pages
@@ -13,7 +14,7 @@ namespace MyMoney.ViewModels.Pages
     /// <summary>
     /// ViewModel for managing and displaying accounts and their transactions
     /// </summary>
-    public partial class AccountsViewModel : ObservableObject
+    public partial class AccountsViewModel : ObservableObject, INavigationAware
     {
         /// <summary>
         /// Collection of all accounts in the system
@@ -23,8 +24,7 @@ namespace MyMoney.ViewModels.Pages
         /// <summary>
         /// Transactions for the currently selected account
         /// </summary>
-        public ObservableCollection<Transaction> SelectedAccountTransactions =>
-            SelectedAccount?.Transactions ?? new ObservableCollection<Transaction>();
+        public ObservableCollection<Transaction> SelectedAccountTransactions { get; set; } = [];
 
         // Observable properties
         [ObservableProperty]
@@ -48,14 +48,16 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private bool _isInputEnabled;
 
+        private bool _isLoadingTransactions = false;
+        private DateTime? _oldestLoadedDate;
+        private int _oldestLoadedId;
+        private const int PageSize = 25;
+
         // Dependencies
         private readonly IContentDialogService _contentDialogService;
         private readonly IDatabaseManager _databaseManager;
         private readonly IMessageBoxService _messageBoxService;
         private readonly IContentDialogFactory _contentDialogFactory;
-
-        // Database lock object
-        private readonly object _databaseLockObject = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountsViewModel"/> class.
@@ -79,28 +81,91 @@ namespace MyMoney.ViewModels.Pages
             LoadAccounts();
         }
 
-        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        public async Task OnNavigatedToAsync()
         {
-            base.OnPropertyChanged(e);
-
-            if (e.PropertyName == nameof(SelectedAccount))
+            await Task.Run(() =>
             {
-                OnPropertyChanged(nameof(SelectedAccountTransactions));
-            }
+                if (Accounts.Count > 0 && SelectedAccountIndex == -1)
+                {
+                    SelectedAccountIndex = 0;
+                }
+            });
         }
+
+        public Task OnNavigatedFromAsync() => Task.CompletedTask;
 
         private void LoadAccounts()
         {
-            lock (_databaseLockObject)
+            var accounts = _databaseManager.GetCollection<Account>("Accounts");
+            foreach (var account in accounts)
             {
-                var accounts = _databaseManager.GetCollection<Account>("Accounts");
-                foreach (var account in accounts)
-                {
-                    Accounts.Add(account);
-                }
+                Accounts.Add(account);
             }
 
             TransactionsEnabled = Accounts.Count > 0;
+        }
+
+        public async Task LoadTransactions()
+        {
+            if (_isLoadingTransactions)
+                return;
+            _isLoadingTransactions = true;
+
+            try
+            {
+                if (SelectedAccount != null)
+                {
+                    var page = await GetTransactionsPage(
+                        SelectedAccount.Id,
+                        _oldestLoadedDate,
+                        _oldestLoadedId,
+                        PageSize
+                    );
+                    
+                    foreach (var transaction in page)
+                    {
+                        SelectedAccountTransactions.Add(transaction);
+                    }
+
+                    if (page.Count > 0)
+                    {
+                        _oldestLoadedId = page[page.Count - 1].Id;
+                        _oldestLoadedDate = page[page.Count - 1].Date;
+                    } 
+                }
+            }
+            finally
+            {
+                _isLoadingTransactions = false;
+            }
+        }
+
+        public async Task<IReadOnlyList<Transaction>> GetTransactionsPage(
+            int accountId,
+            DateTime? before,
+            int beforeId,
+            int pageSize)
+        {
+            List<Transaction> transactions = [];
+
+            await _databaseManager.QueryAsync<Transaction>("Transactions", async query =>
+            {
+                var dbQuery = query
+                    .Where(t => t.AccountId == accountId);
+
+                if (before.HasValue)
+                {
+                    dbQuery = dbQuery.Where(t => t.Date < before.Value ||
+                        (t.Date == before.Value && t.Id < beforeId));
+                }
+
+                transactions = dbQuery
+                    .OrderByDescending(t => t.Date)
+                    .Limit(pageSize)
+                    .ToList();
+            });
+
+            return transactions;
         }
 
         private void SortTransactions()
@@ -109,19 +174,13 @@ namespace MyMoney.ViewModels.Pages
                 return;
 
             var sorted = SelectedAccountTransactions.OrderByDescending(p => p.Date).ToList();
-            SelectedAccountTransactions.Clear();
-            foreach (var transaction in sorted)
-            {
-                SelectedAccountTransactions.Add(transaction);
-            }
+            SelectedAccountTransactions = new(sorted);
+            OnPropertyChanged(nameof(SelectedAccountTransactions));
         }
 
         private void SaveAccountsToDatabase()
         {
-            lock (_databaseLockObject)
-            {
-                _databaseManager.WriteCollection("Accounts", [.. Accounts]);
-            }
+            _databaseManager.WriteCollection("Accounts", [.. Accounts]);
         }
 
         private async Task<bool> ValidateTransactionAmount(Currency amount, Account account)
@@ -155,14 +214,6 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        private void UpdateAccountIds()
-        {
-            for (var i = 0; i < Accounts.Count; i++)
-            {
-                Accounts[i].Id = i + 1;
-            }
-        }
-
         /// <summary>
         /// Updates the savings category when a transaction is added, edited, or deleted
         /// </summary>
@@ -179,108 +230,105 @@ namespace MyMoney.ViewModels.Pages
                 return;
 
             BudgetCollection budgetCollection;
-            lock (_databaseLockObject)
+            budgetCollection = new(_databaseManager);
+            if (!budgetCollection.DoesCurrentBudgetExist())
+                return;
+
+            var currentBudget = budgetCollection.Budgets[budgetCollection.GetCurrentBudgetIndex()];
+
+            switch (operation)
             {
-                budgetCollection = new(_databaseManager);
-                if (!budgetCollection.DoesCurrentBudgetExist())
-                    return;
+                case TransactionOperation.Add:
+                    var savingsCategory = currentBudget.BudgetSavingsCategories.FirstOrDefault(x =>
+                        x.CategoryName == transaction.Category.Name
+                    );
 
-                var currentBudget = budgetCollection.Budgets[budgetCollection.GetCurrentBudgetIndex()];
+                    if (savingsCategory == null)
+                        break;
 
-                switch (operation)
-                {
-                    case TransactionOperation.Add:
-                        var savingsCategory = currentBudget.BudgetSavingsCategories.FirstOrDefault(x =>
+                    savingsCategory.Transactions.Add(transaction);
+                    savingsCategory.CurrentBalance += transaction.Amount;
+                    break;
+
+                case TransactionOperation.Edit when oldTransaction != null:
+                    if (transaction.Category.Name == oldTransaction.Category.Name) // Same category
+                    {
+                        if (transaction.Category.Group != "Savings")
+                            break;
+
+                        var categoryToUpdate = currentBudget.BudgetSavingsCategories.FirstOrDefault(x =>
                             x.CategoryName == transaction.Category.Name
                         );
 
-                        if (savingsCategory == null)
+                        if (categoryToUpdate == null)
                             break;
 
-                        savingsCategory.Transactions.Add(transaction);
-                        savingsCategory.CurrentBalance += transaction.Amount;
-                        break;
+                        var transactionToUpdate = categoryToUpdate.Transactions.FirstOrDefault(x =>
+                            x.TransactionHash == oldTransaction.TransactionHash
+                        );
+                        if (transactionToUpdate == null)
+                            break;
 
-                    case TransactionOperation.Edit when oldTransaction != null:
-                        if (transaction.Category.Name == oldTransaction.Category.Name) // Same category
+                        categoryToUpdate.CurrentBalance -= oldTransaction.Amount;
+                        categoryToUpdate.CurrentBalance += transaction.Amount;
+
+                        var index = categoryToUpdate.Transactions.IndexOf(transactionToUpdate);
+                        categoryToUpdate.Transactions[index] = transaction;
+                    }
+                    else // Category was changed
+                    {
+                        var originalCategory = currentBudget.BudgetSavingsCategories.FirstOrDefault(x =>
+                            x.CategoryName == oldTransaction.Category.Name
+                        );
+                        if (originalCategory == null)
+                            break;
+
+                        var transactionInOldCategory = originalCategory.Transactions.FirstOrDefault(x =>
+                            x.TransactionHash == oldTransaction.TransactionHash
+                        );
+                        if (transactionInOldCategory == null)
+                            break;
+
+                        // Remove the transaction from the original savings category
+                        originalCategory.Transactions.Remove(transactionInOldCategory);
+                        originalCategory.CurrentBalance -= oldTransaction.Amount;
+
+                        // Add the new transaction to the other category if it is a savings category
+                        if (transaction.Category.Group == "Savings")
                         {
-                            if (transaction.Category.Group != "Savings")
-                                break;
-
-                            var categoryToUpdate = currentBudget.BudgetSavingsCategories.FirstOrDefault(x =>
+                            var newCategory = currentBudget.BudgetSavingsCategories.FirstOrDefault(x =>
                                 x.CategoryName == transaction.Category.Name
                             );
 
-                            if (categoryToUpdate == null)
+                            if (newCategory == null)
                                 break;
 
-                            var transactionToUpdate = categoryToUpdate.Transactions.FirstOrDefault(x =>
-                                x.TransactionHash == oldTransaction.TransactionHash
-                            );
-                            if (transactionToUpdate == null)
-                                break;
-
-                            categoryToUpdate.CurrentBalance -= oldTransaction.Amount;
-                            categoryToUpdate.CurrentBalance += transaction.Amount;
-
-                            var index = categoryToUpdate.Transactions.IndexOf(transactionToUpdate);
-                            categoryToUpdate.Transactions[index] = transaction;
+                            newCategory.Transactions.Add(transaction);
+                            newCategory.CurrentBalance += transaction.Amount;
                         }
-                        else // Category was changed
-                        {
-                            var originalCategory = currentBudget.BudgetSavingsCategories.FirstOrDefault(x =>
-                                x.CategoryName == oldTransaction.Category.Name
-                            );
-                            if (originalCategory == null)
-                                break;
+                    }
+                    break;
 
-                            var transactionInOldCategory = originalCategory.Transactions.FirstOrDefault(x =>
-                                x.TransactionHash == oldTransaction.TransactionHash
-                            );
-                            if (transactionInOldCategory == null)
-                                break;
+                case TransactionOperation.Delete:
+                    var containingCategory = currentBudget.BudgetSavingsCategories.FirstOrDefault(x =>
+                        x.CategoryName == transaction.Category.Name
+                    );
 
-                            // Remove the transaction from the original savings category
-                            originalCategory.Transactions.Remove(transactionInOldCategory);
-                            originalCategory.CurrentBalance -= oldTransaction.Amount;
-
-                            // Add the new transaction to the other category if it is a savings category
-                            if (transaction.Category.Group == "Savings")
-                            {
-                                var newCategory = currentBudget.BudgetSavingsCategories.FirstOrDefault(x =>
-                                    x.CategoryName == transaction.Category.Name
-                                );
-
-                                if (newCategory == null)
-                                    break;
-
-                                newCategory.Transactions.Add(transaction);
-                                newCategory.CurrentBalance += transaction.Amount;
-                            }
-                        }
+                    if (containingCategory == null)
                         break;
 
-                    case TransactionOperation.Delete:
-                        var containingCategory = currentBudget.BudgetSavingsCategories.FirstOrDefault(x =>
-                            x.CategoryName == transaction.Category.Name
-                        );
-
-                        if (containingCategory == null)
-                            break;
-
-                        var transactionToDelete = containingCategory.Transactions.FirstOrDefault(x =>
-                            x.TransactionHash == transaction.TransactionHash
-                        );
-                        if (transactionToDelete != null)
-                        {
-                            containingCategory.CurrentBalance -= transaction.Amount;
-                            containingCategory.Transactions.Remove(transactionToDelete);
-                        }
-                        break;
-                }
-
-                budgetCollection.SaveBudgetCollection();
+                    var transactionToDelete = containingCategory.Transactions.FirstOrDefault(x =>
+                        x.TransactionHash == transaction.TransactionHash
+                    );
+                    if (transactionToDelete != null)
+                    {
+                        containingCategory.CurrentBalance -= transaction.Amount;
+                        containingCategory.Transactions.Remove(transactionToDelete);
+                    }
+                    break;
             }
+
+            budgetCollection.SaveBudgetCollection();
         }
 
         private enum TransactionOperation
@@ -351,6 +399,7 @@ namespace MyMoney.ViewModels.Pages
                 amount,
                 viewModel.NewTransactionMemo
             );
+            transaction.AccountId = viewModel.SelectedAccount!.Id;
 
             // make sure there's enough money in the account for this transaction
             if (viewModel.NewTransactionIsExpense)
@@ -383,11 +432,14 @@ namespace MyMoney.ViewModels.Pages
 
             var viewModel = new NewTransactionDialogViewModel(_databaseManager)
             {
-                AutoSuggestPayees = GetAllPayees(),
                 SelectedAccountIndex = SelectedAccountIndex,
                 Accounts = Accounts,
                 SelectedAccount = SelectedAccount,
+                AutoSuggestPayees = await GetAllPayees()
             };
+
+            var categories = await Task.Run(() => viewModel.GetBudgetCategoryNames());
+            viewModel.SetCategoryNames(categories);
 
             var (success, transaction) = await ShowTransactionDialog(viewModel);
             if (!success || transaction == null)
@@ -396,10 +448,13 @@ namespace MyMoney.ViewModels.Pages
             SelectedAccountIndex = viewModel.SelectedAccountIndex;
             UpdateAccountBalance(SelectedAccount!, null, transaction);
             SelectedAccountTransactions.Add(transaction);
+            await Task.Run(() => SortTransactions());
+
+            // Write the new transaction to the database
+            _databaseManager.Insert("Transactions", transaction);
 
             UpdateSavingsCategory(transaction, TransactionOperation.Add);
 
-            SortTransactions();
             SaveAccountsToDatabase();
         }
 
@@ -410,19 +465,27 @@ namespace MyMoney.ViewModels.Pages
                 return;
 
             var oldTransaction = SelectedAccountTransactions[SelectedTransactionIndex];
-            var viewModel = CreateTransactionViewModel(oldTransaction);
+            var viewModel = await CreateTransactionViewModel(oldTransaction);
+
+            var categories = await Task.Run(() => viewModel.GetBudgetCategoryNames());
+            viewModel.SetCategoryNames(categories);
+
             viewModel.SetSelectedCategoryByName(oldTransaction.Category.Name);
 
             var (success, transaction) = await ShowTransactionDialog(viewModel, true);
             if (!success || transaction == null)
                 return;
+            transaction.Id = oldTransaction.Id;
 
             UpdateAccountBalance(SelectedAccount!, oldTransaction, transaction);
             SelectedAccountTransactions[SelectedTransactionIndex] = transaction;
+            await Task.Run(() => SortTransactions());
+
+            // Update the transaction in the database
+            _databaseManager.Update("Transactions", transaction);
 
             UpdateSavingsCategory(transaction, TransactionOperation.Edit, oldTransaction);
 
-            SortTransactions();
             SaveAccountsToDatabase();
         }
 
@@ -454,13 +517,11 @@ namespace MyMoney.ViewModels.Pages
             if (!await ValidateTransactionAmount(viewModel.Amount, fromAccount))
                 return;
 
-            ExecuteTransfer(fromAccount, toAccount, viewModel.Amount);
+            await ExecuteTransfer(fromAccount, toAccount, viewModel.Amount);
             SaveAccountsToDatabase();
-
-            OnPropertyChanged(nameof(SelectedAccountTransactions));
         }
 
-        private void ExecuteTransfer(Account fromAccount, Account toAccount, Currency amount)
+        private async Task ExecuteTransfer(Account fromAccount, Account toAccount, Currency amount)
         {
             var fromTransaction = new Transaction(
                 DateTime.Today,
@@ -469,6 +530,7 @@ namespace MyMoney.ViewModels.Pages
                 new(-amount.Value),
                 "Transfer"
             );
+            fromTransaction.AccountId = fromAccount.Id;
 
             var toTransaction = new Transaction(
                 DateTime.Today,
@@ -477,9 +539,20 @@ namespace MyMoney.ViewModels.Pages
                 amount,
                 "Transfer"
             );
+            toTransaction.AccountId = toAccount.Id;
 
-            fromAccount.Transactions.Add(fromTransaction);
-            toAccount.Transactions.Add(toTransaction);
+            // Write the new transactions to the database
+            _databaseManager.Insert("Transactions", fromTransaction);
+            _databaseManager.Insert("Transactions", toTransaction);
+
+            // Reload transactions if one of the accounts is currently selected
+            if (SelectedAccount != null)
+            {
+                if (SelectedAccount.Id == fromAccount.Id || SelectedAccount.Id == toAccount.Id)
+                {
+                    await LoadTransactions();
+                }
+            }
 
             fromAccount.Total += fromTransaction.Amount;
             toAccount.Total += toTransaction.Amount;
@@ -509,6 +582,9 @@ namespace MyMoney.ViewModels.Pages
             UpdateSavingsCategory(transaction, TransactionOperation.Delete);
 
             SelectedAccountTransactions.RemoveAt(SelectedTransactionIndex);
+
+            _databaseManager.Delete<Transaction>("Transactions", transaction.Id);
+
             SaveAccountsToDatabase();
         }
 
@@ -526,8 +602,11 @@ namespace MyMoney.ViewModels.Pages
             )
                 return;
 
+            // Delete all transactions for this account
+            var accountId = Accounts[SelectedAccountIndex].Id;
+            _databaseManager.DeleteMany<Transaction>("Transactions", x => x.AccountId == accountId);
+
             Accounts.RemoveAt(SelectedAccountIndex);
-            UpdateAccountIds();
             SaveAccountsToDatabase();
             TransactionsEnabled = Accounts.Count > 0;
         }
@@ -584,19 +663,22 @@ namespace MyMoney.ViewModels.Pages
                     balanceChange,
                     "Balance update"
                 );
-                SelectedAccount.Transactions.Add(balanceTransaction);
+                balanceTransaction.AccountId = SelectedAccount.Id;
+                SelectedAccountTransactions.Add(balanceTransaction);
+                SortTransactions();
+
+                _databaseManager.Insert("Transactions", balanceTransaction);
 
                 SelectedAccount.Total = newBalance;
 
-                SortTransactions();
                 SaveAccountsToDatabase();
             }
         }
 
         [RelayCommand]
-        private void ReconcileTransaction()
+        private async Task ReconcileTransaction(Transaction transaction)
         {
-            SaveAccountsToDatabase();
+            _databaseManager.Update("Transactions", transaction);
         }
 
         private bool EnsureAccountSelected()
@@ -625,7 +707,7 @@ namespace MyMoney.ViewModels.Pages
             return result == Wpf.Ui.Controls.MessageBoxResult.Primary;
         }
 
-        private NewTransactionDialogViewModel CreateTransactionViewModel(Transaction transaction)
+        private async Task<NewTransactionDialogViewModel> CreateTransactionViewModel(Transaction transaction)
         {
             return new NewTransactionDialogViewModel(_databaseManager)
             {
@@ -635,7 +717,7 @@ namespace MyMoney.ViewModels.Pages
                 NewTransactionIsIncome = transaction.Amount.Value >= 0m,
                 NewTransactionMemo = transaction.Memo,
                 NewTransactionPayee = transaction.Payee,
-                AutoSuggestPayees = GetAllPayees(),
+                AutoSuggestPayees = await GetAllPayees(),
                 SelectedAccountIndex = SelectedAccountIndex,
                 Accounts = Accounts,
                 SelectedAccount = SelectedAccount,
@@ -643,16 +725,27 @@ namespace MyMoney.ViewModels.Pages
             };
         }
 
-        private List<string> GetAllPayees()
+        private async Task<List<string>> GetAllPayees()
         {
-            return [.. Accounts.SelectMany(a => a.Transactions).Select(t => t.Payee).Where(p => p != null).Distinct()];
+            var transactions = new List<string>();
+            await _databaseManager.QueryAsync<Transaction>("Transactions", async query =>
+            {
+                transactions = [.. query
+                    .Where(t => t.Payee != null)
+                    .Select(t => t.Payee)
+                    .ToList()
+                    .Distinct()];
+            });
+            return transactions;
         }
 
-        partial void OnSelectedAccountChanged(Account? value)
+        public async Task SelectedAccountChanged()
         {
-            OnPropertyChanged(nameof(SelectedAccountTransactions));
-            IsInputEnabled = value != null;
-            SortTransactions();
+            IsInputEnabled = SelectedAccount != null;
+            SelectedAccountTransactions.Clear();
+            _oldestLoadedDate = null;
+            _oldestLoadedId = 0;
+            await LoadTransactions();
         }
 
         public void OnPageNavigatedTo()

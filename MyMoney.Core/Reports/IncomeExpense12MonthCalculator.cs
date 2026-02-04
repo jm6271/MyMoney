@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Threading.Tasks;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 
@@ -28,13 +29,13 @@ namespace MyMoney.Core.Reports
             return monthNames;
         }
 
-        public static List<double> GetPast12MonthsIncome()
+        public static async Task<List<double>> GetPast12MonthsIncome(IDatabaseManager dbManager)
         {
             List<double> income = [];
 
             for (var i = 11; i >= 0; i--)
             {
-                var transactions = GetMonthOfTransactions(i);
+                var transactions = await GetMonthOfTransactions(dbManager, i);
 
                 var total = GetIncome(transactions);
                 income.Add((double)total);
@@ -43,13 +44,13 @@ namespace MyMoney.Core.Reports
             return income;
         }
 
-        public static List<double> GetPast12MonthsExpenses()
+        public static async Task<List<double>> GetPast12MonthsExpenses(IDatabaseManager dbManager)
         {
             List<double> expenses = [];
 
             for (var i = 11; i >= 0; i--)
             {
-                var transactions = GetMonthOfTransactions(i);
+                var transactions = await GetMonthOfTransactions(dbManager, i);
 
                 var total = GetExpenses(transactions);
                 expenses.Add((double)total);
@@ -80,12 +81,12 @@ namespace MyMoney.Core.Reports
             return Math.Abs(expenses);
         }
 
-        private static List<Transaction> GetMonthOfTransactions(int monthsAgo)
+        private static async Task<List<Transaction>> GetMonthOfTransactions(IDatabaseManager dbManager, int monthsAgo)
         {
             var startDate = GetMonthStartDate(monthsAgo);
             var endDate = GetMonthEndDate(monthsAgo);
 
-            var result = ReadTransactionsWithingDateRange(startDate, endDate);
+            var result = await ReadTransactionsWithingDateRange(dbManager, startDate, endDate);
 
             return result;
         }
@@ -124,28 +125,16 @@ namespace MyMoney.Core.Reports
             return dt;
         }
 
-        private static List<Transaction> ReadTransactionsWithingDateRange(DateTime startDate, DateTime endDate)
+        private static async Task<List<Transaction>> ReadTransactionsWithingDateRange(IDatabaseManager dbReader, DateTime startDate, DateTime endDate)
         {
-            // Load list of transactions from the database
-            var dbReader = new DatabaseManager();
-            var accounts = dbReader.GetCollection<Account>("Accounts");
-
-            List<Transaction> allTransactions = [];
-            allTransactions.AddRange(accounts.SelectMany(account => account.Transactions));
-
-            // go through the transactions and get the ones in the specified date range
             List<Transaction> transactions = [];
-            transactions.AddRange(
-                from transaction in allTransactions
-                where IsDateBetween(transaction.Date, startDate, endDate)
-                select transaction
-            );
-            return transactions;
-        }
 
-        private static bool IsDateBetween(DateTime dateToCheck, DateTime startDate, DateTime endDate)
-        {
-            return dateToCheck >= startDate && dateToCheck <= endDate;
+            await dbReader.QueryAsync<Transaction>("Transactions", async query =>
+            {
+                transactions.AddRange(query.Where(t => (t.Date >= startDate && t.Date <= endDate)).ToList());
+            });
+
+            return transactions;
         }
     }
 }

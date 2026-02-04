@@ -4,7 +4,7 @@
     {
         public static string GetDataFilePath()
         {
-#if DEBUG
+#if DEBUG      
             return "MyMoney-LiteDB-Database-DEBUG.db";
 #else
             // make sure all the directories are already created

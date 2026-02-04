@@ -15,18 +15,20 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
     public class DeleteExpenseGroupTests
     {
         private Mock<IContentDialogService> _mockContentDialogService;
-        private Mock<IDatabaseManager> _mockDatabaseReader;
         private Mock<IMessageBoxService> _mockMessageBoxService;
         private Mock<IContentDialogFactory> _mockContentDialogFactory;
         private ViewModels.Pages.BudgetViewModel _viewModel;
+
+        private DatabaseManager _databaseManager;
 
         [TestInitialize]
         public async Task Setup()
         {
             _mockContentDialogService = new Mock<IContentDialogService>();
-            _mockDatabaseReader = new Mock<IDatabaseManager>();
             _mockMessageBoxService = new Mock<IMessageBoxService>();
             _mockContentDialogFactory = new Mock<IContentDialogFactory>();
+
+            _databaseManager = new(new MemoryStream());
 
             // Setup mock database with a test budget
             var testBudget = new Budget
@@ -35,11 +37,11 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 BudgetTitle = DateTime.Now.ToString("MMMM, yyyy"),
             };
 
-            _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget> { testBudget });
+            _databaseManager.WriteCollection("Budgets", [testBudget]);
 
             _viewModel = new ViewModels.Pages.BudgetViewModel(
                 _mockContentDialogService.Object,
-                _mockDatabaseReader.Object,
+                _databaseManager,
                 _mockMessageBoxService.Object,
                 _mockContentDialogFactory.Object
             );

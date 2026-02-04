@@ -72,7 +72,7 @@ public class DeleteAccountTests
     }
 
     [TestMethod]
-    public void DeleteAccount_UserConfirmsDelete_RemovesAccountAndUpdatesIds()
+    public void DeleteAccount_UserConfirmsDelete_RemovesAccount()
     {
         // Arrange
         _viewModel = CreateViewModel();
@@ -101,7 +101,6 @@ public class DeleteAccountTests
 
         // Assert
         Assert.HasCount(1, _viewModel.Accounts);
-        Assert.AreEqual(1, _viewModel.Accounts[0].Id);
         Assert.AreEqual("Test2", _viewModel.Accounts[0].AccountName);
     }
 

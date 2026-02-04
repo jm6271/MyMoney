@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using MyMoney.Core.Models;
-using MyMoney.ViewModels.Pages;
+using MyMoney.Helpers;
 
 namespace MyMoney.ViewAdapters.Pages
 {
@@ -14,7 +14,7 @@ namespace MyMoney.ViewAdapters.Pages
     {
         public ListCollectionView GroupedBudgetsView { get; }
 
-        public BudgetViewAdapter(ObservableCollection<GroupedBudget> budgets)
+        public BudgetViewAdapter(BulkObservableCollection<GroupedBudget> budgets)
         {
             GroupedBudgetsView = new(budgets);
             GroupedBudgetsView.GroupDescriptions.Add(new PropertyGroupDescription("Group"));

@@ -48,7 +48,7 @@ namespace MyMoney.Views.ContentDialogs
             return result;
         }
 
-        private void ContentDialog_Loaded(object sender, RoutedEventArgs e)
+        private async void ContentDialog_Loaded(object sender, RoutedEventArgs e)
         {
             txtAmount.Focus();
             txtAmount.SelectAll();
