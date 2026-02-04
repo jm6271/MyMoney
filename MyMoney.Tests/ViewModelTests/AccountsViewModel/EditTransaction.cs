@@ -65,6 +65,12 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _viewModel.SelectedTransaction = _viewModel.SelectedAccountTransactions[0];
         }
 
+        [TestCleanup]
+        public void Cleanup()
+        {
+            _databaseManager?.Dispose();
+        }
+
         [TestMethod]
         public async Task EditTransaction_DialogCanceled_DoesNotUpdateTransaction()
         {
