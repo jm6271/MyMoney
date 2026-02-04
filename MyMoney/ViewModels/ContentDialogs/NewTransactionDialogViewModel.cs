@@ -89,12 +89,16 @@ namespace MyMoney.ViewModels.ContentDialogs
             if (oldValue.Month == newValue.Month && oldValue.Year == newValue.Year)
                 return;
 
+            var selectedCategory = NewTransactionCategory.Name;
+
             CategoryNames.Clear();
 
             foreach (var item in GetBudgetCategoryNames())
             {
                 CategoryNames.Add(item);
             }
+
+            SetSelectedCategoryByName(selectedCategory);
         }
 
         public ObservableCollection<Category> GetBudgetCategoryNames()
