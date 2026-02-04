@@ -602,6 +602,10 @@ namespace MyMoney.ViewModels.Pages
             )
                 return;
 
+            // Delete all transactions for this account
+            var accountId = Accounts[SelectedAccountIndex].Id;
+            _databaseManager.DeleteMany<Transaction>("Transactions", x => x.AccountId == accountId);
+
             Accounts.RemoveAt(SelectedAccountIndex);
             SaveAccountsToDatabase();
             TransactionsEnabled = Accounts.Count > 0;

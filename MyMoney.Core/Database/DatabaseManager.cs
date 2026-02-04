@@ -17,6 +17,7 @@ namespace MyMoney.Core.Database
         public void Insert<T>(string collectionName, T entity);
         public bool Update<T>(string collectionName, T entity);
         public bool Delete<T>(string collectionName, BsonValue id);
+        public int DeleteMany<T>(string collectionName, System.Linq.Expressions.Expression<Func<T, bool>> predicate);
         public Task QueryAsync<T>(string collectionName, Func<ILiteQueryable<T>, Task> action);
     }
 
@@ -149,6 +150,16 @@ namespace MyMoney.Core.Database
         {
             var collection = _db.GetCollection<T>(collectionName);
             var result = collection.Delete(id);
+            ReportsCache cache = new(this);
+            cache.InvalidateCacheOnWrite(collectionName);
+
+            return result;
+        }
+
+        public int DeleteMany<T>(string collectionName, System.Linq.Expressions.Expression<Func<T, bool>> predicate)
+        {
+            var collection = _db.GetCollection<T>(collectionName);
+            var result = collection.DeleteMany(predicate);
             ReportsCache cache = new(this);
             cache.InvalidateCacheOnWrite(collectionName);
 
