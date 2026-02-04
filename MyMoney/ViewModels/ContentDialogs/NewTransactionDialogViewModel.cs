@@ -74,7 +74,7 @@ namespace MyMoney.ViewModels.ContentDialogs
             CategoriesView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Category.Group)));
         }
 
-        public void SetSelectedCategoryByName(string categoryName)
+        public void SetSelectedCategoryByName(string? categoryName)
         {
             var categoryItem = CategoryNames.FirstOrDefault(c => c.Name == categoryName);
 
@@ -84,19 +84,21 @@ namespace MyMoney.ViewModels.ContentDialogs
             }
         }
 
-        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        partial void OnNewTransactionDateChanged(DateTime oldValue, DateTime newValue)
         {
-            base.OnPropertyChanged(e);
+            if (oldValue.Month == newValue.Month && oldValue.Year == newValue.Year)
+                return;
 
-            if (e.PropertyName == nameof(NewTransactionDate))
+            var selectedCategory = NewTransactionCategory?.Name;
+
+            CategoryNames.Clear();
+
+            foreach (var item in GetBudgetCategoryNames())
             {
-                CategoryNames.Clear();
-
-                foreach (var item in GetBudgetCategoryNames())
-                {
-                    CategoryNames.Add(item);
-                }
+                CategoryNames.Add(item);
             }
+
+            SetSelectedCategoryByName(selectedCategory);
         }
 
         public ObservableCollection<Category> GetBudgetCategoryNames()
