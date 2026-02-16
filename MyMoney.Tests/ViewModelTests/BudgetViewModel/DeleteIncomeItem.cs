@@ -17,9 +17,10 @@ public class DeleteIncomeItemTests
     private Mock<IContentDialogService> _mockContentDialogService;
     private Mock<IMessageBoxService> _mockMessageBoxService;
     private Mock<IContentDialogFactory> _mockContentDialogFactory;
-    private Mock<IDatabaseManager> _mockDatabaseReader;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
     private Budget _testBudget;
+
+    private DatabaseManager _databaseManager;
 
     private int _originalNumberOfIncomeItems;
 
@@ -29,7 +30,8 @@ public class DeleteIncomeItemTests
         _mockContentDialogService = new Mock<IContentDialogService>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
         _mockContentDialogFactory = new Mock<IContentDialogFactory>();
-        _mockDatabaseReader = new Mock<IDatabaseManager>();
+
+        _databaseManager = new(new MemoryStream());
 
         // Setup test budget with income items
         _testBudget = new Budget
@@ -61,11 +63,11 @@ public class DeleteIncomeItemTests
 
         _originalNumberOfIncomeItems = _testBudget.BudgetIncomeItems.Count;
 
-        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget> { _testBudget });
+        _databaseManager.WriteCollection("Budgets", [_testBudget]);
 
         _viewModel = new(
             _mockContentDialogService.Object,
-            _mockDatabaseReader.Object,
+            _databaseManager,
             _mockMessageBoxService.Object,
             _mockContentDialogFactory.Object
         );

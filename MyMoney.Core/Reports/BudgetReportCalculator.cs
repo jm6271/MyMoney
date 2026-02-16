@@ -1,4 +1,5 @@
-﻿using MyMoney.Core.Database;
+﻿using System.Threading.Tasks;
+using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 
 namespace MyMoney.Core.Reports
@@ -11,7 +12,7 @@ namespace MyMoney.Core.Reports
         /// <param name="budgetMonth">The month of the budget to generate a report on</param>
         /// <param name="databaseReader">The database reader to use to get the information for the report</param>
         /// <returns>A list of income report items that occurred in the specified month</returns>
-        public static List<BudgetReportItem> CalculateIncomeReportItems(
+        public static async Task<List<BudgetReportItem>> CalculateIncomeReportItems(
             DateTime budgetMonth,
             IDatabaseManager databaseReader
         )
@@ -42,7 +43,7 @@ namespace MyMoney.Core.Reports
                 {
                     Category = item.Category,
                     Budgeted = item.Amount,
-                    Actual = CalculateTotalForCategory(
+                    Actual = await CalculateTotalForCategory(
                         new() { Group = "Income", Name = item.Category },
                         budgetMonth,
                         databaseReader
@@ -65,9 +66,9 @@ namespace MyMoney.Core.Reports
         /// Calculate the income report items from the beginning of the current month
         /// </summary>
         /// <returns>A list of report items, for each budget category</returns>
-        public static List<BudgetReportItem> CalculateIncomeReportItems(IDatabaseManager databaseReader)
+        public static async Task<List<BudgetReportItem>> CalculateIncomeReportItems(IDatabaseManager databaseReader)
         {
-            return CalculateIncomeReportItems(DateTime.Today, databaseReader);
+            return await CalculateIncomeReportItems(DateTime.Today, databaseReader);
         }
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace MyMoney.Core.Reports
         /// <param name="budgetMonth">The month of the budget to generate a report on</param>
         /// <param name="databaseReader">The database reader to use to get the information for the report</param>
         /// <returns>A list of report items, for each savings category</returns>
-        public static List<SavingsCategoryReportItem> CalculateSavingsReportItems(
+        public static async Task<List<SavingsCategoryReportItem>> CalculateSavingsReportItems(
             DateTime budgetMonth,
             IDatabaseManager databaseReader
         )
@@ -108,11 +109,11 @@ namespace MyMoney.Core.Reports
                     Category = item.CategoryName,
                     Saved = item.BudgetedAmount,
                     Spent = new(
-                        -CalculateTotalForCategory(
+                        -(await CalculateTotalForCategory(
                             new() { Group = "Savings", Name = item.CategoryName },
                             budgetMonth,
                             databaseReader
-                        ).Value
+                        )).Value
                     ),
                     Balance = item.CurrentBalance,
                 };
@@ -129,7 +130,7 @@ namespace MyMoney.Core.Reports
         /// <param name="budgetMonth">The month of the budget to generate a report on</param>
         /// <param name="databaseReader">The database reader to use to get the information for the report</param>
         /// <returns>A list of expense report items that occurred in the specified month</returns>
-        public static List<BudgetReportItem> CalculateExpenseReportItems(
+        public static async Task<List<BudgetReportItem>> CalculateExpenseReportItems(
             DateTime budgetMonth,
             IDatabaseManager databaseReader
         )
@@ -165,11 +166,11 @@ namespace MyMoney.Core.Reports
                         Budgeted = subItem.Amount,
                         Actual = new(
                             Math.Abs(
-                                CalculateTotalForCategory(
+                                (await CalculateTotalForCategory(
                                     new() { Group = item.CategoryName, Name = subItem.Category },
                                     budgetMonth,
                                     databaseReader
-                                ).Value
+                                )).Value
                             )
                         ),
                         IsExpense = true,
@@ -188,9 +189,9 @@ namespace MyMoney.Core.Reports
         /// Calculate the expense report items from the beginning of the current month
         /// </summary>
         /// <returns>A list of report items, for each budget category</returns>
-        public static List<BudgetReportItem> CalculateExpenseReportItems(IDatabaseManager databaseReader)
+        public static async Task<List<BudgetReportItem>> CalculateExpenseReportItems(IDatabaseManager databaseReader)
         {
-            return CalculateExpenseReportItems(DateTime.Today, databaseReader);
+            return await CalculateExpenseReportItems(DateTime.Today, databaseReader);
         }
 
         /// <summary>
@@ -198,11 +199,11 @@ namespace MyMoney.Core.Reports
         /// </summary>
         /// <param name="date">The date of the report</param>
         /// <returns>The income, expenses, and savings report items</returns>
-        public static (
+        public static async Task<(
             List<BudgetReportItem> income,
             List<BudgetReportItem> expenses,
             List<SavingsCategoryReportItem> savings
-        ) CalculateBudgetReport(DateTime date, IDatabaseManager databaseManager)
+        )> CalculateBudgetReport(DateTime date, IDatabaseManager databaseManager)
         {
             // Check to see if data is cached
             ReportsCache cache = new(databaseManager);
@@ -262,9 +263,9 @@ namespace MyMoney.Core.Reports
             }
 
             // Load data and cache it
-            var calculatedIncomeItems = CalculateIncomeReportItems(date, databaseManager);
-            var calculatedExpenseItems = CalculateExpenseReportItems(date, databaseManager);
-            var calulatedSavingsItems = CalculateSavingsReportItems(date, databaseManager);
+            var calculatedIncomeItems = await CalculateIncomeReportItems(date, databaseManager);
+            var calculatedExpenseItems = await CalculateExpenseReportItems(date, databaseManager);
+            var calulatedSavingsItems = await CalculateSavingsReportItems(date, databaseManager);
 
             Dictionary<string, object> reportToCache = [];
             reportToCache["Income"] = calculatedIncomeItems;
@@ -276,34 +277,27 @@ namespace MyMoney.Core.Reports
             return (calculatedIncomeItems, calculatedExpenseItems, calulatedSavingsItems);
         }
 
-        private static Currency CalculateTotalForCategory(
+        private static async Task<Currency> CalculateTotalForCategory(
             Category category,
             DateTime month,
             IDatabaseManager databaseReader
         )
         {
-            // Read the accounts from the database
-            var accounts = databaseReader.GetCollection<Account>("Accounts");
+            decimal actual = 0;
 
-            // search through each account for transactions in this category that happened in the specified month
-            var actual = 0m;
-            foreach (var account in accounts)
+            await databaseReader.QueryAsync<Transaction>("Transactions", async (query) =>
             {
-                foreach (var transaction in account.Transactions)
+                var results = query.Where(t =>
+                    t.Category.Name == category.Name && (t.Date.Year == month.Year && t.Date.Month == month.Month)
+                ).ToList();
+
+                foreach (var transaction in results)
                 {
-                    if (transaction.Category.Name == category.Name && IsDateInCurrentMonth(transaction.Date, month))
-                    {
-                        actual += transaction.Amount.Value;
-                    }
+                    actual += transaction.Amount.Value;
                 }
-            }
+            });
 
             return new Currency(actual);
-        }
-
-        private static bool IsDateInCurrentMonth(DateTime date, DateTime month)
-        {
-            return date.Year == month.Year && date.Month == month.Month;
         }
 
         private static decimal InvertSign(decimal amount)

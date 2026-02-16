@@ -66,6 +66,7 @@ namespace MyMoney.ViewModels.Pages
         private bool _backupSettingsLoaded;
         private readonly IMessageBoxService _messageBoxService;
         private const string SettingsKey = "ApplicationSettings";
+        private IDatabaseManager _databaseManager;
 
         #endregion
 
@@ -105,9 +106,10 @@ namespace MyMoney.ViewModels.Pages
 
         #region Constructor
 
-        public SettingsViewModel(IMessageBoxService messageBoxService)
+        public SettingsViewModel(IMessageBoxService messageBoxService, IDatabaseManager databaseManager)
         {
             _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
+            _databaseManager = databaseManager ?? throw new ArgumentNullException(nameof(databaseManager));
 
             AccentColors = new(PresetAccentColors.AccentColors);
 
@@ -297,6 +299,10 @@ namespace MyMoney.ViewModels.Pages
             if (confirmed != Wpf.Ui.Controls.MessageBoxResult.Primary)
                 return;
 
+            // Close the connection with the DB so we don't throw an exception
+            _databaseManager.Dispose();
+            _databaseManager = new DatabaseManager(":memory:");
+
             DatabaseBackup.RestoreDatabaseBackup(dialog.FileName);
 
             await _messageBoxService.ShowInfoAsync(
@@ -323,16 +329,14 @@ namespace MyMoney.ViewModels.Pages
 
         #region Settings Helper Methods
 
-        private static Dictionary<string, string> GetSettings()
+        private Dictionary<string, string> GetSettings()
         {
-            var reader = new DatabaseManager();
-            return reader.GetSettingsDictionary(SettingsKey);
+            return _databaseManager.GetSettingsDictionary(SettingsKey);
         }
 
-        private static void SaveSettings(Dictionary<string, string> settings)
+        private void SaveSettings(Dictionary<string, string> settings)
         {
-            var writer = new DatabaseManager();
-            writer.WriteSettingsDictionary(SettingsKey, settings);
+            _databaseManager.WriteSettingsDictionary(SettingsKey, settings);
         }
 
         #endregion

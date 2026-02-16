@@ -31,6 +31,7 @@ public class EditSavingsCategoryTests
 
         // Setup database reader to return empty collection
         _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
+        _mockDatabaseReader.Setup(x => x.ReadDictionary<string, object>("ReportsCache")).Returns(new Dictionary<string, object>());
 
         _viewModel = new(
             _mockContentDialogService.Object,

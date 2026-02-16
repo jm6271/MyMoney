@@ -1,11 +1,12 @@
 ﻿using System.Collections;
+using System.Threading;
 using LiteDB;
 
 namespace MyMoney.Core.Database
 {
-    public interface IDatabaseManager
+    public interface IDatabaseManager: IDisposable
     {
-        public void WriteCollection<T>(string collectionName, List<T> collection);
+        public void WriteCollection<T>(string collectionName, IReadOnlyList<T> collection);
         public void WriteSettingsDictionary(string collectionName, Dictionary<string, string> collection);
         public List<T> GetCollection<T>(string collectionName);
         public Dictionary<string, string> GetSettingsDictionary(string collectionName);
@@ -13,11 +14,42 @@ namespace MyMoney.Core.Database
             where TKey : notnull;
         public void WriteDictionary<TKey, TValue>(string dictName, Dictionary<TKey, TValue> dictionary)
             where TKey : notnull;
+        public void Insert<T>(string collectionName, T entity);
+        public bool Update<T>(string collectionName, T entity);
+        public bool Delete<T>(string collectionName, BsonValue id);
+        public int DeleteMany<T>(string collectionName, System.Linq.Expressions.Expression<Func<T, bool>> predicate);
+        public Task QueryAsync<T>(string collectionName, Func<ILiteQueryable<T>, Task> action);
     }
 
-    public class DatabaseManager : IDatabaseManager
+    public class DatabaseManager : IDatabaseManager, IDisposable
     {
-        private static readonly Lock _databaseLock = new();
+        private readonly LiteDatabase _db;
+
+        public DatabaseManager()
+        {
+            var dataFilePath = DataFileLocationGetter.GetDataFilePath();
+            _db = new LiteDatabase(dataFilePath);
+            EnsureIndexes();
+        }
+
+        public DatabaseManager(string dataFilePath)
+        {
+            _db = new LiteDatabase(dataFilePath);
+            EnsureIndexes();
+        }
+
+        public DatabaseManager(Stream stream)
+        {
+            _db = new(stream);
+        }
+
+        private void EnsureIndexes()
+        {
+            var transactions = _db.GetCollection<Core.Models.Transaction>("Transactions");
+            transactions.EnsureIndex(x => x.Date);
+            transactions.EnsureIndex(x => x.AccountId);
+            transactions.EnsureIndex(x => x.Payee);
+        }
 
         /// <summary>
         /// Read a collection from the database
@@ -29,17 +61,10 @@ namespace MyMoney.Core.Database
         {
             List<T> result = [];
 
-            lock (_databaseLock)
-            {
-                using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
-                var collection = db.GetCollection<T>(collectionName);
+            var collection = _db.GetCollection<T>(collectionName);
 
-                // Create list from collection
-                for (int i = 1; i <= collection.Count(); i++)
-                {
-                    result.Add(collection.FindById(i));
-                }
-            }
+            // Create list from collection
+            result = [.. collection.FindAll()];
 
             return result;
         }
@@ -49,13 +74,8 @@ namespace MyMoney.Core.Database
             Dictionary<string, string> dict = [];
             List<KeyValuePair<string, string>> settingsList;
 
-            lock (_databaseLock)
-            {
-                using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
-
-                var dbCollection = db.GetCollection<KeyValuePair<string, string>>(collectionName);
-                settingsList = [.. dbCollection.FindAll()];
-            }
+            var dbCollection = _db.GetCollection<KeyValuePair<string, string>>(collectionName);
+            settingsList = [.. dbCollection.FindAll()];
 
             foreach (var item in settingsList)
             {
@@ -65,23 +85,15 @@ namespace MyMoney.Core.Database
             return dict;
         }
 
-        public void WriteCollection<T>(string collectionName, List<T> collection)
+        public void WriteCollection<T>(string collectionName, IReadOnlyList<T> collection)
         {
-            lock (_databaseLock)
-            {
-                using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
+            _db.BeginTrans();
 
-                var dbCollection = db.GetCollection<T>(collectionName);
+            var col = _db.GetCollection<T>(collectionName);
+            col.DeleteAll();
+            col.InsertBulk(collection);
 
-                // clear the database collection
-                dbCollection.DeleteAll();
-
-                // add the new items to the database
-                foreach (var item in collection)
-                {
-                    dbCollection.Insert(item);
-                }
-            }
+            _db.Commit();
 
             // Invalidate parts of the cache that were affected by this write
             ReportsCache cache = new(this);
@@ -90,23 +102,17 @@ namespace MyMoney.Core.Database
 
         public void WriteSettingsDictionary(string collectionName, Dictionary<string, string> collection)
         {
-            lock (_databaseLock)
-            {
-                // Open or create a database file
-                using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
+            // Get a list version
+            var dictList = collection.ToList();
 
-                // Get a list version
-                var dictList = collection.ToList();
+            // Clear the old collection
+            if (_db.CollectionExists(collectionName))
+                _db.DropCollection(collectionName);
 
-                // Clear the old collection
-                if (db.CollectionExists(collectionName))
-                    db.DropCollection(collectionName);
+            var dbCollection = _db.GetCollection<KeyValuePair<string, string>>(collectionName);
 
-                var dbCollection = db.GetCollection<KeyValuePair<string, string>>(collectionName);
-
-                dbCollection.Insert(dictList);
-                dbCollection.EnsureIndex(x => x.Key);
-            }
+            dbCollection.Insert(dictList);
+            dbCollection.EnsureIndex(x => x.Key);
         }
 
         public Dictionary<TKey, TValue> ReadDictionary<TKey, TValue>(string dictName)
@@ -114,17 +120,12 @@ namespace MyMoney.Core.Database
         {
             Dictionary<TKey, TValue> dict = [];
 
-            lock (_databaseLock)
+            var dbCollection = _db.GetCollection<KeyValuePair<TKey, TValue>>(dictName);
+            var settingsList = dbCollection.FindAll().ToList();
+
+            foreach (var item in settingsList)
             {
-                using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
-
-                var dbCollection = db.GetCollection<KeyValuePair<TKey, TValue>>(dictName);
-                var settingsList = dbCollection.FindAll().ToList();
-
-                foreach (var item in settingsList)
-                {
-                    dict.TryAdd(item.Key, item.Value);
-                }
+                dict.TryAdd(item.Key, item.Value);
             }
             return dict;
         }
@@ -132,23 +133,67 @@ namespace MyMoney.Core.Database
         public void WriteDictionary<TKey, TValue>(string dictName, Dictionary<TKey, TValue> dictionary)
             where TKey : notnull
         {
-            lock (_databaseLock)
-            {
-                // Open or create a database file
-                using var db = new LiteDatabase(DataFileLocationGetter.GetDataFilePath());
+            // Get a list version
+            var dictList = dictionary.ToList();
 
-                // Get a list version
-                var dictList = dictionary.ToList();
+            // Clear the old collection
+            if (_db.CollectionExists(dictName))
+                _db.DropCollection(dictName);
 
-                // Clear the old collection
-                if (db.CollectionExists(dictName))
-                    db.DropCollection(dictName);
+            var dbCollection = _db.GetCollection<KeyValuePair<TKey, TValue>>(dictName);
 
-                var dbCollection = db.GetCollection<KeyValuePair<TKey, TValue>>(dictName);
+            dbCollection.Insert(dictList);
+            dbCollection.EnsureIndex(x => x.Key);
+        }
 
-                dbCollection.Insert(dictList);
-                dbCollection.EnsureIndex(x => x.Key);
-            }
+        public bool Delete<T>(string collectionName, BsonValue id)
+        {
+            var collection = _db.GetCollection<T>(collectionName);
+            var result = collection.Delete(id);
+            ReportsCache cache = new(this);
+            cache.InvalidateCacheOnWrite(collectionName);
+
+            return result;
+        }
+
+        public int DeleteMany<T>(string collectionName, System.Linq.Expressions.Expression<Func<T, bool>> predicate)
+        {
+            var collection = _db.GetCollection<T>(collectionName);
+            var result = collection.DeleteMany(predicate);
+            ReportsCache cache = new(this);
+            cache.InvalidateCacheOnWrite(collectionName);
+
+            return result;
+        }
+
+        public bool Update<T>(string collectionName, T entity)
+        {
+            var collection = _db.GetCollection<T>(collectionName);
+            var result = collection.Update(entity);
+            ReportsCache cache = new(this);
+            cache.InvalidateCacheOnWrite(collectionName);
+
+            return result;
+        }
+
+        public void Insert<T>(string collectionName, T entity)
+        {
+            var collection = _db.GetCollection<T>(collectionName);
+            collection.Insert(entity);
+            ReportsCache cache = new(this);
+            cache.InvalidateCacheOnWrite(collectionName);
+        }
+
+        public async Task QueryAsync<T>(string collectionName, Func<ILiteQueryable<T>, Task> action)
+        {
+            var collection = _db.GetCollection<T>(collectionName);
+            await action(collection.Query());
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+            _db?.Dispose();
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows.Data;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
@@ -17,16 +18,17 @@ using SkiaSharp;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
+using MyMoney.Helpers;
 
 namespace MyMoney.ViewModels.Pages
 {
     public partial class BudgetViewModel : ObservableObject, INavigationAware
     {
         [ObservableProperty]
-        private ObservableCollection<Budget> _budgets = [];
+        private BulkObservableCollection<Budget> _budgets = [];
 
         [ObservableProperty]
-        private ObservableCollection<GroupedBudget> _groupedBudgetsCollection = [];
+        private BulkObservableCollection<GroupedBudget> _groupedBudgetsCollection = [];
 
         [ObservableProperty]
         private GroupedBudget? _selectedGroupedBudget;
@@ -122,8 +124,10 @@ namespace MyMoney.ViewModels.Pages
         {
             if (Budgets.Count > 0)
             {
-                SelectedGroupedBudgetIndex = -1; // Trigger property changed
+                int oldIndex = SelectedGroupedBudgetIndex;
                 SelectedGroupedBudgetIndex = 0;
+                if (oldIndex  == 0)
+                    OnPropertyChanged(nameof(SelectedGroupedBudgetIndex));
             }
         }
 
@@ -131,12 +135,11 @@ namespace MyMoney.ViewModels.Pages
         {
             if (Budgets.Count == 0)
             {
-                var budgets = await Task.Run(() => LoadBudgetCollection());
-                Budgets = budgets;
+                Budgets.AddRange(await LoadBudgetCollection());
 
                 UpdateGroupedBudgetList();
             }
-            UpdateBudgetTotals();
+            UpdateBudgetTotals(false);
 
             if (Budgets.Count > 0)
                 SelectCurrentBudget();
@@ -150,22 +153,20 @@ namespace MyMoney.ViewModels.Pages
             return Task.CompletedTask;
         }
 
-        private ObservableCollection<Budget> LoadBudgetCollection()
+        private async Task<List<Budget>> LoadBudgetCollection()
         {
-            ObservableCollection<Budget> budgets = [];
+            List<Budget> budgets = [];
 
-            List<Budget> budgetCollection = _databaseManager.GetCollection<Budget>("Budgets");
-
-            foreach (var budget in budgetCollection.OfType<Budget>())
+            await _databaseManager.QueryAsync<Budget>("Budgets", async query =>
             {
-                budgets.Add(budget);
-            }
-
-            // Sort according to date
-            var sortedBudgets = budgets.OrderByDescending(x => x.BudgetDate).ToList();
-            budgets.Clear();
-            foreach (var item in sortedBudgets)
-                budgets.Add(item);
+                await Task.Run(() =>
+                {
+                    budgets = query
+                        .OrderByDescending(b => b.BudgetDate)
+                        .Limit(14)
+                        .ToList();
+                });
+            });
 
             return budgets;
         }
@@ -187,16 +188,14 @@ namespace MyMoney.ViewModels.Pages
                 else
                 {
                     // Don't add a budget from more than 1 year ago
-                    if (budget.BudgetDate < DateTime.Now.AddYears(-1))
+                    if (budget.BudgetDate < DateTime.Now.AddYears(-1).AddMonths(-1))
                         continue;
 
                     groupedBudgets.Add(new GroupedBudget() { Group = "Old", Budget = budget });
                 }
             }
 
-            GroupedBudgetsCollection.Clear();
-            foreach (var budget in groupedBudgets)
-                GroupedBudgetsCollection.Add(budget);
+            GroupedBudgetsCollection.ReplaceAll(groupedBudgets);
         }
 
         protected override void OnPropertyChanged(PropertyChangedEventArgs e)
@@ -213,7 +212,7 @@ namespace MyMoney.ViewModels.Pages
                         var index = FindBudgetIndex(SelectedGroupedBudget.Budget.BudgetTitle);
                         if (index != -1)
                         {
-                            LoadBudget(index);
+                            _ = LoadBudget(index);
                         }
                     }
 
@@ -230,7 +229,7 @@ namespace MyMoney.ViewModels.Pages
             _databaseManager.WriteCollection("Budgets", Budgets.ToList());
         }
 
-        private void UpdateBudgetTotals()
+        private void UpdateBudgetTotals(bool writeChanges = true)
         {
             if (CurrentBudget == null)
             {
@@ -240,7 +239,10 @@ namespace MyMoney.ViewModels.Pages
 
             UpdateIncomeTotals();
             UpdateExpenseTotals();
-            WriteToDatabase();
+
+            if (writeChanges)
+                WriteToDatabase();
+
             UpdateCharts();
             UpdateLeftToBudget();
         }
@@ -588,7 +590,7 @@ namespace MyMoney.ViewModels.Pages
                 CurrentBudget.BudgetIncomeItems[IncomeItemsSelectedIndex] = incomeItem;
 
                 // Recalulate the spent properties of all the items in the budget
-                _ = Task.Run(() => AddActualSpentToCurrentBudget());
+                await AddActualSpentToCurrentBudget();
 
                 // Recalculate the total of the income items
                 UpdateBudgetTotals();
@@ -729,7 +731,7 @@ namespace MyMoney.ViewModels.Pages
                 UpdateFutureSavingsCategories(originalSavingsCategory, editedSavingsCategory);
 
                 // Recalulate the spent properties of all the items in the budget
-                _ = Task.Run(() => AddActualSpentToCurrentBudget());
+                await AddActualSpentToCurrentBudget();
 
                 // Recalculate the total of the income items
                 UpdateBudgetTotals();
@@ -852,7 +854,7 @@ namespace MyMoney.ViewModels.Pages
                 parameter.SubItems[parameter.SelectedSubItemIndex] = expenseItem;
 
                 // Recalute the spent properties of all the items in the budget
-                _ = Task.Run(() => AddActualSpentToCurrentBudget());
+                await AddActualSpentToCurrentBudget();
 
                 // Recalculate the total of the expense items
                 UpdateBudgetTotals();
@@ -956,7 +958,7 @@ namespace MyMoney.ViewModels.Pages
                 if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
                 {
                     // Select the most recent budget before attempting to copy over the items
-                    LoadBudget(FindMostRecentBudgetIndex());
+                    await LoadBudget(FindMostRecentBudgetIndex());
 
                     foreach (var item in CurrentBudget.BudgetIncomeItems)
                     {
@@ -1015,11 +1017,11 @@ namespace MyMoney.ViewModels.Pages
                 // Set as current budget
                 if (newBudget.BudgetDate.Month == DateTime.Today.Month || Budgets.Count == 1) // Current month
                 {
-                    LoadBudget(0); // First budget in list
+                    await LoadBudget(0); // First budget in list
                 }
                 else if (newBudget.BudgetDate.Month == DateTime.Today.AddMonths(1).Month) // Next month
                 {
-                    LoadBudget(1); // Next month's budget is the second item in the list
+                    await LoadBudget(1); // Next month's budget is the second item in the list
                 }
             }
         }
@@ -1052,11 +1054,11 @@ namespace MyMoney.ViewModels.Pages
             {
                 if (index - 1 >= 0)
                 {
-                    LoadBudget(index - 1); // Load previous budget
+                    await LoadBudget(index - 1); // Load previous budget
                 }
                 else
                 {
-                    LoadBudget(0); // Load first budget in list
+                    await LoadBudget(0); // Load first budget in list
                 }
             }
             else
@@ -1084,7 +1086,7 @@ namespace MyMoney.ViewModels.Pages
             return false;
         }
 
-        private void LoadBudget(int index)
+        private async Task LoadBudget(int index)
         {
             if (index == -1)
                 return;
@@ -1106,7 +1108,7 @@ namespace MyMoney.ViewModels.Pages
             UpdateCharts();
             UpdateBudgetTotals();
 
-            _ = Task.Run(() => AddActualSpentToCurrentBudget());
+            await AddActualSpentToCurrentBudget();
         }
 
         private int FindBudgetIndex(string budgetName)
@@ -1202,7 +1204,7 @@ namespace MyMoney.ViewModels.Pages
             return false;
         }
 
-        private void AddActualSpentToCurrentBudget()
+        private async Task AddActualSpentToCurrentBudget()
         {
             if (CurrentBudget == null)
                 return;
@@ -1210,20 +1212,17 @@ namespace MyMoney.ViewModels.Pages
             var budget = CurrentBudget;
             var budgetDate = budget.BudgetDate;
 
-            var (income, expenses, savings) = BudgetReportCalculator.CalculateBudgetReport(
+            var (income, expenses, savings) = await BudgetReportCalculator.CalculateBudgetReport(
                 budgetDate,
                 _databaseManager
             );
 
-            Application.Current.Dispatcher.BeginInvoke(() =>
-            {
-                if (CurrentBudget == null || CurrentBudget != budget)
-                    return; // Ensure budget hasn't changed
+            if (CurrentBudget == null || CurrentBudget != budget)
+                return; // Ensure budget hasn't changed
 
-                UpdateIncomeActuals(income);
-                UpdateSavingsActuals(savings);
-                UpdateExpenseActuals(expenses);
-            });
+            UpdateIncomeActuals(income);
+            UpdateSavingsActuals(savings);
+            UpdateExpenseActuals(expenses);
         }
 
         private void UpdateIncomeActuals(List<BudgetReportItem> incomeItems)
@@ -1297,8 +1296,8 @@ namespace MyMoney.ViewModels.Pages
                         // Update begining balance
                         foreach (
                             var transaction in from Transaction transaction in currentSavingsCategory.Transactions
-                            where transaction.TransactionHash == currentSavingsCategory.BalanceTransactionHash
-                            select transaction
+                                               where transaction.TransactionHash == currentSavingsCategory.BalanceTransactionHash
+                                               select transaction
                         )
                         {
                             transaction.Amount += balanceDifference;

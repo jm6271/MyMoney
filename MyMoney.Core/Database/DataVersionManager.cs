@@ -2,7 +2,7 @@
 {
     public class DataVersionManager
     {
-        public const string CURRENT_DATA_VERSION = "1.0.0";
+        public const string CURRENT_DATA_VERSION = "1.1.0";
 
         private readonly IDatabaseManager _dbManager;
 
@@ -33,9 +33,15 @@
                 switch (dbVer.CompareTo(currentVer))
                 {
                     case < 0:
-                        // Note: Here we need to update the data in the database to the
-                        // current version. As of now (v1.0.0), there are no older supported
-                        // versions, so we do nothing.
+                        if (dbVer.Major == 1 && dbVer.Minor == 0 && dbVer.Build == 0) // v1.0.0
+                        {
+                            // Update to v1.1.0
+                            DataUpdater.V100ToV110.Updater.Update(_dbManager);
+
+                            // Recursively call EnsureDataVersion, so that if this update isn't enough,
+                            // another updater can finish the job.
+                            return EnsureDataVersion();
+                        }
                         break;
                     case 0:
                         // The versions match, do nothing

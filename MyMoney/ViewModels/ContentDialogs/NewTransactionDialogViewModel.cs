@@ -9,12 +9,12 @@ using System.Windows.Data;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Views.Controls;
+using Wpf.Ui.Abstractions.Controls;
 
 namespace MyMoney.ViewModels.ContentDialogs
 {
     public partial class NewTransactionDialogViewModel : ObservableObject
     {
-        private readonly object _databaseLockObject = new();
         private readonly IDatabaseManager _databaseManager;
 
         [ObservableProperty]
@@ -57,21 +57,24 @@ namespace MyMoney.ViewModels.ContentDialogs
         private Visibility _accountsVisibility = Visibility.Visible;
 
         [ObservableProperty]
-        private ObservableCollection<Category> _categoryNames;
+        private ObservableCollection<Category> _categoryNames = [];
 
-        public ICollectionView CategoriesView { get; }
+        public ICollectionView? CategoriesView { get; set; }
 
         public NewTransactionDialogViewModel(IDatabaseManager databaseManager)
         {
             _databaseManager = databaseManager ?? throw new ArgumentNullException(nameof(databaseManager));
+        }
 
-            CategoryNames = BudgetCategoryNames;
+        public void SetCategoryNames(ObservableCollection<Category> categories)
+        {
+            CategoryNames = categories;
 
             CategoriesView = CollectionViewSource.GetDefaultView(CategoryNames);
             CategoriesView.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Category.Group)));
         }
 
-        public void SetSelectedCategoryByName(string categoryName)
+        public void SetSelectedCategoryByName(string? categoryName)
         {
             var categoryItem = CategoryNames.FirstOrDefault(c => c.Name == categoryName);
 
@@ -81,57 +84,53 @@ namespace MyMoney.ViewModels.ContentDialogs
             }
         }
 
-        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
+        partial void OnNewTransactionDateChanged(DateTime oldValue, DateTime newValue)
         {
-            base.OnPropertyChanged(e);
+            if (oldValue.Month == newValue.Month && oldValue.Year == newValue.Year)
+                return;
 
-            if (e.PropertyName == nameof(NewTransactionDate))
+            var selectedCategory = NewTransactionCategory?.Name;
+
+            CategoryNames.Clear();
+
+            foreach (var item in GetBudgetCategoryNames())
             {
-                CategoryNames.Clear();
-
-                foreach (var item in BudgetCategoryNames)
-                {
-                    CategoryNames.Add(item);
-                }
+                CategoryNames.Add(item);
             }
+
+            SetSelectedCategoryByName(selectedCategory);
         }
 
-        public ObservableCollection<Category> BudgetCategoryNames
+        public ObservableCollection<Category> GetBudgetCategoryNames()
         {
-            get
-            {
-                var categories = new ObservableCollection<Category>();
+            var categories = new ObservableCollection<Category>();
 
-                BudgetCollection budgetCollection;
-                lock (_databaseLockObject)
-                {
-                    budgetCollection = new(_databaseManager);
-                    var budget = budgetCollection.Budgets.FirstOrDefault(b =>
-                        b.BudgetDate.Month == NewTransactionDate.Month && b.BudgetDate.Year == NewTransactionDate.Year
-                    );
+            BudgetCollection budgetCollection;
+            budgetCollection = new(_databaseManager);
+            var budget = budgetCollection.Budgets.FirstOrDefault(b =>
+                b.BudgetDate.Month == NewTransactionDate.Month && b.BudgetDate.Year == NewTransactionDate.Year
+            );
 
-                    if (budget == null)
-                        return categories;
-
-                    AddCategoriesToCollection(categories, "Income", budget.BudgetIncomeItems.Select(x => x.Category));
-                    AddCategoriesToCollection(
-                        categories,
-                        "Savings",
-                        budget.BudgetSavingsCategories.Select(x => x.CategoryName)
-                    );
-
-                    foreach (var expenseGroup in budget.BudgetExpenseItems)
-                    {
-                        AddCategoriesToCollection(
-                            categories,
-                            expenseGroup.CategoryName,
-                            expenseGroup.SubItems.Select(x => x.Category)
-                        );
-                    }
-                }
-
+            if (budget == null)
                 return categories;
+
+            AddCategoriesToCollection(categories, "Income", budget.BudgetIncomeItems.Select(x => x.Category));
+            AddCategoriesToCollection(
+                categories,
+                "Savings",
+                budget.BudgetSavingsCategories.Select(x => x.CategoryName)
+            );
+
+            foreach (var expenseGroup in budget.BudgetExpenseItems)
+            {
+                AddCategoriesToCollection(
+                    categories,
+                    expenseGroup.CategoryName,
+                    expenseGroup.SubItems.Select(x => x.Category)
+                );
             }
+
+            return categories;
         }
 
         private void AddCategoriesToCollection(

@@ -15,18 +15,20 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel;
 public class EditIncomeItemTests
 {
     private Mock<IContentDialogService> _mockContentDialogService = null!;
-    private Mock<IDatabaseManager> _mockDatabaseReader = null!;
     private Mock<IMessageBoxService> _mockMessageBoxService = null!;
     private Mock<IContentDialogFactory> _mockContentDialogFactory = null!;
     private ViewModels.Pages.BudgetViewModel _viewModel = null!;
+
+    private DatabaseManager _databaseManager = null!;
 
     [TestInitialize]
     public async Task Setup()
     {
         _mockContentDialogService = new Mock<IContentDialogService>();
-        _mockDatabaseReader = new Mock<IDatabaseManager>();
         _mockMessageBoxService = new Mock<IMessageBoxService>();
         _mockContentDialogFactory = new Mock<IContentDialogFactory>();
+
+        _databaseManager = new(new MemoryStream());
 
         // Setup mock database with a test budget
         var testBudget = new Budget
@@ -39,11 +41,11 @@ public class EditIncomeItemTests
             },
         };
 
-        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns([testBudget]);
+        _databaseManager.WriteCollection("Budgets", [testBudget]);
 
         _viewModel = new ViewModels.Pages.BudgetViewModel(
             _mockContentDialogService.Object,
-            _mockDatabaseReader.Object,
+            _databaseManager,
             _mockMessageBoxService.Object,
             _mockContentDialogFactory.Object
         );
