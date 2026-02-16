@@ -619,6 +619,7 @@ namespace MyMoney.ViewModels.Pages
                 return; // User clicked no
 
             CurrentBudget.BudgetIncomeItems.RemoveAt(IncomeItemsSelectedIndex);
+            IncomeItemsSelectedIndex = -1;
 
             // replace the id property of the remaining elements so the IDs are in a consecutive order (We have all kinds of problems when we don't do this)
             for (var i = 0; i < CurrentBudget.BudgetIncomeItems.Count; i++)
