@@ -65,7 +65,7 @@ namespace MyMoney.Views.Pages
 
         private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (e.NewSize.Width < 900)
+            /*if (e.NewSize.Width < 900)
             {
                 // Switch to narrow layout
                 Col0.Width = new GridLength(0);
@@ -95,7 +95,7 @@ namespace MyMoney.Views.Pages
             else
             {
                 // Switch to wide layout
-                Col0.Width = new GridLength(1, GridUnitType.Star);
+                Col0.Width = new GridLength(200, GridUnitType.Pixel);
                 Col2.Width = new GridLength(250, GridUnitType.Pixel);
                 Row0.Height = new GridLength(1, GridUnitType.Star);
                 Row1.Height = new GridLength(0);
@@ -119,6 +119,7 @@ namespace MyMoney.Views.Pages
                 IncomeChart.Margin = _incomeChartWideMargin;
                 ExpenseChart.Margin = _expenseChartWideMargin;
             }
+            */
         }
 
         private void CardExpander_Expanded(object sender, RoutedEventArgs e)
@@ -129,7 +130,7 @@ namespace MyMoney.Views.Pages
         private void GridViewColumnHeader_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
             // Don't let the header eat the scroll event
-            e.Handled = true;
+            e.Handled = false;
 
             var scrollViewer = (sender as DependencyObject)?.FindAncestor<ScrollViewer>();
             if (scrollViewer != null)
@@ -142,6 +143,16 @@ namespace MyMoney.Views.Pages
                     }
                 );
             }
+        }
+
+        private void MainScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var scrollViewer = (ScrollViewer)sender;
+
+            scrollViewer.ScrollToVerticalOffset(
+                scrollViewer.VerticalOffset - e.Delta / 3.0);
+
+            e.Handled = true;
         }
     }
 }
