@@ -11,11 +11,11 @@
     xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
     xmlns:converters="clr-namespace:MyMoney.Converters"
     xmlns:dd="urn:gong-wpf-dragdrop"
+    xmlns:controls="clr-namespace:MyMoney.Views.Controls"
     ScrollViewer.CanContentScroll="False"
     mc:Ignorable="d"
     d:DesignHeight="600"
     d:DesignWidth="800"
-    Margin="0,0,-42,0"
     d:DataContext="{d:DesignInstance local:BudgetPage,
                                  IsDesignTimeCreatable=False}"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
@@ -25,9 +25,11 @@
     SizeChanged="Page_SizeChanged"
 >
     <Page.Resources>
-        <converters:LeftToBudgetTextConverter x:Key="LeftToBudgetTextConverter" />
-        <converters:CurrencyAbsoluteValueConverter x:Key="CurrencyAbsoluteValueConverter" />
-        <converters:NegativeCurrencyToRedColorConverter x:Key="NegativeCurrencyToRedColorConverter" />
+        <ResourceDictionary>
+            <converters:LeftToBudgetTextConverter x:Key="LeftToBudgetTextConverter" />
+            <converters:CurrencyAbsoluteValueConverter x:Key="CurrencyAbsoluteValueConverter" />
+            <converters:NegativeCurrencyToRedColorConverter x:Key="NegativeCurrencyToRedColorConverter" />
+        </ResourceDictionary>
     </Page.Resources>
 
     <Grid>
@@ -97,7 +99,12 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <ui:TextBlock FontTypography="Subtitle" Text="{Binding ViewModel.CurrentBudget.BudgetTitle}" />
+                <!--ui:Button Style="{StaticResource BudgetDatePicker}" Margin="-1,0,0,0">
+                    <ui:TextBlock FontTypography="Subtitle" Text="{Binding ViewModel.CurrentBudget.BudgetTitle}" />
+                </ui:Button-->
+
+                <controls:MonthPicker HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+
                 <ui:Button
                         Command="{Binding ViewModel.CreateNewBudgetCommand}"
                         Grid.Column="1" Grid.Row="0"
@@ -110,9 +117,9 @@
                     </StackPanel>
                 </ui:Button>
 
-                <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,8,0,0">
+                <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,4,0,0">
                     <TextBlock VerticalAlignment="Center"
-                                   FontSize="20"
+                                   FontSize="18"
                                    FontWeight="SemiBold"
                                    Text="{Binding ViewModel.LeftToBudget, Converter={StaticResource CurrencyAbsoluteValueConverter}}"
                                    Foreground="{Binding ViewModel.LeftToBudget, Converter={StaticResource NegativeCurrencyToRedColorConverter}}"
