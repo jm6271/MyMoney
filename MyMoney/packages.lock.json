@@ -22,13 +22,13 @@
       },
       "LiveChartsCore.SkiaSharpView.WPF": {
         "type": "Direct",
-        "requested": "[2.0.0-rc5.4, )",
-        "resolved": "2.0.0-rc5.4",
-        "contentHash": "TXlnj+wbmt4dXq21uFFPRg+lTjFhmMqo1Gqi+IAkNsy/UFB4cyynCmZzVFAgEzfqQ/dJ4ZKwfsXWMqbtI28NHQ==",
+        "requested": "[2.0.0, )",
+        "resolved": "2.0.0",
+        "contentHash": "TR6QWQG2ZJ9pJ+B4UVizmpIQMhfr06Ea+XS8PJ27KHgddeQTCfTwisDxerIFYMpg30ib3SWLtBlmpZwaVuLuVQ==",
         "dependencies": {
-          "LiveChartsCore.SkiaSharpView": "2.0.0-rc5.4",
-          "SkiaSharp.HarfBuzz": "3.116.1",
-          "SkiaSharp.Views.WPF": "3.116.1"
+          "LiveChartsCore.SkiaSharpView": "2.0.0",
+          "SkiaSharp.HarfBuzz": "3.119.0",
+          "SkiaSharp.Views.WPF": "3.119.0"
         }
       },
       "Microsoft.Extensions.Hosting": {
@@ -72,34 +72,34 @@
       },
       "HarfBuzzSharp": {
         "type": "Transitive",
-        "resolved": "8.3.0.1",
-        "contentHash": "rwLpl+W6uqu0DuvzqNhTMuFcXfy1Vc0uq0YXgPEmtTSfeUSAye1FcARrm2YIPOSiCBwBOGu3cLvMX5Fp6OKe2g==",
+        "resolved": "8.3.1.1",
+        "contentHash": "tLZN66oe/uiRPTZfrCU4i8ScVGwqHNh5MHrXj0yVf4l7Mz0FhTGnQ71RGySROTmdognAs0JtluHkL41pIabWuQ==",
         "dependencies": {
-          "HarfBuzzSharp.NativeAssets.Win32": "8.3.0.1",
-          "HarfBuzzSharp.NativeAssets.macOS": "8.3.0.1"
+          "HarfBuzzSharp.NativeAssets.Win32": "8.3.1.1",
+          "HarfBuzzSharp.NativeAssets.macOS": "8.3.1.1"
         }
       },
       "HarfBuzzSharp.NativeAssets.macOS": {
         "type": "Transitive",
-        "resolved": "8.3.0.1",
-        "contentHash": "2o6U05LAmK+rwX7TvmJ2X0anXJG2hSE7kHVmCshhHy0tKfByJ5ykBacvhmmooHchlOwq15KBZeROGafCT8nN+g=="
+        "resolved": "8.3.1.1",
+        "contentHash": "jbtCsgftcaFLCA13tVKo5iWdElJScrulLTKJre36O4YQTIlwDtPPqhRZNk+Y0vv4D1gxbscasGRucUDfS44ofQ=="
       },
       "HarfBuzzSharp.NativeAssets.Win32": {
         "type": "Transitive",
-        "resolved": "8.3.0.1",
-        "contentHash": "ow0DtGEUjo65qhiI22of7qiVbN1xDFsZ5P5xJljRmGZ5WSxNy+1batLNJFGxahqhB1MTHYV8kAXf0GqC8WaevQ=="
+        "resolved": "8.3.1.1",
+        "contentHash": "UsJtQsfAJoFDZrXc4hCUfRPMqccfKZ0iumJ/upcUjz/cmsTgVFGNEL5yaJWmkqsuFYdMWbj/En5/kS4PFl9hBA=="
       },
       "LiveChartsCore": {
         "type": "Transitive",
-        "resolved": "2.0.0-rc5.4",
-        "contentHash": "1hEEvMndEP5urodx+Epu2lwvJr0ZG246FR7jMYtE9/snYwbUKoItq6a4cTzyeyFPi9fcBsjtgwAWA8uL/2s73g=="
+        "resolved": "2.0.0",
+        "contentHash": "6ck/dztjwNAlVxOQeD57tlbpfSk0LBxRH15fn8QK/cWz2Wn6D8WX0be+e241snbDQPTuWYZDhE9cZnrfA6EkIQ=="
       },
       "LiveChartsCore.SkiaSharpView": {
         "type": "Transitive",
-        "resolved": "2.0.0-rc5.4",
-        "contentHash": "lpylapUJHvAagM4pmcwCvx3ObfL2FlITtI0u8LkKlLEnzhJYg17Tcxcgd6R/mItQlCdICG0PFDVNUDnZEwhFuw==",
+        "resolved": "2.0.0",
+        "contentHash": "BHdfDJp8QgMVjOP/kXLvkP50I5UUHft4x+7hwNg4pI6jvlnSKl1X1PAytsJ3OguQU3sJ7PsZt+/UKMEO7yszfQ==",
         "dependencies": {
-          "LiveChartsCore": "2.0.0-rc5.4",
+          "LiveChartsCore": "2.0.0",
           "SkiaSharp": "2.88.9",
           "SkiaSharp.HarfBuzz": "2.88.9"
         }
@@ -368,49 +368,49 @@
       },
       "SkiaSharp": {
         "type": "Transitive",
-        "resolved": "3.116.1",
-        "contentHash": "DNDwbRjP+aMo27dV2h/uHCVTcWubWWxHnPLiePNyl24f4Pv43mQ8AQQeseOrKR+J3AOCEs6t0sUjo0aa3j3RWQ==",
+        "resolved": "3.119.0",
+        "contentHash": "gR9yVoOta2Mc1Rxt15LD65AckfHMfwjIs/3kkD59C9bT2nYYISsE6uz3t4aMPNHA6CgsIL0Ssn+jE5OVilZ1yw==",
         "dependencies": {
-          "SkiaSharp.NativeAssets.Win32": "3.116.1",
-          "SkiaSharp.NativeAssets.macOS": "3.116.1"
+          "SkiaSharp.NativeAssets.Win32": "3.119.0",
+          "SkiaSharp.NativeAssets.macOS": "3.119.0"
         }
       },
       "SkiaSharp.HarfBuzz": {
         "type": "Transitive",
-        "resolved": "3.116.1",
-        "contentHash": "ibDG1+quN86vBd9ztjDAC9wnvS1nRZ6ydTUOSod4NsRHWdLLGzWYn1IOF4Cg9iJh5cQHdpzhUZBQE0JMKznrow==",
+        "resolved": "3.119.0",
+        "contentHash": "5ocGzl+RYEZFnUPUbModshnEFvKTku4hTtOBsLvy5MCK2KAHjq5Nw2+uAVUx79Rjh0z8fTojT6ZVav8MJgW0ug==",
         "dependencies": {
-          "HarfBuzzSharp": "8.3.0.1",
-          "SkiaSharp": "3.116.1"
+          "HarfBuzzSharp": "8.3.1.1",
+          "SkiaSharp": "3.119.0"
         }
       },
       "SkiaSharp.NativeAssets.macOS": {
         "type": "Transitive",
-        "resolved": "3.116.1",
-        "contentHash": "3KPvpKysDmEMt0NnAZPX5U6KFk0LmG/72/IjAIJemIksIZ0Tjs9pGpr3L+zboVCv1MLVoJLKl3nJDXUG6Jda6A=="
+        "resolved": "3.119.0",
+        "contentHash": "YE1vNn0Nyw2PWtv7hw1PYkKJO0itFiQp9vSqGppZUKzQJqwp28a2jgdCMPfYtOiR8KCnDgZqQoynqJRRaE2ZVg=="
       },
       "SkiaSharp.NativeAssets.Win32": {
         "type": "Transitive",
-        "resolved": "3.116.1",
-        "contentHash": "dRQ75MCI8oz6zAs2Y1w6pq6ARs4MhdNG+gf3doOxOxdnueDXffQLGQIxON54GDoxc0WjKOoHMKBR4DhaduwwQw=="
+        "resolved": "3.119.0",
+        "contentHash": "IwC9yx36lOdXVT2DjgmWHl1qkVspfj8ctd4+li8CNnvqdfaTolXCOh6TLznURcPAvzatx9K/tLOB7zT6T8EA9w=="
       },
       "SkiaSharp.Views.Desktop.Common": {
         "type": "Transitive",
-        "resolved": "3.116.1",
-        "contentHash": "/ZDg00zVgjN/N5ghDCnP0+9TfOSmMZkMtnoQpaigsBc4Ghg9Qe+iimZuA5nrEWgaygW64LnVan+p8T1wDtS+kQ==",
+        "resolved": "3.119.0",
+        "contentHash": "KST7Q3n+X5BhDj1aKTJXk9tITWWznveka9n+pBjOtE53Omc+wlZR0s4fQStybWCVVaWG9eaeOMaw93J3zEMklA==",
         "dependencies": {
-          "SkiaSharp": "3.116.1"
+          "SkiaSharp": "3.119.0"
         }
       },
       "SkiaSharp.Views.WPF": {
         "type": "Transitive",
-        "resolved": "3.116.1",
-        "contentHash": "28vXtX/56h1RCmTNubJQcrVNxmx2aV8wGbyUjZOnkocNRHHfG7zoChYHTjwBt7R7TCojTo3RbLBkcP/CLtJLNw==",
+        "resolved": "3.119.0",
+        "contentHash": "1Dmj9RlBW/gvmJwSUER+N9plA/kcWOgiL5g3q2DB+USVQav8rQtfOZIQZ1Wt/AqhwepOacv1M6pZKDWtXmwDAg==",
         "dependencies": {
           "OpenTK": "3.3.1",
           "OpenTK.GLWpfControl": "3.3.0",
-          "SkiaSharp": "3.116.1",
-          "SkiaSharp.Views.Desktop.Common": "3.116.1"
+          "SkiaSharp": "3.119.0",
+          "SkiaSharp.Views.Desktop.Common": "3.119.0"
         }
       },
       "WPF-UI.Abstractions": {
