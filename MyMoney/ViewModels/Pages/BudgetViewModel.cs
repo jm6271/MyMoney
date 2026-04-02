@@ -10,6 +10,7 @@ using LiveChartsCore.SkiaSharpView.VisualElements;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
+using MyMoney.Helpers;
 using MyMoney.Helpers.DropHandlers;
 using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
@@ -18,7 +19,7 @@ using SkiaSharp;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
-using MyMoney.Helpers;
+using Wpf.Ui.Controls;
 
 namespace MyMoney.ViewModels.Pages
 {
@@ -28,13 +29,7 @@ namespace MyMoney.ViewModels.Pages
         private BulkObservableCollection<Budget> _budgets = [];
 
         [ObservableProperty]
-        private BulkObservableCollection<GroupedBudget> _groupedBudgetsCollection = [];
-
-        [ObservableProperty]
-        private GroupedBudget? _selectedGroupedBudget;
-
-        [ObservableProperty]
-        private int _selectedGroupedBudgetIndex;
+        private DateTime _selectedBudgetMonth = DateTime.Today;
 
         [ObservableProperty]
         private Budget? _currentBudget;
@@ -122,27 +117,14 @@ namespace MyMoney.ViewModels.Pages
 
         private void SelectCurrentBudget()
         {
-            if (Budgets.Count > 0)
-            {
-                int oldIndex = SelectedGroupedBudgetIndex;
-                SelectedGroupedBudgetIndex = 0;
-                if (oldIndex  == 0)
-                    OnPropertyChanged(nameof(SelectedGroupedBudgetIndex));
-            }
+            SelectedBudgetMonth = DateTime.Today;
         }
 
         public async Task OnNavigatedToAsync()
         {
-            if (Budgets.Count == 0)
-            {
-                Budgets.AddRange(await LoadBudgetCollection());
-
-                UpdateGroupedBudgetList();
-            }
             UpdateBudgetTotals(false);
 
-            if (Budgets.Count > 0)
-                SelectCurrentBudget();
+            SelectCurrentBudget();
 
             // Fire property changed so that colors update if the theme was changed
             OnPropertyChanged(nameof(LeftToBudget));
@@ -153,80 +135,12 @@ namespace MyMoney.ViewModels.Pages
             return Task.CompletedTask;
         }
 
-        private async Task<List<Budget>> LoadBudgetCollection()
-        {
-            List<Budget> budgets = [];
-
-            await _databaseManager.QueryAsync<Budget>("Budgets", async query =>
-            {
-                await Task.Run(() =>
-                {
-                    budgets = query
-                        .OrderByDescending(b => b.BudgetDate)
-                        .Limit(14)
-                        .ToList();
-                });
-            });
-
-            return budgets;
-        }
-
-        private void UpdateGroupedBudgetList()
-        {
-            List<GroupedBudget> groupedBudgets = [];
-
-            foreach (var budget in Budgets)
-            {
-                if (budget.BudgetDate.Month == DateTime.Now.Month && budget.BudgetDate.Year == DateTime.Now.Year)
-                {
-                    groupedBudgets.Add(new GroupedBudget() { Group = "Current", Budget = budget });
-                }
-                else if (budget.BudgetDate > DateTime.Now)
-                {
-                    groupedBudgets.Add(new GroupedBudget() { Group = "Future", Budget = budget });
-                }
-                else
-                {
-                    // Don't add a budget from more than 1 year ago
-                    if (budget.BudgetDate < DateTime.Now.AddYears(-1).AddMonths(-1))
-                        continue;
-
-                    groupedBudgets.Add(new GroupedBudget() { Group = "Old", Budget = budget });
-                }
-            }
-
-            GroupedBudgetsCollection.ReplaceAll(groupedBudgets);
-        }
-
-        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
-        {
-            base.OnPropertyChanged(e);
-
-            switch (e.PropertyName)
-            {
-                case nameof(SelectedGroupedBudget):
-
-                    // Find this budget in the budgets collection and load it
-                    if (SelectedGroupedBudget != null)
-                    {
-                        var index = FindBudgetIndex(SelectedGroupedBudget.Budget.BudgetTitle);
-                        if (index != -1)
-                        {
-                            _ = LoadBudget(index);
-                        }
-                    }
-
-                    break;
-                default:
-                    break;
-            }
-        }
-
         public void WriteToDatabase()
         {
             if (CurrentBudget == null)
                 return;
-            _databaseManager.WriteCollection("Budgets", Budgets.ToList());
+            //_databaseManager.WriteCollection("Budgets", Budgets.ToList());
+            _databaseManager.Update("Budgets", CurrentBudget);
         }
 
         private void UpdateBudgetTotals(bool writeChanges = true)
@@ -349,6 +263,13 @@ namespace MyMoney.ViewModels.Pages
             IncomePercentagesTitle.Paint = new SolidColorPaint(ChartTextColor);
             ExpensePercentagesTitle.Paint = new SolidColorPaint(ChartTextColor);
         }
+
+        [RelayCommand]
+        private async Task BudgetMonthChanged()
+        {
+            await LoadBudget();
+        }
+
 
         [RelayCommand]
         private async Task AddIncomeItem()
@@ -957,7 +878,7 @@ namespace MyMoney.ViewModels.Pages
                 if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
                 {
                     // Select the most recent budget before attempting to copy over the items
-                    await LoadBudget(FindMostRecentBudgetIndex());
+                    await LoadMostRecentBudget();
 
                     foreach (var item in CurrentBudget.BudgetIncomeItems)
                     {
@@ -1010,18 +931,8 @@ namespace MyMoney.ViewModels.Pages
                 // Add to list of budgets
                 Budgets.Add(newBudget);
 
-                // Update budget lists
-                UpdateGroupedBudgetList();
-
                 // Set as current budget
-                if (newBudget.BudgetDate.Month == DateTime.Today.Month || Budgets.Count == 1) // Current month
-                {
-                    await LoadBudget(0); // First budget in list
-                }
-                else if (newBudget.BudgetDate.Month == DateTime.Today.AddMonths(1).Month) // Next month
-                {
-                    await LoadBudget(1); // Next month's budget is the second item in the list
-                }
+                SelectedBudgetMonth = newBudget.BudgetDate;
             }
         }
 
@@ -1046,29 +957,9 @@ namespace MyMoney.ViewModels.Pages
 
             // Remove the budget
             Budgets.RemoveAt(index);
-            // Update budget lists
-            UpdateGroupedBudgetList();
+
             // Load another budget
-            if (Budgets.Count > 0)
-            {
-                if (index - 1 >= 0)
-                {
-                    await LoadBudget(index - 1); // Load previous budget
-                }
-                else
-                {
-                    await LoadBudget(0); // Load first budget in list
-                }
-            }
-            else
-            {
-                // No budgets left
-                CurrentBudget = null;
-                IsEditingEnabled = false;
-                ResetTotals();
-                IncomePercentagesSeries = [];
-                ExpensePercentagesSeries = [];
-            }
+            await LoadBudget();
             WriteToDatabase();
         }
 
@@ -1085,24 +976,29 @@ namespace MyMoney.ViewModels.Pages
             return false;
         }
 
-        private async Task LoadBudget(int index)
+        private async Task LoadBudget()
         {
-            if (index == -1)
-                return;
-
-            // Load into current budget
-            CurrentBudget = Budgets[index];
-
-            // Select the item in the listview
-            foreach (var item in GroupedBudgetsCollection)
+            // Load budget for selected month if it exists
+            Budget? budget = null;
+            await _databaseManager.QueryAsync<Budget>("Budgets", async query =>
             {
-                if (item is GroupedBudget budget && budget.Budget == CurrentBudget)
+                await Task.Run(() =>
                 {
-                    SelectedGroupedBudgetIndex = GroupedBudgetsCollection.IndexOf(item);
-                }
-            }
+                    budget = query.Where(p => p.BudgetDate.Month == SelectedBudgetMonth.Month && p.BudgetDate.Year == SelectedBudgetMonth.Year)
+                                  .FirstOrDefault();
+                });
+            });
 
-            IsEditingEnabled = true;
+            if (budget != null)
+            {
+                CurrentBudget = budget;
+                IsEditingEnabled = true;
+            }
+            else
+            {
+                CurrentBudget = null;
+                IsEditingEnabled = false;
+            }
 
             UpdateCharts();
             UpdateBudgetTotals();
@@ -1123,28 +1019,19 @@ namespace MyMoney.ViewModels.Pages
             return -1;
         }
 
-        private int FindMostRecentBudgetIndex()
+        private async Task LoadMostRecentBudget()
         {
-            DateTime? mostRecent = null;
-            int mostRecentIndex = -1;
+            DateTime budgetDate = DateTime.Today;
 
-            for (int i = 0; i < Budgets.Count; i++)
+            await _databaseManager.QueryAsync<Budget>("Budgets", async query =>
             {
-                if (mostRecent == null)
+                await Task.Run(() =>
                 {
-                    mostRecent = Budgets[i].BudgetDate;
-                    mostRecentIndex = i;
-                    continue;
-                }
+                    budgetDate = query.OrderByDescending(p => p.BudgetDate).FirstOrDefault()?.BudgetDate ?? DateTime.Today;
+                });
+            });
 
-                if (Budgets[i].BudgetDate > mostRecent)
-                {
-                    mostRecent = Budgets[i].BudgetDate;
-                    mostRecentIndex = i;
-                }
-            }
-
-            return mostRecentIndex;
+            SelectedBudgetMonth = budgetDate;
         }
 
         private bool DoesIncomeItemExist(string item)

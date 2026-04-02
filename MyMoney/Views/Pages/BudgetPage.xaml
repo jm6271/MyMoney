@@ -34,8 +34,7 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="Col0" Width="200" />
-            <ColumnDefinition x:Name="Col1" Width="3*" />
+            <ColumnDefinition x:Name="Col1" Width="*" />
             <ColumnDefinition x:Name="Col2" Width="250" />
         </Grid.ColumnDefinitions>
 
@@ -44,52 +43,15 @@
             <RowDefinition x:Name="Row1" Height="0" />
             <RowDefinition x:Name="Row2" Height="0" />
         </Grid.RowDefinitions>
-
-        <ui:Card Grid.Column="0" VerticalAlignment="Top" x:Name="BudgetsCard" Margin="0,0,0,24">
-            <StackPanel>
-                <ui:TextBlock FontTypography="Subtitle" Margin="0,0,0,24">Budgets</ui:TextBlock>
-                <ui:ListView
-                    ItemsSource="{Binding ViewAdapter.GroupedBudgetsView}"
-                    SelectedItem="{Binding ViewModel.SelectedGroupedBudget, Mode=TwoWay}"
-                    SelectedIndex="{Binding ViewModel.SelectedGroupedBudgetIndex, Mode=TwoWay}"
-                    x:Name="BudgetsListView"
-                    VirtualizingStackPanel.IsVirtualizing="True"
-                    VirtualizingStackPanel.VirtualizationMode="Recycling"
-                    VirtualizingPanel.IsVirtualizingWhenGrouping="True"
-                >
-                    <ui:ListView.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate>
-                                    <ui:TextBlock Margin="4,0,4,0" FontWeight="Bold" Text="{Binding Name}" />
-                                </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
-                        </GroupStyle>
-                    </ui:ListView.GroupStyle>
-
-                    <ui:ListView.ItemTemplate>
-                        <DataTemplate>
-                            <ui:TextBlock Text="{Binding Budget.BudgetTitle}" Margin="5" />
-                        </DataTemplate>
-                    </ui:ListView.ItemTemplate>
-
-                    <ui:ListView.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="Delete budget" Command="{Binding ViewModel.DeleteBudgetCommand}" />
-                        </ContextMenu>
-                    </ui:ListView.ContextMenu>
-                </ui:ListView>
-            </StackPanel>
-        </ui:Card>
-
-        <Grid Grid.Column="1">
+        
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Grid Margin="24,0,24,16">
+            <Grid Margin="0,0,24,16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="Auto" />
@@ -103,7 +65,9 @@
                     <ui:TextBlock FontTypography="Subtitle" Text="{Binding ViewModel.CurrentBudget.BudgetTitle}" />
                 </ui:Button-->
 
-                <controls:MonthPicker HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                <controls:MonthPicker HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                      SelectedMonth="{Binding ViewModel.SelectedBudgetMonth}"
+                                      SelectionChangedCommand="{Binding ViewModel.BudgetMonthChangedCommand}"/>
 
                 <ui:Button
                         Command="{Binding ViewModel.CreateNewBudgetCommand}"
@@ -130,10 +94,10 @@
                 </StackPanel>
             </Grid>
 
-            <Separator Grid.Row="1" Margin="12,0,12,0"/>
+            <Separator Grid.Row="1" Margin="0,0,12,0"/>
 
             <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="2" 
-                      Margin="24,0,24,0" PanningMode="VerticalOnly"
+                      Margin="24,0,36,0" PanningMode="VerticalOnly"
                       PanningRatio="1.5"
                       PanningDeceleration="0.001"
                       x:Name="MainScrollViewer"
@@ -434,7 +398,7 @@
             </ScrollViewer>
         </Grid>
 
-        <Grid Grid.Column="2" Margin="0,0,0,24" x:Name="ChartsPanel">
+        <Grid Grid.Column="1" Margin="0,0,0,24" x:Name="ChartsPanel">
             <Grid.RowDefinitions>
                 <RowDefinition x:Name="ChartRow0" Height="Auto" />
                 <RowDefinition x:Name="ChartRow1" Height="Auto" />

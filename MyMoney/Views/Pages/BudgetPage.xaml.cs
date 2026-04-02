@@ -27,17 +27,15 @@ namespace MyMoney.Views.Pages
         private Thickness _expenseChartNarrowMargin = new(8, 0, 0, 0);
 
         public BudgetViewModel ViewModel { get; }
-        public BudgetViewAdapter ViewAdapter { get; }
 
         public BudgetPage(BudgetViewModel viewModel)
         {
             ViewModel = viewModel;
-            ViewAdapter = new(viewModel.GroupedBudgetsCollection);
             DataContext = this;
 
             InitializeComponent();
 
-            _budgetsListWideMargin = BudgetsCard.Margin;
+            //_budgetsListWideMargin = BudgetsCard.Margin;
             _budgetsPanelWideMargin = BudgetPanel.Margin;
             _chartPanelWideMargin = ChartsPanel.Margin;
             _incomeChartWideMargin = IncomeChart.Margin;
