@@ -15,6 +15,7 @@ using MyMoney.Helpers.DropHandlers;
 using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Views.ContentDialogs;
+using MyMoney.Views.Pages;
 using SkiaSharp;
 using Wpf.Ui;
 using Wpf.Ui.Abstractions.Controls;
@@ -25,9 +26,6 @@ namespace MyMoney.ViewModels.Pages
 {
     public partial class BudgetViewModel : ObservableObject, INavigationAware
     {
-        [ObservableProperty]
-        private BulkObservableCollection<Budget> _budgets = [];
-
         [ObservableProperty]
         private DateTime _selectedBudgetMonth = DateTime.Today;
 
@@ -648,7 +646,7 @@ namespace MyMoney.ViewModels.Pages
                 CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex] = editedSavingsCategory;
 
                 // Update the category in any future budgets
-                UpdateFutureSavingsCategories(originalSavingsCategory, editedSavingsCategory);
+                await UpdateFutureSavingsCategories(originalSavingsCategory, editedSavingsCategory);
 
                 // Recalulate the spent properties of all the items in the budget
                 await AddActualSpentToCurrentBudget();
@@ -856,7 +854,7 @@ namespace MyMoney.ViewModels.Pages
             if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
             {
                 // make sure this budget doesn't exist already
-                if (DoesBudgetExist(Convert.ToDateTime(viewModel.SelectedDate)))
+                if (await DoesBudgetExist(Convert.ToDateTime(viewModel.SelectedDate)))
                 {
                     // warn user that the budget exists
                     await _messageBoxService.ShowInfoAsync(
@@ -928,8 +926,8 @@ namespace MyMoney.ViewModels.Pages
                     }
                 }
 
-                // Add to list of budgets
-                Budgets.Add(newBudget);
+                // Insert into database collection
+                _databaseManager.Insert("Budgets", newBudget);
 
                 // Set as current budget
                 SelectedBudgetMonth = newBudget.BudgetDate;
@@ -953,27 +951,28 @@ namespace MyMoney.ViewModels.Pages
             if (result != Wpf.Ui.Controls.MessageBoxResult.Primary)
                 return; // User clicked no
 
-            var index = FindBudgetIndex(CurrentBudget.BudgetTitle);
-
-            // Remove the budget
-            Budgets.RemoveAt(index);
+            _databaseManager.Delete<Budget>("Budgets", CurrentBudget.Id);
 
             // Load another budget
-            await LoadBudget();
-            WriteToDatabase();
+            await LoadMostRecentBudget();
         }
 
-        private bool DoesBudgetExist(DateTime selectedDate)
+        private async Task<bool> DoesBudgetExist(DateTime selectedDate)
         {
-            foreach (var budget in Budgets)
+            // Load budget for selected month if it exists
+            Budget? budget = null;
+            await _databaseManager.QueryAsync<Budget>("Budgets", async query =>
             {
-                if (budget.BudgetDate.ToString("MMMM, yyyy") == selectedDate.ToString("MMMM, yyyy"))
+                await Task.Run(() =>
                 {
-                    return true;
-                }
-            }
+                    budget = query.Where(p => p.BudgetDate.Month == selectedDate.Month && p.BudgetDate.Year == selectedDate.Year)
+                                  .FirstOrDefault();
+                });
+            });
 
-            return false;
+            if (budget == null)
+                return false;
+            return true;
         }
 
         private async Task LoadBudget()
@@ -1004,19 +1003,6 @@ namespace MyMoney.ViewModels.Pages
             UpdateBudgetTotals();
 
             await AddActualSpentToCurrentBudget();
-        }
-
-        private int FindBudgetIndex(string budgetName)
-        {
-            for (var i = 0; i < Budgets.Count; i++)
-            {
-                if (Budgets[i].BudgetTitle == budgetName)
-                {
-                    return i;
-                }
-            }
-
-            return -1;
         }
 
         private async Task LoadMostRecentBudget()
@@ -1154,7 +1140,7 @@ namespace MyMoney.ViewModels.Pages
             }
         }
 
-        private void UpdateFutureSavingsCategories(
+        private async Task UpdateFutureSavingsCategories(
             BudgetSavingsCategory originalSavingsCategory,
             BudgetSavingsCategory modifiedSavingsCategory
         )
@@ -1162,38 +1148,53 @@ namespace MyMoney.ViewModels.Pages
             if (CurrentBudget == null)
                 return;
 
-            // Loop through future budgets, beginning with the nearest in date and going to the most distant
-            for (int i = Budgets.IndexOf(CurrentBudget) + 1; i < Budgets.Count; i++)
-            {
-                // Find the savings category in this budget
-                for (int j = 0; j < Budgets[i].BudgetSavingsCategories.Count; j++)
+            var earliestDate = CurrentBudget.BudgetDate;
+
+            await Task.Run(async () => 
+            { 
+                List<Budget> Budgets = [];
+
+                await _databaseManager.QueryAsync<Budget>("Budgets", async query =>
                 {
-                    var currentSavingsCategory = Budgets[i].BudgetSavingsCategories[j];
+                    Budgets.AddRange(query.Where(p => p.BudgetDate > earliestDate).ToList());
+                });
 
-                    if (
-                        currentSavingsCategory.CategoryHash == modifiedSavingsCategory.CategoryHash // Same category
-                        && currentSavingsCategory.Transactions.Count != 0
-                    ) // There must be some transactions
+                // Loop through future budgets, beginning with the nearest in date and going to the most distant
+                for (int i = 0; i < Budgets.Count; i++)
+                {
+                    // Find the savings category in this budget
+                    for (int j = 0; j < Budgets[i].BudgetSavingsCategories.Count; j++)
                     {
-                        // Amount to update by
-                        var balanceDifference =
-                            modifiedSavingsCategory.CurrentBalance - originalSavingsCategory.CurrentBalance;
+                        var currentSavingsCategory = Budgets[i].BudgetSavingsCategories[j];
 
-                        // Update begining balance
-                        foreach (
-                            var transaction in from Transaction transaction in currentSavingsCategory.Transactions
-                                               where transaction.TransactionHash == currentSavingsCategory.BalanceTransactionHash
-                                               select transaction
-                        )
+                        if (
+                            currentSavingsCategory.CategoryHash == modifiedSavingsCategory.CategoryHash // Same category
+                            && currentSavingsCategory.Transactions.Count != 0
+                        ) // There must be some transactions
                         {
-                            transaction.Amount += balanceDifference;
-                        }
+                            // Amount to update by
+                            var balanceDifference =
+                                modifiedSavingsCategory.CurrentBalance - originalSavingsCategory.CurrentBalance;
 
-                        // Update balance
-                        currentSavingsCategory.CurrentBalance += balanceDifference;
+                            // Update begining balance
+                            foreach (
+                                var transaction in from Transaction transaction in currentSavingsCategory.Transactions
+                                                   where transaction.TransactionHash == currentSavingsCategory.BalanceTransactionHash
+                                                   select transaction
+                            )
+                            {
+                                transaction.Amount += balanceDifference;
+                            }
+
+                            // Update balance
+                            currentSavingsCategory.CurrentBalance += balanceDifference;
+                        }
                     }
+
+                    // Update budget in database
+                    _databaseManager.Update("Budgets", Budgets[i]);
                 }
-            }
+            });
         }
     }
 }
