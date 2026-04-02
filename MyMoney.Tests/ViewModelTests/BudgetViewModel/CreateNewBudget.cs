@@ -64,11 +64,12 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.HasCount(1, _viewModel.Budgets);
-            Assert.AreEqual(budgetTitle, _viewModel.Budgets[0].BudgetTitle);
-            Assert.HasCount(0, _viewModel.Budgets[0].BudgetIncomeItems);
-            Assert.HasCount(0, _viewModel.Budgets[0].BudgetExpenseItems);
-            Assert.HasCount(0, _viewModel.Budgets[0].BudgetSavingsCategories);
+            var budgets = _databaseManager.GetCollection<Budget>("Budgets");
+            Assert.HasCount(1, budgets);
+            Assert.AreEqual(budgetTitle, budgets[0].BudgetTitle);
+            Assert.HasCount(0, budgets[0].BudgetIncomeItems);
+            Assert.HasCount(0, budgets[0].BudgetExpenseItems);
+            Assert.HasCount(0, budgets[0].BudgetSavingsCategories);
         }
 
         [TestMethod]
@@ -102,13 +103,13 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             _mockContentDialogFactory.Setup(x => x.Create<NewBudgetDialog>()).Returns(fakeDialog.Object);
 
             await _viewModel.OnNavigatedToAsync();
-            _viewModel.CurrentBudget = _viewModel.Budgets[0];
+            _viewModel.CurrentBudget = _databaseManager.GetCollection<Budget>("Budgets")[0];
 
             // Act
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.HasCount(1, _viewModel.Budgets); // Only the existing budget
+            Assert.HasCount(1, _databaseManager.GetCollection<Budget>("Budgets")); // Only the existing budget
             _mockMessageBoxService.Verify(
                 x =>
                     x.ShowInfoAsync(
@@ -136,7 +137,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.HasCount(0, _viewModel.Budgets);
+            Assert.HasCount(0, _databaseManager.GetCollection<Budget>("Budgets"));
         }
 
         [TestMethod]
@@ -203,14 +204,15 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             _mockContentDialogFactory.Setup(x => x.Create<NewBudgetDialog>()).Returns(fakeDialog.Object);
 
             await _viewModel.OnNavigatedToAsync();
-            _viewModel.CurrentBudget = _viewModel.Budgets[0];
+            _viewModel.CurrentBudget = _databaseManager.GetCollection<Budget>("Budgets")[0];
 
             // Act
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
             // Assert
-            Assert.HasCount(2, _viewModel.Budgets);
-            var newBudget = _viewModel.Budgets[1];
+            var allBudgets = _databaseManager.GetCollection<Budget>("Budgets");
+            Assert.HasCount(2, allBudgets);
+            var newBudget = allBudgets[1];
             Assert.AreEqual(nextBudgetTitle, newBudget.BudgetTitle);
             Assert.HasCount(1, newBudget.BudgetIncomeItems);
             Assert.AreEqual("Income", newBudget.BudgetIncomeItems[0].Category);

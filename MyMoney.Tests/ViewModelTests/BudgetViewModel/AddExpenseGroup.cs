@@ -50,8 +50,8 @@ public class AddExpenseGroupTests
             .Callback<CancellationToken>(
                 (ct) =>
                 {
-                    var vm = fake.Object.DataContext as NewExpenseGroupDialogViewModel;
-                    vm?.GroupName = "Test Group";
+                    if (fake.Object.DataContext is NewExpenseGroupDialogViewModel vm)
+                        vm.GroupName = "Test Group";
                 }
             )
             .ReturnsAsync(ContentDialogResult.Primary);
@@ -85,8 +85,8 @@ public class AddExpenseGroupTests
             .Callback<CancellationToken>(
                 (ct) =>
                 {
-                    var vm = fake.Object.DataContext as NewExpenseGroupDialogViewModel;
-                    vm?.GroupName = "Test Group";
+                    if (fake.Object.DataContext is NewExpenseGroupDialogViewModel vm)
+                        vm.GroupName = "Test Group";
                 }
             )
             .ReturnsAsync(ContentDialogResult.Primary);
