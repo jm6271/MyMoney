@@ -22,7 +22,6 @@
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
-    SizeChanged="Page_SizeChanged"
 >
     <Page.Resources>
         <ResourceDictionary>
