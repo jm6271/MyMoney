@@ -35,8 +35,8 @@
                                IsOpen="{Binding IsChecked, ElementName=PART_ToggleButton}"
                                MaxWidth="{TemplateBinding PopupMaxWidth}"
                                AllowsTransparency="True">
-                            <Border Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
-                                    BorderBrush="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}"
+                            <Border Background="{DynamicResource ContextMenuBackground}"
+                                    BorderBrush="{DynamicResource ContextMenuBorderBrush}"
                                     BorderThickness="1"
                                     Margin="12"
                                     CornerRadius="4">
@@ -62,17 +62,57 @@
                                             </ItemsControl.ItemsPanel>
                                             <ItemsControl.ItemTemplate>
                                                 <DataTemplate>
-                                                    <Button Style="{x:Null}"
-                                                            Background="Transparent"
+                                                    <Button Background="Transparent"
                                                             BorderThickness="0"
+                                                            BorderBrush="Transparent"
                                                             Padding="0"
-                                                            Cursor="Hand">
-                                                        <local:MonthTile Month="{Binding Month}"
+                                                            Cursor="Hand"
+                                                            HorizontalAlignment="Left"
+                                                            VerticalAlignment="Center"
+                                                            HorizontalContentAlignment="Center"
+                                                            VerticalContentAlignment="Center"
+                                                            FocusVisualStyle="{DynamicResource DefaultControlFocusVisualStyle}">
+                                                        <Button.Template>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border x:Name="MonthTileButtonBorder"
+                                                                        BorderBrush="{TemplateBinding BorderBrush}" 
+                                                                        BorderThickness="{TemplateBinding BorderThickness}"
+                                                                        Background="{TemplateBinding Background}"
+                                                                        CornerRadius="4"
+                                                                        Width="{TemplateBinding Width}"
+                                                                        Height="{TemplateBinding Height}">
+                                                                    <local:MonthTile Month="{Binding Month}"
                                                                          IsSelected="{Binding IsSelected}"
                                                                          IsCurrentMonth="{Binding IsCurrentMonth}"
                                                                          AccentColor="{Binding AccentColor}"
                                                                          TileWidth="{Binding TileWidth}"
                                                                          TileHeight="{Binding TileHeight}" />
+                                                                </Border>
+
+                                                                <ControlTemplate.Triggers>
+                                                                    <MultiTrigger>
+                                                                        <MultiTrigger.Conditions>
+                                                                            <Condition Property="IsMouseOver" Value="True"/>
+                                                                            <Condition Property="IsPressed" Value="False"/>
+                                                                        </MultiTrigger.Conditions>
+                                                                        <Setter TargetName="MonthTileButtonBorder" 
+                                                                                Property="Background" 
+                                                                                Value="{DynamicResource LayerOnMicaBaseAltFillColorSecondaryBrush}"/>
+                                                                    </MultiTrigger>
+                                                                    <MultiTrigger>
+                                                                        <MultiTrigger.Conditions>
+                                                                            <Condition Property="IsMouseOver" Value="True"/>
+                                                                            <Condition Property="IsPressed" Value="True"/>
+                                                                        </MultiTrigger.Conditions>
+                                                                        <Setter TargetName="MonthTileButtonBorder"
+                                                                                Property="Background"
+                                                                                Value="{DynamicResource CardBackgroundFillColorDefaultBrush}"/>
+                                                                    </MultiTrigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Button.Template>
+                                                        
+                                                        
                                                     </Button>
                                                 </DataTemplate>
                                             </ItemsControl.ItemTemplate>
@@ -104,7 +144,8 @@
                             Height="{TemplateBinding TileHeight}"
                             BorderThickness="2"
                             BorderBrush="Transparent"
-                            Background="Transparent">
+                            Background="Transparent"
+                            CornerRadius="4">
                         <StackPanel VerticalAlignment="Center"
                                     HorizontalAlignment="Center">
                             <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent},
@@ -114,7 +155,8 @@
                                        FontSize="16"
                                        FontWeight="SemiBold"
                                        HorizontalAlignment="Center"
-                                       TextAlignment="Center" />
+                                       TextAlignment="Center" 
+                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                             <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent},
                                                       Path=Month,
                                                       Converter={StaticResource MonthYearConverter},
@@ -122,7 +164,8 @@
                                        FontSize="11"
                                        FontWeight="Normal"
                                        HorizontalAlignment="Center"
-                                       TextAlignment="Center" />
+                                       TextAlignment="Center" 
+                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
                         </StackPanel>
                     </Border>
                     <ControlTemplate.Triggers>

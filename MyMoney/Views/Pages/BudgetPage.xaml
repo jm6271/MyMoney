@@ -63,7 +63,9 @@
 
                 <controls:MonthPicker HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
                                       SelectedMonth="{Binding ViewModel.SelectedBudgetMonth}"
-                                      SelectionChangedCommand="{Binding ViewModel.BudgetMonthChangedCommand}"/>
+                                      SelectionChangedCommand="{Binding ViewModel.BudgetMonthChangedCommand}"
+                                      AccentColor="{DynamicResource AccentFillColorSecondaryBrush}"
+                                      PopupMaxWidth="750" TileWidth="100" TileHeight="75"/>
 
                 <ui:Button
                         Command="{Binding ViewModel.CreateNewBudgetCommand}"
