@@ -69,17 +69,14 @@
                                       AccentColor="{DynamicResource AccentFillColorSecondaryBrush}"
                                       PopupMaxWidth="750" TileWidth="100" TileHeight="75"/>
 
-                <ui:Button
-                        Command="{Binding ViewModel.CreateNewBudgetCommand}"
-                        Grid.Column="1" Grid.Row="0"
-                        Appearance="Primary"
-                        Margin="12,0,0,0"
-                    >
-                    <StackPanel Orientation="Horizontal">
-                        <ui:SymbolIcon Symbol="FormNew20" Margin="0,0,4,0" />
-                        <ui:TextBlock Margin="4,0,0,0">New Budget</ui:TextBlock>
-                    </StackPanel>
-                </ui:Button>
+                <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal">
+                    <ui:Button Command="{Binding ViewModel.PreviousBudgetMonthCommand}">
+                        <ui:SymbolIcon Symbol="ArrowLeft24" FontSize="20"/>
+                    </ui:Button>
+                    <ui:Button Command="{Binding ViewModel.NextBudgetMonthCommand}">
+                        <ui:SymbolIcon Symbol="ArrowRight24" FontSize="20"/>
+                    </ui:Button>
+                </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,4,0,0" 
                             Visibility="{Binding ViewModel.IsEditingEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">

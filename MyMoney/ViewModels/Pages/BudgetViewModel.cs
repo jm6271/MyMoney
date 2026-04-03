@@ -960,6 +960,18 @@ namespace MyMoney.ViewModels.Pages
             await LoadMostRecentBudget();
         }
 
+        [RelayCommand]
+        private void NextBudgetMonth()
+        {
+            SelectedBudgetMonth = SelectedBudgetMonth.AddMonths(1);
+        }
+
+        [RelayCommand]
+        private void PreviousBudgetMonth()
+        {
+            SelectedBudgetMonth = SelectedBudgetMonth.AddMonths(-1);
+        }
+
         private async Task<bool> DoesBudgetExist(DateTime selectedDate)
         {
             // Load budget for selected month if it exists
