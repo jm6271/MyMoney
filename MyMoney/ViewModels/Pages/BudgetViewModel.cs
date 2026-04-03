@@ -113,16 +113,16 @@ namespace MyMoney.ViewModels.Pages
             ExpenseItemsMoveAndReorderHandler = new(this);
         }
 
-        private void SelectCurrentBudget()
-        {
-            SelectedBudgetMonth = DateTime.Today;
-        }
-
         public async Task OnNavigatedToAsync()
         {
-            UpdateBudgetTotals(false);
+            if (CurrentBudget == null)
+            {
+                await LoadMostRecentBudget();
+                if (CurrentBudget == null)
+                    await LoadBudget();
+            }
 
-            SelectCurrentBudget();
+            UpdateBudgetTotals(false);
 
             // Fire property changed so that colors update if the theme was changed
             OnPropertyChanged(nameof(LeftToBudget));
@@ -1013,7 +1013,9 @@ namespace MyMoney.ViewModels.Pages
             {
                 await Task.Run(() =>
                 {
-                    budgetDate = query.OrderByDescending(p => p.BudgetDate).FirstOrDefault()?.BudgetDate ?? DateTime.Today;
+                    budgetDate = query.Where(p => p.BudgetDate <= DateTime.Today)
+                    .OrderByDescending(p => p.BudgetDate)
+                    .FirstOrDefault()?.BudgetDate ?? DateTime.Today;
                 });
             });
 

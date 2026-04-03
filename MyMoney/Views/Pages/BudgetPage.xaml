@@ -360,7 +360,8 @@
                     <Button HorizontalAlignment="Stretch" Height="75" Margin="0,8,0,8"
                             Background="Transparent" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                             BorderThickness="2" HorizontalContentAlignment="Stretch"
-                            Command="{Binding ViewModel.AddExpenseGroupCommand}">
+                            Command="{Binding ViewModel.AddExpenseGroupCommand}"
+                            IsEnabled="{Binding ViewModel.IsEditingEnabled}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
