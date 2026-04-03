@@ -844,42 +844,31 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private async Task CreateNewBudget()
         {
-            // Create the new budget dialog
-            var dialog = _contentDialogFactory.Create<NewBudgetDialog>();
-            var viewModel = new NewBudgetDialogViewModel();
-            dialog.DataContext = viewModel;
-            dialog.PrimaryButtonText = "OK";
-            dialog.CloseButtonText = "Cancel";
-            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
+            Budget newBudget = new();
 
-            var result = await dialog.ShowAsync();
+            var budgetTitle = SelectedBudgetMonth.ToString("MMMM, yyyy");
+            newBudget.BudgetTitle = budgetTitle;
+            newBudget.BudgetDate = SelectedBudgetMonth;
 
-            if (result == Wpf.Ui.Controls.ContentDialogResult.Primary)
+            // See if there's a budget to copy categories from
+            DateTime? mostRecentDate = null;
+            await _databaseManager.QueryAsync<Budget>("Budgets", async query =>
             {
-                // make sure this budget doesn't exist already
-                if (await DoesBudgetExist(Convert.ToDateTime(viewModel.SelectedDate)))
+                await Task.Run(() =>
                 {
-                    // warn user that the budget exists
-                    await _messageBoxService.ShowInfoAsync(
-                        "Budget Already Exists",
-                        "Cannot create a budget for the selected month because a budget for this month already exists",
-                        "OK"
-                    );
-                    return;
-                }
+                    mostRecentDate = query.Where(p => p.BudgetDate.Month < SelectedBudgetMonth.Month && p.BudgetDate.Year <= SelectedBudgetMonth.Year)
+                                          .OrderByDescending(p => p.BudgetDate)
+                                          .FirstOrDefault()
+                                          ?.BudgetDate;
+                });
+            });
 
-                // Add the budget
-                Budget newBudget = new();
-
-                var budgetTitle = viewModel.SelectedDate;
-                newBudget.BudgetTitle = budgetTitle;
-                newBudget.BudgetDate = Convert.ToDateTime(budgetTitle);
-
-                // Copy over categories if box is checked
-                if (viewModel.UseLastMonthsBudget && CurrentBudget != null)
+            // If there is a budget to copy from, select it
+            if (mostRecentDate != null)
+            {
+                SelectedBudgetMonth = mostRecentDate.Value;
+                if (CurrentBudget != null)
                 {
-                    // Select the most recent budget before attempting to copy over the items
-                    await LoadMostRecentBudget();
 
                     foreach (var item in CurrentBudget.BudgetIncomeItems)
                     {
@@ -928,13 +917,13 @@ namespace MyMoney.ViewModels.Pages
                         newBudget.BudgetExpenseItems.Add((BudgetExpenseCategory)item.Clone());
                     }
                 }
-
-                // Insert into database collection
-                _databaseManager.Insert("Budgets", newBudget);
-
-                // Set as current budget
-                SelectedBudgetMonth = newBudget.BudgetDate;
             }
+
+            // Insert into database collection
+            _databaseManager.Insert("Budgets", newBudget);
+
+            // Set as current budget
+            SelectedBudgetMonth = newBudget.BudgetDate;
         }
 
         [RelayCommand]
@@ -1190,8 +1179,8 @@ namespace MyMoney.ViewModels.Pages
 
             var earliestDate = CurrentBudget.BudgetDate;
 
-            await Task.Run(async () => 
-            { 
+            await Task.Run(async () =>
+            {
                 List<Budget> Budgets = [];
 
                 await _databaseManager.QueryAsync<Budget>("Budgets", async query =>
