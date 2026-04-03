@@ -374,6 +374,13 @@
                             <TextBlock Text="Add Group" Grid.Column="1" FontSize="16" FontWeight="SemiBold"/>
                         </Grid>
                     </Button>
+
+                    <ui:Button Margin="0,24,0,8" Command="{Binding ViewModel.DeleteBudgetCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon Symbol="Delete24"/>
+                            <TextBlock Margin="8,0,0,0">Delete Budget</TextBlock>
+                        </StackPanel>
+                    </ui:Button>
                 </StackPanel>
             </ScrollViewer>
 

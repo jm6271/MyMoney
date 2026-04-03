@@ -140,7 +140,6 @@ namespace MyMoney.ViewModels.Pages
         {
             if (CurrentBudget == null)
                 return;
-            //_databaseManager.WriteCollection("Budgets", Budgets.ToList());
             _databaseManager.Update("Budgets", CurrentBudget);
         }
 
@@ -867,12 +866,13 @@ namespace MyMoney.ViewModels.Pages
             if (mostRecentDate != null)
             {
                 SelectedBudgetMonth = mostRecentDate.Value;
+                await LoadBudget();
                 if (CurrentBudget != null)
                 {
 
                     foreach (var item in CurrentBudget.BudgetIncomeItems)
                     {
-                        newBudget.BudgetIncomeItems.Add(item);
+                        newBudget.BudgetIncomeItems.Add((BudgetItem)item.Clone());
                     }
 
                     foreach (var item in CurrentBudget.BudgetSavingsCategories)
@@ -924,6 +924,7 @@ namespace MyMoney.ViewModels.Pages
 
             // Set as current budget
             SelectedBudgetMonth = newBudget.BudgetDate;
+            await LoadBudget();
         }
 
         [RelayCommand]
@@ -950,15 +951,17 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private void NextBudgetMonth()
+        private async Task NextBudgetMonth()
         {
             SelectedBudgetMonth = SelectedBudgetMonth.AddMonths(1);
+            await LoadBudget();
         }
 
         [RelayCommand]
-        private void PreviousBudgetMonth()
+        private async Task PreviousBudgetMonth()
         {
             SelectedBudgetMonth = SelectedBudgetMonth.AddMonths(-1);
+            await LoadBudget();
         }
 
         private async Task<bool> DoesBudgetExist(DateTime selectedDate)
@@ -981,6 +984,10 @@ namespace MyMoney.ViewModels.Pages
 
         private async Task LoadBudget()
         {
+            // If budget for requested date is already loaded, then skip loading it again
+            if (CurrentBudget?.BudgetDate.Month == SelectedBudgetMonth.Month && CurrentBudget?.BudgetDate.Year == SelectedBudgetMonth.Year)
+                return;
+
             // Load budget for selected month if it exists
             Budget? budget = null;
             await _databaseManager.QueryAsync<Budget>("Budgets", async query =>
@@ -1047,6 +1054,7 @@ namespace MyMoney.ViewModels.Pages
             });
 
             SelectedBudgetMonth = budgetDate;
+            await LoadBudget();
         }
 
         private bool DoesIncomeItemExist(string item)
