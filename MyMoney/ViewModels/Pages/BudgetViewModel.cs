@@ -33,6 +33,9 @@ namespace MyMoney.ViewModels.Pages
         private Budget? _currentBudget;
 
         [ObservableProperty]
+        private string _newBudgetCopyInfo = string.Empty;
+
+        [ObservableProperty]
         private ISeries[] _incomePercentagesSeries = [];
 
         [ObservableProperty]
@@ -997,6 +1000,29 @@ namespace MyMoney.ViewModels.Pages
             {
                 CurrentBudget = null;
                 IsEditingEnabled = false;
+
+                // Show info for creating a new budget
+                // Look for a previous budget to copy from
+                DateTime? mostRecentDate = null;
+                await _databaseManager.QueryAsync<Budget>("Budgets", async query =>
+                {
+                    await Task.Run(() =>
+                    {
+                        mostRecentDate = query.Where(p => p.BudgetDate.Month < SelectedBudgetMonth.Month && p.BudgetDate.Year <= SelectedBudgetMonth.Year)
+                                              .OrderByDescending(p => p.BudgetDate)
+                                              .FirstOrDefault()
+                                              ?.BudgetDate;
+                    });
+                });
+
+                if (mostRecentDate != null)
+                {
+                    NewBudgetCopyInfo = $"We'll copy {mostRecentDate.Value:MMMM}'s budget to help you get started.";
+                }
+                else
+                {
+                    NewBudgetCopyInfo = ""; // No budget to copy from, we'll just create a blank budget
+                }
             }
 
             UpdateCharts();

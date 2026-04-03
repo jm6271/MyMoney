@@ -28,6 +28,9 @@
             <converters:LeftToBudgetTextConverter x:Key="LeftToBudgetTextConverter" />
             <converters:CurrencyAbsoluteValueConverter x:Key="CurrencyAbsoluteValueConverter" />
             <converters:NegativeCurrencyToRedColorConverter x:Key="NegativeCurrencyToRedColorConverter" />
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <converters:BooleanToInverseVisibilityConverter x:Key="BooleanToInverseVisibilityConverter"/>
+            <converters:IntToMonthNameConverter x:Key="IntToMonthNameConverter"/>
         </ResourceDictionary>
     </Page.Resources>
 
@@ -78,7 +81,8 @@
                     </StackPanel>
                 </ui:Button>
 
-                <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,4,0,0">
+                <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,4,0,0" 
+                            Visibility="{Binding ViewModel.IsEditingEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <TextBlock VerticalAlignment="Center"
                                    FontSize="18"
                                    FontWeight="SemiBold"
@@ -94,11 +98,12 @@
             <Separator Grid.Row="1" Margin="0,0,12,0"/>
 
             <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="2" 
-                      Margin="24,0,36,0" PanningMode="VerticalOnly"
-                      PanningRatio="1.5"
-                      PanningDeceleration="0.001"
-                      x:Name="MainScrollViewer"
-                      PreviewMouseWheel="MainScrollViewer_PreviewMouseWheel">
+                          Margin="24,0,36,0" PanningMode="VerticalOnly"
+                          PanningRatio="1.5"
+                          PanningDeceleration="0.001"
+                          x:Name="MainScrollViewer"
+                          PreviewMouseWheel="MainScrollViewer_PreviewMouseWheel"
+                          Visibility="{Binding ViewModel.IsEditingEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <StackPanel x:Name="BudgetPanel" Margin="0,12,12,16">
 
                     <ui:CardExpander IsExpanded="True" Margin="0,8,0,8">
@@ -234,8 +239,7 @@
                 dd:DragDrop.IsDragSource="True"
                 dd:DragDrop.IsDropTarget="True"
                 dd:DragDrop.DropHandler="{Binding ViewModel.ExpenseGroupsReorderHandler}"
-                dd:DragDrop.DragHandler="{Binding ViewModel.ExpenseGroupsReorderHandler}"
-            >
+                dd:DragDrop.DragHandler="{Binding ViewModel.ExpenseGroupsReorderHandler}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <ui:CardExpander
@@ -375,12 +379,35 @@
                     </Button>
                 </StackPanel>
             </ScrollViewer>
+
+            <StackPanel Grid.Row="2" VerticalAlignment="Center"
+                        Visibility="{Binding ViewModel.IsEditingEnabled, Converter={StaticResource BooleanToInverseVisibilityConverter}}">
+                <ui:Button Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center"
+                           FontSize="24" Appearance="Primary" Command="{Binding ViewModel.CreateNewBudgetCommand}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ui:SymbolIcon Symbol="FormNew24" Margin="0,0,8,0"/>
+                        <ui:TextBlock Grid.Column="1" VerticalAlignment="Center" Text="Create a Budget for "/>
+                        <ui:TextBlock Grid.Column="2" 
+                                      Text="{Binding ViewModel.SelectedBudgetMonth.Month, Converter={StaticResource IntToMonthNameConverter}}"
+                                      VerticalAlignment="Center"/>
+                    </Grid>
+                </ui:Button>
+
+                <ui:TextBlock Margin="0,16,0,0" HorizontalAlignment="Center" Text="{Binding ViewModel.NewBudgetCopyInfo}"/>
+            </StackPanel>
+
         </Grid>
 
         <ScrollViewer Grid.Column="1" Margin="0,0,-42,0"
                       PanningMode="VerticalOnly"
                       PanningRatio="1.5"
-                      PanningDeceleration="0.001">
+                      PanningDeceleration="0.001"
+                      Visibility="{Binding ViewModel.IsEditingEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Grid Grid.Column="1" Margin="0,0,42,24" x:Name="ChartsPanel">
                 <Grid.RowDefinitions>
                     <RowDefinition x:Name="ChartRow0" Height="Auto" />
