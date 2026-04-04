@@ -53,9 +53,11 @@ public class AddIncomeItemTests
             .Callback<CancellationToken>(
                 (ct) =>
                 {
-                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
-                    vm?.BudgetCategory = "Test Category";
-                    vm?.BudgetAmount = new Currency(100m);
+                    if (fake.Object.DataContext is BudgetCategoryDialogViewModel vm)
+                    {
+                        vm.BudgetCategory = "Test Category";
+                        vm.BudgetAmount = new Currency(100m);
+                    }
                 }
             )
             .ReturnsAsync(ContentDialogResult.Secondary);
@@ -81,9 +83,11 @@ public class AddIncomeItemTests
             .Callback<CancellationToken>(
                 (ct) =>
                 {
-                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
-                    vm?.BudgetCategory = "Test Category";
-                    vm?.BudgetAmount = new Currency(100m);
+                    if (fake.Object.DataContext is BudgetCategoryDialogViewModel vm)
+                    {
+                        vm.BudgetCategory = "Test Category";
+                        vm.BudgetAmount = new Currency(100m);
+                    }
                 }
             )
             .ReturnsAsync(ContentDialogResult.Primary);
@@ -113,9 +117,11 @@ public class AddIncomeItemTests
             .Callback<CancellationToken>(
                 (ct) =>
                 {
-                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
-                    vm?.BudgetCategory = "Existing Category";
-                    vm?.BudgetAmount = new Currency(90m);
+                    if (fake.Object.DataContext is BudgetCategoryDialogViewModel vm)
+                    {
+                        vm.BudgetCategory = "Existing Category";
+                        vm.BudgetAmount = new Currency(90m);
+                    }
                 }
             )
             .ReturnsAsync(ContentDialogResult.Primary);

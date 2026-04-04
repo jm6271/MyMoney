@@ -44,7 +44,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             );
 
             await _viewModel.OnNavigatedToAsync();
-            _viewModel.CurrentBudget = _viewModel.Budgets[0];
+            _viewModel.CurrentBudget = _databaseManager.GetCollection<Budget>("Budgets")[0];
         }
 
         [TestMethod]
@@ -60,8 +60,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 .Callback<CancellationToken>(
                     (ct) =>
                     {
-                        var vm = fake.Object.DataContext as NewExpenseGroupDialogViewModel;
-                        vm?.GroupName = newName;
+                        if (fake.Object.DataContext is NewExpenseGroupDialogViewModel vm)
+                            vm.GroupName = newName;
                     }
                 )
                 .ReturnsAsync(ContentDialogResult.Primary);
@@ -88,8 +88,8 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 .Callback<CancellationToken>(
                     (ct) =>
                     {
-                        var vm = fake.Object.DataContext as NewExpenseGroupDialogViewModel;
-                        vm?.GroupName = "Test Group";
+                        if (fake.Object.DataContext is NewExpenseGroupDialogViewModel vm)
+                            vm.GroupName = "Test Group";
                     }
                 )
                 .ReturnsAsync(ContentDialogResult.Secondary);

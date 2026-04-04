@@ -1,12 +1,7 @@
 using Moq;
-using MyMoney.Abstractions;
 using MyMoney.Core.Database;
-using MyMoney.Core.Models;
 using MyMoney.Services;
-using MyMoney.ViewModels.ContentDialogs;
-using MyMoney.Views.ContentDialogs;
 using Wpf.Ui;
-using Wpf.Ui.Controls;
 
 namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
 {
@@ -40,194 +35,115 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
         [TestMethod]
         public async Task CreateNewBudget_WhenBudgetDoesntExist_CreatesNewBudget()
         {
-            // Arrange
-            var budgetDate = DateTime.Now.AddMonths(1);
-            var budgetTitle = budgetDate.ToString("MMMM, yyyy", System.Globalization.CultureInfo.InvariantCulture);
-
-            var fakeDialog = new Mock<IContentDialog>();
-            fakeDialog.SetupAllProperties();
-            fakeDialog
-                .Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-                .Callback<CancellationToken>(
-                    (ct) =>
-                    {
-                        var vm = fakeDialog.Object.DataContext as NewBudgetDialogViewModel;
-                        vm!.SelectedDate = budgetTitle;
-                        vm.UseLastMonthsBudget = false;
-                    }
-                )
-                .ReturnsAsync(ContentDialogResult.Primary);
-
-            _mockContentDialogFactory.Setup(x => x.Create<NewBudgetDialog>()).Returns(fakeDialog.Object);
+            // Arrange: set a target month with no prior budget in the database
+            var targetMonth = new DateTime(2025, 6, 1);
+            _viewModel.SelectedBudgetMonth = targetMonth;
 
             // Act
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
-            // Assert
-            Assert.HasCount(1, _viewModel.Budgets);
-            Assert.AreEqual(budgetTitle, _viewModel.Budgets[0].BudgetTitle);
-            Assert.HasCount(0, _viewModel.Budgets[0].BudgetIncomeItems);
-            Assert.HasCount(0, _viewModel.Budgets[0].BudgetExpenseItems);
-            Assert.HasCount(0, _viewModel.Budgets[0].BudgetSavingsCategories);
-        }
+            // Assert: one budget inserted into the "Budgets" collection
+            var budgets = _databaseManager.GetCollection<MyMoney.Core.Models.Budget>("Budgets");
+            Assert.AreEqual(1, budgets.Count);
 
-        [TestMethod]
-        public async Task CreateNewBudget_WhenBudgetExistsAlready_ShowsWarningAndDoesNotCreate()
-        {
-            // Arrange
-            var existingBudget = new Budget
-            {
-                BudgetTitle = DateTime
-                    .Now.AddMonths(1)
-                    .ToString("MMMM, yyyy", System.Globalization.CultureInfo.InvariantCulture),
-                BudgetDate = DateTime.Now.AddMonths(1),
-            };
+            var newBudget = budgets[0];
 
-            _databaseManager.WriteCollection("Budgets", [existingBudget]);
+            // Assert: title derived from SelectedBudgetMonth using "MMMM, yyyy" format
+            Assert.AreEqual(targetMonth.ToString("MMMM, yyyy"), newBudget.BudgetTitle);
 
-            var fakeDialog = new Mock<IContentDialog>();
-            fakeDialog.SetupAllProperties();
-            fakeDialog
-                .Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-                .Callback<CancellationToken>(
-                    (ct) =>
-                    {
-                        var vm = fakeDialog.Object.DataContext as NewBudgetDialogViewModel;
-                        vm!.SelectedDate = existingBudget.BudgetTitle;
-                        vm.UseLastMonthsBudget = false;
-                    }
-                )
-                .ReturnsAsync(ContentDialogResult.Primary);
-
-            _mockContentDialogFactory.Setup(x => x.Create<NewBudgetDialog>()).Returns(fakeDialog.Object);
-
-            await _viewModel.OnNavigatedToAsync();
-            _viewModel.CurrentBudget = _viewModel.Budgets[0];
-
-            // Act
-            await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
-
-            // Assert
-            Assert.HasCount(1, _viewModel.Budgets); // Only the existing budget
-            _mockMessageBoxService.Verify(
-                x =>
-                    x.ShowInfoAsync(
-                        "Budget Already Exists",
-                        "Cannot create a budget for the selected month because a budget for this month already exists",
-                        "OK"
-                    ),
-                Times.Once
-            );
-        }
-
-        [TestMethod]
-        public async Task CreateNewBudget_WhenDialogResultNotPrimary_DoesNotCreateBudget()
-        {
-            // Arrange
-            var fakeDialog = new Mock<IContentDialog>();
-            fakeDialog.SetupAllProperties();
-            fakeDialog
-                .Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-                .ReturnsAsync(ContentDialogResult.Secondary);
-
-            _mockContentDialogFactory.Setup(x => x.Create<NewBudgetDialog>()).Returns(fakeDialog.Object);
-
-            // Act
-            await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
-
-            // Assert
-            Assert.HasCount(0, _viewModel.Budgets);
+            // Assert: empty income, expense, and savings collections
+            Assert.AreEqual(0, newBudget.BudgetIncomeItems.Count);
+            Assert.AreEqual(0, newBudget.BudgetExpenseItems.Count);
+            Assert.AreEqual(0, newBudget.BudgetSavingsCategories.Count);
         }
 
         [TestMethod]
         public async Task CreateNewBudget_WhenCopyingFromCurrentBudget_CopiesAllItems()
         {
-            // Arrange
-            var currentBudgetDate = DateTime.Now;
-            var nextBudgetDate = currentBudgetDate.AddMonths(1);
-            var currentBudgetTitle = currentBudgetDate.ToString(
-                "MMMM, yyyy",
-                System.Globalization.CultureInfo.InvariantCulture
-            );
-            var nextBudgetTitle = nextBudgetDate.ToString(
-                "MMMM, yyyy",
-                System.Globalization.CultureInfo.InvariantCulture
-            );
+            // Arrange: build a prior budget for May 2025
+            var priorMonth = new DateTime(2025, 5, 1);
+            var targetMonth = new DateTime(2025, 6, 1);
 
-            var currentBudget = new Budget
+            var priorBudget = new MyMoney.Core.Models.Budget
             {
-                BudgetTitle = currentBudgetTitle,
-                BudgetDate = currentBudgetDate,
-                BudgetIncomeItems =
-                {
-                    new BudgetItem { Category = "Income", Amount = new Currency(1000) },
-                },
-                BudgetExpenseItems = { new BudgetExpenseCategory { CategoryName = "Expense" } },
-                BudgetSavingsCategories =
-                {
-                    new BudgetSavingsCategory
-                    {
-                        CategoryName = "Save",
-                        BudgetedAmount = new Currency(200),
-                        CurrentBalance = new Currency(500),
-                        Transactions =
-                        {
-                            new Transaction(
-                                currentBudgetDate,
-                                "",
-                                new Category { Group = "Savings", Name = "Save" },
-                                new Currency(500),
-                                "Initial"
-                            ),
-                        },
-                    },
-                },
+                BudgetTitle = priorMonth.ToString("MMMM, yyyy"),
+                BudgetDate = priorMonth,
             };
 
-            _databaseManager.WriteCollection("Budgets", [currentBudget]);
+            // Add an income item
+            priorBudget.BudgetIncomeItems.Add(new MyMoney.Core.Models.BudgetItem
+            {
+                Category = "Salary",
+                Amount = new MyMoney.Core.Models.Currency(3000m),
+            });
 
-            var fakeDialog = new Mock<IContentDialog>();
-            fakeDialog.SetupAllProperties();
-            fakeDialog
-                .Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
-                .Callback<CancellationToken>(
-                    (ct) =>
-                    {
-                        var vm = fakeDialog.Object.DataContext as NewBudgetDialogViewModel;
-                        vm!.SelectedDate = nextBudgetTitle;
-                        vm.UseLastMonthsBudget = true;
-                    }
-                )
-                .ReturnsAsync(ContentDialogResult.Primary);
+            // Add an expense group with one sub-item
+            var expenseGroup = new MyMoney.Core.Models.BudgetExpenseCategory { CategoryName = "Housing" };
+            expenseGroup.SubItems.Add(new MyMoney.Core.Models.BudgetItem
+            {
+                Category = "Rent",
+                Amount = new MyMoney.Core.Models.Currency(1200m),
+            });
+            priorBudget.BudgetExpenseItems.Add(expenseGroup);
 
-            _mockContentDialogFactory.Setup(x => x.Create<NewBudgetDialog>()).Returns(fakeDialog.Object);
+            // Add a savings category with an existing transaction, a balance, and a budgeted amount
+            var savingsCategory = new MyMoney.Core.Models.BudgetSavingsCategory
+            {
+                CategoryName = "Emergency Fund",
+                BudgetedAmount = new MyMoney.Core.Models.Currency(200m),
+                CurrentBalance = new MyMoney.Core.Models.Currency(500m),
+            };
+            savingsCategory.Transactions.Add(new MyMoney.Core.Models.Transaction(
+                priorMonth,
+                "",
+                new MyMoney.Core.Models.Category { Group = "Savings", Name = "Emergency Fund" },
+                new MyMoney.Core.Models.Currency(500m),
+                "Initial deposit"
+            ));
+            priorBudget.BudgetSavingsCategories.Add(savingsCategory);
 
-            await _viewModel.OnNavigatedToAsync();
-            _viewModel.CurrentBudget = _viewModel.Budgets[0];
+            _databaseManager.Insert("Budgets", priorBudget);
+
+            // Load the prior budget into CurrentBudget by navigating to that month
+            _viewModel.SelectedBudgetMonth = priorMonth;
+            await _viewModel.BudgetMonthChangedCommand.ExecuteAsync(null);
+
+            // Set target month for the new budget
+            _viewModel.SelectedBudgetMonth = targetMonth;
 
             // Act
             await _viewModel.CreateNewBudgetCommand.ExecuteAsync(null);
 
-            // Assert
-            Assert.HasCount(2, _viewModel.Budgets);
-            var newBudget = _viewModel.Budgets[1];
-            Assert.AreEqual(nextBudgetTitle, newBudget.BudgetTitle);
-            Assert.HasCount(1, newBudget.BudgetIncomeItems);
-            Assert.AreEqual("Income", newBudget.BudgetIncomeItems[0].Category);
-            Assert.HasCount(1, newBudget.BudgetExpenseItems);
-            Assert.AreEqual("Expense", newBudget.BudgetExpenseItems[0].CategoryName);
-            Assert.HasCount(1, newBudget.BudgetSavingsCategories);
+            // Assert: two budgets in the database (prior + new)
+            var budgets = _databaseManager.GetCollection<MyMoney.Core.Models.Budget>("Budgets");
+            Assert.AreEqual(2, budgets.Count);
 
-            var newSavings = newBudget.BudgetSavingsCategories[0];
-            Assert.AreEqual("Save", newSavings.CategoryName);
-            Assert.AreEqual(
-                currentBudget.BudgetSavingsCategories[0].CurrentBalance
-                    + currentBudget.BudgetSavingsCategories[0].BudgetedAmount,
-                newSavings.CurrentBalance
-            );
-            Assert.HasCount(2, newSavings.Transactions); // Old transactions are deleted during copy
-            Assert.AreEqual(newSavings.BudgetedAmount, newSavings.Transactions[1].Amount);
-            Assert.AreEqual(newSavings.PlannedTransactionHash, newSavings.Transactions[1].TransactionHash);
+            // Find the new budget (June 2025)
+            var newBudget = budgets.First(b => b.BudgetDate.Month == targetMonth.Month && b.BudgetDate.Year == targetMonth.Year);
+
+            // Assert income items are copied
+            Assert.AreEqual(1, newBudget.BudgetIncomeItems.Count);
+            Assert.AreEqual("Salary", newBudget.BudgetIncomeItems[0].Category);
+            Assert.AreEqual(3000m, newBudget.BudgetIncomeItems[0].Amount.Value);
+
+            // Assert expense groups are copied
+            Assert.AreEqual(1, newBudget.BudgetExpenseItems.Count);
+            Assert.AreEqual("Housing", newBudget.BudgetExpenseItems[0].CategoryName);
+
+            // Assert savings categories are copied
+            Assert.AreEqual(1, newBudget.BudgetSavingsCategories.Count);
+            var copiedSavings = newBudget.BudgetSavingsCategories[0];
+            Assert.AreEqual("Emergency Fund", copiedSavings.CategoryName);
+
+            // Assert exactly 2 transactions: balance-carried-forward and planned-this-month
+            Assert.AreEqual(2, copiedSavings.Transactions.Count);
+
+            // Assert CurrentBalance = prior balance (500) + budgeted amount (200) = 700
+            Assert.AreEqual(500m + 200m, copiedSavings.CurrentBalance.Value);
+
+            // Assert PlannedTransactionHash matches the planned-this-month transaction
+            var plannedTransaction = copiedSavings.Transactions.First(t => t.TransactionDetail == "Planned This Month");
+            Assert.AreEqual(plannedTransaction.TransactionHash, copiedSavings.PlannedTransactionHash);
         }
     }
 }
