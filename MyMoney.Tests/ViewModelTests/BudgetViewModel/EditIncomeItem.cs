@@ -51,7 +51,7 @@ public class EditIncomeItemTests
         );
 
         await _viewModel.OnNavigatedToAsync();
-        _viewModel.CurrentBudget = _viewModel.Budgets[0];
+        _viewModel.CurrentBudget = _databaseManager.GetCollection<Budget>("Budgets")[0];
     }
 
     [TestMethod]
@@ -68,9 +68,11 @@ public class EditIncomeItemTests
             .Callback<CancellationToken>(
                 (ct) =>
                 {
-                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
-                    vm?.BudgetCategory = newCategory;
-                    vm?.BudgetAmount = newAmount;
+                    if (fake.Object.DataContext is BudgetCategoryDialogViewModel vm)
+                    {
+                        vm.BudgetCategory = newCategory;
+                        vm.BudgetAmount = newAmount;
+                    }
                 }
             )
             .ReturnsAsync(ContentDialogResult.Primary);
@@ -100,9 +102,11 @@ public class EditIncomeItemTests
             .Callback<CancellationToken>(
                 (ct) =>
                 {
-                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
-                    vm?.BudgetCategory = "Test Category";
-                    vm?.BudgetAmount = new Currency(150m);
+                    if (fake.Object.DataContext is BudgetCategoryDialogViewModel vm)
+                    {
+                        vm.BudgetCategory = "Test Category";
+                        vm.BudgetAmount = new Currency(150m);
+                    }
                 }
             )
             .ReturnsAsync(ContentDialogResult.Secondary);
@@ -132,9 +136,11 @@ public class EditIncomeItemTests
             .Callback<CancellationToken>(
                 (ct) =>
                 {
-                    var vm = fake.Object.DataContext as BudgetCategoryDialogViewModel;
-                    vm?.BudgetCategory = newCategory;
-                    vm?.BudgetAmount = newAmount;
+                    if (fake.Object.DataContext is BudgetCategoryDialogViewModel vm)
+                    {
+                        vm.BudgetCategory = newCategory;
+                        vm.BudgetAmount = newAmount;
+                    }
                 }
             )
             .ReturnsAsync(ContentDialogResult.Primary);

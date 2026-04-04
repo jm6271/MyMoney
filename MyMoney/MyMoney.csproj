@@ -14,6 +14,12 @@
         <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
     <ItemGroup>
+      <Compile Remove="Services\ContentDialogs\**" />
+      <EmbeddedResource Remove="Services\ContentDialogs\**" />
+      <None Remove="Services\ContentDialogs\**" />
+      <Page Remove="Services\ContentDialogs\**" />
+    </ItemGroup>
+    <ItemGroup>
         <Content Include="MyMoney-icon.ico" />
     </ItemGroup>
     <ItemGroup>
@@ -36,9 +42,6 @@
         <Resource Include="Assets\MyMoney-icon-256.png" />
         <Resource Include="Assets\MyMoney-Banner.png" />
     </ItemGroup>
-    <ItemGroup>
-        <Folder Include="Services\ContentDialogs\" />
-    </ItemGroup>
 
     <!-- Target to build MkDocs documentation and copy it to output directory -->
     <Target Name="BuildMkDocs" BeforeTargets="Build">
@@ -58,10 +61,6 @@
             <MkDocsFiles Include="$(ProjectDir)../Docs/site\**\*" />
         </ItemGroup>
 
-        <Copy
-            SourceFiles="@(MkDocsFiles)"
-            DestinationFolder="$(OutDir)site\%(RecursiveDir)"
-            Condition="'$(UvFound)' == '0'"
-        />
+        <Copy SourceFiles="@(MkDocsFiles)" DestinationFolder="$(OutDir)site\%(RecursiveDir)" Condition="'$(UvFound)' == '0'" />
     </Target>
 </Project>

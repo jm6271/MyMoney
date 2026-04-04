@@ -12,6 +12,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ui:ThemesDictionary Theme="Light" />
                 <ui:ControlsDictionary />
+                <ResourceDictionary Source="/Views/Controls/MonthPicker/MonthPicker.xaml"/>
             </ResourceDictionary.MergedDictionaries>
 
             <Color x:Key="LayerFillColorDefaultColorLight">#FEFEFE</Color>

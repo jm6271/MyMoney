@@ -47,7 +47,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             );
 
             await _viewModel.OnNavigatedToAsync();
-            _viewModel.CurrentBudget = _viewModel.Budgets[0];
+            _viewModel.CurrentBudget = _databaseManager.GetCollection<Budget>("Budgets")[0];
         }
 
         [TestMethod]
