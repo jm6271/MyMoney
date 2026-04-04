@@ -12,7 +12,8 @@ nav:
     - Using Sinking Funds: tutorials/sinking-fund.md
     - Zero-Based Budgeting: tutorials/zero-based-budgeting.md
 use_directory_urls: false
-plugins: []
+plugins:
+  - offline
 site_url: ""
 repo_url: "https://github.com/jm6271/MyMoney"
 copyright: "Copyright © 2024-2026 Jordan Miller"
