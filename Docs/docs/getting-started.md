@@ -10,17 +10,16 @@ See [Creating a new account](tasks/new-account.md) for more information.
 
 ## Create a budget
 1. Go to the **Budget** page in the left navbar.
-2. Click the **New Budget** button at the top.
-3. Select the current month from the dropdown and click OK.
-4. Add income items by clicking the **+** button beside "Income" and entering 
+2. Click the **Create Budget** button.
+3. Add income items by clicking the **Add Income** button in the Income group and entering 
    the category name and the amount of income you will receive for that category.
-5. Add groups for your expense items by clicking the **+** button beside "Expenses"
+4. Add groups for your expense items by clicking the **Add Group** button at the bottom of the page
    and entering a name for the group.
-6. Add expense items to each group by clicking the **Add Item** button in the
+5. Add expense items to each group by clicking the **Add Item** button in the
    expense group. Enter a name for each expense category and the amount you plan
    to spend in that category. 
-7. Add savings categories to budget the amount you plan to save, by clicking 
-   the **+** button beside "Savings" and entering the category name and the amount
+6. Add savings categories to budget the amount you plan to save, by clicking 
+   the **Add Item** button beside in the Savings group and entering the category name and the amount
    you plan to save this month.
 
 See [Making a budget](tasks/new-budget.md) and [Tutorial: Zero-Based Budgeting](tutorials/zero-based-budgeting.md)

@@ -72,7 +72,7 @@ Write down your expenses, both fixed and variable.
 - Emergency fund: $500
 - Credit card payment: $300
 
-## 3\. Allocate Every Dollar
+### 3\. Allocate Every Dollar
 
 Now, distribute your $3,500 income across all categories until there’s nothing left.
 
@@ -95,7 +95,7 @@ Now, distribute your $3,500 income across all categories until there’s nothing
 
 Your income minus expenses = **$0.**
 
-## 4\. Track and Adjust
+### 4\. Track and Adjust
 
 Throughout the month:
 

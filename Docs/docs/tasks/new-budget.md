@@ -3,22 +3,18 @@
 ## Creating a new budget
 
 Navigate to the **Budget** page in the left navbar and click
-**New Budget**.
+**Create a Budget**.
 
 ![New Budget](../img/new-budget.jpg)
 
-Select which month you want the budget to be created for. The
-next month in the future is automatically selected. Select
-"Start with previous month's budget" if you want to copy the
-most recent budget into the new budget. Click OK to create
-the new budget
-
-![New Budget Dialog](../img/new-budget-dialog.jpg)
+A budget will be created for the current month. If a 
+previous budget exists, its categories will be automatically
+copied to the new budget.
 
 
 ## Adding income
 
-Click the **+** button beside "Income" to create a new income
+Click the **Add Income** button beside in the Income group to create a new income
 category
 
 ![New income category](../img/new-income-category.jpg)
@@ -32,8 +28,12 @@ Enter the category name and planned amount, then click OK
 
 ## Adding expenses
 
-Click the **+** button beside "Expenses" to create a new expense
-group. Enter a name for the group and click "Add".
+Click the **Add Group** button at the bottom of the page to create a new expense
+group.
+
+![Add expense group](../img/new-expense-group.jpg)
+
+Enter a name for the group and click "Add".
 
 <div style="text-align: center;">
     <img src="../img/new-budget-expense-group-dialog.jpg"         width="300">

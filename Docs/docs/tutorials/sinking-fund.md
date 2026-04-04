@@ -33,7 +33,7 @@ Instead of one big hit to your budget, you spread it evenly over time.
 
 ### Step 1: Create the Fund
 
-1. Go to your budget and click the **+** button beside "Savings".
+1. Go to your budget and click the **Add Item** button in the "Savings" group.
 2. Give your fund a descriptive name (e.g., “Car Insurance,” “Holiday Gifts”).
 3. Enter the amount you will save this month in the "Planned" field.
 4. Enter the amount you already have in the "Current Balance" field.
