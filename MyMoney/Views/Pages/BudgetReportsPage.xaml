@@ -65,20 +65,28 @@
             SavingsItems="{Binding ViewModel.SavingsItems}"
         />
 
-        <ui:Card x:Name="IncomeChart" Grid.Column="1" Grid.Row="1" VerticalAlignment="Stretch" Margin="8,8,8,24">
-            <lvc:PieChart
-                Height="300"
-                Series="{Binding ViewModel.ActualIncomeSeries}"
-                Title="{Binding ViewModel.ActualIncomeTitle}"
-            />
+        <ui:Card x:Name="IncomeChart" Grid.Column="1" Grid.Row="1" VerticalAlignment="Top" Margin="8,8,8,24"
+                 VerticalContentAlignment="Stretch">
+            <StackPanel>
+                <TextBlock FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Top">Actual Income</TextBlock>
+                <lvc:PieChart
+                    Height="300"
+                    Series="{Binding ViewModel.ActualIncomeSeries}"
+                    Background="Transparent"
+                />
+            </StackPanel>
         </ui:Card>
 
-        <ui:Card x:Name="ExpenseChart" Grid.Column="2" Grid.Row="1" VerticalAlignment="Stretch" Margin="8,8,0,24">
-            <lvc:PieChart
-                Height="300"
-                Series="{Binding ViewModel.ActualExpenseSeries}"
-                Title="{Binding ViewModel.ActualExpensesTitle}"
-            />
+        <ui:Card x:Name="ExpenseChart" Grid.Column="2" Grid.Row="1" VerticalAlignment="Top" Margin="8,8,0,24"
+                 VerticalContentAlignment="Stretch">
+            <StackPanel>
+                <TextBlock FontSize="25" HorizontalAlignment="Center" VerticalAlignment="Top">Actual Expenses</TextBlock>
+                <lvc:PieChart
+                    Height="300"
+                    Series="{Binding ViewModel.ActualExpenseSeries}"
+                    Background="Transparent"
+                />
+            </StackPanel>
         </ui:Card>
     </Grid>
 </Page>

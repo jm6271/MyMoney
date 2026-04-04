@@ -437,7 +437,8 @@
                                 <TextBlock Text="{Binding ViewModel.IncomeTotal}" Margin="42" />
                             </Viewbox>
 
-                            <lvc:PieChart Series="{Binding ViewModel.IncomePercentagesSeries}" Height="275" />
+                            <lvc:PieChart Series="{Binding ViewModel.IncomePercentagesSeries}" Height="275" 
+                                          Background="Transparent"/>
                         </Grid>
                     </StackPanel>
                 </ui:Card>
@@ -456,7 +457,8 @@
                                 <TextBlock Text="{Binding ViewModel.ExpenseTotal}" Margin="42" />
                             </Viewbox>
 
-                            <lvc:PieChart Series="{Binding ViewModel.ExpensePercentagesSeries}" Height="275" />
+                            <lvc:PieChart Series="{Binding ViewModel.ExpensePercentagesSeries}" Height="275" 
+                                          Background="Transparent"/>
                         </Grid>
                     </StackPanel>
                 </ui:Card>
