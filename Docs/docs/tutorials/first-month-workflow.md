@@ -8,18 +8,17 @@ This tutorial walks you through the basic workflow of using **MyMoney** for your
 
 MyMoney uses a [zero-based budgeting system](../tutorials/zero-based-budgeting.md), which means every dollar you earn should be assigned a purpose. By the end, **income – expenses = 0**.
 
-1. Go to the **Budget** page and click **New Budget**.  
-2. Select the current month, then click **OK**.  
-3. Add your income categories:  
-    - Click the **+** beside *Income*.  
+1. Go to the **Budget** page and click **Create a Budget**.  
+2. Add your income categories:  
+    - Click the **Add Income** button in the Income group.  
     - Enter a category name (e.g., “Salary”), the expected amount, then click **OK**.  
     - Repeat for each source of income.  
-4. Add your expenses:  
-    - First, create a group (e.g., *Housing*, *Transportation*) by clicking the **+** beside *Expenses*.  
+3. Add your expenses:  
+    - First, create a group (e.g., *Housing*, *Transportation*) by clicking the **Add Group** button beside at the bottom of the page.  
     - Within each group, click **Add Item**, enter a category name and planned amount, then click **OK**.  
     - Repeat for all expenses.  
 5. Add savings categories:  
-    - Click the **+** beside *Savings*.  
+    - Click the **Add Item** button beside in the Savings group.  
     - These categories function like [sinking funds](sinking-fund.md) for long-term goals.  
 
 **Tip:** Watch the “Amount left to budget” at the top. Adjust income/expenses until it reaches **$0.00**.  
@@ -97,8 +96,8 @@ Reports show how your plan compares to reality.
 
 When a new month begins:  
 
-1. Create a new budget.  
-2. In the dialog, check **Start with previous month’s budget**.  
+1. Create a new budget by clicking the budget month name and selecting the new budget.
+2. Click **Create a Budget**. 
 
 This copies your categories forward and carries over balances in your savings funds.  
 

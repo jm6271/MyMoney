@@ -51,7 +51,7 @@
         </Exec>
 
         <!-- Run mkdocs build only if uv is available -->
-        <Exec Command="uvx mkdocs build" WorkingDirectory="$(ProjectDir)../Docs" Condition="'$(UvFound)' == '0'" />
+        <Exec Command="uvx zensical build" WorkingDirectory="$(ProjectDir)../Docs" Condition="'$(UvFound)' == '0'" />
 
         <!-- Remove old help folder -->
         <RemoveDir Directories="$(OutDir)site" Condition="'$(UvFound)' == '0'" />
