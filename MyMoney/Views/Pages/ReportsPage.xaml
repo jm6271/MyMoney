@@ -34,6 +34,7 @@
                 LegendPosition="Bottom"
                 YAxes="{Binding ViewModel.IncomeExpense12MonthYAxes}"
                 LegendTextPaint="{Binding ViewModel.IncomeExpense12MonthLegendPaint}"
+                Background="Transparent"
             ></lvc:CartesianChart>
         </ui:Card>
 
@@ -78,6 +79,7 @@
                     Series="{Binding ViewModel.NetWorthSeries}"
                     XAxes="{Binding ViewModel.NetWorthXAxes}"
                     YAxes="{Binding ViewModel.NetWorthYAxes}"
+                    Background="Transparent"
                 />
 
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="{Binding ViewModel.NetWorthStartDate}" />

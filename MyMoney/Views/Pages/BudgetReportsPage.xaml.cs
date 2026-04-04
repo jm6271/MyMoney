@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.ComponentModel;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using MyMoney.Helpers;
 using MyMoney.ViewModels.Pages;
 using Wpf.Ui.Abstractions.Controls;
 
@@ -24,14 +14,6 @@ namespace MyMoney.Views.Pages
     {
         public BudgetReportsViewModel ViewModel { get; private set; }
 
-        private readonly Thickness _narrowBudgetsMargin = new(0, 0, 0, 24);
-        private readonly Thickness _narrowReportMargin = new(0, 0, 0, 8);
-        private readonly Thickness _narrowIncomeChartMargin = new(0, 8, 8, 24);
-
-        private Thickness _wideBudgetsMargin;
-        private Thickness _wideReportMargin;
-        private Thickness _wideIncomeChartMargin;
-
         public BudgetReportsPage(BudgetReportsViewModel viewModel)
         {
             InitializeComponent();
@@ -39,53 +21,40 @@ namespace MyMoney.Views.Pages
             ViewModel = viewModel;
             DataContext = this;
 
-            _wideBudgetsMargin = BudgetsCard.Margin;
-            _wideReportMargin = BudgetReport.Margin;
-            _wideIncomeChartMargin = IncomeChart.Margin;
+            // Listen for MouseWheel on *all* column headers inside this page
+            AddHandler(
+                GridViewColumnHeader.PreviewMouseWheelEvent,
+                new MouseWheelEventHandler(GridViewColumnHeader_PreviewMouseWheel),
+                handledEventsToo: true
+            );
         }
 
-        private void Page_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void GridViewColumnHeader_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
-            if (e.NewSize.Width < 750)
-            {
-                // Switch to narrow layout
-                Col0.Width = new GridLength(0);
-                Row1.Height = new GridLength(0, GridUnitType.Auto);
-                Row2.Height = new GridLength(0, GridUnitType.Auto);
-                Grid.SetColumn(BudgetsCard, 1);
-                Grid.SetRowSpan(BudgetsCard, 1);
-                Grid.SetColumnSpan(BudgetsCard, 2);
-                Grid.SetRow(BudgetsCard, 0);
-                Grid.SetRow(BudgetReport, 1);
-                Grid.SetRow(IncomeChart, 2);
-                Grid.SetRow(ExpenseChart, 2);
-                BudgetsListView.MaxHeight = 300;
+            // Don't let the header eat the scroll event
+            e.Handled = false;
 
-                // Adjust margins
-                BudgetsCard.Margin = _narrowBudgetsMargin;
-                BudgetReport.Margin = _narrowReportMargin;
-                IncomeChart.Margin = _narrowIncomeChartMargin;
-            }
-            else
+            var scrollViewer = (sender as DependencyObject)?.FindAncestor<ScrollViewer>();
+            if (scrollViewer != null)
             {
-                // Switch to wide layout
-                Col0.Width = new GridLength(200);
-                Row1.Height = new GridLength(1, GridUnitType.Star);
-                Row2.Height = new GridLength(0);
-                Grid.SetColumn(BudgetsCard, 0);
-                Grid.SetRow(BudgetsCard, 0);
-                Grid.SetRowSpan(BudgetsCard, 2);
-                Grid.SetColumnSpan(BudgetsCard, 1);
-                Grid.SetRow(BudgetReport, 0);
-                Grid.SetRow(IncomeChart, 1);
-                Grid.SetRow(ExpenseChart, 1);
-                BudgetsListView.MaxHeight = double.PositiveInfinity;
-
-                // Adjust margins
-                BudgetsCard.Margin = _wideBudgetsMargin;
-                BudgetReport.Margin = _wideReportMargin;
-                IncomeChart.Margin = _wideIncomeChartMargin;
+                scrollViewer.RaiseEvent(
+                    new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+                    {
+                        RoutedEvent = UIElement.MouseWheelEvent,
+                        Source = sender,
+                    }
+                );
             }
+        }
+
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            var scrollViewer = (ScrollViewer)sender;
+
+            scrollViewer.ScrollToVerticalOffset(
+                scrollViewer.VerticalOffset - e.Delta / 3.0);
+
+            e.Handled = true;
         }
     }
 }

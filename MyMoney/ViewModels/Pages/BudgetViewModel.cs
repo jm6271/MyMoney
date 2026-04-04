@@ -41,22 +41,6 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private ISeries[] _expensePercentagesSeries = [];
 
-        [ObservableProperty]
-        private LabelVisual _incomePercentagesTitle = new()
-        {
-            Text = "Income",
-            TextSize = 25,
-            Padding = new LiveChartsCore.Drawing.Padding(15),
-        };
-
-        [ObservableProperty]
-        private LabelVisual _expensePercentagesTitle = new()
-        {
-            Text = "Expenses",
-            TextSize = 25,
-            Padding = new LiveChartsCore.Drawing.Padding(15),
-        };
-
         // Colors for chart text (changes in light and dark modes)
         [ObservableProperty]
         private SKColor _chartTextColor = new(0x33, 0x33, 0x33);
@@ -259,9 +243,6 @@ namespace MyMoney.ViewModels.Pages
                 ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
                     ? new SKColor(0x33, 0x33, 0x33)
                     : new SKColor(0xff, 0xff, 0xff);
-
-            IncomePercentagesTitle.Paint = new SolidColorPaint(ChartTextColor);
-            ExpensePercentagesTitle.Paint = new SolidColorPaint(ChartTextColor);
         }
 
         [RelayCommand]

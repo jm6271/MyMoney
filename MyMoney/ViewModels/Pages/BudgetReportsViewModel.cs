@@ -84,32 +84,10 @@ namespace MyMoney.ViewModels.Pages
         private ISeries[] _actualIncomeSeries = [];
 
         /// <summary>
-        /// Title for the income chart
-        /// </summary>
-        [ObservableProperty]
-        private LabelVisual _actualIncomeTitle = new()
-        {
-            Text = "Actual Income",
-            TextSize = 25,
-            Padding = new LiveChartsCore.Drawing.Padding(15),
-        };
-
-        /// <summary>
         /// Series data for the expense chart
         /// </summary>
         [ObservableProperty]
         private ISeries[] _actualExpenseSeries = [];
-
-        /// <summary>
-        /// Title for the expense chart
-        /// </summary>
-        [ObservableProperty]
-        private LabelVisual _actualExpensesTitle = new()
-        {
-            Text = "Actual Expenses",
-            TextSize = 25,
-            Padding = new LiveChartsCore.Drawing.Padding(15),
-        };
 
         /// <summary>
         /// Current text color for charts, changes with theme
@@ -208,7 +186,7 @@ namespace MyMoney.ViewModels.Pages
                     int index = Budgets.IndexOf(budget);
                     if (index != SelectedBudgetIndex)
                     {
-                        SelectedBudgetIndex = index;
+                        SelectedBudget = budget;
                     }
                     else
                     {
@@ -364,10 +342,6 @@ namespace MyMoney.ViewModels.Pages
         {
             ChartTextColor =
                 ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light ? LightTextColor : DarkTextColor;
-
-            var textPaint = new SolidColorPaint(ChartTextColor);
-            ActualIncomeTitle.Paint = textPaint;
-            ActualExpensesTitle.Paint = textPaint;
         }
 
         #endregion

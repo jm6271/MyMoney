@@ -99,6 +99,7 @@
                             XAxes="{Binding ViewModel.NetWorthXAxes}"
                             YAxes="{Binding ViewModel.NetWorthYAxes}"
                             TooltipPosition="Hidden"
+                            Background="Transparent"
                         />
                         <Viewbox Grid.Row="2" MaxHeight="40">
                             <TextBlock Text="{Binding ViewModel.TotalNetWorth}" FontWeight="SemiBold" />
@@ -369,14 +370,18 @@
                     </StackPanel>
                 </ui:Card>
                 <ui:Card Margin="0,8,0,8">
-                    <lvc:CartesianChart
-                        x:Name="IncomeExpenseChart"
-                        Height="350"
-                        Series="{Binding ViewModel.Series}"
-                        XAxes="{Binding ViewModel.XAxes}"
-                        YAxes="{Binding ViewModel.YAxes}"
-                        Title="{Binding ViewModel.ChartTitle}"
-                    ></lvc:CartesianChart>
+                    <StackPanel>
+                        <TextBlock FontSize="25" HorizontalAlignment="Center">Income vs. Expenses</TextBlock>
+                        <lvc:CartesianChart
+                            x:Name="IncomeExpenseChart"
+                            Height="350"
+                            Series="{Binding ViewModel.Series}"
+                            XAxes="{Binding ViewModel.XAxes}"
+                            YAxes="{Binding ViewModel.YAxes}"
+                            Background="Transparent"
+                        ></lvc:CartesianChart>                        
+                    </StackPanel>
+
                 </ui:Card>
 
                 <ui:Card VerticalContentAlignment="Stretch" Margin="0,8,0,24" Grid.Row="1" x:Name="ExpenseChart">
@@ -393,6 +398,7 @@
                             LegendPosition="Bottom"
                             Grid.Row="1"
                             LegendTextPaint="{Binding ViewModel.ExpenseBreakdownForeColor}"
+                            Background="Transparent"
                         />
                     </Grid>
                 </ui:Card>

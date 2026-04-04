@@ -66,14 +66,6 @@ namespace MyMoney.ViewModels.Pages
         private SKColor _chartTextColor = new(0x33, 0x33, 0x33);
 
         [ObservableProperty]
-        private LabelVisual _chartTitle = new()
-        {
-            Text = "Income vs. Expenses",
-            TextSize = 25,
-            Padding = new LiveChartsCore.Drawing.Padding(15),
-        };
-
-        [ObservableProperty]
         private Axis[] _xAxes =
         [
             new()
@@ -499,7 +491,6 @@ namespace MyMoney.ViewModels.Pages
             XAxes[0].LabelsPaint = textPaint;
             YAxes[0].LabelsPaint = textPaint;
             YAxes[0].NamePaint = textPaint;
-            ChartTitle.Paint = textPaint;
 
             ExpenseBreakdownForeColor =
                 ApplicationThemeManager.GetAppTheme() == ApplicationTheme.Light
