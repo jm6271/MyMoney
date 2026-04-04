@@ -186,7 +186,7 @@ namespace MyMoney.ViewModels.Pages
                     int index = Budgets.IndexOf(budget);
                     if (index != SelectedBudgetIndex)
                     {
-                        SelectedBudgetIndex = index;
+                        SelectedBudget = budget;
                     }
                     else
                     {
