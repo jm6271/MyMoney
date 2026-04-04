@@ -855,7 +855,7 @@ namespace MyMoney.ViewModels.Pages
             {
                 await Task.Run(() =>
                 {
-                    mostRecentDate = query.Where(p => p.BudgetDate.Month < SelectedBudgetMonth.Month && p.BudgetDate.Year <= SelectedBudgetMonth.Year)
+                    mostRecentDate = query.Where(p => p.BudgetDate < SelectedBudgetMonth)
                                           .OrderByDescending(p => p.BudgetDate)
                                           .FirstOrDefault()
                                           ?.BudgetDate;
@@ -1016,7 +1016,7 @@ namespace MyMoney.ViewModels.Pages
                 {
                     await Task.Run(() =>
                     {
-                        mostRecentDate = query.Where(p => p.BudgetDate.Month < SelectedBudgetMonth.Month && p.BudgetDate.Year <= SelectedBudgetMonth.Year)
+                        mostRecentDate = query.Where(p => p.BudgetDate < SelectedBudgetMonth)
                                               .OrderByDescending(p => p.BudgetDate)
                                               .FirstOrDefault()
                                               ?.BudgetDate;
