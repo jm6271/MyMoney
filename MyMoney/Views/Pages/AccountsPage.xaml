@@ -206,7 +206,7 @@
                                                 >
                                                     <Setter
                                                         Property="Foreground"
-                                                        Value="{DynamicResource AccentTextFillColorTertiaryBrush}"
+                                                        Value="{StaticResource PositiveForegroundColorBrush}"
                                                     />
                                                 </DataTrigger>
                                             </Style.Triggers>

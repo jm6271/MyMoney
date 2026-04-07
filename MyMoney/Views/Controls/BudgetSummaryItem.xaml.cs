@@ -115,8 +115,7 @@ namespace MyMoney.Views.Controls
                 }
                 else
                 {
-                    // Accent color
-                    return new SolidColorBrush(ApplicationAccentColorManager.PrimaryAccent);
+                    return (SolidColorBrush)Application.Current.Resources["PositiveForegroundColorBrush"];
                 }
             }
         }
