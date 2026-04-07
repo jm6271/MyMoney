@@ -1,12 +1,8 @@
-﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Reflection;
-using System.Windows.Media;
+﻿using System.Reflection;
 using Microsoft.Win32;
 using MyMoney.Converters.RadioButtonConverters;
 using MyMoney.Core.Database;
 using MyMoney.Services;
-using MyMoney.Themes;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
 
@@ -48,15 +44,6 @@ namespace MyMoney.ViewModels.Pages
         /// </summary>
         [ObservableProperty]
         private BackupStorageDuration _backupDuration = BackupStorageDuration.OneWeek;
-
-        [ObservableProperty]
-        private ObservableCollection<AccentColor> _accentColors;
-
-        [ObservableProperty]
-        private AccentColor _selectedAccentColor;
-
-        [ObservableProperty]
-        private Visibility _accentColorAppliesOnRestartVisiblity = Visibility.Collapsed;
 
         #endregion
 
@@ -110,19 +97,6 @@ namespace MyMoney.ViewModels.Pages
         {
             _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
             _databaseManager = databaseManager ?? throw new ArgumentNullException(nameof(databaseManager));
-
-            AccentColors = new(PresetAccentColors.AccentColors);
-
-            // Select the current accent color from settings
-            var settings = GetSettings();
-            if (settings.TryGetValue("AccentColor", out var accentColorName))
-            {
-                SelectedAccentColor = AccentColors.FirstOrDefault(ac => ac.Name == accentColorName) ?? AccentColors[0];
-            }
-            else
-            {
-                SelectedAccentColor = AccentColors[0];
-            }
         }
 
         #endregion
@@ -195,20 +169,7 @@ namespace MyMoney.ViewModels.Pages
         {
             var settings = GetSettings();
             settings["AppTheme"] = CurrentTheme == ApplicationTheme.Light ? "Light" : "Dark";
-            settings["AccentColor"] = SelectedAccentColor.Name;
             SaveSettings(settings);
-        }
-
-        protected override void OnPropertyChanged(PropertyChangedEventArgs e)
-        {
-            base.OnPropertyChanged(e);
-            if (e.PropertyName == nameof(SelectedAccentColor) && _isInitialized)
-            {
-                if (SelectedAccentColor == null)
-                    return;
-                SaveTheme();
-                AccentColorAppliesOnRestartVisiblity = Visibility.Visible;
-            }
         }
 
         #endregion
