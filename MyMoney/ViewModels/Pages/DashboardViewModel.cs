@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
+using LiveChartsCore.Kernel;
 using LiveChartsCore.Painting;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
@@ -60,7 +61,7 @@ namespace MyMoney.ViewModels.Pages
         #region Income vs. Expense Chart Properties
 
         [ObservableProperty]
-        private ISeries[] _series = [];
+        private double[] _incomeExpenseSeries = [0.0, 0.0];
 
         [ObservableProperty]
         private SKColor _chartTextColor = new(0x33, 0x33, 0x33);
@@ -170,9 +171,9 @@ namespace MyMoney.ViewModels.Pages
             get
             {
                 if (CashFlowTotal.Value > 0)
-                    return ApplicationAccentColorManager.PrimaryAccentBrush;
+                    return (SolidColorBrush)Application.Current.Resources["PositiveForegroundColorBrush"];
                 else if (CashFlowTotal.Value < 0)
-                    return new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x55, 0x55));
+                    return new SolidColorBrush( (Color)Application.Current.Resources["NegativeForegroundColor"]);
                 else
                     return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
             }
@@ -183,9 +184,9 @@ namespace MyMoney.ViewModels.Pages
             get
             {
                 if (CashFlowPercentVsLastMonth > 0d)
-                    return ApplicationAccentColorManager.PrimaryAccentBrush;
+                    return (SolidColorBrush)Application.Current.Resources["PositiveForegroundColorBrush"];
                 else if (CashFlowPercentVsLastMonth < 0d)
-                    return new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x55, 0x55));
+                    return new SolidColorBrush( (Color)Application.Current.Resources["NegativeForegroundColor"]);
                 else
                     return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
             }
@@ -199,7 +200,7 @@ namespace MyMoney.ViewModels.Pages
         SymbolRegular _budgetHealthIcon = SymbolRegular.CheckmarkCircle24;
 
         [ObservableProperty]
-        private Brush _budgetHealthIconColorBrush = ApplicationAccentColorManager.PrimaryAccentBrush;
+        private Brush _budgetHealthIconColorBrush = (SolidColorBrush)Application.Current.Resources["PositiveForegroundColorBrush"];
 
         public string BudgetHealthText
         {
@@ -217,7 +218,7 @@ namespace MyMoney.ViewModels.Pages
                 if (overspentItems.Count == 0)
                 {
                     BudgetHealthIcon = SymbolRegular.CheckmarkCircle24;
-                    BudgetHealthIconColorBrush = ApplicationAccentColorManager.PrimaryAccentBrush;
+                    BudgetHealthIconColorBrush = (SolidColorBrush)Application.Current.Resources["PositiveForegroundColorBrush"];
                     return "You're on track this month";
                 }
                 else
@@ -273,9 +274,9 @@ namespace MyMoney.ViewModels.Pages
             get
             {
                 if (SpendingVsLastMonthPercentage < 0d)
-                    return ApplicationAccentColorManager.PrimaryAccentBrush;
+                    return (SolidColorBrush)Application.Current.Resources["PositiveForegroundColorBrush"];
                 else if (SpendingVsLastMonthPercentage > 0d)
-                    return new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x55, 0x55));
+                    return new SolidColorBrush( (Color)Application.Current.Resources["NegativeForegroundColor"]);
                 else
                     return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
             }
@@ -411,13 +412,13 @@ namespace MyMoney.ViewModels.Pages
 
         private async Task UpdateChartDisplay()
         {
-            Series = await UpdateChartSeries();
+            await UpdateChartSeries();
             ExpensePercentagesSeries = await UpdateExpenseBreakdownSeries();
             await UpdateNetWorthChart();
             UpdateChartTheme();
         }
 
-        private async Task<ISeries[]> UpdateChartSeries()
+        private async Task UpdateChartSeries()
         {
             var past12MonthsIncome = await IncomeExpense12MonthCalculator.GetPast12MonthsIncome(_databaseReader);
             var past12MonthsExpenses = await IncomeExpense12MonthCalculator.GetPast12MonthsExpenses(_databaseReader);
@@ -425,16 +426,21 @@ namespace MyMoney.ViewModels.Pages
             var incomeTotal = past12MonthsIncome.Count > 0 ? past12MonthsIncome[^1] : 0.0;
             var expenseTotal = past12MonthsExpenses.Count > 0 ? past12MonthsExpenses[^1] : 0.0;
 
-            var accentColor = ApplicationAccentColorManager.PrimaryAccent;
-            return
-            [
-                new ColumnSeries<double>
-                {
-                    Values = [incomeTotal, expenseTotal],
-                    Fill = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B)),
-                    Stroke = null,
-                },
-            ];
+            IncomeExpenseSeries = [incomeTotal, expenseTotal];
+        }
+
+        [RelayCommand]
+        private void IncomeExpenseOnPointMeasured(ChartPoint point)
+        {
+            var incomeColor = (Color)Application.Current.Resources["PositiveForegroundColor"];
+            var expenseColor =  (Color)Application.Current.Resources["NegativeForegroundColor"];
+
+            if (point.Context.Visual is null) return;
+
+            if (point.Index == 0)
+                point.Context.Visual.Fill = new SolidColorPaint(new SKColor(incomeColor.R, incomeColor.G, incomeColor.B));
+            else if (point.Index == 1)
+                point.Context.Visual.Fill = new SolidColorPaint(new SKColor(expenseColor.R, expenseColor.G, expenseColor.B));
         }
 
         private async Task<ISeries[]> UpdateExpenseBreakdownSeries()
@@ -549,8 +555,13 @@ namespace MyMoney.ViewModels.Pages
 
             TotalNetWorth = new Currency(netWorthData.LastOrDefault().Value);
 
-            var accentColor = ApplicationAccentColorManager.SecondaryAccent;
-            var lighterAccentColor = ApplicationAccentColorManager.PrimaryAccent;
+            // Determine color: green if up, red if down
+            var firstValue = netWorthData.FirstOrDefault().Value;
+            var lastValue = netWorthData.LastOrDefault().Value;
+            bool isUp = lastValue >= firstValue;
+            var upColor = (Color)Application.Current.Resources["PositiveForegroundColor"];
+            var downColor = (Color)Application.Current.Resources["NegativeForegroundColor"];
+            var chartColor = isUp ? upColor : downColor;
 
             NetWorthSeries =
             [
@@ -558,10 +569,10 @@ namespace MyMoney.ViewModels.Pages
                 {
                     Values = dateTimePoints,
                     GeometrySize = 0,
-                    Stroke = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B), 2),
+                    Stroke = new SolidColorPaint(new SKColor(chartColor.R, chartColor.G, chartColor.B), 2),
                     LineSmoothness = 0,
                     Fill = new SolidColorPaint(
-                        new SKColor(lighterAccentColor.R, lighterAccentColor.G, lighterAccentColor.B, 100)
+                        new SKColor(chartColor.R, chartColor.G, chartColor.B, 100)
                     ),
                 },
             ];

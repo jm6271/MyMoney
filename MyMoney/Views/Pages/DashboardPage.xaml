@@ -375,11 +375,18 @@
                         <lvc:CartesianChart
                             x:Name="IncomeExpenseChart"
                             Height="350"
-                            Series="{Binding ViewModel.Series}"
                             XAxes="{Binding ViewModel.XAxes}"
                             YAxes="{Binding ViewModel.YAxes}"
-                            Background="Transparent"
-                        ></lvc:CartesianChart>                        
+                            Background="Transparent">
+                            <lvc:CartesianChart.Series>
+                                <lvc:SeriesCollection>
+                                    <lvc:XamlColumnSeries
+                                        PointMeasuredCommand="{Binding ViewModel.IncomeExpenseOnPointMeasuredCommand}"
+                                        Values="{Binding ViewModel.IncomeExpenseSeries}"
+                                        />
+                                </lvc:SeriesCollection>
+                            </lvc:CartesianChart.Series>
+                        </lvc:CartesianChart>                        
                     </StackPanel>
 
                 </ui:Card>
