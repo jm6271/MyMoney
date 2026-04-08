@@ -555,7 +555,13 @@ namespace MyMoney.ViewModels.Pages
 
             TotalNetWorth = new Currency(netWorthData.LastOrDefault().Value);
 
-            var accentColor = (Color)Application.Current.Resources["PositiveForegroundColor"];
+            // Determine color: green if up, red if down
+            var firstValue = netWorthData.FirstOrDefault().Value;
+            var lastValue = netWorthData.LastOrDefault().Value;
+            bool isUp = lastValue >= firstValue;
+            var upColor = (Color)Application.Current.Resources["PositiveForegroundColor"];
+            var downColor = Color.FromArgb(0xFF, 0xE5, 0x3E, 0x3E); // typical red
+            var chartColor = isUp ? upColor : downColor;
 
             NetWorthSeries =
             [
@@ -563,10 +569,10 @@ namespace MyMoney.ViewModels.Pages
                 {
                     Values = dateTimePoints,
                     GeometrySize = 0,
-                    Stroke = new SolidColorPaint(new SKColor(accentColor.R, accentColor.G, accentColor.B), 2),
+                    Stroke = new SolidColorPaint(new SKColor(chartColor.R, chartColor.G, chartColor.B), 2),
                     LineSmoothness = 0,
                     Fill = new SolidColorPaint(
-                        new SKColor(accentColor.R, accentColor.G, accentColor.B, 100)
+                        new SKColor(chartColor.R, chartColor.G, chartColor.B, 100)
                     ),
                 },
             ];
