@@ -173,7 +173,7 @@ namespace MyMoney.ViewModels.Pages
                 if (CashFlowTotal.Value > 0)
                     return (SolidColorBrush)Application.Current.Resources["PositiveForegroundColorBrush"];
                 else if (CashFlowTotal.Value < 0)
-                    return new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x55, 0x55));
+                    return new SolidColorBrush( (Color)Application.Current.Resources["NegativeForegroundColor"]);
                 else
                     return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
             }
@@ -186,7 +186,7 @@ namespace MyMoney.ViewModels.Pages
                 if (CashFlowPercentVsLastMonth > 0d)
                     return (SolidColorBrush)Application.Current.Resources["PositiveForegroundColorBrush"];
                 else if (CashFlowPercentVsLastMonth < 0d)
-                    return new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x55, 0x55));
+                    return new SolidColorBrush( (Color)Application.Current.Resources["NegativeForegroundColor"]);
                 else
                     return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
             }
@@ -276,7 +276,7 @@ namespace MyMoney.ViewModels.Pages
                 if (SpendingVsLastMonthPercentage < 0d)
                     return (SolidColorBrush)Application.Current.Resources["PositiveForegroundColorBrush"];
                 else if (SpendingVsLastMonthPercentage > 0d)
-                    return new SolidColorBrush(Color.FromArgb(0xFF, 0xFF, 0x55, 0x55));
+                    return new SolidColorBrush( (Color)Application.Current.Resources["NegativeForegroundColor"]);
                 else
                     return (SolidColorBrush)Application.Current.Resources["TextFillColorPrimaryBrush"];
             }
@@ -433,7 +433,7 @@ namespace MyMoney.ViewModels.Pages
         private void IncomeExpenseOnPointMeasured(ChartPoint point)
         {
             var incomeColor = (Color)Application.Current.Resources["PositiveForegroundColor"];
-            var expenseColor = Color.FromArgb(0xFF, 0xFF, 0x55, 0x55);
+            var expenseColor =  (Color)Application.Current.Resources["NegativeForegroundColor"];
 
             if (point.Context.Visual is null) return;
 
@@ -560,7 +560,7 @@ namespace MyMoney.ViewModels.Pages
             var lastValue = netWorthData.LastOrDefault().Value;
             bool isUp = lastValue >= firstValue;
             var upColor = (Color)Application.Current.Resources["PositiveForegroundColor"];
-            var downColor = Color.FromArgb(0xFF, 0xE5, 0x3E, 0x3E); // typical red
+            var downColor = (Color)Application.Current.Resources["NegativeForegroundColor"];
             var chartColor = isUp ? upColor : downColor;
 
             NetWorthSeries =

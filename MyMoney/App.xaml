@@ -22,6 +22,9 @@
 
             <Color x:Key="PositiveForegroundColor">#4bb473</Color>
             <SolidColorBrush x:Key="PositiveForegroundColorBrush" Color="{StaticResource PositiveForegroundColor}"/>
+
+            <Color x:Key="NegativeForegroundColor">#E53E3E</Color>
+            <SolidColorBrush x:Key="NegativeForegroundColorBrush" Color="{StaticResource NegativeForegroundColor}"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
