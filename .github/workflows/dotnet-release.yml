@@ -35,10 +35,7 @@ jobs:
 
     # Install uv to build docs
     - name: Install uv
-      uses: astral-sh/setup-uv@v6
-      with:
-        # Install a specific version of uv.
-        version: "0.8.17"
+      uses: astral-sh/setup-uv@v8
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
