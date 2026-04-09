@@ -371,6 +371,8 @@ namespace MyMoney.ViewModels.Pages
                 SelectedAccountIndex = 0;
             }
 
+            if (SelectedAccount == null) return (false, null);
+
             var dialog = _contentDialogFactory.Create<NewTransactionDialog>();
             dialog.Title = isEdit ? "Edit Transaction" : "New Transaction";
             dialog.PrimaryButtonText = "OK";
@@ -399,17 +401,11 @@ namespace MyMoney.ViewModels.Pages
                 amount,
                 viewModel.NewTransactionMemo
             );
-            transaction.AccountId = viewModel.SelectedAccount!.Id;
+            transaction.AccountId = SelectedAccount.Id;
 
             // make sure there's enough money in the account for this transaction
             if (viewModel.NewTransactionIsExpense)
             {
-                if (SelectedAccount == null)
-                {
-                    await _messageBoxService.ShowInfoAsync("Error", "No account is selected.", "OK");
-                    return (false, null);
-                }
-
                 if (Math.Abs(transaction.Amount.Value) > SelectedAccount.Total.Value)
                 {
                     await _messageBoxService.ShowInfoAsync(
@@ -432,9 +428,6 @@ namespace MyMoney.ViewModels.Pages
 
             var viewModel = new NewTransactionDialogViewModel(_databaseManager)
             {
-                SelectedAccountIndex = SelectedAccountIndex,
-                Accounts = Accounts,
-                SelectedAccount = SelectedAccount,
                 AutoSuggestPayees = await GetAllPayees()
             };
 
@@ -445,7 +438,6 @@ namespace MyMoney.ViewModels.Pages
             if (!success || transaction == null)
                 return;
 
-            SelectedAccountIndex = viewModel.SelectedAccountIndex;
             UpdateAccountBalance(SelectedAccount!, null, transaction);
             SelectedAccountTransactions.Add(transaction);
             await Task.Run(() => SortTransactions());
@@ -718,10 +710,6 @@ namespace MyMoney.ViewModels.Pages
                 NewTransactionMemo = transaction.Memo,
                 NewTransactionPayee = transaction.Payee,
                 AutoSuggestPayees = await GetAllPayees(),
-                SelectedAccountIndex = SelectedAccountIndex,
-                Accounts = Accounts,
-                SelectedAccount = SelectedAccount,
-                AccountsVisibility = Visibility.Collapsed,
             };
         }
 
