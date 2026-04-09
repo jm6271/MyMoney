@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
-using MyMoney.Views.Controls;
-using Wpf.Ui.Abstractions.Controls;
 
 namespace MyMoney.ViewModels.ContentDialogs
 {
@@ -43,18 +36,6 @@ namespace MyMoney.ViewModels.ContentDialogs
 
         [ObservableProperty]
         private List<string> _autoSuggestPayees = [];
-
-        [ObservableProperty]
-        private int _selectedAccountIndex = 0;
-
-        [ObservableProperty]
-        private ObservableCollection<Account> _accounts = [];
-
-        [ObservableProperty]
-        private Account? _selectedAccount;
-
-        [ObservableProperty]
-        private Visibility _accountsVisibility = Visibility.Visible;
 
         [ObservableProperty]
         private ObservableCollection<Category> _categoryNames = [];
