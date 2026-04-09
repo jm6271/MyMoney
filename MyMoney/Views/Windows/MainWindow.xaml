@@ -9,27 +9,29 @@
     Title="{Binding ViewModel.ApplicationTitle, Mode=OneWay}"
     Width="1100"
     Height="650"
+    MinWidth="1000"
+    MinHeight="500"
     d:DataContext="{d:DesignInstance local:MainWindow,
                                      IsDesignTimeCreatable=True}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Closing="FluentWindow_Closing"
     ExtendsContentIntoTitleBar="True"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Loaded="FluentWindow_Loaded"
+    SizeChanged="MainWindow_OnSizeChanged"
     WindowBackdropType="Mica"
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
-    mc:Ignorable="d"
     WindowState="Normal"
-    MinWidth="1000"
-    MinHeight="500"
-    Loaded="FluentWindow_Loaded"
-    Closing="FluentWindow_Closing"
-    SizeChanged="MainWindow_OnSizeChanged"
->
+    mc:Ignorable="d">
     <ui:FluentWindow.InputBindings>
-        <KeyBinding Key="F" Command="{Binding ElementName=AutoSuggestBox, Path=FocusCommand}" Modifiers="Control" />
+        <KeyBinding
+            Key="F"
+            Command="{Binding ElementName=AutoSuggestBox, Path=FocusCommand}"
+            Modifiers="Control" />
     </ui:FluentWindow.InputBindings>
 
     <Grid>
@@ -37,8 +39,7 @@
             x:Name="TitleBar"
             Title="{Binding ViewModel.ApplicationTitle}"
             Grid.Row="0"
-            CloseWindowByDoubleClickOnIcon="True"
-        >
+            CloseWindowByDoubleClickOnIcon="True">
             <ui:TitleBar.Icon>
                 <ui:ImageIcon Source="pack://application:,,,/Assets/MyMoney-icon-256.png" />
             </ui:TitleBar.Icon>
@@ -54,12 +55,11 @@
             IsPaneToggleVisible="True"
             MenuItemsSource="{Binding ViewModel.MenuItems, Mode=OneWay}"
             OpenPaneLength="310"
-            PaneDisplayMode="Left"
-            TitleBar="{Binding ElementName=TitleBar, Mode=OneWay}"
-            ScrollViewer.IsDeferredScrollingEnabled="False"
             PaneClosed="NavigationView_OnPaneClosed"
+            PaneDisplayMode="Left"
             PaneOpened="NavigationView_OnPaneOpened"
-        >
+            ScrollViewer.IsDeferredScrollingEnabled="False"
+            TitleBar="{Binding ElementName=TitleBar, Mode=OneWay}">
             <ui:NavigationView.Header>
                 <ui:BreadcrumbBar x:Name="BreadcrumbBar" Margin="42,32,42,20" />
             </ui:NavigationView.Header>

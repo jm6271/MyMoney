@@ -25,8 +25,8 @@
         </Grid.ColumnDefinitions>
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" x:Name="Row0"/>
-            <RowDefinition Height="0" x:Name="Row1"/>
+            <RowDefinition x:Name="Row0" Height="*" />
+            <RowDefinition x:Name="Row1" Height="0" />
         </Grid.RowDefinitions>
 
         <ui:Card
@@ -53,15 +53,15 @@
         <ScrollViewer
             Grid.Column="1"
             Margin="0,0,-42,0"
-            VerticalScrollBarVisibility="Auto"
+            PanningDeceleration="0.001"
             PanningMode="VerticalOnly"
             PanningRatio="1.5"
-            PanningDeceleration="0.001"
-            PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+            PreviewMouseWheel="ScrollViewer_PreviewMouseWheel"
+            VerticalScrollBarVisibility="Auto">
             <Grid Margin="0,0,42,0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" x:Name="ChartColumn1"/>
-                    <ColumnDefinition Width="*" x:Name="ChartColumn2"/>
+                    <ColumnDefinition x:Name="ChartColumn1" Width="*" />
+                    <ColumnDefinition x:Name="ChartColumn2" Width="*" />
                 </Grid.ColumnDefinitions>
 
                 <Grid.RowDefinitions>

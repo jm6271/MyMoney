@@ -2,11 +2,11 @@
     x:Class="MyMoney.Views.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:converters="clr-namespace:MyMoney.Converters"
-    xmlns:rbhelpers="clr-namespace:MyMoney.Converters.RadioButtonConverters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:MyMoney.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:rbhelpers="clr-namespace:MyMoney.Converters.RadioButtonConverters"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="SettingsPage"
     d:DataContext="{d:DesignInstance local:SettingsPage,
@@ -16,8 +16,7 @@
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-    mc:Ignorable="d"
->
+    mc:Ignorable="d">
     <Page.Resources>
         <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter" />
         <rbhelpers:RadioButtonEnumToBooleanConverter x:Key="RadioButtonEnumToBooleanConverter" />
@@ -32,19 +31,17 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
                     <ui:SymbolIcon
-                        Symbol="Color24"
-                        FontSize="28"
-                        FontWeight="Medium"
                         Margin="0,0,12,0"
                         VerticalAlignment="Center"
-                    />
+                        FontSize="28"
+                        FontWeight="Medium"
+                        Symbol="Color24" />
                     <TextBlock
                         Grid.Column="1"
+                        VerticalAlignment="Center"
                         FontSize="20"
                         FontWeight="Medium"
-                        Text="Personalization"
-                        VerticalAlignment="Center"
-                    />
+                        Text="Personalization" />
                 </Grid>
             </ui:CardExpander.Header>
             <ui:CardExpander.Content>
@@ -56,61 +53,60 @@
                         CommandParameter="theme_light"
                         Content="Light"
                         GroupName="themeSelect"
-                        IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, 
-                                            ConverterParameter=Light, Mode=OneWay}"
-                    />
+                        IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Light, Mode=OneWay}" />
                     <RadioButton
                         Margin="0,8,0,0"
                         Command="{Binding ViewModel.ChangeThemeCommand, Mode=OneWay}"
                         CommandParameter="theme_dark"
                         Content="Dark"
                         GroupName="themeSelect"
-                        IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, 
-                                            ConverterParameter=Dark, Mode=OneWay}"
-                    />
+                        IsChecked="{Binding ViewModel.CurrentTheme, Converter={StaticResource EnumToBooleanConverter}, ConverterParameter=Dark, Mode=OneWay}" />
                 </StackPanel>
             </ui:CardExpander.Content>
         </ui:CardExpander>
-        <ui:CardExpander IsExpanded="False" Margin="0,16,0,0">
+        <ui:CardExpander Margin="0,16,0,0" IsExpanded="False">
             <ui:CardExpander.Header>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <ui:SymbolIcon Margin="0,0,12,0" Symbol="FolderArrowUp24" FontWeight="Medium" FontSize="28" />
-                    <TextBlock Grid.Column="1" FontSize="20" FontWeight="Medium" Text="Backups" />
+                    <ui:SymbolIcon
+                        Margin="0,0,12,0"
+                        FontSize="28"
+                        FontWeight="Medium"
+                        Symbol="FolderArrowUp24" />
+                    <TextBlock
+                        Grid.Column="1"
+                        FontSize="20"
+                        FontWeight="Medium"
+                        Text="Backups" />
                 </Grid>
             </ui:CardExpander.Header>
             <StackPanel>
                 <RadioButton
-                    GroupName="BackupMode"
-                    Content="Manual"
                     Command="{Binding ViewModel.SaveBackupSettingsCommand}"
-                    IsChecked="{Binding ViewModel.BackupMode, Converter={StaticResource RadioButtonEnumToBooleanConverter}, 
-                                        ConverterParameter={x:Static rbhelpers:BackupModeRadioButtonGroup.Manual}}"
-                />
+                    Content="Manual"
+                    GroupName="BackupMode"
+                    IsChecked="{Binding ViewModel.BackupMode, Converter={StaticResource RadioButtonEnumToBooleanConverter}, ConverterParameter={x:Static rbhelpers:BackupModeRadioButtonGroup.Manual}}" />
                 <RadioButton
                     Margin="0,8,0,0"
-                    GroupName="BackupMode"
-                    Content="Automatic"
                     Command="{Binding ViewModel.SaveBackupSettingsCommand}"
-                    IsChecked="{Binding ViewModel.BackupMode, Converter={StaticResource RadioButtonEnumToBooleanConverter}, 
-                                        ConverterParameter={x:Static rbhelpers:BackupModeRadioButtonGroup.Automatic}}"
-                />
-                <StackPanel
-                    IsEnabled="{Binding ViewModel.BackupMode, Converter={StaticResource RadioButtonEnumToBooleanConverter}, 
-                                       ConverterParameter={x:Static rbhelpers:BackupModeRadioButtonGroup.Automatic}}"
-                >
+                    Content="Automatic"
+                    GroupName="BackupMode"
+                    IsChecked="{Binding ViewModel.BackupMode, Converter={StaticResource RadioButtonEnumToBooleanConverter}, ConverterParameter={x:Static rbhelpers:BackupModeRadioButtonGroup.Automatic}}" />
+                <StackPanel IsEnabled="{Binding ViewModel.BackupMode, Converter={StaticResource RadioButtonEnumToBooleanConverter}, ConverterParameter={x:Static rbhelpers:BackupModeRadioButtonGroup.Automatic}}">
                     <TextBlock Margin="0,12,0,0" Text="Backup location:" />
                     <WrapPanel Margin="0,8,0,0">
-                        <ui:TextBox Width="400" Text="{Binding ViewModel.BackupLocation}" IsReadOnly="True" />
+                        <ui:TextBox
+                            Width="400"
+                            IsReadOnly="True"
+                            Text="{Binding ViewModel.BackupLocation}" />
                         <ui:Button
                             Margin="4,0,0,0"
-                            Content="..."
                             VerticalAlignment="Stretch"
                             Command="{Binding ViewModel.ChooseAutomaticBackupLocationCommand}"
-                        />
+                            Content="..." />
                     </WrapPanel>
 
                     <TextBlock Margin="0,12,0,0" Text="Keep automatic backups for:" />
@@ -118,8 +114,7 @@
                         Margin="0,8,0,0"
                         HorizontalAlignment="Left"
                         SelectedIndex="{Binding ViewModel.BackupDurationIndex}"
-                        SelectionChanged="ComboBox_SelectionChanged"
-                    >
+                        SelectionChanged="ComboBox_SelectionChanged">
                         <ComboBoxItem Content="4 days" />
                         <ComboBoxItem Content="1 week" IsSelected="True" />
                         <ComboBoxItem Content="2 weeks" />
@@ -128,12 +123,14 @@
                         <ComboBoxItem Content="Forever" />
                     </ComboBox>
                 </StackPanel>
-                <ui:Button Margin="0,12,0,0" Content="Backup now..." Command="{Binding ViewModel.BackupNowCommand}" />
                 <ui:Button
                     Margin="0,12,0,0"
-                    Content="Restore from backup..."
+                    Command="{Binding ViewModel.BackupNowCommand}"
+                    Content="Backup now..." />
+                <ui:Button
+                    Margin="0,12,0,0"
                     Command="{Binding ViewModel.RestoreFromBackupCommand}"
-                />
+                    Content="Restore from backup..." />
             </StackPanel>
         </ui:CardExpander>
 
@@ -150,19 +147,28 @@
                 </Grid.RowDefinitions>
 
                 <ui:ImageIcon
+                    Grid.RowSpan="2"
                     Width="28"
                     Height="28"
-                    Grid.RowSpan="2"
-                    Source="pack://application:,,,/Assets/MyMoney-icon-256.png"
-                />
-                <TextBlock Margin="12,0,0,0" Grid.Row="0" Grid.Column="1" FontSize="16">MyMoney</TextBlock>
-                <TextBlock Margin="12,0,0,0" Grid.Row="1" Grid.Column="1">© 2024-2026 Jordan Miller</TextBlock>
+                    Source="pack://application:,,,/Assets/MyMoney-icon-256.png" />
+                <TextBlock
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    Margin="12,0,0,0"
+                    FontSize="16">
+                    MyMoney
+                </TextBlock>
+                <TextBlock
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="12,0,0,0">
+                    © 2024-2026 Jordan Miller
+                </TextBlock>
                 <ui:TextBlock
-                    Grid.Column="2"
                     Grid.RowSpan="2"
-                    Text="{Binding ViewModel.AppVersion, Mode=OneWay}"
+                    Grid.Column="2"
                     VerticalAlignment="Center"
-                />
+                    Text="{Binding ViewModel.AppVersion, Mode=OneWay}" />
             </Grid>
         </ui:Card>
     </StackPanel>
