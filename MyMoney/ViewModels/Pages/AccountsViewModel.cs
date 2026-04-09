@@ -406,12 +406,6 @@ namespace MyMoney.ViewModels.Pages
             // make sure there's enough money in the account for this transaction
             if (viewModel.NewTransactionIsExpense)
             {
-                if (SelectedAccount == null)
-                {
-                    await _messageBoxService.ShowInfoAsync("Error", "No account is selected.", "OK");
-                    return (false, null);
-                }
-
                 if (Math.Abs(transaction.Amount.Value) > SelectedAccount.Total.Value)
                 {
                     await _messageBoxService.ShowInfoAsync(
