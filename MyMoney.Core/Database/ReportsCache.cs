@@ -53,7 +53,7 @@ namespace MyMoney.Core.Database
 
         public void InvalidateCacheOnWrite(string collectionName)
         {
-            if (collectionName == "Budgets" || collectionName == "Accounts")
+            if (collectionName == "Budgets" || collectionName == "Accounts" || collectionName == "Transactions")
             {
                 // Invalidate all the budget reports
                 var keysToRemove = _cacheObjects.Keys.Where(key => key.StartsWith("Budget-Report-")).ToList();

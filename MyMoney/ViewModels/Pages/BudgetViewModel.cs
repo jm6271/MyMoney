@@ -110,6 +110,7 @@ namespace MyMoney.ViewModels.Pages
             }
 
             UpdateBudgetTotals(false);
+            await AddActualSpentToCurrentBudget();
 
             // Fire property changed so that colors update if the theme was changed
             OnPropertyChanged(nameof(LeftToBudget));
