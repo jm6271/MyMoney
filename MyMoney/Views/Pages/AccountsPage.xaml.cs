@@ -14,13 +14,6 @@ namespace MyMoney.Views.Pages
     {
         bool _isLoaded = false;
 
-        // Cache the “wide” padding so we can restore it
-        private Thickness _wideTransactionMargin;
-        private Thickness _wideAccountsMargin;
-
-        // Define the “narrow” padding (no left inset)
-        private readonly Thickness _narrowMargin = new Thickness(0, 0, 0, 24);
-
         public AccountsViewModel ViewModel { get; }
 
         public AccountsPage(AccountsViewModel viewModel)
@@ -29,9 +22,6 @@ namespace MyMoney.Views.Pages
             DataContext = this;
 
             InitializeComponent();
-
-            _wideTransactionMargin = TransactionsGrid.Margin;
-            _wideAccountsMargin = AccountsCard.Margin;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
