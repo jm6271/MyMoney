@@ -32,46 +32,11 @@ namespace MyMoney.Views.Pages
 
             _wideTransactionMargin = TransactionsGrid.Margin;
             _wideAccountsMargin = AccountsCard.Margin;
-
-            Application.Current.MainWindow.SizeChanged += MainWindow_SizeChanged;
-        }
-
-        private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            if (e.NewSize.Width < 750)
-            {
-                // stacked
-                Col0.Width = new GridLength(0);
-                Grid.SetColumn(AccountsCard, 1);
-                Grid.SetRow(AccountsCard, 0);
-                Grid.SetRow(TransactionsGrid, 1);
-                TransactionsGrid.Margin = _narrowMargin;
-                AccountsCard.Margin = _narrowMargin;
-            }
-            else
-            {
-                // side‑by‑side: first fixed, second star
-                Col0.Width = new GridLength(275);
-                Grid.SetColumn(AccountsCard, 0);
-                Grid.SetRow(AccountsCard, 0);
-                Grid.SetRow(TransactionsGrid, 0);
-                TransactionsGrid.Margin = _wideTransactionMargin;
-                AccountsCard.Margin = _wideAccountsMargin;
-            }
-
-            UpdateTransactionsMaxHeight();
-        }
-
-        private void UpdateTransactionsMaxHeight()
-        {
-            TransactionsList.MaxHeight = Application.Current.MainWindow.ActualHeight - 220;
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
             ViewModel.OnPageNavigatedTo();
-
-            UpdateTransactionsMaxHeight();
             _isLoaded = true;
         }
 
@@ -85,7 +50,7 @@ namespace MyMoney.Views.Pages
             await ViewModel.SelectedAccountChanged();
         }
 
-        private void ResetScroll(Wpf.Ui.Controls.ListView list)
+        private void ResetScroll(System.Windows.Controls.ListView list)
         {
             var scroll = FindScrollViewer(list);
             scroll?.ScrollToTop();
