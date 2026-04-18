@@ -38,6 +38,7 @@
                 <Style.Setters>
                     <Setter Property="HorizontalContentAlignment" Value="Right" />
                     <Setter Property="Padding" Value="0,0,8,0" />
+                    <Setter Property="FontWeight" Value="SemiBold" />
                 </Style.Setters>
             </Style>
         </ResourceDictionary>
@@ -179,6 +180,7 @@
                                     <TextBlock
                                         Margin="0,0,0,2"
                                         FontSize="18"
+                                        FontWeight="SemiBold"
                                         Text="Date" />
                                 </ui:GridViewColumn.Header>
                                 <ui:GridViewColumn.CellTemplate>
@@ -188,11 +190,12 @@
                                 </ui:GridViewColumn.CellTemplate>
                             </ui:GridViewColumn>
 
-                            <ui:GridViewColumn Width="220">
+                            <ui:GridViewColumn Width="250">
                                 <ui:GridViewColumn.Header>
                                     <TextBlock
                                         Margin="0,0,0,2"
                                         FontSize="18"
+                                        FontWeight="SemiBold"
                                         Text="Payee" />
                                 </ui:GridViewColumn.Header>
                                 <ui:GridViewColumn.CellTemplate>
@@ -202,11 +205,12 @@
                                 </ui:GridViewColumn.CellTemplate>
                             </ui:GridViewColumn>
 
-                            <ui:GridViewColumn Width="180">
+                            <ui:GridViewColumn Width="Auto">
                                 <ui:GridViewColumn.Header>
                                     <TextBlock
                                         Margin="0,0,0,2"
                                         FontSize="18"
+                                        FontWeight="SemiBold"
                                         Text="Category" />
                                 </ui:GridViewColumn.Header>
                                 <ui:GridViewColumn.CellTemplate>
