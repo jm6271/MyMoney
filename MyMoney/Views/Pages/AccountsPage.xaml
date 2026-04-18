@@ -133,7 +133,6 @@
                 VerticalContentAlignment="Stretch">
                 <ui:ListView
                     x:Name="TransactionsList"
-                    Tag="{Binding}"
                     ItemsSource="{Binding ViewModel.SelectedAccountTransactions}"
                     ScrollViewer.PanningDeceleration="0.001"
                     ScrollViewer.PanningMode="VerticalFirst"
@@ -141,6 +140,7 @@
                     ScrollViewer.ScrollChanged="TransactionsList_ScrollChanged"
                     SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}"
                     SelectedItem="{Binding ViewModel.SelectedTransaction}"
+                    Tag="{Binding}"
                     VirtualizingPanel.IsVirtualizing="True"
                     VirtualizingPanel.ScrollUnit="Pixel"
                     VirtualizingPanel.VirtualizationMode="Recycling">
@@ -211,7 +211,18 @@
                                 </ui:GridViewColumn.Header>
                                 <ui:GridViewColumn.CellTemplate>
                                     <DataTemplate DataType="{x:Type models:Transaction}">
-                                        <TextBlock VerticalAlignment="Center" Text="{Binding Category.Name}" />
+                                        <Border
+                                            Padding="4"
+                                            HorizontalAlignment="Left"
+                                            Background="{DynamicResource LayerOnMicaBaseAltFillColorSecondaryBrush}"
+                                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                            BorderThickness="1"
+                                            CornerRadius="12">
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                FontSize="12"
+                                                Text="{Binding Category.Name}" />
+                                        </Border>
                                     </DataTemplate>
                                 </ui:GridViewColumn.CellTemplate>
                             </ui:GridViewColumn>
