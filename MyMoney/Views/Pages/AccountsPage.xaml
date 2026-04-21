@@ -144,7 +144,8 @@
                     Tag="{Binding}"
                     VirtualizingPanel.IsVirtualizing="True"
                     VirtualizingPanel.ScrollUnit="Pixel"
-                    VirtualizingPanel.VirtualizationMode="Recycling">
+                    VirtualizingPanel.VirtualizationMode="Recycling"
+                    AlternationCount="2">
                     <ui:ListView.ContextMenu>
                         <ContextMenu>
                             <MenuItem Command="{Binding ViewModel.EditTransactionCommand}" Header="Edit" />
@@ -261,7 +262,8 @@
                                             FontSize="18"
                                             FontWeight="SemiBold"
                                             Text="{Binding AmountFormatted}"
-                                            TextAlignment="Right">
+                                            TextAlignment="Right"
+                                            Typography.NumeralAlignment="Tabular">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Style.Triggers>
@@ -281,6 +283,12 @@
                     <ListView.ItemContainerStyle>
                         <Style BasedOn="{StaticResource ListViewItemStyle}" TargetType="ui:ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Padding" Value="2"/>
+                            <Style.Triggers>
+                                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                    <Setter Property="Background" Value="{DynamicResource ControlAltFillColorTertiaryBrush}"/>
+                                </Trigger>
+                            </Style.Triggers>
                         </Style>
                     </ListView.ItemContainerStyle>
                 </ui:ListView>
