@@ -6,10 +6,10 @@
     xmlns:converters="clr-namespace:MyMoney.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
-    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:local="clr-namespace:MyMoney.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
+    xmlns:behaviors="clr-namespace:MyMoney.Behaviors"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="Accounts"
     d:DataContext="{d:DesignInstance {x:Type local:AccountsPage},
@@ -343,6 +343,9 @@
                             <Style BasedOn="{StaticResource ListViewItemStyle}" TargetType="ui:ListViewItem">
                                 <Setter Property="HorizontalContentAlignment" Value="Stretch" />
                                 <Setter Property="Padding" Value="2" />
+
+                                <Setter Property="behaviors:DoubleClickBehavior.Command" Value="{Binding DataContext.ViewModel.EditTransactionCommand, RelativeSource={RelativeSource AncestorType=ui:ListView}}" />
+
                                 <Style.Triggers>
                                     <Trigger Property="ItemsControl.AlternationIndex" Value="1">
                                         <Setter Property="Background" Value="{DynamicResource ControlAltFillColorTertiaryBrush}" />
