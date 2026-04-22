@@ -58,12 +58,44 @@
         <ui:Card
             x:Name="AccountsCard"
             Grid.Row="0"
+            Grid.RowSpan="2"
             Grid.Column="0"
             Margin="0,0,12,24"
-            VerticalAlignment="Top">
-            <StackPanel Grid.Column="0">
+            VerticalAlignment="Stretch"
+            VerticalContentAlignment="Stretch">
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <ui:TextBlock FontTypography="Subtitle" Text="Accounts" />
+                    <ui:SplitButton
+                        x:Name="NewAccountButton"
+                        Grid.Column="1"
+                        HorizontalAlignment="Right"
+                        Appearance="Primary"
+                        Command="{Binding ViewModel.CreateNewAccountCommand}"
+                        Tag="{Binding ViewModel}">
+                        <StackPanel Orientation="Horizontal">
+                            <ui:SymbolIcon VerticalAlignment="Center" Symbol="Add24" />
+                            <TextBlock Margin="4,0,0,0" VerticalAlignment="Center">New</TextBlock>
+                        </StackPanel>
+
+                        <ui:SplitButton.Flyout>
+                            <ContextMenu>
+                                <ui:MenuItem Command="{Binding ViewModel.TransferBetweenAccountsCommand}" Header="Transfer" />
+                            </ContextMenu>
+                        </ui:SplitButton.Flyout>
+                    </ui:SplitButton>
+                </Grid>
+
                 <ui:ListView
-                    MaxHeight="200"
+                    Grid.Row="1"
                     ItemsSource="{Binding ViewModel.Accounts}"
                     SelectedIndex="{Binding ViewModel.SelectedAccountIndex}"
                     SelectedItem="{Binding ViewModel.SelectedAccount}"
@@ -78,8 +110,9 @@
                                 <ui:TextBlock Margin="4" Text="{Binding AccountName}" />
                                 <ui:TextBlock
                                     Grid.Column="1"
-                                    Margin="4"
-                                    Text="{Binding Total}" />
+                                    Margin="4,4,12,4"
+                                    Text="{Binding Total}"
+                                    Typography.NumeralAlignment="Tabular" />
                             </Grid>
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
@@ -95,27 +128,7 @@
                         </ContextMenu>
                     </ui:ListView.ContextMenu>
                 </ui:ListView>
-                <ui:Button
-                    Margin="0,12,0,8"
-                    HorizontalAlignment="Stretch"
-                    Appearance="Primary"
-                    Command="{Binding ViewModel.CreateNewTransactionCommand}"
-                    IsEnabled="{Binding ViewModel.TransactionsEnabled}">
-                    New transaction
-                </ui:Button>
-                <ui:Button
-                    Margin="0,0,0,8"
-                    HorizontalAlignment="Stretch"
-                    Command="{Binding ViewModel.CreateNewAccountCommand}">
-                    New account
-                </ui:Button>
-                <ui:Button
-                    HorizontalAlignment="Stretch"
-                    Command="{Binding ViewModel.TransferBetweenAccountsCommand}"
-                    IsEnabled="{Binding ViewModel.TransactionsEnabled}">
-                    Transfer
-                </ui:Button>
-            </StackPanel>
+            </Grid>
         </ui:Card>
 
         <Grid
@@ -132,166 +145,214 @@
                 x:Name="TransactionsCard"
                 VerticalAlignment="Stretch"
                 VerticalContentAlignment="Stretch">
-                <ui:ListView
-                    x:Name="TransactionsList"
-                    ItemsSource="{Binding ViewModel.SelectedAccountTransactions}"
-                    ScrollViewer.PanningDeceleration="0.001"
-                    ScrollViewer.PanningMode="VerticalFirst"
-                    ScrollViewer.PanningRatio="1.5"
-                    ScrollViewer.ScrollChanged="TransactionsList_ScrollChanged"
-                    SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}"
-                    SelectedItem="{Binding ViewModel.SelectedTransaction}"
-                    Tag="{Binding}"
-                    VirtualizingPanel.IsVirtualizing="True"
-                    VirtualizingPanel.ScrollUnit="Pixel"
-                    VirtualizingPanel.VirtualizationMode="Recycling"
-                    AlternationCount="2">
-                    <ui:ListView.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Command="{Binding ViewModel.EditTransactionCommand}" Header="Edit" />
-                            <MenuItem Command="{Binding ViewModel.DeleteTransactionCommand}" Header="Delete" />
-                        </ContextMenu>
-                    </ui:ListView.ContextMenu>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
 
-                    <ui:ListView.View>
-                        <ui:GridView>
-                            <ui:GridViewColumn Width="60">
-                                <ui:GridViewColumn.Header>
-                                    <ui:SymbolIcon
-                                        Margin="14,0,0,0"
-                                        VerticalAlignment="Center"
-                                        FontSize="20"
-                                        FontWeight="ExtraBold"
-                                        Symbol="CheckmarkCircle24" />
-                                </ui:GridViewColumn.Header>
-                                <ui:GridViewColumn.CellTemplate>
-                                    <DataTemplate DataType="{x:Type models:Transaction}">
-                                        <CheckBox
-                                            HorizontalAlignment="Center"
+                    <Grid Grid.Row="0" Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBlock FontTypography="Subtitle" Text="Transactions" />
+
+                        <ui:TextBox
+                            Grid.Column="1"
+                            Width="250"
+                            PlaceholderText="Search transactions">
+                            <ui:TextBox.Icon>
+                                <ui:SymbolIcon Symbol="Search24" />
+                            </ui:TextBox.Icon>
+                        </ui:TextBox>
+
+                        <ui:Button
+                            Grid.Column="2"
+                            Margin="8,0"
+                            VerticalAlignment="Stretch"
+                            ToolTip="Export as CSV">
+                            <ui:SymbolIcon Symbol="ArrowExportLtr24" />
+                        </ui:Button>
+
+                        <ui:Button
+                            Grid.Column="3"
+                            VerticalAlignment="Stretch"
+                            Appearance="Primary"
+                            Command="{Binding ViewModel.CreateNewTransactionCommand}"
+                            ToolTip="New transaction">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:SymbolIcon Symbol="Add24" />
+                                <TextBlock Margin="4,0,0,0" Text="New" />
+                            </StackPanel>
+                        </ui:Button>
+                    </Grid>
+
+                    <ui:ListView
+                        x:Name="TransactionsList"
+                        Grid.Row="1"
+                        AlternationCount="2"
+                        ItemsSource="{Binding ViewModel.SelectedAccountTransactions}"
+                        ScrollViewer.PanningDeceleration="0.001"
+                        ScrollViewer.PanningMode="VerticalFirst"
+                        ScrollViewer.PanningRatio="1.5"
+                        ScrollViewer.ScrollChanged="TransactionsList_ScrollChanged"
+                        SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}"
+                        SelectedItem="{Binding ViewModel.SelectedTransaction}"
+                        Tag="{Binding}"
+                        VirtualizingPanel.IsVirtualizing="True"
+                        VirtualizingPanel.ScrollUnit="Pixel"
+                        VirtualizingPanel.VirtualizationMode="Recycling">
+                        <ui:ListView.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Command="{Binding ViewModel.EditTransactionCommand}" Header="Edit" />
+                                <MenuItem Command="{Binding ViewModel.DeleteTransactionCommand}" Header="Delete" />
+                            </ContextMenu>
+                        </ui:ListView.ContextMenu>
+
+                        <ui:ListView.View>
+                            <ui:GridView>
+                                <ui:GridViewColumn Width="60">
+                                    <ui:GridViewColumn.Header>
+                                        <ui:SymbolIcon
+                                            Margin="14,0,0,0"
                                             VerticalAlignment="Center"
-                                            Command="{Binding Tag.ViewModel.ReconcileTransactionCommand, ElementName=TransactionsList}"
-                                            CommandParameter="{Binding}"
-                                            IsChecked="{Binding Reconciled}" />
-                                    </DataTemplate>
-                                </ui:GridViewColumn.CellTemplate>
-                            </ui:GridViewColumn>
-
-                            <ui:GridViewColumn Width="80">
-                                <ui:GridViewColumn.Header>
-                                    <TextBlock
-                                        Margin="0,0,0,2"
-                                        FontSize="18"
-                                        FontWeight="SemiBold"
-                                        Text="Date" />
-                                </ui:GridViewColumn.Header>
-                                <ui:GridViewColumn.CellTemplate>
-                                    <DataTemplate DataType="{x:Type models:Transaction}">
-                                        <TextBlock VerticalAlignment="Center" Text="{Binding Date, StringFormat=' {0:MMM dd}'}" />
-                                    </DataTemplate>
-                                </ui:GridViewColumn.CellTemplate>
-                            </ui:GridViewColumn>
-
-                            <ui:GridViewColumn Width="250">
-                                <ui:GridViewColumn.Header>
-                                    <TextBlock
-                                        Margin="0,0,0,2"
-                                        FontSize="18"
-                                        FontWeight="SemiBold"
-                                        Text="Payee" />
-                                </ui:GridViewColumn.Header>
-                                <ui:GridViewColumn.CellTemplate>
-                                    <DataTemplate DataType="{x:Type models:Transaction}">
-                                        <TextBlock VerticalAlignment="Center" Text="{Binding Payee}" />
-                                    </DataTemplate>
-                                </ui:GridViewColumn.CellTemplate>
-                            </ui:GridViewColumn>
-
-                            <ui:GridViewColumn Width="Auto">
-                                <ui:GridViewColumn.Header>
-                                    <TextBlock
-                                        Margin="0,0,0,2"
-                                        FontSize="18"
-                                        FontWeight="SemiBold"
-                                        Text="Category" />
-                                </ui:GridViewColumn.Header>
-                                <ui:GridViewColumn.CellTemplate>
-                                    <DataTemplate DataType="{x:Type models:Transaction}">
-                                        <Border
-                                            Padding="4"
-                                            HorizontalAlignment="Left"
-                                            Background="{DynamicResource LayerOnMicaBaseAltFillColorSecondaryBrush}"
-                                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                                            BorderThickness="1"
-                                            CornerRadius="12">
-                                            <TextBlock
+                                            FontSize="20"
+                                            FontWeight="ExtraBold"
+                                            Symbol="CheckmarkCircle24" />
+                                    </ui:GridViewColumn.Header>
+                                    <ui:GridViewColumn.CellTemplate>
+                                        <DataTemplate DataType="{x:Type models:Transaction}">
+                                            <CheckBox
+                                                HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
-                                                FontSize="12"
-                                                Text="{Binding Category.Name}" />
+                                                Command="{Binding Tag.ViewModel.ReconcileTransactionCommand, ElementName=TransactionsList}"
+                                                CommandParameter="{Binding}"
+                                                IsChecked="{Binding Reconciled}" />
+                                        </DataTemplate>
+                                    </ui:GridViewColumn.CellTemplate>
+                                </ui:GridViewColumn>
 
-                                            <Border.Style>
-                                                <Style TargetType="Border">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding Category.Name}" Value="">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                        <DataTrigger Binding="{Binding Category.Name}" Value="{x:Null}">
-                                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Border.Style>
-                                        </Border>
-                                    </DataTemplate>
-                                </ui:GridViewColumn.CellTemplate>
-                            </ui:GridViewColumn>
-
-                            <ui:GridViewColumn Width="120" HeaderContainerStyle="{StaticResource RightAlignedGridViewColumnHeaderStyle}">
-
-                                <ui:GridViewColumn.Header>
-                                    <TextBlock
-                                        Margin="0,0,0,2"
-                                        FontSize="18"
-                                        Text="Amount" />
-                                </ui:GridViewColumn.Header>
-
-                                <ui:GridViewColumn.CellTemplate>
-                                    <DataTemplate DataType="{x:Type models:Transaction}">
+                                <ui:GridViewColumn Width="80">
+                                    <ui:GridViewColumn.Header>
                                         <TextBlock
-                                            VerticalAlignment="Center"
+                                            Margin="0,0,0,2"
                                             FontSize="18"
                                             FontWeight="SemiBold"
-                                            Text="{Binding AmountFormatted}"
-                                            TextAlignment="Right"
-                                            Typography.NumeralAlignment="Tabular">
-                                            <TextBlock.Style>
-                                                <Style TargetType="TextBlock">
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding AmountFormatted, Converter={StaticResource StartsWithPlusConverter}}" Value="True">
-                                                            <Setter Property="Foreground" Value="{StaticResource PositiveForegroundColorBrush}" />
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBlock.Style>
-                                        </TextBlock>
-                                    </DataTemplate>
-                                </ui:GridViewColumn.CellTemplate>
-                            </ui:GridViewColumn>
-                        </ui:GridView>
-                    </ui:ListView.View>
+                                            Text="Date" />
+                                    </ui:GridViewColumn.Header>
+                                    <ui:GridViewColumn.CellTemplate>
+                                        <DataTemplate DataType="{x:Type models:Transaction}">
+                                            <TextBlock VerticalAlignment="Center" Text="{Binding Date, StringFormat=' {0:MMM dd}'}" />
+                                        </DataTemplate>
+                                    </ui:GridViewColumn.CellTemplate>
+                                </ui:GridViewColumn>
 
-                    <ListView.ItemContainerStyle>
-                        <Style BasedOn="{StaticResource ListViewItemStyle}" TargetType="ui:ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                            <Setter Property="Padding" Value="2"/>
-                            <Style.Triggers>
-                                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                                    <Setter Property="Background" Value="{DynamicResource ControlAltFillColorTertiaryBrush}"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                </ui:ListView>
+                                <ui:GridViewColumn Width="250">
+                                    <ui:GridViewColumn.Header>
+                                        <TextBlock
+                                            Margin="0,0,0,2"
+                                            FontSize="18"
+                                            FontWeight="SemiBold"
+                                            Text="Payee" />
+                                    </ui:GridViewColumn.Header>
+                                    <ui:GridViewColumn.CellTemplate>
+                                        <DataTemplate DataType="{x:Type models:Transaction}">
+                                            <TextBlock VerticalAlignment="Center" Text="{Binding Payee}" />
+                                        </DataTemplate>
+                                    </ui:GridViewColumn.CellTemplate>
+                                </ui:GridViewColumn>
+
+                                <ui:GridViewColumn Width="Auto">
+                                    <ui:GridViewColumn.Header>
+                                        <TextBlock
+                                            Margin="0,0,0,2"
+                                            FontSize="18"
+                                            FontWeight="SemiBold"
+                                            Text="Category" />
+                                    </ui:GridViewColumn.Header>
+                                    <ui:GridViewColumn.CellTemplate>
+                                        <DataTemplate DataType="{x:Type models:Transaction}">
+                                            <Border
+                                                Padding="4"
+                                                HorizontalAlignment="Left"
+                                                Background="{DynamicResource LayerOnMicaBaseAltFillColorSecondaryBrush}"
+                                                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                BorderThickness="1"
+                                                CornerRadius="12">
+                                                <TextBlock
+                                                    VerticalAlignment="Center"
+                                                    FontSize="12"
+                                                    Text="{Binding Category.Name}" />
+
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Category.Name}" Value="">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding Category.Name}" Value="{x:Null}">
+                                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ui:GridViewColumn.CellTemplate>
+                                </ui:GridViewColumn>
+
+                                <ui:GridViewColumn Width="120" HeaderContainerStyle="{StaticResource RightAlignedGridViewColumnHeaderStyle}">
+
+                                    <ui:GridViewColumn.Header>
+                                        <TextBlock
+                                            Margin="0,0,0,2"
+                                            FontSize="18"
+                                            Text="Amount" />
+                                    </ui:GridViewColumn.Header>
+
+                                    <ui:GridViewColumn.CellTemplate>
+                                        <DataTemplate DataType="{x:Type models:Transaction}">
+                                            <TextBlock
+                                                VerticalAlignment="Center"
+                                                FontSize="18"
+                                                FontWeight="SemiBold"
+                                                Text="{Binding AmountFormatted}"
+                                                TextAlignment="Right"
+                                                Typography.NumeralAlignment="Tabular">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding AmountFormatted, Converter={StaticResource StartsWithPlusConverter}}" Value="True">
+                                                                <Setter Property="Foreground" Value="{StaticResource PositiveForegroundColorBrush}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </ui:GridViewColumn.CellTemplate>
+                                </ui:GridViewColumn>
+                            </ui:GridView>
+                        </ui:ListView.View>
+
+                        <ListView.ItemContainerStyle>
+                            <Style BasedOn="{StaticResource ListViewItemStyle}" TargetType="ui:ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                <Setter Property="Padding" Value="2" />
+                                <Style.Triggers>
+                                    <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                                        <Setter Property="Background" Value="{DynamicResource ControlAltFillColorTertiaryBrush}" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                    </ui:ListView>
+                </Grid>
+
             </ui:Card>
         </Grid>
     </Grid>
