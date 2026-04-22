@@ -1,15 +1,15 @@
-﻿<Page
+<Page
     x:Class="MyMoney.Views.Pages.AccountsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:Controls="clr-namespace:MyMoney.Views.Controls"
+    xmlns:behaviors="clr-namespace:MyMoney.Behaviors"
     xmlns:converters="clr-namespace:MyMoney.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
     xmlns:local="clr-namespace:MyMoney.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
-    xmlns:behaviors="clr-namespace:MyMoney.Behaviors"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     Title="Accounts"
     d:DataContext="{d:DesignInstance {x:Type local:AccountsPage},
@@ -345,6 +345,7 @@
                                 <Setter Property="Padding" Value="2" />
 
                                 <Setter Property="behaviors:DoubleClickBehavior.Command" Value="{Binding DataContext.ViewModel.EditTransactionCommand, RelativeSource={RelativeSource AncestorType=ui:ListView}}" />
+                                <Setter Property="behaviors:DeleteKeyBehavior.Command" Value="{Binding DataContext.ViewModel.DeleteTransactionCommand, RelativeSource={RelativeSource AncestorType=ui:ListView}}" />
 
                                 <Style.Triggers>
                                     <Trigger Property="ItemsControl.AlternationIndex" Value="1">
