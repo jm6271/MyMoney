@@ -458,11 +458,6 @@
           "Newtonsoft.Json": "13.0.3"
         }
       },
-      "Microsoft.Xaml.Behaviors.Wpf": {
-        "type": "Transitive",
-        "resolved": "1.1.142",
-        "contentHash": "c47wA/8GHiQ9w+O6+mdqrZhZrxHogx2/fSZyRKL9tz0k+ypoTiwOx6fID0X3jr5LnCazJbCk7KiAcL0zVnNgNA=="
-      },
       "MSTest.Analyzers": {
         "type": "Transitive",
         "resolved": "4.2.1",
@@ -540,16 +535,16 @@
       },
       "WPF-UI": {
         "type": "Transitive",
-        "resolved": "4.2.0",
-        "contentHash": "cLJCqIYGtbSU8da9UnPV83SU5XttiM+BEZWW/jLSLjjmBvK2s54oDcO2wP36GEVgiXu5/QXJHlgXk0f14Cvw3g==",
+        "resolved": "4.2.1",
+        "contentHash": "SgfFIzYtZWVsffgVXAy7QP8fSoBM6y33d5xUgDZGYGbNeIMEu49ZWJVG3rTWYO3Y+OxWWMrhIa+ER//OOi9t3Q==",
         "dependencies": {
-          "WPF-UI.Abstractions": "4.2.0"
+          "WPF-UI.Abstractions": "4.2.1"
         }
       },
       "WPF-UI.Abstractions": {
         "type": "Transitive",
-        "resolved": "4.2.0",
-        "contentHash": "N4/ODw2F7yniiaEO6aEaxFC8aMJDJTGoeNNv3LLXFJs+qY2Flu9fMqFrRfcCFTk4ZKg1+guUB6Y0QKi6AGt88w=="
+        "resolved": "4.2.1",
+        "contentHash": "x4RVqFxRH0/KX4VvABWWCjtKu7+lHQC2kGtV/W41BwHMLg4hdA10pUzxJV2L2AouqFewUvKSKCFugDQchf+zAw=="
       },
       "mymoney": {
         "type": "Project",
@@ -558,9 +553,8 @@
           "LiteDB": "[5.0.21, )",
           "LiveChartsCore.SkiaSharpView.WPF": "[2.0.0, )",
           "Microsoft.Extensions.Hosting": "[10.0.5, )",
-          "Microsoft.Xaml.Behaviors.Wpf": "[1.1.142, )",
           "MyMoney.Core": "[1.0.0, )",
-          "WPF-UI": "[4.2.0, )",
+          "WPF-UI": "[4.2.1, )",
           "gong-wpf-dragdrop": "[4.0.0, )"
         }
       },
