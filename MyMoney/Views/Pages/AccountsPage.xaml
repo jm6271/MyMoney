@@ -1,4 +1,4 @@
-<Page
+﻿<Page
     x:Class="MyMoney.Views.Pages.AccountsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -24,8 +24,13 @@
     mc:Ignorable="d">
     <Page.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Views/Controls/MoreButton.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
             <converters:CurrencyConverter x:Key="CurrencyConverter" />
             <converters:StartsWithPlusConverter x:Key="StartsWithPlusConverter" />
+
             <StackPanel x:Key="RenameDialogContent">
                 <TextBlock Margin="0,0,0,8">Rename account to</TextBlock>
                 <TextBox HorizontalAlignment="Stretch" />
@@ -95,38 +100,57 @@
                 </Grid>
 
                 <ui:ListView
+                    x:Name="AccountsList"
                     Grid.Row="1"
                     ItemsSource="{Binding ViewModel.Accounts}"
                     SelectedIndex="{Binding ViewModel.SelectedAccountIndex}"
                     SelectedItem="{Binding ViewModel.SelectedAccount}"
-                    SelectionChanged="AccountsList_SelectionChanged">
+                    SelectionChanged="AccountsList_SelectionChanged"
+                    Tag="{Binding DataContext, RelativeSource={RelativeSource Self}}">
+
+                    <ui:ListView.Resources>
+                        <ContextMenu x:Key="AccountItemContextMenu">
+                            <MenuItem
+                                Command="{Binding DataContext.ViewModel.RenameAccountCommand, Source={x:Reference AccountsList}}"
+                                CommandParameter="{Binding}"
+                                Header="Rename" />
+                            <MenuItem Command="{Binding DataContext.ViewModel.UpdateAccountBalanceCommand, Source={x:Reference AccountsList}}"
+                                      Header="Update balance" />
+                            <MenuItem Command="{Binding DataContext.ViewModel.DeleteAccountCommand, Source={x:Reference AccountsList}}"
+                                      Header="Delete account" />
+                        </ContextMenu>
+                    </ui:ListView.Resources>
+                    
                     <ui:ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*" />
                                     <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <ui:TextBlock Margin="4" Text="{Binding AccountName}" />
                                 <ui:TextBlock
                                     Grid.Column="1"
-                                    Margin="4,4,12,4"
+                                    Margin="4"
                                     Text="{Binding Total}"
                                     Typography.NumeralAlignment="Tabular" />
+                                <Button
+                                    Grid.Column="2"
+                                    Style="{StaticResource MoreButtonStyle}"
+                                    Click="MoreButton_Click"
+                                    VerticalAlignment="Center">
+                                    <ui:SymbolIcon Symbol="MoreVertical24" FontSize="18"/>
+                                </Button>
                             </Grid>
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
 
-                    <ui:ListView.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem
-                                Command="{Binding ViewModel.RenameAccountCommand}"
-                                CommandParameter="{StaticResource RenameDialogContent}"
-                                Header="Rename" />
-                            <MenuItem Command="{Binding ViewModel.UpdateAccountBalanceCommand}" Header="Update balance" />
-                            <MenuItem Command="{Binding ViewModel.DeleteAccountCommand}" Header="Delete account" />
-                        </ContextMenu>
-                    </ui:ListView.ContextMenu>
+                    <ui:ListView.ItemContainerStyle>
+                        <Style TargetType="ui:ListViewItem" BasedOn="{StaticResource ListViewItemStyle}">
+                            <Setter Property="ContextMenu" Value="{StaticResource AccountItemContextMenu}" />
+                        </Style>
+                    </ui:ListView.ItemContainerStyle>
                 </ui:ListView>
             </Grid>
         </ui:Card>

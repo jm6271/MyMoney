@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using MyMoney.ViewModels.Pages;
 using Wpf.Ui;
@@ -68,6 +69,22 @@ namespace MyMoney.Views.Pages
             if (viewer.VerticalOffset + viewer.ViewportHeight >= viewer.ExtentHeight - 200)
             {
                 await ViewModel.LoadTransactions();
+            }
+        }
+
+        private void MoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = (System.Windows.Controls.Button)sender;
+            AccountsList.SelectedItem = button.DataContext;
+
+            // Walk up to the ListViewItem to grab its ContextMenu
+            var listViewItem = ItemsControl.ContainerFromElement(AccountsList, button) as Wpf.Ui.Controls.ListViewItem;
+            if (listViewItem?.ContextMenu is ContextMenu menu)
+            {
+                menu.PlacementTarget = button; // anchor it to the button visually
+                menu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+                menu.DataContext = button.DataContext; // ensure bindings in menu items work
+                menu.IsOpen = true;
             }
         }
     }
