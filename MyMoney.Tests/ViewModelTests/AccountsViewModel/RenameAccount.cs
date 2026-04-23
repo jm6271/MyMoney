@@ -61,7 +61,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _contentDialogFactory.Setup(x => x.Create<RenameAccountDialog>()).Returns(fake.Object);
 
             // Act
-            await viewModel.RenameAccountCommand.ExecuteAsync(null);
+            await viewModel.RenameAccountCommand.ExecuteAsync(account);
 
             // Assert
             Assert.AreEqual("New Name", viewModel.Accounts[0].AccountName);
@@ -97,7 +97,7 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             _contentDialogFactory.Setup(x => x.Create<RenameAccountDialog>()).Returns(fake.Object);
 
             // Act
-            await viewModel.RenameAccountCommand.ExecuteAsync(null);
+            await viewModel.RenameAccountCommand.ExecuteAsync(account);
 
             // Assert
             Assert.AreEqual("Original Name", viewModel.Accounts[0].AccountName);
