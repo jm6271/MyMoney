@@ -21,7 +21,7 @@ namespace MyMoney.Core.Database
         public Task QueryAsync<T>(string collectionName, Func<ILiteQueryable<T>, Task> action);
 
         /// <summary>
-        /// Returns all transactions for the given account whose Payee or Category.Name
+        /// Returns all transactions for the given account whose Payee, Category.Name, or Memo
         /// contains <paramref name="query"/> (case-insensitive).
         /// </summary>
         Task<List<Core.Models.Transaction>> SearchTransactionsAsync(int accountId, string query);
@@ -209,7 +209,8 @@ namespace MyMoney.Core.Database
                     .Where(t =>
                         (t.Payee != null && t.Payee.ToLower().Contains(lowerQuery)) ||
                         (t.Category != null && t.Category.Name != null &&
-                         t.Category.Name.ToLower().Contains(lowerQuery)))
+                         t.Category.Name.ToLower().Contains(lowerQuery)) ||
+                        (t.Memo != null && t.Memo.ToLower().Contains(lowerQuery)))
                     .ToList();
                 await Task.CompletedTask;
             });

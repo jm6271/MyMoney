@@ -8,9 +8,9 @@ public class SearchTransactionsTests
 {
     private DatabaseManager _db = null!;
 
-    private static Transaction MakeTransaction(int accountId, string payee, string categoryName, int id = 0)
+    private static Transaction MakeTransaction(int accountId, string payee, string categoryName, int id = 0, string memo = "")
     {
-        var t = new Transaction(DateTime.Today, payee, new Category { Name = categoryName }, new Currency(10m), "")
+        var t = new Transaction(DateTime.Today, payee, new Category { Name = categoryName }, new Currency(10m), memo)
         {
             AccountId = accountId,
             Id = id
@@ -76,6 +76,23 @@ public class SearchTransactionsTests
         // Assert
         Assert.HasCount(1, results);
         Assert.AreEqual("Groceries", results[0].Category.Name);
+    }
+
+    [TestMethod]
+    public async Task SearchTransactionsAsync_MatchesOnMemo_CaseInsensitive()
+    {
+        // Arrange
+        var t1 = MakeTransaction(accountId: 1, payee: "Store A", categoryName: "Shopping", id: 1, memo: "Monthly invoice #42");
+        var t2 = MakeTransaction(accountId: 1, payee: "Store B", categoryName: "Shopping", id: 2, memo: "Cash back");
+        _db.Insert("Transactions", t1);
+        _db.Insert("Transactions", t2);
+
+        // Act — uppercase query on memo only
+        var results = await _db.SearchTransactionsAsync(accountId: 1, query: "INVOICE");
+
+        // Assert
+        Assert.HasCount(1, results);
+        Assert.AreEqual("Monthly invoice #42", results[0].Memo);
     }
 
     [TestMethod]
