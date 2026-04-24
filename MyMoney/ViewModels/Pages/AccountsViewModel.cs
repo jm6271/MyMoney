@@ -604,12 +604,11 @@ namespace MyMoney.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async Task RenameAccount()
+        private async Task RenameAccount(Account? account)
         {
-            if (SelectedAccountIndex < 0)
-                return;
+            if (account == null) return;
 
-            var viewModel = new RenameAccountViewModel { NewName = Accounts[SelectedAccountIndex].AccountName };
+            var viewModel = new RenameAccountViewModel { NewName = account.AccountName };
 
             var dialog = _contentDialogFactory.Create<RenameAccountDialog>();
             dialog.PrimaryButtonText = "Rename";
@@ -621,7 +620,7 @@ namespace MyMoney.ViewModels.Pages
 
             if (result == ContentDialogResult.Primary)
             {
-                Accounts[SelectedAccountIndex].AccountName = viewModel.NewName;
+                account.AccountName = viewModel.NewName;
                 SaveAccountsToDatabase();
             }
         }
