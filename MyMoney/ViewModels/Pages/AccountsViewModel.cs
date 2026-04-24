@@ -53,6 +53,7 @@ namespace MyMoney.ViewModels.Pages
         private CancellationTokenSource? _searchDebounceTokenSource;
 
         private bool _isLoadingTransactions = false;
+        private bool _isSearchActive = false;
         private DateTime? _oldestLoadedDate;
         private int _oldestLoadedId;
         private const int PageSize = 25;
@@ -111,6 +112,10 @@ namespace MyMoney.ViewModels.Pages
 
         public async Task LoadTransactions()
         {
+            // Don't load more transactions if search is active
+            if (_isSearchActive)
+                return;
+
             if (_isLoadingTransactions)
                 return;
             _isLoadingTransactions = true;
@@ -125,7 +130,7 @@ namespace MyMoney.ViewModels.Pages
                         _oldestLoadedId,
                         PageSize
                     );
-                    
+
                     foreach (var transaction in page)
                     {
                         SelectedAccountTransactions.Add(transaction);
@@ -135,7 +140,7 @@ namespace MyMoney.ViewModels.Pages
                     {
                         _oldestLoadedId = page[page.Count - 1].Id;
                         _oldestLoadedDate = page[page.Count - 1].Date;
-                    } 
+                    }
                 }
             }
             finally
@@ -741,6 +746,7 @@ namespace MyMoney.ViewModels.Pages
                 oldCts?.Dispose();
             }
             SearchQuery = "";
+            _isSearchActive = false;
 
             IsInputEnabled = SelectedAccount != null;
             SelectedAccountTransactions.Clear();
@@ -803,6 +809,7 @@ namespace MyMoney.ViewModels.Pages
                 {
                     SelectedAccountTransactions.Add(transaction);
                 }
+                _isSearchActive = true;
             } );
         }
 
@@ -811,6 +818,7 @@ namespace MyMoney.ViewModels.Pages
             SelectedAccountTransactions.Clear();
             _oldestLoadedDate = null;
             _oldestLoadedId = 0;
+            _isSearchActive = false;
             await LoadTransactions();
         }
 
