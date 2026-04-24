@@ -30,6 +30,7 @@
 
             <converters:CurrencyConverter x:Key="CurrencyConverter" />
             <converters:StartsWithPlusConverter x:Key="StartsWithPlusConverter" />
+            <converters:WidthThresholdToGridViewColumnWidthConverter x:Key="WidthThresholdToGridViewColumnWidthConverter" />
 
             <StackPanel x:Key="RenameDialogContent">
                 <TextBlock Margin="0,0,0,8">Rename account to</TextBlock>
@@ -289,7 +290,7 @@
                                     </ui:GridViewColumn.CellTemplate>
                                 </ui:GridViewColumn>
 
-                                <ui:GridViewColumn Width="Auto">
+                                <ui:GridViewColumn Width="{Binding ActualWidth, ElementName=TransactionsList, Converter={StaticResource WidthThresholdToGridViewColumnWidthConverter}}">
                                     <ui:GridViewColumn.Header>
                                         <TextBlock
                                             Margin="0,0,0,2"
