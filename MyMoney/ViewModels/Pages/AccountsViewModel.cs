@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.ComponentModel;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Services;
@@ -47,6 +46,12 @@ namespace MyMoney.ViewModels.Pages
 
         [ObservableProperty]
         private bool _isInputEnabled;
+
+        [ObservableProperty]
+        private string _searchQuery = "";
+
+        private bool _isInSearchMode = false;
+        private CancellationTokenSource? _searchDebounceTokenSource;
 
         private bool _isLoadingTransactions = false;
         private DateTime? _oldestLoadedDate;
@@ -728,7 +733,84 @@ namespace MyMoney.ViewModels.Pages
 
         public async Task SelectedAccountChanged()
         {
+            // Clear search state before reloading for the new account
+            if (_searchDebounceTokenSource != null)
+            {
+                _searchDebounceTokenSource.Cancel();
+                _searchDebounceTokenSource.Dispose();
+                _searchDebounceTokenSource = null;
+            }
+            SearchQuery = "";
+            _isInSearchMode = false;
+
             IsInputEnabled = SelectedAccount != null;
+            SelectedAccountTransactions.Clear();
+            _oldestLoadedDate = null;
+            _oldestLoadedId = 0;
+            await LoadTransactions();
+        }
+
+        partial void OnSearchQueryChanged(string value)
+        {
+            // Source updates are debounced (Binding.Delay on the search TextBox) so the
+            // view model and binding are not hit on every keypress. Search work still
+            // runs on a background thread to avoid blocking the UI.
+            _searchDebounceTokenSource?.Cancel();
+            _searchDebounceTokenSource?.Dispose();
+            _searchDebounceTokenSource = null;
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                _ = ClearSearchAndReloadAsync();
+                return;
+            }
+
+            var cts = new CancellationTokenSource();
+            _searchDebounceTokenSource = cts;
+            var ct = cts.Token;
+
+            _ = Task.Run(
+                async () =>
+                {
+                    try
+                    {
+                        await ExecuteSearchAsync(value, ct);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Superseded by a newer search or account change — expected.
+                    }
+                },
+                ct
+            );
+        }
+
+        private async Task ExecuteSearchAsync(string query, CancellationToken ct)
+        {
+            if (SelectedAccount == null)
+                return;
+
+            var results = await _databaseManager.SearchTransactionsAsync(SelectedAccount.Id, query);
+
+            if (ct.IsCancellationRequested)
+                return;
+
+            // update with dispatcher
+            await App.Current.Dispatcher.InvokeAsync(() =>
+            {
+                SelectedAccountTransactions.Clear();
+                foreach (var transaction in results)
+                {
+                    SelectedAccountTransactions.Add(transaction);
+                }
+            } );
+
+            _isInSearchMode = true;
+        }
+
+        private async Task ClearSearchAndReloadAsync()
+        {
+            _isInSearchMode = false;
             SelectedAccountTransactions.Clear();
             _oldestLoadedDate = null;
             _oldestLoadedId = 0;
