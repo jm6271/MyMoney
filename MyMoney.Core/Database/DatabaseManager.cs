@@ -19,6 +19,12 @@ namespace MyMoney.Core.Database
         public bool Delete<T>(string collectionName, BsonValue id);
         public int DeleteMany<T>(string collectionName, System.Linq.Expressions.Expression<Func<T, bool>> predicate);
         public Task QueryAsync<T>(string collectionName, Func<ILiteQueryable<T>, Task> action);
+
+        /// <summary>
+        /// Returns all transactions for the given account whose Payee, Category.Name, or Memo
+        /// contains <paramref name="query"/> (case-insensitive).
+        /// </summary>
+        Task<List<Core.Models.Transaction>> SearchTransactionsAsync(int accountId, string query);
     }
 
     public class DatabaseManager : IDatabaseManager, IDisposable
@@ -188,6 +194,27 @@ namespace MyMoney.Core.Database
         {
             var collection = _db.GetCollection<T>(collectionName);
             await action(collection.Query());
+        }
+
+        public async Task<List<Core.Models.Transaction>> SearchTransactionsAsync(int accountId, string query)
+        {
+            var results = new List<Core.Models.Transaction>();
+            var lowerQuery = query.ToLower();
+
+            await QueryAsync<Core.Models.Transaction>("Transactions", async q =>
+            {
+                results = q
+                    .Where(t => t.AccountId == accountId)
+                    .ToList()
+                    .Where(t =>
+                        (t.Payee != null && t.Payee.ToLower().Contains(lowerQuery)) ||
+                        (t.Category != null && t.Category.Name != null &&
+                         t.Category.Name.ToLower().Contains(lowerQuery)) ||
+                        (t.Memo != null && t.Memo.ToLower().Contains(lowerQuery)))
+                    .ToList();
+            });
+
+            return results;
         }
 
         public void Dispose()

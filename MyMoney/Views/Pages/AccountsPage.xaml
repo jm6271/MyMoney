@@ -188,7 +188,9 @@
                         <ui:TextBox
                             Grid.Column="1"
                             Width="250"
-                            PlaceholderText="Search transactions">
+                            PlaceholderText="Search transactions"
+                            Text="{Binding ViewModel.SearchQuery, Delay=300, UpdateSourceTrigger=PropertyChanged}"
+                            IsEnabled="{Binding ViewModel.IsInputEnabled}">
                             <ui:TextBox.Icon>
                                 <ui:SymbolIcon Symbol="Search24" />
                             </ui:TextBox.Icon>
