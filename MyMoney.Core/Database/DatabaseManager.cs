@@ -212,7 +212,6 @@ namespace MyMoney.Core.Database
                          t.Category.Name.ToLower().Contains(lowerQuery)) ||
                         (t.Memo != null && t.Memo.ToLower().Contains(lowerQuery)))
                     .ToList();
-                await Task.CompletedTask;
             });
 
             return results;

@@ -50,7 +50,6 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private string _searchQuery = "";
 
-        private bool _isInSearchMode = false;
         private CancellationTokenSource? _searchDebounceTokenSource;
 
         private bool _isLoadingTransactions = false;
@@ -736,12 +735,12 @@ namespace MyMoney.ViewModels.Pages
             // Clear search state before reloading for the new account
             if (_searchDebounceTokenSource != null)
             {
-                _searchDebounceTokenSource.Cancel();
-                _searchDebounceTokenSource.Dispose();
+                var oldCts = _searchDebounceTokenSource;
                 _searchDebounceTokenSource = null;
+                oldCts?.Cancel();
+                oldCts?.Dispose();
             }
             SearchQuery = "";
-            _isInSearchMode = false;
 
             IsInputEnabled = SelectedAccount != null;
             SelectedAccountTransactions.Clear();
@@ -755,9 +754,10 @@ namespace MyMoney.ViewModels.Pages
             // Source updates are debounced (Binding.Delay on the search TextBox) so the
             // view model and binding are not hit on every keypress. Search work still
             // runs on a background thread to avoid blocking the UI.
-            _searchDebounceTokenSource?.Cancel();
-            _searchDebounceTokenSource?.Dispose();
+            var oldCts = _searchDebounceTokenSource;
             _searchDebounceTokenSource = null;
+            oldCts?.Cancel();
+            oldCts?.Dispose();
 
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -804,13 +804,10 @@ namespace MyMoney.ViewModels.Pages
                     SelectedAccountTransactions.Add(transaction);
                 }
             } );
-
-            _isInSearchMode = true;
         }
 
         private async Task ClearSearchAndReloadAsync()
         {
-            _isInSearchMode = false;
             SelectedAccountTransactions.Clear();
             _oldestLoadedDate = null;
             _oldestLoadedId = 0;
