@@ -30,6 +30,12 @@
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <converters:BooleanToInverseVisibilityConverter x:Key="BooleanToInverseVisibilityConverter" />
             <converters:IntToMonthNameConverter x:Key="IntToMonthNameConverter" />
+            <converters:BudgetItemActualPercentageConverter x:Key="BudgetItemActualPercentageConverter" />
+            <converters:BudgetItemProgressBarBrushConverter x:Key="BudgetItemProgressBarBrushConverter" />
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Views/Controls/BudgetListViewItemStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Page.Resources>
 
@@ -165,6 +171,9 @@
                                             Header="Actual" />
                                     </ui:GridView>
                                 </ui:ListView.View>
+                                <ui:ListView.ItemContainerStyle>
+                                    <StaticResource ResourceKey="BudgetListViewItemStyle" />
+                                </ui:ListView.ItemContainerStyle>
                             </ui:ListView>
 
                             <ui:Button
@@ -334,6 +343,9 @@
                                                         Header="Actual" />
                                                 </ui:GridView>
                                             </ui:ListView.View>
+                                            <ui:ListView.ItemContainerStyle>
+                                                <StaticResource ResourceKey="BudgetListViewItemStyleExpense" />
+                                            </ui:ListView.ItemContainerStyle>
                                         </ui:ListView>
 
                                         <ui:Button
