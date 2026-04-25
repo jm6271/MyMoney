@@ -1,4 +1,7 @@
-# Copilot Instructions for MyMoney
+# AI Agent Instructions for MyMoney
+
+MyMoney is a personal finance application built with WPF. It uses
+the WPF-UI package for a WinUI 3 theme.
 
 ## Build, Test, and Lint Commands
 
