@@ -141,7 +141,7 @@
                                     Style="{StaticResource MoreButtonStyle}"
                                     Click="MoreButton_Click"
                                     VerticalAlignment="Center">
-                                    <ui:SymbolIcon Symbol="MoreVertical24" FontSize="18"/>
+                                    <ui:SymbolIcon Symbol="MoreVertical24" FontSize="18" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
                                 </Button>
                             </Grid>
                         </DataTemplate>
