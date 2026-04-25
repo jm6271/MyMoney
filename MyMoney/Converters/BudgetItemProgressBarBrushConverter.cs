@@ -15,7 +15,7 @@ namespace MyMoney.Converters
             }
 
             // Get the item type from the third binding or from the parameter
-            string itemType = parameter as string;
+            string? itemType = parameter as string;
             if (values.Length >= 3 && values[2] is string typeFromBinding)
             {
                 itemType = typeFromBinding;
