@@ -1,0 +1,101 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:converters="clr-namespace:MyMoney.Converters"
+    xmlns:helpers="clr-namespace:MyMoney.Helpers">
+
+    <converters:BudgetItemProgressBarBrushConverter x:Key="BudgetItemProgressBarBrushConverter" />
+    <converters:BudgetItemActualPercentageConverter x:Key="BudgetItemActualPercentageConverter" />
+
+    <Style x:Key="BudgetListViewItemStyleBase" TargetType="{x:Type ui:ListViewItem}">
+        <Setter Property="Foreground" Value="{DynamicResource ListViewItemForeground}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Border.CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+        <Setter Property="Margin" Value="0,0,0,2" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:ListViewItem}">
+                    <Border
+                        x:Name="Border"
+                        Margin="0"
+                        Padding="0"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding Border.BorderBrush}"
+                        BorderThickness="{TemplateBinding Border.BorderThickness}"
+                        CornerRadius="{TemplateBinding Border.CornerRadius}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <ui:GridViewRowPresenter
+                                Margin="{TemplateBinding Padding}"
+                                VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
+                                Columns="{TemplateBinding GridView.ColumnCollection}"
+                                Content="{TemplateBinding ContentControl.Content}" />
+
+                            <ProgressBar
+                                Grid.Row="1"
+                                Height="4"
+                                Margin="12,0,12,4"
+                                Maximum="100"
+                                Minimum="0">
+                                <ProgressBar.Foreground>
+                                    <MultiBinding Converter="{StaticResource BudgetItemProgressBarBrushConverter}">
+                                        <Binding Path="Amount" />
+                                        <Binding Path="Actual" />
+                                        <Binding Path="(helpers:BudgetItemTypeHelper.ItemType)" RelativeSource="{RelativeSource AncestorType={x:Type ui:ListViewItem}}" />
+                                    </MultiBinding>
+                                </ProgressBar.Foreground>
+                                <ProgressBar.Value>
+                                    <MultiBinding Converter="{StaticResource BudgetItemActualPercentageConverter}">
+                                        <Binding Path="Amount" />
+                                        <Binding Path="Actual" />
+                                    </MultiBinding>
+                                </ProgressBar.Value>
+                            </ProgressBar>
+
+                            <Rectangle
+                                x:Name="ActiveRectangle"
+                                Grid.Row="0"
+                                Grid.RowSpan="2"
+                                Width="3"
+                                Height="18"
+                                Margin="0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Fill="{DynamicResource ListViewItemPillFillBrush}"
+                                RadiusX="2"
+                                RadiusY="2"
+                                Visibility="Collapsed" />
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsEnabled" Value="True" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource ListViewItemBackgroundPointerOver}" />
+                        </MultiTrigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="ActiveRectangle" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource ListViewItemBackgroundPointerOver}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="BudgetListViewItemStyle" TargetType="{x:Type ui:ListViewItem}" BasedOn="{StaticResource BudgetListViewItemStyleBase}">
+        <Setter Property="helpers:BudgetItemTypeHelper.ItemType" Value="Income" />
+    </Style>
+
+    <Style x:Key="BudgetListViewItemStyleExpense" TargetType="{x:Type ui:ListViewItem}" BasedOn="{StaticResource BudgetListViewItemStyleBase}">
+        <Setter Property="helpers:BudgetItemTypeHelper.ItemType" Value="Expense" />
+    </Style>
+
+</ResourceDictionary>

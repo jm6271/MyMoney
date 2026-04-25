@@ -33,3 +33,7 @@ MyMoney is a WPF application using MVVM pattern with:
 1. **Database Operations**: All database access goes through `DatabaseManager` interface
 2. **MVVM Pattern**: ViewModels expose properties and commands for Views to bind to
 5. **Testing**: Tests use in-memory database via `MemoryStream` for isolation
+
+## GitHub Interaction
+
+Use the `gh` CLI to interact with GitHub.
