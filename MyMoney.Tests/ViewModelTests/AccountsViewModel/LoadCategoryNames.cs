@@ -2,6 +2,7 @@ using Moq;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.ViewModels.ContentDialogs; // Added missing namespace
+using System.Collections.ObjectModel;
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
 namespace MyMoney.Tests.ViewModelTests.AccountsViewModel;
@@ -104,6 +105,26 @@ public class LoadCategoryNames
         Assert.HasCount(2, secondAccess);
         Assert.AreEqual(1, secondAccess.Count(x => x.Name.ToString() == "Salary"));
         Assert.AreEqual(1, secondAccess.Count(x => x.Name.ToString() == "Groceries"));
+    }
+
+    [TestMethod]
+    public void SetSelectedCategoryByName_SetsSelectedCategoryObject()
+    {
+        // Arrange
+        var categories = new ObservableCollection<Category>
+        {
+            new() { Name = "Salary", Group = "Income" },
+            new() { Name = "Groceries", Group = "Food" },
+        };
+        _viewModel.SetCategoryNames(categories);
+
+        // Act
+        _viewModel.SetSelectedCategoryByName("Groceries");
+
+        // Assert
+        Assert.AreEqual(1, _viewModel.NewTransactionCategorySelectedIndex);
+        Assert.AreEqual("Groceries", _viewModel.NewTransactionCategory.Name);
+        Assert.AreEqual("Food", _viewModel.NewTransactionCategory.Group);
     }
 }
 

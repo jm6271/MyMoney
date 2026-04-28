@@ -62,6 +62,7 @@ namespace MyMoney.ViewModels.ContentDialogs
             if (categoryItem is not null)
             {
                 NewTransactionCategorySelectedIndex = CategoryNames.IndexOf(categoryItem);
+                NewTransactionCategory = categoryItem;
             }
         }
 
