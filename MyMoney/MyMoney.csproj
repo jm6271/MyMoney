@@ -11,7 +11,6 @@
         <AssemblyVersion>1.2.0</AssemblyVersion>
         <FileVersion>1.2.0</FileVersion>
         <InformationalVersion>1.2.0</InformationalVersion>
-        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
     <ItemGroup>
       <Compile Remove="Services\ContentDialogs\**" />
@@ -23,12 +22,12 @@
         <Content Include="MyMoney-icon.ico" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="gong-wpf-dragdrop" Version="4.0.0" />
-        <PackageReference Include="LiteDB" Version="5.0.21" />
-        <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.1" />
-        <PackageReference Include="WPF-UI" Version="4.2.1" />
-        <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.7" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+        <PackageReference Include="gong-wpf-dragdrop" />
+        <PackageReference Include="LiteDB" />
+        <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" />
+        <PackageReference Include="WPF-UI" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" />
+        <PackageReference Include="CommunityToolkit.Mvvm" />
     </ItemGroup>
     <ItemGroup>
         <None Remove="Assets\MyMoney-icon-256.png" />
