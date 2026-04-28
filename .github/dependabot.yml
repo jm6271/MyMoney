@@ -1,42 +1,14 @@
 version: 2
 updates:
   - package-ecosystem: "nuget"
-    directory: "/MyMoney/"
+    directory: "/"
     schedule:
       interval: "weekly"
       day: "monday"
-      time: "07:00"
+      time: "06:00"
       timezone: "America/New_York"
     groups:
-      dependencies:
-        patterns:
-          - "*"
-    labels:
-      - "dependencies"
-
-  - package-ecosystem: "nuget"
-    directory: "/MyMoney.Core/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "07:10"
-      timezone: "America/New_York"
-    groups:
-      dependencies:
-        patterns:
-          - "*"
-    labels:
-      - "dependencies"
-
-  - package-ecosystem: "nuget"
-    directory: "/MyMoney.Tests/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "07:20"
-      timezone: "America/New_York"
-    groups:
-      dependencies:
+      all-dependencies:
         patterns:
           - "*"
     labels:
