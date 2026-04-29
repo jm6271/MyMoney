@@ -1,6 +1,7 @@
 ﻿using Moq;
 using MyMoney.Abstractions;
 using MyMoney.Core.Database;
+using MyMoney.Core.Exports;
 using MyMoney.Core.Models;
 using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
@@ -49,7 +50,9 @@ public class NewAccountTest
             _mockContentDialogService.Object,
             _mockDatabaseService.Object,
             _mockMessageBoxService.Object,
-            _mockContentDialogFactory.Object
+            _mockContentDialogFactory.Object,
+            Mock.Of<IFileDialogService>(),
+            Mock.Of<ITransactionCsvExporter>()
         );
         _viewModel.CreateNewAccountCommand.Execute(null);
 
@@ -77,7 +80,9 @@ public class NewAccountTest
             _mockContentDialogService.Object,
             _mockDatabaseService.Object,
             _mockMessageBoxService.Object,
-            _mockContentDialogFactory.Object
+            _mockContentDialogFactory.Object,
+            Mock.Of<IFileDialogService>(),
+            Mock.Of<ITransactionCsvExporter>()
         );
         _viewModel.CreateNewAccountCommand.Execute(null);
 
@@ -101,7 +106,9 @@ public class NewAccountTest
             _mockContentDialogService.Object,
             _mockDatabaseService.Object,
             _mockMessageBoxService.Object,
-            _mockContentDialogFactory.Object
+            _mockContentDialogFactory.Object,
+            Mock.Of<IFileDialogService>(),
+            Mock.Of<ITransactionCsvExporter>()
         );
         _viewModel.CreateNewAccountCommand.Execute(null);
 
@@ -129,7 +136,9 @@ public class NewAccountTest
             _mockContentDialogService.Object,
             _mockDatabaseService.Object,
             _mockMessageBoxService.Object,
-            _mockContentDialogFactory.Object
+            _mockContentDialogFactory.Object,
+            Mock.Of<IFileDialogService>(),
+            Mock.Of<ITransactionCsvExporter>()
         );
 
         // Act - Create first account
@@ -165,7 +174,9 @@ public class NewAccountTest
             _mockContentDialogService.Object,
             _mockDatabaseService.Object,
             _mockMessageBoxService.Object,
-            _mockContentDialogFactory.Object
+            _mockContentDialogFactory.Object,
+            Mock.Of<IFileDialogService>(),
+            Mock.Of<ITransactionCsvExporter>()
         );
         Assert.IsFalse(_viewModel.TransactionsEnabled); // Initially disabled
 

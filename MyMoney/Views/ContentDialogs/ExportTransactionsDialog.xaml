@@ -1,0 +1,71 @@
+<ui:ContentDialog
+    x:Class="MyMoney.Views.ContentDialogs.ExportTransactionsDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:MyMoney.Views.ContentDialogs"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="Export Transactions"
+    d:DataContext="{d:DesignInstance {x:Type contentdialogs:ExportTransactionsDialogViewModel},
+                                     IsDesignTimeCreatable=False}"
+    d:DesignHeight="540"
+    d:DesignWidth="760"
+    ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+    ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    Closing="ContentDialog_Closing"
+    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+    mc:Ignorable="d">
+    <ui:ContentDialog.Resources>
+        <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:ExportTransactionsDialog}" />
+    </ui:ContentDialog.Resources>
+
+    <StackPanel Margin="1,0,1,0">
+        <ui:TextBlock Margin="0,0,0,4">Accounts to export</ui:TextBlock>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+            <RadioButton Grid.Column="0" IsChecked="{Binding ExportCurrentAccount}" Margin="0,0,12,0">Currently selected account</RadioButton>
+            <RadioButton Grid.Column="1" IsChecked="{Binding ExportAllAccounts}">All accounts</RadioButton>
+        </StackPanel>
+
+        <ui:TextBlock Margin="0,0,0,4">Date scope</ui:TextBlock>
+        <Grid Margin="0,0,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+            <RadioButton Grid.Column="0" IsChecked="{Binding ExportAllDates}">All transactions</RadioButton>
+            <RadioButton Grid.Column="1" IsChecked="{Binding UseDateRange}">Date range</RadioButton>
+        </Grid>
+
+        <Grid Margin="0,0,0,16" IsEnabled="{Binding UseDateRange}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <DatePicker SelectedDate="{Binding StartDate}" SelectedDateFormat="Short" />
+            <DatePicker Grid.Column="2" SelectedDate="{Binding EndDate}" SelectedDateFormat="Short" />
+        </Grid>
+
+        <ui:TextBlock Margin="0,0,0,8">Fields to include</ui:TextBlock>
+        <Border
+            x:Name="FieldsBorder"
+            Margin="0,0,0,8"
+            Padding="8"
+            BorderBrush="Transparent"
+            BorderThickness="1"
+            CornerRadius="8">
+            <UniformGrid Columns="2" Rows="3">
+                <CheckBox IsChecked="{Binding IncludeAccountName}">Account name</CheckBox>
+                <CheckBox IsChecked="{Binding IncludeReconciled}">Reconciled</CheckBox>
+                <CheckBox IsChecked="{Binding IncludeDate}">Date</CheckBox>
+                <CheckBox IsChecked="{Binding IncludePayee}">Payee</CheckBox>
+                <CheckBox IsChecked="{Binding IncludeCategory}">Category</CheckBox>
+                <CheckBox IsChecked="{Binding IncludeAmount}">Amount</CheckBox>
+            </UniformGrid>
+        </Border>
+
+        <TextBlock x:Name="ValidationText" Foreground="Red" Visibility="Collapsed" />
+    </StackPanel>
+</ui:ContentDialog>

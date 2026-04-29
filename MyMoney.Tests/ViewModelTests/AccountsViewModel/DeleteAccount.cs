@@ -1,5 +1,6 @@
 using Moq;
 using MyMoney.Core.Database;
+using MyMoney.Core.Exports;
 using MyMoney.Core.Models;
 using MyMoney.Services;
 using MyMoney.ViewModels.Pages;
@@ -110,7 +111,9 @@ public class DeleteAccountTests
             _mockContentDialogService.Object,
             _mockDatabaseService.Object,
             _mockMessageBoxService.Object,
-            Mock.Of<IContentDialogFactory>()
+            Mock.Of<IContentDialogFactory>(),
+            Mock.Of<IFileDialogService>(),
+            Mock.Of<ITransactionCsvExporter>()
         );
     }
 }

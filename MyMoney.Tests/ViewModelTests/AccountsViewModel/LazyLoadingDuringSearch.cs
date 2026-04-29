@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using MyMoney.Core.Database;
+using MyMoney.Core.Exports;
 using MyMoney.Core.Models;
 using MyMoney.Services;
 using Wpf.Ui;
@@ -67,7 +68,9 @@ public class LazyLoadingDuringSearch
             _mockContentDialogService.Object,
             _mockDatabaseService.Object,
             _mockMessageBoxService.Object,
-            _mockContentDialogFactory.Object
+            _mockContentDialogFactory.Object,
+            Mock.Of<IFileDialogService>(),
+            Mock.Of<ITransactionCsvExporter>()
         );
     }
 

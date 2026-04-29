@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyMoney.Core.Database;
+using MyMoney.Core.Exports;
 using MyMoney.Services;
 using MyMoney.ViewModels.Pages;
 using MyMoney.ViewModels.Windows;
@@ -77,8 +78,10 @@ namespace MyMoney
 
                     // Database
                     services.AddSingleton<IDatabaseManager, DatabaseManager>();
+                    services.AddTransient<ITransactionCsvExporter, TransactionCsvExporter>();
 
                     services.AddSingleton<IContentDialogFactory, ContentDialogFactory>();
+                    services.AddTransient<IFileDialogService, FileDialogService>();
 
                     services.AddTransient<IMessageBoxService, MessageBoxService>();
                 }
