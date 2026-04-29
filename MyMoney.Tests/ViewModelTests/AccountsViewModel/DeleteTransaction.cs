@@ -1,6 +1,7 @@
 using System.Security.Principal;
 using Moq;
 using MyMoney.Core.Database;
+using MyMoney.Core.Exports;
 using MyMoney.Core.Models;
 using MyMoney.Services;
 using MyMoney.Tests;
@@ -61,7 +62,10 @@ public class DeleteTransactionTest
             _mockContentDialogService.Object,
             _databaseManager,
             _mockMessageBoxService.Object,
-            _mockContentDialogFactory.Object);
+            _mockContentDialogFactory.Object,
+            Mock.Of<IFileDialogService>(),
+            Mock.Of<ITransactionCsvExporter>()
+        );
 
         _viewModel.SelectedAccount = _viewModel.Accounts[0];
         _viewModel.SelectedAccountIndex = 0;

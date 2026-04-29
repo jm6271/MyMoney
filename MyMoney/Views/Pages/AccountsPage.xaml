@@ -200,6 +200,7 @@
                             Grid.Column="2"
                             Margin="8,0"
                             VerticalAlignment="Stretch"
+                            Command="{Binding ViewModel.ExportTransactionsCommand}"
                             ToolTip="Export as CSV">
                             <ui:SymbolIcon Symbol="ArrowExportLtr24" />
                         </ui:Button>

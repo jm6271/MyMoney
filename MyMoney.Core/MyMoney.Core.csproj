@@ -7,6 +7,7 @@
 
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="CsvHelper" />
         <PackageReference Include="LiteDB" />
     </ItemGroup>
 </Project>

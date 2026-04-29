@@ -5,6 +5,7 @@ using LiteDB;
 using Moq;
 using MyMoney.Abstractions;
 using MyMoney.Core.Database;
+using MyMoney.Core.Exports;
 using MyMoney.Core.Models;
 using MyMoney.Services;
 using MyMoney.Tests;
@@ -48,7 +49,9 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
                 _mockContentDialogService.Object,
                 _databaseManager,
                 _mockMessageBoxService.Object,
-                _mockContentDialogFactory.Object
+                _mockContentDialogFactory.Object,
+                Mock.Of<IFileDialogService>(),
+                Mock.Of<ITransactionCsvExporter>()
             );
             await _viewModel.OnNavigatedToAsync();
         }

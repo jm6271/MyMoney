@@ -1,6 +1,7 @@
 using Moq;
 using MyMoney.Abstractions;
 using MyMoney.Core.Database;
+using MyMoney.Core.Exports;
 using MyMoney.Core.Models;
 using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
@@ -35,7 +36,9 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
                 _contentDialogService.Object,
                 _databaseReader.Object,
                 _messageBoxService.Object,
-                _contentDialogFactory.Object
+                _contentDialogFactory.Object,
+                Mock.Of<IFileDialogService>(),
+                Mock.Of<ITransactionCsvExporter>()
             );
         }
 

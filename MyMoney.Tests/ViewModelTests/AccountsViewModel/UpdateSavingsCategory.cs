@@ -3,6 +3,7 @@ using LiteDB;
 using Moq;
 using MyMoney.Abstractions;
 using MyMoney.Core.Database;
+using MyMoney.Core.Exports;
 using MyMoney.Core.Models;
 using MyMoney.Services;
 using MyMoney.Tests;
@@ -51,7 +52,9 @@ public class UpdateSavingsCategoryTests
             _contentDialogServiceMock.Object,
             _databaseManager,
             _messageBoxServiceMock.Object,
-            _contentDialogFactoryMock.Object
+            _contentDialogFactoryMock.Object,
+            Mock.Of<IFileDialogService>(),
+            Mock.Of<ITransactionCsvExporter>()
         );
 
         var fake = new Mock<IContentDialog>();

@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using MyMoney.Core.Database;
+using MyMoney.Core.Exports;
 using MyMoney.Core.Models;
 using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
@@ -63,6 +64,8 @@ namespace MyMoney.ViewModels.Pages
         private readonly IDatabaseManager _databaseManager;
         private readonly IMessageBoxService _messageBoxService;
         private readonly IContentDialogFactory _contentDialogFactory;
+        private readonly IFileDialogService _fileDialogService;
+        private readonly ITransactionCsvExporter _transactionCsvExporter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccountsViewModel"/> class.
@@ -75,13 +78,17 @@ namespace MyMoney.ViewModels.Pages
             IContentDialogService contentDialogService,
             IDatabaseManager databaseManager,
             IMessageBoxService messageBoxService,
-            IContentDialogFactory contentDialogFactory
+            IContentDialogFactory contentDialogFactory,
+            IFileDialogService fileDialogService,
+            ITransactionCsvExporter transactionCsvExporter
         )
         {
             _contentDialogService = contentDialogService;
             _databaseManager = databaseManager;
             _messageBoxService = messageBoxService;
             _contentDialogFactory = contentDialogFactory;
+            _fileDialogService = fileDialogService;
+            _transactionCsvExporter = transactionCsvExporter;
 
             LoadAccounts();
         }
@@ -681,6 +688,63 @@ namespace MyMoney.ViewModels.Pages
             _databaseManager.Update("Transactions", transaction);
         }
 
+        [RelayCommand]
+        private async Task ExportTransactions()
+        {
+            if (SelectedAccount == null && Accounts.Count == 0)
+                return;
+
+            var viewModel = new ExportTransactionsDialogViewModel();
+            var dialog = _contentDialogFactory.Create<ExportTransactionsDialog>();
+            dialog.Title = "Export Transactions";
+            dialog.PrimaryButtonText = "Export";
+            dialog.CloseButtonText = "Cancel";
+            dialog.DataContext = viewModel;
+            dialog.DialogHostEx = _contentDialogService.GetDialogHostEx();
+
+            var result = await dialog.ShowAsync();
+            if (result != ContentDialogResult.Primary)
+                return;
+
+            if (viewModel.ExportCurrentAccount && SelectedAccount == null)
+            {
+                await _messageBoxService.ShowInfoAsync("Error", "No account is currently selected.", "OK");
+                return;
+            }
+
+            var outputPath = _fileDialogService.ShowSaveCsvFileDialog($"transactions-{DateTime.Now:yyyy-MM-dd}.csv");
+            if (string.IsNullOrWhiteSpace(outputPath))
+                return;
+
+            var exportOptions = new TransactionCsvExportOptions
+            {
+                ExportAllAccounts = viewModel.ExportAllAccounts,
+                AccountId = viewModel.ExportCurrentAccount ? SelectedAccount?.Id : null,
+                UseDateRange = viewModel.UseDateRange,
+                StartDate = viewModel.UseDateRange ? viewModel.StartDate.Date : null,
+                EndDate = viewModel.UseDateRange ? viewModel.EndDate.Date : null,
+                SelectedFields = viewModel.GetSelectedFields(),
+                OutputFilePath = outputPath,
+            };
+
+            var exportResult = await _transactionCsvExporter.ExportAsync(exportOptions);
+            if (!exportResult.Success)
+            {
+                await _messageBoxService.ShowInfoAsync(
+                    "Export Failed",
+                    exportResult.ErrorMessage ?? "Unable to export transactions.",
+                    "OK"
+                );
+                return;
+            }
+
+            await _messageBoxService.ShowInfoAsync(
+                "Export Complete",
+                $"Successfully exported {exportResult.RowCount} transactions.",
+                "OK"
+            );
+        }
+
         private bool EnsureAccountSelected()
         {
             if (SelectedAccount != null)
@@ -828,3 +892,6 @@ namespace MyMoney.ViewModels.Pages
         }
     }
 }
+
+
+
