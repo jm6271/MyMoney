@@ -21,7 +21,7 @@ public class ExportTransactionsTests
     private Mock<IFileDialogService> _fileDialogServiceMock = null!;
     private Mock<ITransactionCsvExporter> _transactionCsvExporterMock = null!;
     private DatabaseManager _databaseManager = null!;
-    private AccountsViewModel _viewModel = null!;
+    private MyMoney.ViewModels.Pages.AccountsViewModel _viewModel = null!;
 
     [TestInitialize]
     public async Task Setup()
@@ -37,7 +37,7 @@ public class ExportTransactionsTests
             new Account { AccountName = "Checking", Total = new Currency(1000m), Id = 1 },
         ]);
 
-        _viewModel = new AccountsViewModel(
+        _viewModel = new (
             _contentDialogServiceMock.Object,
             _databaseManager,
             _messageBoxServiceMock.Object,

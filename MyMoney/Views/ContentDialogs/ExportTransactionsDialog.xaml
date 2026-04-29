@@ -23,14 +23,10 @@
 
     <StackPanel Margin="1,0,1,0">
         <ui:TextBlock Margin="0,0,0,4">Accounts to export</ui:TextBlock>
-        <Grid Margin="0,0,0,16" MinWidth="400">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*" />
-                <ColumnDefinition Width="1*" />
-            </Grid.ColumnDefinitions>
-            <RadioButton Grid.Column="0" IsChecked="{Binding ExportCurrentAccount}">Currently selected account</RadioButton>
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+            <RadioButton Grid.Column="0" IsChecked="{Binding ExportCurrentAccount}" Margin="0,0,12,0">Currently selected account</RadioButton>
             <RadioButton Grid.Column="1" IsChecked="{Binding ExportAllAccounts}">All accounts</RadioButton>
-        </Grid>
+        </StackPanel>
 
         <ui:TextBlock Margin="0,0,0,4">Date scope</ui:TextBlock>
         <Grid Margin="0,0,0,8">
