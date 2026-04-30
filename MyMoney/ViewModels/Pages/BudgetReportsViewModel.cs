@@ -73,6 +73,18 @@ namespace MyMoney.ViewModels.Pages
         [ObservableProperty]
         private int _selectedBudgetIndex;
 
+        /// <summary>
+        /// Month currently selected for viewing reports.
+        /// </summary>
+        [ObservableProperty]
+        private DateTime _selectedReportMonth = new(DateTime.Today.Year, DateTime.Today.Month, 1);
+
+        /// <summary>
+        /// Budget associated with the currently selected report month, if one exists.
+        /// </summary>
+        [ObservableProperty]
+        private Budget? _currentReportBudget;
+
         #endregion
 
         #region Chart Properties
@@ -125,7 +137,15 @@ namespace MyMoney.ViewModels.Pages
         public async Task OnNavigatedToAsync()
         {
             await LoadBudgets();
-            UpdateCharts();
+
+            if (Budgets.Count == 0)
+            {
+                ShowBlankReportForMonth(SelectedReportMonth);
+                return;
+            }
+
+            var initialMonth = GetInitialReportMonth();
+            SelectedReportMonth = new DateTime(initialMonth.Year, initialMonth.Month, 1);
         }
 
         public Task OnNavigatedFromAsync() => Task.CompletedTask;
@@ -149,21 +169,31 @@ namespace MyMoney.ViewModels.Pages
             ReportTotal = reportTotal;
         }
 
+        [RelayCommand]
+        private void ReportMonthChanged(DateTime selectedMonth)
+        {
+            SelectedReportMonth = new DateTime(selectedMonth.Year, selectedMonth.Month, 1);
+        }
+
+        [RelayCommand]
+        private void NextReportMonth()
+        {
+            SelectedReportMonth = SelectedReportMonth.AddMonths(1);
+        }
+
+        [RelayCommand]
+        private void PreviousReportMonth()
+        {
+            SelectedReportMonth = SelectedReportMonth.AddMonths(-1);
+        }
+
         #endregion
 
         #region Event Handlers
 
-        async partial void OnSelectedBudgetChanged(Budget? value)
+        partial void OnSelectedReportMonthChanged(DateTime value)
         {
-            if (value == null)
-            {
-                ReportTitle = "Budget Report";
-                return;
-            }
-
-            await CalculateReport(value.BudgetDate);
-            ReportTitle = value.BudgetTitle;
-            UpdateCharts();
+            _ = NavigateToReportMonthAsync(value);
         }
 
         #endregion
@@ -176,42 +206,6 @@ namespace MyMoney.ViewModels.Pages
 
             var unsortedBudgets = new ObservableCollection<Budget>(budgetCollection.Budgets);
             Budgets = new ObservableCollection<Budget>(unsortedBudgets.OrderByDescending(o => o.BudgetDate));
-
-            // Select the current budget
-            bool found = false;
-            foreach (var budget in Budgets)
-            {
-                if (budget.BudgetTitle == BudgetCollection.GetCurrentBudgetName())
-                {
-                    int index = Budgets.IndexOf(budget);
-                    if (index != SelectedBudgetIndex)
-                    {
-                        SelectedBudget = budget;
-                    }
-                    else
-                    {
-                        // Current budget is already loaded, refresh it's report
-                        await CalculateReport(budget.BudgetDate);
-                        ReportTitle = budget.BudgetTitle;
-                        UpdateCharts();
-                    }
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found && Budgets.Count > 0) // No current budget, just select the latest
-            {
-                if (SelectedBudgetIndex != 0)
-                    SelectedBudgetIndex = 0;
-                else
-                {
-                    // Latest budget is already loaded, refresh it
-                    await CalculateReport(Budgets[SelectedBudgetIndex].BudgetDate);
-                    ReportTitle = Budgets[SelectedBudgetIndex].BudgetTitle;
-                    UpdateCharts();
-                }
-            }
         }
 
         private void ClearReports()
@@ -219,6 +213,55 @@ namespace MyMoney.ViewModels.Pages
             IncomeItems.Clear();
             ExpenseItems.Clear();
             SavingsItems.Clear();
+            ReportTotal = new Currency(0m);
+        }
+
+        private async Task NavigateToReportMonthAsync(DateTime month)
+        {
+            var normalizedMonth = new DateTime(month.Year, month.Month, 1);
+            var budgetForMonth = FindBudgetForMonth(normalizedMonth);
+
+            CurrentReportBudget = budgetForMonth;
+            SelectedBudget = budgetForMonth;
+            SelectedBudgetIndex = budgetForMonth == null ? -1 : Budgets.IndexOf(budgetForMonth);
+
+            if (budgetForMonth == null)
+            {
+                ShowBlankReportForMonth(normalizedMonth);
+                return;
+            }
+
+            await CalculateReport(budgetForMonth.BudgetDate);
+            ReportTitle = budgetForMonth.BudgetTitle;
+            UpdateCharts();
+        }
+
+        private Budget? FindBudgetForMonth(DateTime month)
+        {
+            return Budgets.FirstOrDefault(b => b.BudgetDate.Month == month.Month && b.BudgetDate.Year == month.Year);
+        }
+
+        private DateTime GetInitialReportMonth()
+        {
+            var currentBudgetName = BudgetCollection.GetCurrentBudgetName();
+            var currentBudget = Budgets.FirstOrDefault(b => b.BudgetTitle == currentBudgetName);
+
+            if (currentBudget != null)
+                return currentBudget.BudgetDate;
+
+            if (Budgets.Count > 0)
+                return Budgets[0].BudgetDate;
+
+            return DateTime.Today;
+        }
+
+        private void ShowBlankReportForMonth(DateTime month)
+        {
+            ClearReports();
+            ReportTitle = month.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
+            ActualIncomeSeries = [];
+            ActualExpenseSeries = [];
+            UpdateChartsTheme();
         }
 
         private void UpdateReportCollections(
@@ -274,8 +317,13 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateCharts()
         {
-            if (SelectedBudget == null)
+            if (CurrentReportBudget == null)
+            {
+                ActualIncomeSeries = [];
+                ActualExpenseSeries = [];
+                UpdateChartsTheme();
                 return;
+            }
 
             UpdateActualIncomeChart();
             UpdateActualExpensesChart();
@@ -284,7 +332,7 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateActualIncomeChart()
         {
-            if (SelectedBudget == null)
+            if (CurrentReportBudget == null)
                 return;
 
             var incomeTotals = GetNonZeroTotals(
@@ -298,7 +346,7 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateActualExpensesChart()
         {
-            if (SelectedBudget == null)
+            if (CurrentReportBudget == null)
                 return;
 
             var expenseTotals = GetNonZeroTotals(

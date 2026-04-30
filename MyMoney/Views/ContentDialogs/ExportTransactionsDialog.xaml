@@ -23,8 +23,13 @@
 
     <StackPanel Margin="1,0,1,0">
         <ui:TextBlock Margin="0,0,0,4">Accounts to export</ui:TextBlock>
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-            <RadioButton Grid.Column="0" IsChecked="{Binding ExportCurrentAccount}" Margin="0,0,12,0">Currently selected account</RadioButton>
+        <StackPanel Margin="0,0,0,16" Orientation="Horizontal">
+            <RadioButton
+                Grid.Column="0"
+                Margin="0,0,12,0"
+                IsChecked="{Binding ExportCurrentAccount}">
+                Currently selected account
+            </RadioButton>
             <RadioButton Grid.Column="1" IsChecked="{Binding ExportAllAccounts}">All accounts</RadioButton>
         </StackPanel>
 
@@ -45,7 +50,10 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <DatePicker SelectedDate="{Binding StartDate}" SelectedDateFormat="Short" />
-            <DatePicker Grid.Column="2" SelectedDate="{Binding EndDate}" SelectedDateFormat="Short" />
+            <DatePicker
+                Grid.Column="2"
+                SelectedDate="{Binding EndDate}"
+                SelectedDateFormat="Short" />
         </Grid>
 
         <ui:TextBlock Margin="0,0,0,8">Fields to include</ui:TextBlock>
@@ -66,6 +74,9 @@
             </UniformGrid>
         </Border>
 
-        <TextBlock x:Name="ValidationText" Foreground="Red" Visibility="Collapsed" />
+        <TextBlock
+            x:Name="ValidationText"
+            Foreground="Red"
+            Visibility="Collapsed" />
     </StackPanel>
 </ui:ContentDialog>
