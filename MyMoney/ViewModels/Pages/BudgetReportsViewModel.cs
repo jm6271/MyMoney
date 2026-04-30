@@ -56,24 +56,6 @@ namespace MyMoney.ViewModels.Pages
         #region Budget Selection
 
         /// <summary>
-        /// Available budgets for report generation
-        /// </summary>
-        [ObservableProperty]
-        private ObservableCollection<Budget> _budgets = [];
-
-        /// <summary>
-        /// Currently selected budget
-        /// </summary>
-        [ObservableProperty]
-        private Budget? _selectedBudget;
-
-        /// <summary>
-        /// Index of the selected budget in the budgets collection
-        /// </summary>
-        [ObservableProperty]
-        private int _selectedBudgetIndex;
-
-        /// <summary>
         /// Month currently selected for viewing reports.
         /// </summary>
         [ObservableProperty]
@@ -136,15 +118,7 @@ namespace MyMoney.ViewModels.Pages
 
         public async Task OnNavigatedToAsync()
         {
-            await LoadBudgets();
-
-            if (Budgets.Count == 0)
-            {
-                ShowBlankReportForMonth(SelectedReportMonth);
-                return;
-            }
-
-            var initialMonth = GetInitialReportMonth();
+            var initialMonth = await GetInitialReportMonthAsync();
             SelectedReportMonth = new DateTime(initialMonth.Year, initialMonth.Month, 1);
         }
 
@@ -200,14 +174,6 @@ namespace MyMoney.ViewModels.Pages
 
         #region Private Methods
 
-        private async Task LoadBudgets()
-        {
-            BudgetCollection budgetCollection = new(_databaseReader);
-
-            var unsortedBudgets = new ObservableCollection<Budget>(budgetCollection.Budgets);
-            Budgets = new ObservableCollection<Budget>(unsortedBudgets.OrderByDescending(o => o.BudgetDate));
-        }
-
         private void ClearReports()
         {
             IncomeItems.Clear();
@@ -219,11 +185,9 @@ namespace MyMoney.ViewModels.Pages
         private async Task NavigateToReportMonthAsync(DateTime month)
         {
             var normalizedMonth = new DateTime(month.Year, month.Month, 1);
-            var budgetForMonth = FindBudgetForMonth(normalizedMonth);
+            var budgetForMonth = await GetBudgetForMonthAsync(normalizedMonth);
 
             CurrentReportBudget = budgetForMonth;
-            SelectedBudget = budgetForMonth;
-            SelectedBudgetIndex = budgetForMonth == null ? -1 : Budgets.IndexOf(budgetForMonth);
 
             if (budgetForMonth == null)
             {
@@ -236,23 +200,43 @@ namespace MyMoney.ViewModels.Pages
             UpdateCharts();
         }
 
-        private Budget? FindBudgetForMonth(DateTime month)
+        private async Task<Budget?> GetBudgetForMonthAsync(DateTime month)
         {
-            return Budgets.FirstOrDefault(b => b.BudgetDate.Month == month.Month && b.BudgetDate.Year == month.Year);
+            Budget? budgetForMonth = null;
+            await _databaseReader.QueryAsync<Budget>("Budgets", async query =>
+            {
+                budgetForMonth = query
+                    .Where(b => b.BudgetDate.Month == month.Month && b.BudgetDate.Year == month.Year)
+                    .FirstOrDefault();
+            });
+
+            return budgetForMonth;
         }
 
-        private DateTime GetInitialReportMonth()
+        private async Task<Budget?> GetLatestBudgetAsync()
         {
-            var currentBudgetName = BudgetCollection.GetCurrentBudgetName();
-            var currentBudget = Budgets.FirstOrDefault(b => b.BudgetTitle == currentBudgetName);
+            Budget? latestBudget = null;
+            await _databaseReader.QueryAsync<Budget>("Budgets", async query =>
+            {
+                latestBudget = query.OrderByDescending(b => b.BudgetDate).FirstOrDefault();
+            });
+
+            return latestBudget;
+        }
+
+        private async Task<DateTime> GetInitialReportMonthAsync()
+        {
+            var currentMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            var currentBudget = await GetBudgetForMonthAsync(currentMonth);
 
             if (currentBudget != null)
-                return currentBudget.BudgetDate;
+                return currentMonth;
 
-            if (Budgets.Count > 0)
-                return Budgets[0].BudgetDate;
+            var latestBudget = await GetLatestBudgetAsync();
+            if (latestBudget != null)
+                return new DateTime(latestBudget.BudgetDate.Year, latestBudget.BudgetDate.Month, 1);
 
-            return DateTime.Today;
+            return currentMonth;
         }
 
         private void ShowBlankReportForMonth(DateTime month)
