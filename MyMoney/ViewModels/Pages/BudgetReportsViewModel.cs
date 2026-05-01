@@ -119,7 +119,15 @@ namespace MyMoney.ViewModels.Pages
         public async Task OnNavigatedToAsync()
         {
             var initialMonth = await GetInitialReportMonthAsync();
-            SelectedReportMonth = new DateTime(initialMonth.Year, initialMonth.Month, 1);
+            var normalizedInitialMonth = new DateTime(initialMonth.Year, initialMonth.Month, 1);
+
+            if (SelectedReportMonth == normalizedInitialMonth)
+            {
+                await NavigateToReportMonthAsync(normalizedInitialMonth);
+                return;
+            }
+
+            SelectedReportMonth = normalizedInitialMonth;
         }
 
         public Task OnNavigatedFromAsync() => Task.CompletedTask;

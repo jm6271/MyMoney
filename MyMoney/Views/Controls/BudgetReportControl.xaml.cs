@@ -111,6 +111,9 @@ namespace MyMoney.Views.Controls
             {
                 newCollection.CollectionChanged += control.UpdateGroupedExpenseItems;
             }
+
+            // Ensure the grouped view refreshes when the binding first attaches.
+            control.OnPropertyChanged(nameof(GroupedExpenseItems));
         }
 
         // This gets called when items are added/removed/replaced
