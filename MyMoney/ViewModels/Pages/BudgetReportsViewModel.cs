@@ -56,22 +56,16 @@ namespace MyMoney.ViewModels.Pages
         #region Budget Selection
 
         /// <summary>
-        /// Available budgets for report generation
+        /// Month currently selected for viewing reports.
         /// </summary>
         [ObservableProperty]
-        private ObservableCollection<Budget> _budgets = [];
+        private DateTime _selectedReportMonth = new(DateTime.Today.Year, DateTime.Today.Month, 1);
 
         /// <summary>
-        /// Currently selected budget
+        /// Budget associated with the currently selected report month, if one exists.
         /// </summary>
         [ObservableProperty]
-        private Budget? _selectedBudget;
-
-        /// <summary>
-        /// Index of the selected budget in the budgets collection
-        /// </summary>
-        [ObservableProperty]
-        private int _selectedBudgetIndex;
+        private Budget? _currentReportBudget;
 
         #endregion
 
@@ -124,8 +118,16 @@ namespace MyMoney.ViewModels.Pages
 
         public async Task OnNavigatedToAsync()
         {
-            await LoadBudgets();
-            UpdateCharts();
+            var initialMonth = await GetInitialReportMonthAsync();
+            var normalizedInitialMonth = new DateTime(initialMonth.Year, initialMonth.Month, 1);
+
+            if (SelectedReportMonth == normalizedInitialMonth)
+            {
+                await NavigateToReportMonthAsync(normalizedInitialMonth);
+                return;
+            }
+
+            SelectedReportMonth = normalizedInitialMonth;
         }
 
         public Task OnNavigatedFromAsync() => Task.CompletedTask;
@@ -149,76 +151,124 @@ namespace MyMoney.ViewModels.Pages
             ReportTotal = reportTotal;
         }
 
+        [RelayCommand]
+        private void ReportMonthChanged(DateTime selectedMonth)
+        {
+            SelectedReportMonth = new DateTime(selectedMonth.Year, selectedMonth.Month, 1);
+        }
+
+        [RelayCommand]
+        private void NextReportMonth()
+        {
+            SelectedReportMonth = SelectedReportMonth.AddMonths(1);
+        }
+
+        [RelayCommand]
+        private void PreviousReportMonth()
+        {
+            SelectedReportMonth = SelectedReportMonth.AddMonths(-1);
+        }
+
         #endregion
 
         #region Event Handlers
 
-        async partial void OnSelectedBudgetChanged(Budget? value)
+        partial void OnSelectedReportMonthChanged(DateTime value)
         {
-            if (value == null)
-            {
-                ReportTitle = "Budget Report";
-                return;
-            }
-
-            await CalculateReport(value.BudgetDate);
-            ReportTitle = value.BudgetTitle;
-            UpdateCharts();
+            _ = NavigateToReportMonthAsync(value);
         }
 
         #endregion
 
         #region Private Methods
 
-        private async Task LoadBudgets()
-        {
-            BudgetCollection budgetCollection = new(_databaseReader);
-
-            var unsortedBudgets = new ObservableCollection<Budget>(budgetCollection.Budgets);
-            Budgets = new ObservableCollection<Budget>(unsortedBudgets.OrderByDescending(o => o.BudgetDate));
-
-            // Select the current budget
-            bool found = false;
-            foreach (var budget in Budgets)
-            {
-                if (budget.BudgetTitle == BudgetCollection.GetCurrentBudgetName())
-                {
-                    int index = Budgets.IndexOf(budget);
-                    if (index != SelectedBudgetIndex)
-                    {
-                        SelectedBudget = budget;
-                    }
-                    else
-                    {
-                        // Current budget is already loaded, refresh it's report
-                        await CalculateReport(budget.BudgetDate);
-                        ReportTitle = budget.BudgetTitle;
-                        UpdateCharts();
-                    }
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found && Budgets.Count > 0) // No current budget, just select the latest
-            {
-                if (SelectedBudgetIndex != 0)
-                    SelectedBudgetIndex = 0;
-                else
-                {
-                    // Latest budget is already loaded, refresh it
-                    await CalculateReport(Budgets[SelectedBudgetIndex].BudgetDate);
-                    ReportTitle = Budgets[SelectedBudgetIndex].BudgetTitle;
-                    UpdateCharts();
-                }
-            }
-        }
-
         private void ClearReports()
         {
             IncomeItems.Clear();
             ExpenseItems.Clear();
             SavingsItems.Clear();
+            ReportTotal = new Currency(0m);
+        }
+
+        private async Task NavigateToReportMonthAsync(DateTime month)
+        {
+            var normalizedMonth = new DateTime(month.Year, month.Month, 1);
+            var budgetForMonth = await GetBudgetForMonthAsync(normalizedMonth);
+
+            CurrentReportBudget = budgetForMonth;
+
+            if (budgetForMonth == null)
+            {
+                ShowBlankReportForMonth(normalizedMonth);
+                return;
+            }
+
+            await CalculateReport(budgetForMonth.BudgetDate);
+            ReportTitle = budgetForMonth.BudgetTitle;
+            UpdateCharts();
+        }
+
+        private async Task<Budget?> GetBudgetForMonthAsync(DateTime month)
+        {
+            Budget? budgetForMonth = null;
+            await _databaseReader.QueryAsync<Budget>("Budgets", async query =>
+            {
+                budgetForMonth = query
+                    .Where(b => b.BudgetDate.Month == month.Month && b.BudgetDate.Year == month.Year)
+                    .FirstOrDefault();
+            });
+
+            if (budgetForMonth == null)
+            {
+                budgetForMonth = _databaseReader
+                    .GetCollection<Budget>("Budgets")
+                    .FirstOrDefault(b => b.BudgetDate.Month == month.Month && b.BudgetDate.Year == month.Year);
+            }
+
+            return budgetForMonth;
+        }
+
+        private async Task<Budget?> GetLatestBudgetAsync()
+        {
+            Budget? latestBudget = null;
+            await _databaseReader.QueryAsync<Budget>("Budgets", async query =>
+            {
+                latestBudget = query.OrderByDescending(b => b.BudgetDate).FirstOrDefault();
+            });
+
+            if (latestBudget == null)
+            {
+                latestBudget = _databaseReader
+                    .GetCollection<Budget>("Budgets")
+                    .OrderByDescending(b => b.BudgetDate)
+                    .FirstOrDefault();
+            }
+
+            return latestBudget;
+        }
+
+        private async Task<DateTime> GetInitialReportMonthAsync()
+        {
+            var currentMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+            var currentBudget = await GetBudgetForMonthAsync(currentMonth);
+
+            if (currentBudget != null)
+                return currentMonth;
+
+            var latestBudget = await GetLatestBudgetAsync();
+            if (latestBudget != null)
+                return new DateTime(latestBudget.BudgetDate.Year, latestBudget.BudgetDate.Month, 1);
+
+            return currentMonth;
+        }
+
+        private void ShowBlankReportForMonth(DateTime month)
+        {
+            ClearReports();
+            ReportTitle = month.ToString("MMMM yyyy", CultureInfo.CurrentCulture);
+            ActualIncomeSeries = [];
+            ActualExpenseSeries = [];
+            UpdateChartsTheme();
         }
 
         private void UpdateReportCollections(
@@ -274,8 +324,13 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateCharts()
         {
-            if (SelectedBudget == null)
+            if (CurrentReportBudget == null)
+            {
+                ActualIncomeSeries = [];
+                ActualExpenseSeries = [];
+                UpdateChartsTheme();
                 return;
+            }
 
             UpdateActualIncomeChart();
             UpdateActualExpensesChart();
@@ -284,7 +339,7 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateActualIncomeChart()
         {
-            if (SelectedBudget == null)
+            if (CurrentReportBudget == null)
                 return;
 
             var incomeTotals = GetNonZeroTotals(
@@ -298,7 +353,7 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateActualExpensesChart()
         {
-            if (SelectedBudget == null)
+            if (CurrentReportBudget == null)
                 return;
 
             var expenseTotals = GetNonZeroTotals(
