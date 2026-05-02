@@ -10,6 +10,17 @@ the WPF-UI package for a WinUI 3 theme.
 - **Run single test**: `dotnet test --filter "Fully.Qualified.Test.Name"`
 - **Lint**: Uses built-in .editorconfig for C# formatting (no separate lint command)
 
+### Sandbox build/test commands
+
+When working inside a restricted sandbox, use `build-sandbox.ps1` from the solution directory.
+This script redirects temp and NuGet cache paths to `.sandbox-tmp/` in the repo so MSBuild/NuGet
+do not use blocked user temp locations.
+
+- **Sandbox restore**: `.\build-sandbox.ps1 -Command restore`
+- **Sandbox build**: `.\build-sandbox.ps1 -Command build`
+- **Sandbox run all tests**: `.\build-sandbox.ps1 -Command test`
+- **Sandbox run single test**: `.\build-sandbox.ps1 -Command test -TestFilter "Fully.Qualified.Test.Name"`
+
 ## High-level Architecture
 
 MyMoney is a WPF application using MVVM pattern with:
