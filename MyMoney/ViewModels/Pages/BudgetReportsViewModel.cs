@@ -218,6 +218,13 @@ namespace MyMoney.ViewModels.Pages
                     .FirstOrDefault();
             });
 
+            if (budgetForMonth == null)
+            {
+                budgetForMonth = _databaseReader
+                    .GetCollection<Budget>("Budgets")
+                    .FirstOrDefault(b => b.BudgetDate.Month == month.Month && b.BudgetDate.Year == month.Year);
+            }
+
             return budgetForMonth;
         }
 
@@ -228,6 +235,14 @@ namespace MyMoney.ViewModels.Pages
             {
                 latestBudget = query.OrderByDescending(b => b.BudgetDate).FirstOrDefault();
             });
+
+            if (latestBudget == null)
+            {
+                latestBudget = _databaseReader
+                    .GetCollection<Budget>("Budgets")
+                    .OrderByDescending(b => b.BudgetDate)
+                    .FirstOrDefault();
+            }
 
             return latestBudget;
         }
