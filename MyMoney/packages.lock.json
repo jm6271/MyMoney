@@ -22,11 +22,11 @@
       },
       "LiveChartsCore.SkiaSharpView.WPF": {
         "type": "Direct",
-        "requested": "[2.0.1, )",
-        "resolved": "2.0.1",
-        "contentHash": "OYsjKd8cK2NTgY7FFJmLZtTtom6PRd6v+gOgooPMCE8lRyltHe8WRNTpTzNsA3aRAeWQLrwkiYZustGyJZERtg==",
+        "requested": "[2.0.2, )",
+        "resolved": "2.0.2",
+        "contentHash": "zyWazVkoN47OFR5PZptpp2DoJJCyBPNhKAe20p9RkARjjPEGbMuj+88ss+OKEoTpcd4ahTjgg5LUx+dRMVU6dQ==",
         "dependencies": {
-          "LiveChartsCore.SkiaSharpView": "2.0.1",
+          "LiveChartsCore.SkiaSharpView": "2.0.2",
           "SkiaSharp.HarfBuzz": "3.119.0",
           "SkiaSharp.Views.WPF": "3.119.0"
         }
@@ -91,15 +91,15 @@
       },
       "LiveChartsCore": {
         "type": "Transitive",
-        "resolved": "2.0.1",
-        "contentHash": "jtFjel32vWDyLTmhmg7qMSj1AHR6tKA57AWhDezRXk6Qc+nnpuRbD2eWOHQc+Uzn3uRhhPTlblUG5sRnnkc5pg=="
+        "resolved": "2.0.2",
+        "contentHash": "UL1f9H0eypkaSMqSm74BhyvdvDqxe+LplIqPfn/UiLmuS8yK6mGwm4qzI9YNsRaF0uQs4Hcivl67MOajH8Rqtg=="
       },
       "LiveChartsCore.SkiaSharpView": {
         "type": "Transitive",
-        "resolved": "2.0.1",
-        "contentHash": "D8GlyqZdUJhypIctQHNZNevzplPeM8UGmrIALMMMoQ8bTQGlJPBhcLX8pO1U298EFpNHHDAWKUzjBOeCwPDKbg==",
+        "resolved": "2.0.2",
+        "contentHash": "O84AQUIQ7iL+cF77ulnYv6zhIcA5kyU6KY8veJxFP4Kbb58pRNxF97ZDIjbGs15AH4m/tj2FcsW+FmBw+MPXmw==",
         "dependencies": {
-          "LiveChartsCore": "2.0.1",
+          "LiveChartsCore": "2.0.2",
           "SkiaSharp": "2.88.9",
           "SkiaSharp.HarfBuzz": "2.88.9"
         }
