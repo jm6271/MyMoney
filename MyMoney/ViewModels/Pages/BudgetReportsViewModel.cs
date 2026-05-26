@@ -7,6 +7,7 @@ using LiveChartsCore.SkiaSharpView.VisualElements;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
+using MyMoney.Core.Services.Reports;
 using SkiaSharp;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
@@ -102,14 +103,16 @@ namespace MyMoney.ViewModels.Pages
         #region Fields
 
         private readonly IDatabaseManager _databaseReader;
+        private readonly ReportSummaryCalculator _reportSummaryCalculator;
 
         #endregion
 
         #region Constructor
 
-        public BudgetReportsViewModel(IDatabaseManager databaseReader)
+        public BudgetReportsViewModel(IDatabaseManager databaseReader, ReportSummaryCalculator? reportSummaryCalculator = null)
         {
             _databaseReader = databaseReader ?? throw new ArgumentNullException(nameof(databaseReader));
+            _reportSummaryCalculator = reportSummaryCalculator ?? new ReportSummaryCalculator(databaseReader);
         }
 
         #endregion
@@ -140,7 +143,7 @@ namespace MyMoney.ViewModels.Pages
             ClearReports();
             var reportData = await BudgetReportCalculator.CalculateBudgetReport(date, _databaseReader);
 
-            var (incomeTotal, expenseTotal, reportTotal) = await CalculateReportTotals(
+            var (incomeTotal, expenseTotal, reportTotal) = await _reportSummaryCalculator.CalculateReportTotals(
                 reportData.income,
                 reportData.expenses
             );
@@ -287,35 +290,6 @@ namespace MyMoney.ViewModels.Pages
 
             foreach (var item in data.savings)
                 SavingsItems.Add(item);
-        }
-
-        private static async Task<(
-            BudgetReportItem income,
-            BudgetReportItem expenses,
-            Currency total
-        )> CalculateReportTotals(IList<BudgetReportItem> incomeItems, IList<BudgetReportItem> expenseItems)
-        {
-            var incomeTotal = await Task.Run(() => CalculateTotal(incomeItems));
-            var expenseTotal = await Task.Run(() => CalculateTotal(expenseItems));
-
-            incomeTotal.Category = "Total";
-            expenseTotal.Category = "Total";
-
-            Currency reportTotal = incomeTotal.Actual - expenseTotal.Actual;
-
-            return (incomeTotal, expenseTotal, reportTotal);
-        }
-
-        private static BudgetReportItem CalculateTotal(IEnumerable<BudgetReportItem> items)
-        {
-            var total = new BudgetReportItem();
-            foreach (var item in items)
-            {
-                total.Actual += item.Actual;
-                total.Budgeted += item.Budgeted;
-                total.Remaining += item.Remaining;
-            }
-            return total;
         }
 
         #endregion

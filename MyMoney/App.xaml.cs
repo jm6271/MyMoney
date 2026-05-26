@@ -6,6 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using MyMoney.Core.Database;
 using MyMoney.Core.Exports;
+using MyMoney.Core.Services.Accounts;
+using MyMoney.Core.Services.Budgets;
+using MyMoney.Core.Services.Reports;
+using MyMoney.Core.Services.Settings;
 using MyMoney.Services;
 using MyMoney.ViewModels.Pages;
 using MyMoney.ViewModels.Windows;
@@ -79,6 +83,17 @@ namespace MyMoney
                     // Database
                     services.AddSingleton<IDatabaseManager, DatabaseManager>();
                     services.AddTransient<ITransactionCsvExporter, TransactionCsvExporter>();
+                    services.AddTransient<ITransactionQueryService, TransactionQueryService>();
+                    services.AddTransient<IAccountTransactionService, AccountTransactionService>();
+                    services.AddTransient<IAccountValidationService, AccountValidationService>();
+                    services.AddTransient<ISavingsCategoryTransactionSyncService, SavingsCategoryTransactionSyncService>();
+                    services.AddTransient<BudgetComputationService>();
+                    services.AddTransient<BudgetValidationService>();
+                    services.AddTransient<IBudgetCreationService, BudgetCreationService>();
+                    services.AddTransient<BudgetActualsApplier>();
+                    services.AddTransient<FutureBudgetAdjustmentService>();
+                    services.AddTransient<ReportSummaryCalculator>();
+                    services.AddTransient<AppSettingsService>();
 
                     services.AddSingleton<IContentDialogFactory, ContentDialogFactory>();
                     services.AddTransient<IFileDialogService, FileDialogService>();
