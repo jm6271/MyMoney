@@ -341,7 +341,7 @@
                                 </Style>
                             </ui:ListView.Resources>
                             <ui:ListView.ItemTemplate>
-                                <DataTemplate DataType="{x:Type models:AccountDashboardDisplayItem}">
+                                <DataTemplate DataType="{x:Type models:Account}">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition />
