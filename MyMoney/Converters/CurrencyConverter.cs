@@ -19,16 +19,25 @@ namespace MyMoney.Converters
         {
             if (value is string text)
             {
-                string amount = text;
-                if (text.StartsWith('$'))
+                try
                 {
-                    amount = text.Substring(1);
-                }
+                    // Strip dollar signs
+                    string expression = text.Replace("$", "").Trim();
 
-                if (decimal.TryParse(amount, out decimal result))
-                {
+                    // Strip commas
+                    expression = expression.Replace(",", "");
+
+                    // Evaluate with NCalc
+                    var expr = new NCalc.Expression(expression);
+
+                    var result = System.Convert.ToDecimal(expr.Evaluate());
+
                     if (result >= 0)
                         return new Currency(result);
+                }
+                catch (Exception)
+                {
+                    return DependencyProperty.UnsetValue;
                 }
             }
             return DependencyProperty.UnsetValue;

@@ -25,6 +25,7 @@
         <PackageReference Include="gong-wpf-dragdrop" />
         <PackageReference Include="LiteDB" />
         <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" />
+        <PackageReference Include="NCalcSync" />
         <PackageReference Include="WPF-UI" />
         <PackageReference Include="Microsoft.Extensions.Hosting" />
         <PackageReference Include="CommunityToolkit.Mvvm" />
@@ -46,17 +47,13 @@
         <BuildDocs Condition="'$(BuildDocs)' == ''">false</BuildDocs>
     </PropertyGroup>
 
-    <Target Name="BuildMkDocs"
-            BeforeTargets="Build"
-            Condition="'$(Configuration)' == 'Release' OR '$(BuildDocs)' == 'true'">
+    <Target Name="BuildMkDocs" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release' OR '$(BuildDocs)' == 'true'">
 
         <Exec Command="where uv" ContinueOnError="true" StandardOutputImportance="low">
             <Output TaskParameter="ExitCode" PropertyName="UvFound" />
         </Exec>
 
-        <Exec Command="uvx zensical build"
-              WorkingDirectory="$(ProjectDir)../Docs"
-              Condition="'$(UvFound)' == '0'" />
+        <Exec Command="uvx zensical build" WorkingDirectory="$(ProjectDir)../Docs" Condition="'$(UvFound)' == '0'" />
 
         <RemoveDir Directories="$(OutDir)site" Condition="'$(UvFound)' == '0'" />
 
@@ -64,8 +61,6 @@
             <MkDocsFiles Include="$(ProjectDir)../Docs/site\**\*" />
         </ItemGroup>
 
-        <Copy SourceFiles="@(MkDocsFiles)"
-              DestinationFolder="$(OutDir)site\%(RecursiveDir)"
-              Condition="'$(UvFound)' == '0'" />
+        <Copy SourceFiles="@(MkDocsFiles)" DestinationFolder="$(OutDir)site\%(RecursiveDir)" Condition="'$(UvFound)' == '0'" />
     </Target>
 </Project>
