@@ -27,10 +27,8 @@ namespace MyMoney.ViewModels.Pages
     {
         #region Collections
 
-        /// <summary>
-        /// Collection of account summaries to display on the dashboard
-        /// </summary>
-        public ObservableCollection<AccountDashboardDisplayItem> Accounts { get; } = [];
+        [ObservableProperty]
+        private ObservableCollection<Account> _accounts = [];
 
         [ObservableProperty]
         private ObservableCollection<BudgetReportItem> _budgetReportIncomeItems = [];
@@ -512,17 +510,14 @@ namespace MyMoney.ViewModels.Pages
 
             List<Account> accounts = _databaseReader.GetCollection<Account>("Accounts");
 
-            foreach (var account in accounts)
-            {
-                Accounts.Add(AccountDashboardDisplayItem.FromAccount(account));
-            }
+            Accounts = new(accounts);
 
             AddAccountTotalItem();
         }
 
         private void AddAccountTotalItem()
         {
-            var totalItem = new AccountDashboardDisplayItem { AccountName = "Total" };
+            var totalItem = new Account { AccountName = "Total" };
 
             foreach (var account in Accounts)
             {
