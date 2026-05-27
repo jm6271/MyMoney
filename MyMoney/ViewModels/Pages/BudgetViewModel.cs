@@ -10,6 +10,7 @@ using LiveChartsCore.SkiaSharpView.VisualElements;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
+using MyMoney.Core.Services.Budgets;
 using MyMoney.Helpers;
 using MyMoney.Helpers.DropHandlers;
 using MyMoney.Services;
@@ -80,18 +81,34 @@ namespace MyMoney.ViewModels.Pages
         private readonly IMessageBoxService _messageBoxService;
         private readonly IContentDialogFactory _contentDialogFactory;
         private readonly IDatabaseManager _databaseManager;
+        private readonly BudgetComputationService _budgetComputationService;
+        private readonly BudgetValidationService _budgetValidationService;
+        private readonly IBudgetCreationService _budgetCreationService;
+        private readonly BudgetActualsApplier _budgetActualsApplier;
+        private readonly FutureBudgetAdjustmentService _futureBudgetAdjustmentService;
 
         public BudgetViewModel(
             IContentDialogService contentDialogService,
             IDatabaseManager databaseManager,
             IMessageBoxService messageBoxService,
-            IContentDialogFactory contentDialogFactory
+            IContentDialogFactory contentDialogFactory,
+            BudgetComputationService? budgetComputationService = null,
+            BudgetValidationService? budgetValidationService = null,
+            IBudgetCreationService? budgetCreationService = null,
+            BudgetActualsApplier? budgetActualsApplier = null,
+            FutureBudgetAdjustmentService? futureBudgetAdjustmentService = null
         )
         {
             _contentDialogService = contentDialogService;
             _messageBoxService = messageBoxService;
             _contentDialogFactory = contentDialogFactory;
             _databaseManager = databaseManager;
+            _budgetComputationService = budgetComputationService ?? new BudgetComputationService();
+            _budgetValidationService = budgetValidationService ?? new BudgetValidationService();
+            _budgetCreationService = budgetCreationService ?? new BudgetCreationService(databaseManager);
+            _budgetActualsApplier = budgetActualsApplier ?? new BudgetActualsApplier();
+            _futureBudgetAdjustmentService =
+                futureBudgetAdjustmentService ?? new FutureBudgetAdjustmentService(databaseManager);
 
             // Set up drop handlers
             ExpenseGroupsReorderHandler = new(this);
@@ -136,14 +153,16 @@ namespace MyMoney.ViewModels.Pages
                 return;
             }
 
-            UpdateIncomeTotals();
-            UpdateExpenseTotals();
+            var totals = _budgetComputationService.CalculateTotals(CurrentBudget);
+            IncomeTotal = totals.IncomeTotal;
+            ExpenseTotal = totals.ExpenseTotal;
 
             if (writeChanges)
                 WriteToDatabase();
 
             UpdateCharts();
-            UpdateLeftToBudget();
+            LeftToBudget = new(0m); // Trigger property changed
+            LeftToBudget = totals.LeftToBudget;
         }
 
         private void ResetTotals()
@@ -151,31 +170,6 @@ namespace MyMoney.ViewModels.Pages
             IncomeTotal = new(0m);
             ExpenseTotal = new(0m);
             LeftToBudget = new(0m);
-        }
-
-        private void UpdateIncomeTotals()
-        {
-            if (CurrentBudget == null)
-                return;
-
-            IncomeTotal = new(CurrentBudget.BudgetIncomeItems.Sum(item => item.Amount.Value));
-        }
-
-        private void UpdateExpenseTotals()
-        {
-            if (CurrentBudget == null)
-                return;
-
-            var expenseSum = CurrentBudget.BudgetExpenseItems.Sum(item => item.CategoryTotal.Value);
-            var savingsSum = CurrentBudget.BudgetSavingsCategories.Sum(item => item.BudgetedAmount.Value);
-
-            ExpenseTotal = new(expenseSum + savingsSum);
-        }
-
-        private void UpdateLeftToBudget()
-        {
-            LeftToBudget = new(0m); // Trigger property changed
-            LeftToBudget = IncomeTotal - ExpenseTotal;
         }
 
         private void UpdateCharts()
@@ -825,81 +819,8 @@ namespace MyMoney.ViewModels.Pages
         [RelayCommand]
         private async Task CreateNewBudget()
         {
-            Budget newBudget = new();
-
-            var budgetTitle = SelectedBudgetMonth.ToString("MMMM, yyyy");
-            newBudget.BudgetTitle = budgetTitle;
-            newBudget.BudgetDate = SelectedBudgetMonth;
-
-            // See if there's a budget to copy categories from
-            DateTime? mostRecentDate = null;
-            await _databaseManager.QueryAsync<Budget>("Budgets", async query =>
-            {
-                await Task.Run(() =>
-                {
-                    mostRecentDate = query.Where(p => p.BudgetDate < SelectedBudgetMonth)
-                                          .OrderByDescending(p => p.BudgetDate)
-                                          .FirstOrDefault()
-                                          ?.BudgetDate;
-                });
-            });
-
-            // If there is a budget to copy from, select it
-            if (mostRecentDate != null)
-            {
-                SelectedBudgetMonth = mostRecentDate.Value;
-                await LoadBudget();
-                if (CurrentBudget != null)
-                {
-
-                    foreach (var item in CurrentBudget.BudgetIncomeItems)
-                    {
-                        newBudget.BudgetIncomeItems.Add((BudgetItem)item.Clone());
-                    }
-
-                    foreach (var item in CurrentBudget.BudgetSavingsCategories)
-                    {
-                        // We have to modify the item before copying it over
-                        BudgetSavingsCategory newSavingsCategory = (BudgetSavingsCategory)item.Clone();
-
-                        // Add a new transaction that carries the balance forward
-                        Transaction balanceCarriedForward = new(
-                            newBudget.BudgetDate.AddDays(-1),
-                            "",
-                            new Category() { Group = "Savings", Name = item.CategoryName },
-                            item.CurrentBalance,
-                            "Balance carried forward"
-                        )
-                        {
-                            TransactionDetail = CurrentBudget.BudgetDate.ToString("MMM") + " balance",
-                        };
-                        newSavingsCategory.Transactions.Add(balanceCarriedForward);
-
-                        // Add a transaction that applies the budgeted amount to the total balance
-                        Transaction appliedBudgetedAmount = new(
-                            newBudget.BudgetDate,
-                            "",
-                            new Category() { Group = "Savings", Name = item.CategoryName },
-                            item.BudgetedAmount,
-                            "Planned This Month"
-                        );
-                        appliedBudgetedAmount.TransactionDetail = "Planned This Month";
-
-                        newSavingsCategory.Transactions.Add(appliedBudgetedAmount);
-                        newSavingsCategory.PlannedTransactionHash = appliedBudgetedAmount.TransactionHash;
-                        newSavingsCategory.BalanceTransactionHash = balanceCarriedForward.TransactionHash;
-
-                        newSavingsCategory.CurrentBalance += newSavingsCategory.BudgetedAmount;
-
-                        newBudget.BudgetSavingsCategories.Add(newSavingsCategory);
-                    }
-
-                    foreach (var item in CurrentBudget.BudgetExpenseItems)
-                    {
-                        newBudget.BudgetExpenseItems.Add((BudgetExpenseCategory)item.Clone());
-                    }
-                }
-            }
+            var result = await _budgetCreationService.CreateBudget(SelectedBudgetMonth);
+            var newBudget = result.Budget;
 
             // Insert into database collection
             _databaseManager.Insert("Budgets", newBudget);
@@ -991,19 +912,7 @@ namespace MyMoney.ViewModels.Pages
                 CurrentBudget = null;
                 IsEditingEnabled = false;
 
-                // Show info for creating a new budget
-                // Look for a previous budget to copy from
-                DateTime? mostRecentDate = null;
-                await _databaseManager.QueryAsync<Budget>("Budgets", async query =>
-                {
-                    await Task.Run(() =>
-                    {
-                        mostRecentDate = query.Where(p => p.BudgetDate < SelectedBudgetMonth)
-                                              .OrderByDescending(p => p.BudgetDate)
-                                              .FirstOrDefault()
-                                              ?.BudgetDate;
-                    });
-                });
+                var mostRecentDate = await _budgetCreationService.GetMostRecentBudgetDateBefore(SelectedBudgetMonth);
 
                 if (mostRecentDate != null)
                 {
@@ -1043,56 +952,28 @@ namespace MyMoney.ViewModels.Pages
         {
             if (CurrentBudget == null)
                 return false;
-
-            foreach (var incomeCategory in CurrentBudget.BudgetIncomeItems)
-            {
-                if (incomeCategory.Category == item)
-                    return true;
-            }
-            return false;
+            return _budgetValidationService.DoesIncomeItemExist(CurrentBudget, item);
         }
 
         private bool DoesSavingsCategoryExist(string category)
         {
             if (CurrentBudget == null)
                 return false;
-            foreach (var savingsCategory in CurrentBudget.BudgetSavingsCategories)
-            {
-                if (savingsCategory.CategoryName == category)
-                    return true;
-            }
-            return false;
+            return _budgetValidationService.DoesSavingsCategoryExist(CurrentBudget, category);
         }
 
         private bool DoesExpenseGroupExist(string groupName)
         {
             if (CurrentBudget == null)
                 return false;
-            if (groupName == "Savings" || groupName == "Income")
-                return true;
-
-            foreach (var expenseGroup in CurrentBudget.BudgetExpenseItems)
-            {
-                if (expenseGroup.CategoryName == groupName)
-                    return true;
-            }
-            return false;
+            return _budgetValidationService.DoesExpenseGroupExist(CurrentBudget, groupName);
         }
 
         private bool DoesExpenseItemExist(string item)
         {
             if (CurrentBudget == null)
                 return false;
-
-            foreach (var expenseGroup in CurrentBudget.BudgetExpenseItems)
-            {
-                foreach (var expenseCategory in expenseGroup.SubItems)
-                {
-                    if (expenseCategory.Category == item)
-                        return true;
-                }
-            }
-            return false;
+            return _budgetValidationService.DoesExpenseItemExist(CurrentBudget, item);
         }
 
         private async Task AddActualSpentToCurrentBudget()
@@ -1111,52 +992,7 @@ namespace MyMoney.ViewModels.Pages
             if (CurrentBudget == null || CurrentBudget != budget)
                 return; // Ensure budget hasn't changed
 
-            UpdateIncomeActuals(income);
-            UpdateSavingsActuals(savings);
-            UpdateExpenseActuals(expenses);
-        }
-
-        private void UpdateIncomeActuals(List<BudgetReportItem> incomeItems)
-        {
-            if (CurrentBudget == null)
-                return;
-
-            for (int i = 0; i < Math.Min(incomeItems.Count, CurrentBudget.BudgetIncomeItems.Count); i++)
-            {
-                CurrentBudget.BudgetIncomeItems[i].Actual = incomeItems[i].Actual;
-            }
-        }
-
-        private void UpdateSavingsActuals(List<SavingsCategoryReportItem> savingsItems)
-        {
-            if (CurrentBudget == null)
-                return;
-
-            for (int i = 0; i < Math.Min(savingsItems.Count, CurrentBudget.BudgetSavingsCategories.Count); i++)
-            {
-                CurrentBudget.BudgetSavingsCategories[i].Spent = savingsItems[i].Spent;
-            }
-        }
-
-        private void UpdateExpenseActuals(List<BudgetReportItem> expenseItems)
-        {
-            if (CurrentBudget == null)
-                return;
-
-            foreach (var expenseGroup in CurrentBudget.BudgetExpenseItems)
-            {
-                foreach (var subItem in expenseGroup.SubItems)
-                {
-                    var matchingItem = expenseItems.FirstOrDefault(item =>
-                        item.Category == subItem.Category && item.Group == expenseGroup.CategoryName
-                    );
-
-                    if (matchingItem != null)
-                    {
-                        subItem.Actual = matchingItem.Actual;
-                    }
-                }
-            }
+            _budgetActualsApplier.Apply(CurrentBudget, income, expenses, savings);
         }
 
         private async Task UpdateFutureSavingsCategories(
@@ -1167,53 +1003,11 @@ namespace MyMoney.ViewModels.Pages
             if (CurrentBudget == null)
                 return;
 
-            var earliestDate = CurrentBudget.BudgetDate;
-
-            await Task.Run(async () =>
-            {
-                List<Budget> Budgets = [];
-
-                await _databaseManager.QueryAsync<Budget>("Budgets", async query =>
-                {
-                    Budgets.AddRange(query.Where(p => p.BudgetDate > earliestDate).ToList());
-                });
-
-                // Loop through future budgets, beginning with the nearest in date and going to the most distant
-                for (int i = 0; i < Budgets.Count; i++)
-                {
-                    // Find the savings category in this budget
-                    for (int j = 0; j < Budgets[i].BudgetSavingsCategories.Count; j++)
-                    {
-                        var currentSavingsCategory = Budgets[i].BudgetSavingsCategories[j];
-
-                        if (
-                            currentSavingsCategory.CategoryHash == modifiedSavingsCategory.CategoryHash // Same category
-                            && currentSavingsCategory.Transactions.Count != 0
-                        ) // There must be some transactions
-                        {
-                            // Amount to update by
-                            var balanceDifference =
-                                modifiedSavingsCategory.CurrentBalance - originalSavingsCategory.CurrentBalance;
-
-                            // Update begining balance
-                            foreach (
-                                var transaction in from Transaction transaction in currentSavingsCategory.Transactions
-                                                   where transaction.TransactionHash == currentSavingsCategory.BalanceTransactionHash
-                                                   select transaction
-                            )
-                            {
-                                transaction.Amount += balanceDifference;
-                            }
-
-                            // Update balance
-                            currentSavingsCategory.CurrentBalance += balanceDifference;
-                        }
-                    }
-
-                    // Update budget in database
-                    _databaseManager.Update("Budgets", Budgets[i]);
-                }
-            });
+            await _futureBudgetAdjustmentService.UpdateFutureSavingsCategories(
+                CurrentBudget.BudgetDate,
+                originalSavingsCategory,
+                modifiedSavingsCategory
+            );
         }
     }
 }

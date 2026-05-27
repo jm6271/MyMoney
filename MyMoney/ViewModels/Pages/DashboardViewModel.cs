@@ -12,6 +12,7 @@ using LiveChartsCore.SkiaSharpView.VisualElements;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
 using MyMoney.Core.Reports;
+using MyMoney.Core.Services.Reports;
 using SkiaSharp;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
@@ -285,14 +286,16 @@ namespace MyMoney.ViewModels.Pages
         #endregion
 
         private readonly IDatabaseManager _databaseReader;
+        private readonly ReportSummaryCalculator _reportSummaryCalculator;
         private readonly Lock _incomeItemsLock = new();
         private readonly Lock _expenseItemsLock = new();
         private readonly Lock _savingsItemsLock = new();
         private readonly Lock _reportItemsLock = new();
 
-        public DashboardViewModel(IDatabaseManager databaseReader)
+        public DashboardViewModel(IDatabaseManager databaseReader, ReportSummaryCalculator? reportSummaryCalculator = null)
         {
             _databaseReader = databaseReader ?? throw new ArgumentNullException(nameof(databaseReader));
+            _reportSummaryCalculator = reportSummaryCalculator ?? new ReportSummaryCalculator(databaseReader);
         }
 
         private async Task CalculateBudgetReport()
@@ -302,8 +305,8 @@ namespace MyMoney.ViewModels.Pages
             UpdateReportCollections(reportItems);
             await UpdateChartDisplay();
 
-            CashFlowTotal = await GetCashFlowTotal(DateTime.Now);
-            LastMonthCashFlowTotal = await GetCashFlowTotal(DateTime.Now.AddMonths(-1));
+            CashFlowTotal = await _reportSummaryCalculator.GetCashFlowTotal(DateTime.Now);
+            LastMonthCashFlowTotal = await _reportSummaryCalculator.GetCashFlowTotal(DateTime.Now.AddMonths(-1));
             OnPropertyChanged(nameof(CashFlowPercentVsLastMonth));
             OnPropertyChanged(nameof(CashFlowTotalFormatted));
             OnPropertyChanged(nameof(CashFlowTotalColorBrush));
@@ -311,8 +314,8 @@ namespace MyMoney.ViewModels.Pages
 
             OnPropertyChanged(nameof(BudgetHealthText));
 
-            TotalSpending = await GetSpendingTotal(DateTime.Now);
-            LastMonthTotalSpending = await GetSpendingTotal(DateTime.Now.AddMonths(-1));
+            TotalSpending = await _reportSummaryCalculator.GetSpendingTotal(DateTime.Now);
+            LastMonthTotalSpending = await _reportSummaryCalculator.GetSpendingTotal(DateTime.Now.AddMonths(-1));
             OnPropertyChanged(nameof(SpendingVsLastMonthPercentage));
             OnPropertyChanged(nameof(SpendingPercentageColorBrush));
         }
@@ -336,8 +339,8 @@ namespace MyMoney.ViewModels.Pages
         )> LoadReportItems()
         {
             var reportItems = await BudgetReportCalculator.CalculateBudgetReport(DateTime.Today, _databaseReader);
-            var incomeTotal = CalculateTotal(reportItems.income);
-            var expenseTotal = CalculateTotal(reportItems.expenses);
+            var incomeTotal = ReportSummaryCalculator.CalculateTotal(reportItems.income);
+            var expenseTotal = ReportSummaryCalculator.CalculateTotal(reportItems.expenses);
             //reportItems.income.Add(incomeTotal);
             //reportItems.expenses.Add(expenseTotal);
 
@@ -396,18 +399,6 @@ namespace MyMoney.ViewModels.Pages
                     BudgetReportItems.Add(item);
                 }
             }
-        }
-
-        private static BudgetReportItem CalculateTotal(List<BudgetReportItem> reportItems)
-        {
-            var total = new BudgetReportItem { Category = "Total" };
-            foreach (var item in reportItems)
-            {
-                total.Actual += item.Actual;
-                total.Budgeted += item.Budgeted;
-                total.Remaining += item.Remaining;
-            }
-            return total;
         }
 
         private async Task UpdateChartDisplay()
@@ -578,35 +569,5 @@ namespace MyMoney.ViewModels.Pages
             ];
         }
 
-        private async Task<Currency> GetCashFlowTotal(DateTime month)
-        {
-            // Get a budget report for the specified month
-            var report = await BudgetReportCalculator.CalculateBudgetReport(month, _databaseReader);
-
-            Currency income = new(0m);
-            foreach (var item in report.income)
-            {
-                income.Value += item.Actual.Value;
-            }
-
-            Currency expense = new(0m);
-            foreach (var item in report.expenses)
-            {
-                expense.Value += item.Actual.Value;
-            }
-
-            return income - expense;
-        }
-
-        private async Task<Currency> GetSpendingTotal(DateTime month)
-        {
-            var report = await BudgetReportCalculator.CalculateExpenseReportItems(month, _databaseReader);
-            Currency totalSpending = new(0m);
-            foreach (var item in report)
-            {
-                totalSpending.Value += item.Actual.Value;
-            }
-            return totalSpending;
-        }
     }
 }

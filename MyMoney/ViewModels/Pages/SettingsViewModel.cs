@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using MyMoney.Converters.RadioButtonConverters;
 using MyMoney.Core.Database;
+using MyMoney.Core.Services.Settings;
 using MyMoney.Services;
 using Wpf.Ui.Abstractions.Controls;
 using Wpf.Ui.Appearance;
@@ -54,6 +55,7 @@ namespace MyMoney.ViewModels.Pages
         private readonly IMessageBoxService _messageBoxService;
         private const string SettingsKey = "ApplicationSettings";
         private IDatabaseManager _databaseManager;
+        private readonly AppSettingsService _appSettingsService;
 
         #endregion
 
@@ -93,10 +95,15 @@ namespace MyMoney.ViewModels.Pages
 
         #region Constructor
 
-        public SettingsViewModel(IMessageBoxService messageBoxService, IDatabaseManager databaseManager)
+        public SettingsViewModel(
+            IMessageBoxService messageBoxService,
+            IDatabaseManager databaseManager,
+            AppSettingsService? appSettingsService = null
+        )
         {
             _messageBoxService = messageBoxService ?? throw new ArgumentNullException(nameof(messageBoxService));
             _databaseManager = databaseManager ?? throw new ArgumentNullException(nameof(databaseManager));
+            _appSettingsService = appSettingsService ?? new AppSettingsService(databaseManager);
         }
 
         #endregion
@@ -292,12 +299,12 @@ namespace MyMoney.ViewModels.Pages
 
         private Dictionary<string, string> GetSettings()
         {
-            return _databaseManager.GetSettingsDictionary(SettingsKey);
+            return _appSettingsService.GetSettings(SettingsKey);
         }
 
         private void SaveSettings(Dictionary<string, string> settings)
         {
-            _databaseManager.WriteSettingsDictionary(SettingsKey, settings);
+            _appSettingsService.SaveSettings(SettingsKey, settings);
         }
 
         #endregion
