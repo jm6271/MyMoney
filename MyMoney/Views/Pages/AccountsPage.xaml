@@ -84,7 +84,6 @@
                         x:Name="NewAccountButton"
                         Grid.Column="1"
                         HorizontalAlignment="Right"
-                        Appearance="Primary"
                         Command="{Binding ViewModel.CreateNewAccountCommand}"
                         Tag="{Binding ViewModel}">
                         <StackPanel Orientation="Horizontal">
@@ -115,13 +114,11 @@
                                 Command="{Binding DataContext.ViewModel.RenameAccountCommand, Source={x:Reference AccountsList}}"
                                 CommandParameter="{Binding}"
                                 Header="Rename" />
-                            <MenuItem Command="{Binding DataContext.ViewModel.UpdateAccountBalanceCommand, Source={x:Reference AccountsList}}"
-                                      Header="Update balance" />
-                            <MenuItem Command="{Binding DataContext.ViewModel.DeleteAccountCommand, Source={x:Reference AccountsList}}"
-                                      Header="Delete account" />
+                            <MenuItem Command="{Binding DataContext.ViewModel.UpdateAccountBalanceCommand, Source={x:Reference AccountsList}}" Header="Update balance" />
+                            <MenuItem Command="{Binding DataContext.ViewModel.DeleteAccountCommand, Source={x:Reference AccountsList}}" Header="Delete account" />
                         </ContextMenu>
                     </ui:ListView.Resources>
-                    
+
                     <ui:ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid>
@@ -138,17 +135,20 @@
                                     Typography.NumeralAlignment="Tabular" />
                                 <Button
                                     Grid.Column="2"
-                                    Style="{StaticResource MoreButtonStyle}"
+                                    VerticalAlignment="Center"
                                     Click="MoreButton_Click"
-                                    VerticalAlignment="Center">
-                                    <ui:SymbolIcon Symbol="MoreVertical24" FontSize="18" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                    Style="{StaticResource MoreButtonStyle}">
+                                    <ui:SymbolIcon
+                                        FontSize="18"
+                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        Symbol="MoreVertical24" />
                                 </Button>
                             </Grid>
                         </DataTemplate>
                     </ui:ListView.ItemTemplate>
 
                     <ui:ListView.ItemContainerStyle>
-                        <Style TargetType="ui:ListViewItem" BasedOn="{StaticResource ListViewItemStyle}">
+                        <Style BasedOn="{StaticResource ListViewItemStyle}" TargetType="ui:ListViewItem">
                             <Setter Property="ContextMenu" Value="{StaticResource AccountItemContextMenu}" />
                         </Style>
                     </ui:ListView.ItemContainerStyle>
@@ -187,14 +187,16 @@
 
                         <ui:TextBox
                             Grid.Column="1"
-                            Width="250"
+                            Width="170"
+                            HorizontalAlignment="Right"
+                            IsEnabled="{Binding ViewModel.IsInputEnabled}"
                             PlaceholderText="Search transactions"
-                            Text="{Binding ViewModel.SearchQuery, Delay=300, UpdateSourceTrigger=PropertyChanged}"
-                            IsEnabled="{Binding ViewModel.IsInputEnabled}">
+                            Text="{Binding ViewModel.SearchQuery, Delay=300, UpdateSourceTrigger=PropertyChanged}">
                             <ui:TextBox.Icon>
                                 <ui:SymbolIcon Symbol="Search24" />
                             </ui:TextBox.Icon>
                         </ui:TextBox>
+
 
                         <ui:Button
                             Grid.Column="2"
@@ -213,7 +215,7 @@
                             ToolTip="New transaction">
                             <StackPanel Orientation="Horizontal">
                                 <ui:SymbolIcon Symbol="Add24" />
-                                <TextBlock Margin="4,0,0,0" Text="New" />
+                                <TextBlock Margin="4,0,0,0" Text="New Transaction" />
                             </StackPanel>
                         </ui:Button>
                     </Grid>
