@@ -61,6 +61,15 @@
           "Microsoft.Extensions.Options": "10.0.8"
         }
       },
+      "NCalcSync": {
+        "type": "Direct",
+        "requested": "[5.12.0, )",
+        "resolved": "5.12.0",
+        "contentHash": "gG1FolD+vQ6+kCXmVWzxuKLt5v6kpyoHo/ALvo1aYmvUITZ8j53qCAqCQZJHdvbiOeasWXQWpEAE7hmqnKtkUg==",
+        "dependencies": {
+          "NCalc.Core": "5.12.0"
+        }
+      },
       "WPF-UI": {
         "type": "Direct",
         "requested": "[4.3.0, )",
@@ -69,6 +78,11 @@
         "dependencies": {
           "WPF-UI.Abstractions": "4.3.0"
         }
+      },
+      "ExtendedNumerics.BigDecimal": {
+        "type": "Transitive",
+        "resolved": "3003.0.0.346",
+        "contentHash": "o6qdyacVFNvDKX6T0sDEdhMKppdCiTwpj22kdgNfQlIviLSAiLqv/i4G/gYL4ZzqBYzR/o3t8wDWCX21Tt/i1A=="
       },
       "HarfBuzzSharp": {
         "type": "Transitive",
@@ -327,6 +341,16 @@
           "Microsoft.Extensions.Primitives": "10.0.8"
         }
       },
+      "Microsoft.Extensions.Logging.TraceSource": {
+        "type": "Transitive",
+        "resolved": "10.0.2",
+        "contentHash": "t4nIJs3BySHuGM97/Xu9fKShytl9HdQsBTnCN/D8p9BwuWXOeUHNFn825dehkh0siOync3cL9McTSCVYPtStAA==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.2",
+          "Microsoft.Extensions.Logging": "10.0.2",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.2"
+        }
+      },
       "Microsoft.Extensions.Options": {
         "type": "Transitive",
         "resolved": "10.0.8",
@@ -353,6 +377,17 @@
         "resolved": "10.0.8",
         "contentHash": "OBPo4nYhMyIbtueoC10CBm6AGAbo/A9IV8QQ/6ryZS7VvmqpGT7hunazeHLxFawRzn3oLOq4jhqhpBX4tfswWQ=="
       },
+      "NCalc.Core": {
+        "type": "Transitive",
+        "resolved": "5.12.0",
+        "contentHash": "fk9NN0fgquopSYylD3xcAZCDX43B4btI1WkmBWud4CV6wP7dg7PDb2YAu20fmnEZd8IM3qfQmdcii69YdlRn+g==",
+        "dependencies": {
+          "ExtendedNumerics.BigDecimal": "3003.0.0.346",
+          "Microsoft.Extensions.Logging.Console": "10.0.2",
+          "Microsoft.Extensions.Logging.TraceSource": "10.0.2",
+          "Parlot": "1.5.7"
+        }
+      },
       "OpenTK": {
         "type": "Transitive",
         "resolved": "3.3.1",
@@ -365,6 +400,11 @@
         "dependencies": {
           "OpenTK": "[3.3.0, 3.4.0)"
         }
+      },
+      "Parlot": {
+        "type": "Transitive",
+        "resolved": "1.5.7",
+        "contentHash": "D0PhSypMx1JJVTQUqB8ebwcJxH4NAvdn1d8eKi9lLoNz8c1+8qHw+/Sq5/6HaJFgOaqy1VJBpvYFCIC4I2uvqQ=="
       },
       "SkiaSharp": {
         "type": "Transitive",
