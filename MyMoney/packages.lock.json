@@ -63,11 +63,11 @@
       },
       "NCalcSync": {
         "type": "Direct",
-        "requested": "[5.12.0, )",
-        "resolved": "5.12.0",
-        "contentHash": "gG1FolD+vQ6+kCXmVWzxuKLt5v6kpyoHo/ALvo1aYmvUITZ8j53qCAqCQZJHdvbiOeasWXQWpEAE7hmqnKtkUg==",
+        "requested": "[6.1.0, )",
+        "resolved": "6.1.0",
+        "contentHash": "Hspee+qCMjzLOw+jFjlmrxLv+6mh3pY3W4ngS0UCrAxdu0+DPPi1PNSRJEVs3Ue7dh1s4DCoHNFFel812eScaw==",
         "dependencies": {
-          "NCalc.Core": "5.12.0"
+          "NCalc.Core": "6.1.0"
         }
       },
       "WPF-UI": {
@@ -341,16 +341,6 @@
           "Microsoft.Extensions.Primitives": "10.0.8"
         }
       },
-      "Microsoft.Extensions.Logging.TraceSource": {
-        "type": "Transitive",
-        "resolved": "10.0.2",
-        "contentHash": "t4nIJs3BySHuGM97/Xu9fKShytl9HdQsBTnCN/D8p9BwuWXOeUHNFn825dehkh0siOync3cL9McTSCVYPtStAA==",
-        "dependencies": {
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.2",
-          "Microsoft.Extensions.Logging": "10.0.2",
-          "Microsoft.Extensions.Logging.Abstractions": "10.0.2"
-        }
-      },
       "Microsoft.Extensions.Options": {
         "type": "Transitive",
         "resolved": "10.0.8",
@@ -379,12 +369,26 @@
       },
       "NCalc.Core": {
         "type": "Transitive",
-        "resolved": "5.12.0",
-        "contentHash": "fk9NN0fgquopSYylD3xcAZCDX43B4btI1WkmBWud4CV6wP7dg7PDb2YAu20fmnEZd8IM3qfQmdcii69YdlRn+g==",
+        "resolved": "6.1.0",
+        "contentHash": "o1cNNttijd86VuRpbZKD3IN98B/fdo3fnmkBjYLStlTL/W1M7V5aKroYwsmRVR0mK5EG/iCERCihMkMNQeoOJg==",
         "dependencies": {
           "ExtendedNumerics.BigDecimal": "3003.0.0.346",
-          "Microsoft.Extensions.Logging.Console": "10.0.2",
-          "Microsoft.Extensions.Logging.TraceSource": "10.0.2",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.7",
+          "NCalc.Parser": "6.1.0",
+          "Parlot": "1.5.7"
+        }
+      },
+      "NCalc.Domain": {
+        "type": "Transitive",
+        "resolved": "6.1.0",
+        "contentHash": "Q2CMEPpvzPD/45nMnS01vZJiUrkZveNxU2Gmzfx+1F877BMD23VNHQQu4HGG7wwY6tGZVx43jUFFby3csoE2wQ=="
+      },
+      "NCalc.Parser": {
+        "type": "Transitive",
+        "resolved": "6.1.0",
+        "contentHash": "xOVUnQnrOPTwTQBrPVVaOgTU/wJHbyPeXqWOzv7YS44QFUUk6fdvOtNoW4FzZxTEO/8Szcz3lSqzSUzLVZtM5Q==",
+        "dependencies": {
+          "NCalc.Domain": "6.1.0",
           "Parlot": "1.5.7"
         }
       },
