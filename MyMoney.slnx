@@ -1,0 +1,17 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="ARM" />
+    <Platform Name="ARM64" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="MyMoney.Core/MyMoney.Core.csproj" />
+  <Project Path="MyMoney.Tests/MyMoney.Tests.csproj" />
+  <Project Path="MyMoney/MyMoney.csproj">
+    <BuildDependency Project="MyMoney.Core/MyMoney.Core.csproj" />
+  </Project>
+</Solution>

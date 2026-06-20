@@ -12,7 +12,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      Solution_Name: MyMoney.sln
+      Solution_Name: MyMoney.slnx
       Test_Project_Path: MyMoney.Tests\MyMoney.csproj
 
     steps:
