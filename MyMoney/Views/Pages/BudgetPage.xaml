@@ -12,6 +12,7 @@
     xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
+    xmlns:behaviors="clr-namespace:MyMoney.Behaviors"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     d:DataContext="{d:DesignInstance local:BudgetPage,
                                      IsDesignTimeCreatable=False}"
@@ -172,7 +173,9 @@
                                     </ui:GridView>
                                 </ui:ListView.View>
                                 <ui:ListView.ItemContainerStyle>
-                                    <StaticResource ResourceKey="BudgetListViewItemStyle" />
+                                    <Style BasedOn="{StaticResource BudgetListViewItemStyle}" TargetType="ui:ListViewItem">
+                                        <Setter Property="behaviors:DoubleClickBehavior.Command" Value="{Binding DataContext.ViewModel.EditIncomeItemCommand, RelativeSource={RelativeSource AncestorType=ui:ListView}}" />
+                                    </Style>
                                 </ui:ListView.ItemContainerStyle>
                             </ui:ListView>
 
@@ -225,7 +228,7 @@
                                 </ui:ListView.InputBindings>
 
                                 <ui:ListView.View>
-                                    <ui:GridView>
+                                <ui:GridView>
                                         <ui:GridViewColumn CellTemplate="{StaticResource CategoryItemTemplate}" Header="Category" />
                                         <ui:GridViewColumn
                                             Width="125"
@@ -237,6 +240,13 @@
                                             Header="Balance" />
                                     </ui:GridView>
                                 </ui:ListView.View>
+                                <ui:ListView.ItemContainerStyle>
+                                    <Style BasedOn="{StaticResource ListViewItemStyle}" TargetType="ui:ListViewItem">
+                                        <Setter
+                                            Property="behaviors:DoubleClickBehavior.Command"
+                                            Value="{Binding DataContext.ViewModel.EditSavingsCategoryCommand, RelativeSource={RelativeSource AncestorType=ui:ListView}}" />
+                                    </Style>
+                                </ui:ListView.ItemContainerStyle>
                             </ui:ListView>
 
                             <ui:Button
@@ -344,7 +354,14 @@
                                                 </ui:GridView>
                                             </ui:ListView.View>
                                             <ui:ListView.ItemContainerStyle>
-                                                <StaticResource ResourceKey="BudgetListViewItemStyleExpense" />
+                                                <Style BasedOn="{StaticResource BudgetListViewItemStyleExpense}" TargetType="ui:ListViewItem">
+                                                    <Setter
+                                                        Property="behaviors:DoubleClickBehavior.Command"
+                                                        Value="{Binding Tag.EditExpenseItemCommand, RelativeSource={RelativeSource AncestorType=ui:ListView}}" />
+                                                    <Setter
+                                                        Property="behaviors:DoubleClickBehavior.CommandParameter"
+                                                        Value="{Binding DataContext, RelativeSource={RelativeSource AncestorType=ui:ListView}}" />
+                                                </Style>
                                             </ui:ListView.ItemContainerStyle>
                                         </ui:ListView>
 
