@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using MyMoney.Core.Models;
 using MyMoney.Core.Services;
+using MyMoney.ValidationAttributes;
 
 namespace MyMoney.ViewModels.ContentDialogs
 {
@@ -15,7 +16,7 @@ namespace MyMoney.ViewModels.ContentDialogs
         [ObservableProperty]
         [NotifyDataErrorInfo]
         [Required(ErrorMessage = "Budget amount is required.")]
-        [CustomValidation(typeof(BudgetCategoryDialogViewModel), nameof(ValidateBudgetedAmount))]
+        [CurrencyExpression(AllowNegative = false)]
         private string _budgetAmountStr = "";
 
         private Currency _budgetedAmount = new Currency(0);
@@ -73,31 +74,5 @@ namespace MyMoney.ViewModels.ContentDialogs
             return ValidationResult.Success;
         }
 
-        public static ValidationResult? ValidateBudgetedAmount(object? value, ValidationContext context)
-        {
-            var expression = value as string;
-
-            if (string.IsNullOrWhiteSpace(expression))
-            {
-                return new ValidationResult("Amount is required.");
-            }
-
-            if (!CurrencyExpressionParser.TryEvaluate(
-                    expression,
-                    out decimal amount,
-                    out string? error))
-            {
-                return new ValidationResult(
-                    error ?? "Enter a valid amount or math expression.");
-            }
-
-            if (amount < 0)
-            {
-                return new ValidationResult(
-                    "The amount cannot be negative.");
-            }
-
-            return ValidationResult.Success;
-        }
     }
 }
