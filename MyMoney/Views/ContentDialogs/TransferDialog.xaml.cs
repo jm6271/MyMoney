@@ -1,6 +1,4 @@
-﻿using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using MyMoney.Abstractions;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
@@ -23,13 +21,11 @@ namespace MyMoney.Views.ContentDialogs
             txtAmount.SelectAll();
         }
 
-        private void txtAmount_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void txtAmount_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == System.Windows.Input.Key.Enter)
+            if (e.Key == Key.Enter)
             {
-                txtAmount.MoveFocus(
-                    new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.Next)
-                );
+                txtAmount.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
                 e.Handled = false;
             }
         }
@@ -42,44 +38,15 @@ namespace MyMoney.Views.ContentDialogs
             txtAmount.Focus();
             txtAmount.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 
-            // validate the user data, and if it is invalid, prevent the dialog from closing
+            if (DataContext is TransferDialogViewModel vm)
+            {
+                vm.Validate();
 
-            // get validation errors for all the required fields
-            var amountValidationErrors = Validation.GetErrors(txtAmount);
-            var fromHasErrors = cmbFrom.Text == "" || cmbFrom.Text == cmbTo.Text;
-            var toHasErrors = cmbTo.Text == "" || cmbFrom.Text == cmbTo.Text;
-
-            // Clear the red border from custom validated controls
-            cmbFromBorder.BorderBrush = Brushes.Transparent;
-            cmbToBorder.BorderBrush = Brushes.Transparent;
-
-            // validate
-            if (!fromHasErrors && !toHasErrors && amountValidationErrors is not { Count: > 0 })
-                return;
-
-            // Errors, prevent the dialog from cancelling
-            args.Cancel = true;
-
-            if (fromHasErrors)
-                cmbFromBorder.BorderBrush = Brushes.Red;
-            if (toHasErrors)
-                cmbToBorder.BorderBrush = Brushes.Red;
-        }
-
-        private void cmbTo_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (cmbTo.IsDropDownOpen)
-                return;
-            cmbToBorder.BorderBrush =
-                string.IsNullOrEmpty(cmbTo.Text) || cmbFrom.Text == cmbTo.Text ? Brushes.Red : Brushes.Transparent;
-        }
-
-        private void cmbFrom_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (cmbFrom.IsDropDownOpen)
-                return;
-            cmbFromBorder.BorderBrush =
-                string.IsNullOrEmpty(cmbFrom.Text) || cmbFrom.Text == cmbTo.Text ? Brushes.Red : Brushes.Transparent;
+                if (vm.HasErrors)
+                {
+                    args.Cancel = true;
+                }
+            }
         }
     }
 }
