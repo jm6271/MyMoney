@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:contentdialogs="clr-namespace:MyMoney.ViewModels.ContentDialogs"
+    xmlns:converters="clr-namespace:MyMoney.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:MyMoney.Views.ContentDialogs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -18,6 +19,8 @@
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d">
     <ui:ContentDialog.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:FirstValidationErrorConverter x:Key="FirstValidationErrorConverter" />
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:ExportTransactionsDialog}" />
     </ui:ContentDialog.Resources>
 
@@ -51,32 +54,38 @@
             </Grid.ColumnDefinitions>
             <DatePicker SelectedDate="{Binding StartDate}" SelectedDateFormat="Short" />
             <DatePicker
+                x:Name="EndDatePicker"
                 Grid.Column="2"
-                SelectedDate="{Binding EndDate}"
+                SelectedDate="{Binding EndDate, ValidatesOnNotifyDataErrors=True}"
                 SelectedDateFormat="Short" />
         </Grid>
+        <TextBlock
+            Margin="1,-12,2,12"
+            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+            Text="{Binding ElementName=EndDatePicker, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+            Visibility="{Binding ElementName=EndDatePicker, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
 
         <ui:TextBlock Margin="0,0,0,8">Fields to include</ui:TextBlock>
         <Border
-            x:Name="FieldsBorder"
             Margin="0,0,0,8"
             Padding="8"
             BorderBrush="Transparent"
             BorderThickness="1"
             CornerRadius="8">
             <UniformGrid Columns="2" Rows="3">
-                <CheckBox IsChecked="{Binding IncludeAccountName}">Account name</CheckBox>
-                <CheckBox IsChecked="{Binding IncludeReconciled}">Reconciled</CheckBox>
-                <CheckBox IsChecked="{Binding IncludeDate}">Date</CheckBox>
-                <CheckBox IsChecked="{Binding IncludePayee}">Payee</CheckBox>
-                <CheckBox IsChecked="{Binding IncludeCategory}">Category</CheckBox>
-                <CheckBox IsChecked="{Binding IncludeAmount}">Amount</CheckBox>
+                <CheckBox x:Name="IncludeAccountNameCheckBox" IsChecked="{Binding IncludeAccountName, ValidatesOnNotifyDataErrors=True}">Account name</CheckBox>
+                <CheckBox IsChecked="{Binding IncludeReconciled, ValidatesOnNotifyDataErrors=True}">Reconciled</CheckBox>
+                <CheckBox IsChecked="{Binding IncludeDate, ValidatesOnNotifyDataErrors=True}">Date</CheckBox>
+                <CheckBox IsChecked="{Binding IncludePayee, ValidatesOnNotifyDataErrors=True}">Payee</CheckBox>
+                <CheckBox IsChecked="{Binding IncludeCategory, ValidatesOnNotifyDataErrors=True}">Category</CheckBox>
+                <CheckBox IsChecked="{Binding IncludeAmount, ValidatesOnNotifyDataErrors=True}">Amount</CheckBox>
             </UniformGrid>
         </Border>
 
         <TextBlock
-            x:Name="ValidationText"
-            Foreground="Red"
-            Visibility="Collapsed" />
+            Margin="1,-4,2,0"
+            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+            Text="{Binding ElementName=IncludeAccountNameCheckBox, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+            Visibility="{Binding ElementName=IncludeAccountNameCheckBox, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
     </StackPanel>
 </ui:ContentDialog>

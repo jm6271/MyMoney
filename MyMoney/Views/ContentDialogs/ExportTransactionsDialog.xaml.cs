@@ -1,5 +1,3 @@
-using System.Windows;
-using System.Windows.Media;
 using MyMoney.Abstractions;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
@@ -21,24 +19,11 @@ public partial class ExportTransactionsDialog : ContentDialog, IContentDialog
         if (DataContext is not ExportTransactionsDialogViewModel viewModel)
             return;
 
-        var hasError = false;
-        ValidationText.Visibility = Visibility.Collapsed;
-        FieldsBorder.BorderBrush = Brushes.Transparent;
+        viewModel.Validate();
 
-        if (!viewModel.HasSelectedFields)
+        if (viewModel.HasErrors)
         {
-            hasError = true;
-            FieldsBorder.BorderBrush = Brushes.Red;
-            ValidationText.Text = "Select at least one field.";
-            ValidationText.Visibility = Visibility.Visible;
+            args.Cancel = true;
         }
-        else if (viewModel.UseDateRange && viewModel.StartDate.Date > viewModel.EndDate.Date)
-        {
-            hasError = true;
-            ValidationText.Text = "Start date must be on or before end date.";
-            ValidationText.Visibility = Visibility.Visible;
-        }
-
-        args.Cancel = hasError;
     }
 }
