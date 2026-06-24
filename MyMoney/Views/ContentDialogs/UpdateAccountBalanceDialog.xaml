@@ -19,14 +19,20 @@
     mc:Ignorable="d">
     <ui:ContentDialog.Resources>
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:UpdateAccountBalanceDialog}" />
-        <converters:CurrencyConverter x:Key="CurrencyConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:FirstValidationErrorConverter x:Key="FirstValidationErrorConverter" />
     </ui:ContentDialog.Resources>
     <StackPanel>
         <TextBlock Margin="0,0,0,8">New balance</TextBlock>
         <TextBox
             x:Name="txtBalance"
-            Margin="1,0,1,0"
+            Margin="1,0,2,1"
             GotKeyboardFocus="TextBox_GotKeyboardFocus"
-            Text="{Binding Balance, Converter={StaticResource CurrencyConverter}}" />
+            Text="{Binding BalanceStr, ValidatesOnNotifyDataErrors=True}" />
+        <TextBlock
+            Margin="1,2,2,0"
+            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+            Text="{Binding ElementName=txtBalance, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+            Visibility="{Binding ElementName=txtBalance, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
     </StackPanel>
 </ui:ContentDialog>

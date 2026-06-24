@@ -34,12 +34,14 @@ namespace MyMoney.Views.ContentDialogs
             txtBalance.Focus();
             txtBalance.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 
-            // validate the user data, and if it is invalid, prevent the dialog from closing
-            var validationErrors = Validation.GetErrors(txtBalance);
-
-            if (validationErrors is { Count: > 0 })
+            if (DataContext is UpdateAccountBalanceDialogViewModel vm)
             {
-                args.Cancel = true;
+                vm.Validate();
+
+                if (vm.HasErrors)
+                {
+                    args.Cancel = true;
+                }
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using MyMoney.Abstractions;
+using MyMoney.Abstractions;
+using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -27,6 +28,27 @@ namespace MyMoney.Views.ContentDialogs
                     new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.Next)
                 );
                 e.Handled = false;
+            }
+        }
+
+        private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
+        {
+            if (args.Result != ContentDialogResult.Primary)
+                return;
+
+            txtNewName.Focus();
+            txtNewName.MoveFocus(
+                new System.Windows.Input.TraversalRequest(System.Windows.Input.FocusNavigationDirection.Next)
+            );
+
+            if (DataContext is RenameAccountViewModel vm)
+            {
+                vm.Validate();
+
+                if (vm.HasErrors)
+                {
+                    args.Cancel = true;
+                }
             }
         }
     }

@@ -15,7 +15,8 @@
     Closing="ContentDialog_Closing"
     mc:Ignorable="d">
     <ui:ContentDialog.Resources>
-        <converters:CurrencyConverter x:Key="CurrencyConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:FirstValidationErrorConverter x:Key="FirstValidationErrorConverter" />
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:NewAccountDialog}" />
     </ui:ContentDialog.Resources>
     <StackPanel>
@@ -23,15 +24,26 @@
         <ui:TextBox
             x:Name="TxtAccountName"
             MinWidth="300"
-            Margin="0,4,0,8"
+            Margin="1,4,2,1"
             GotFocus="TxtAccountName_GotFocus"
-            Text="{Binding AccountName}" />
+            Text="{Binding AccountName, ValidatesOnNotifyDataErrors=True}" />
+        <TextBlock
+            Margin="1,2,2,8"
+            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+            Text="{Binding ElementName=TxtAccountName, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+            Visibility="{Binding ElementName=TxtAccountName, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
+
         <Label Margin="0,8,0,4">Starting balance</Label>
         <ui:TextBox
             x:Name="txtStartingBalance"
-            Margin="0,4,0,0"
+            Margin="1,4,2,1"
             GotKeyboardFocus="txtStartingBalance_GotFocus"
             KeyDown="txtStartingBalance_KeyDown"
-            Text="{Binding StartingBalance, Converter={StaticResource CurrencyConverter}}" />
+            Text="{Binding StartingBalanceStr, ValidatesOnNotifyDataErrors=True}" />
+        <TextBlock
+            Margin="1,2,2,0"
+            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+            Text="{Binding ElementName=txtStartingBalance, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+            Visibility="{Binding ElementName=txtStartingBalance, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
     </StackPanel>
 </ui:ContentDialog>

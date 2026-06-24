@@ -1,17 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MyMoney.Abstractions;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
@@ -46,6 +33,25 @@ namespace MyMoney.Views.ContentDialogs
         {
             txtGroupName.Focus();
             txtGroupName.SelectAll();
+        }
+
+        private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
+        {
+            if (args.Result != ContentDialogResult.Primary)
+                return;
+
+            txtGroupName.Focus();
+            txtGroupName.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+
+            if (DataContext is NewExpenseGroupDialogViewModel vm)
+            {
+                vm.Validate();
+
+                if (vm.HasErrors)
+                {
+                    args.Cancel = true;
+                }
+            }
         }
     }
 }

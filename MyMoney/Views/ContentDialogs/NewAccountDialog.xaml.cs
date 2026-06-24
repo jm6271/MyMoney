@@ -42,8 +42,21 @@ namespace MyMoney.Views.ContentDialogs
 
         private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
         {
+            if (args.Result != ContentDialogResult.Primary)
+                return;
+
             TxtAccountName.Focus();
             TxtAccountName.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+
+            if (DataContext is NewAccountDialogViewModel vm)
+            {
+                vm.Validate();
+
+                if (vm.HasErrors)
+                {
+                    args.Cancel = true;
+                }
+            }
         }
     }
 }
