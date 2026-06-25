@@ -89,7 +89,7 @@
                 Margin="3,0,0,0"
                 MinWidth="300"
                 OriginalItemsSource="{Binding AutoSuggestPayees, Mode=OneWay}"
-                Text="{Binding NewTransactionPayee, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}">
+                Text="{Binding NewTransactionPayee, Mode=TwoWay, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}">
                 <ui:AutoSuggestBox.Icon>
                     <ui:FontIcon Glyph="" />
                 </ui:AutoSuggestBox.Icon>
