@@ -24,7 +24,8 @@
     Loaded="ContentDialog_Loaded"
     mc:Ignorable="d">
     <ui:ContentDialog.Resources>
-        <converters:CurrencyConverter x:Key="CurrencyConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:FirstValidationErrorConverter x:Key="FirstValidationErrorConverter" />
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:NewTransactionDialog}" />
     </ui:ContentDialog.Resources>
 
@@ -41,15 +42,21 @@
         <ui:TextBlock Margin="0,0,0,4">Amount</ui:TextBlock>
         <ui:TextBox
             x:Name="txtAmount"
-            Margin="0,0,0,16"
+            Margin="1,0,2,0"
             GotKeyboardFocus="txtAmount_GotKeyboardFocus"
-            Text="{Binding Path=NewTransactionAmount, Converter={StaticResource CurrencyConverter}}" />
-        <Grid Margin="0,0,0,16">
+            Text="{Binding NewTransactionAmountStr, ValidatesOnNotifyDataErrors=True}" />
+        <TextBlock
+            Margin="1,2,2,0"
+            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+            Text="{Binding ElementName=txtAmount, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+            Visibility="{Binding ElementName=txtAmount, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <Grid Margin="0,16,0,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="135" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
@@ -60,63 +67,71 @@
                 Grid.Row="1"
                 Margin="0,0,4,0"
                 IsTodayHighlighted="True"
-                SelectedDate="{Binding NewTransactionDate}"
+                SelectedDate="{Binding NewTransactionDateInput, ValidatesOnNotifyDataErrors=True}"
                 SelectedDateFormat="Short" />
+            <TextBlock
+                Grid.Row="2"
+                Margin="1,2,2,0"
+                TextWrapping="Wrap"
+                Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                Text="{Binding ElementName=txtDate, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+                Visibility="{Binding ElementName=txtDate, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
             <ui:TextBlock
                 Grid.Row="0"
                 Grid.Column="1"
                 Margin="4,0,0,4">
                 Payee
             </ui:TextBlock>
-            <Border
-                x:Name="PayeeBorder"
+            <ui:AutoSuggestBox
+                x:Name="txtPayee"
                 Grid.Row="1"
                 Grid.Column="1"
                 Margin="3,0,0,0"
-                BorderBrush="Transparent"
-                BorderThickness="1">
-                <ui:AutoSuggestBox
-                    x:Name="txtPayee"
-                    MinWidth="300"
-                    LostFocus="TxtPayee_OnLostFocus"
-                    OriginalItemsSource="{Binding AutoSuggestPayees, Mode=OneWay}">
-                    <ui:AutoSuggestBox.Icon>
-                        <ui:FontIcon Glyph="" />
-                    </ui:AutoSuggestBox.Icon>
-                </ui:AutoSuggestBox>
-            </Border>
+                MinWidth="300"
+                OriginalItemsSource="{Binding AutoSuggestPayees, Mode=OneWay}"
+                Text="{Binding NewTransactionPayee, ValidatesOnNotifyDataErrors=True, UpdateSourceTrigger=PropertyChanged}">
+                <ui:AutoSuggestBox.Icon>
+                    <ui:FontIcon Glyph="" />
+                </ui:AutoSuggestBox.Icon>
+            </ui:AutoSuggestBox>
+            <TextBlock
+                Grid.Row="2"
+                Grid.Column="1"
+                Margin="4,2,2,0"
+                Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                Text="{Binding ElementName=txtPayee, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+                Visibility="{Binding ElementName=txtPayee, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
         </Grid>
         <ui:TextBlock Margin="0,0,0,4">Category</ui:TextBlock>
 
-        <Border
-            x:Name="CategoryBorder"
-            Margin="0,0,0,16"
-            BorderBrush="Transparent"
-            BorderThickness="1">
-            <ComboBox
-                x:Name="cmbCategory"
-                DisplayMemberPath="Name"
-                ItemsSource="{Binding CategoriesView}"
-                LostFocus="cmbCategory_LostFocus"
-                SelectedIndex="{Binding NewTransactionCategorySelectedIndex}"
-                SelectedItem="{Binding NewTransactionCategory}">
-                <ComboBox.GroupStyle>
-                    <GroupStyle>
-                        <GroupStyle.HeaderTemplate>
-                            <DataTemplate>
-                                <ui:TextBlock
-                                    Margin="4,0,4,0"
-                                    FontWeight="Bold"
-                                    Foreground="{DynamicResource AccentTextFillColorTertiaryBrush}"
-                                    Text="{Binding Name}" />
-                            </DataTemplate>
-                        </GroupStyle.HeaderTemplate>
-                    </GroupStyle>
-                </ComboBox.GroupStyle>
-            </ComboBox>
-        </Border>
+        <ComboBox
+            x:Name="cmbCategory"
+            Margin="1,0,2,0"
+            DisplayMemberPath="Name"
+            ItemsSource="{Binding CategoriesView}"
+            SelectedIndex="{Binding NewTransactionCategorySelectedIndex, ValidatesOnNotifyDataErrors=True}"
+            SelectedItem="{Binding NewTransactionCategory}">
+            <ComboBox.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.HeaderTemplate>
+                        <DataTemplate>
+                            <ui:TextBlock
+                                Margin="4,0,4,0"
+                                FontWeight="Bold"
+                                Foreground="{DynamicResource AccentTextFillColorTertiaryBrush}"
+                                Text="{Binding Name}" />
+                        </DataTemplate>
+                    </GroupStyle.HeaderTemplate>
+                </GroupStyle>
+            </ComboBox.GroupStyle>
+        </ComboBox>
+        <TextBlock
+            Margin="1,2,2,0"
+            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+            Text="{Binding ElementName=cmbCategory, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+            Visibility="{Binding ElementName=cmbCategory, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-        <ui:TextBlock Margin="0,0,0,4">Memo</ui:TextBlock>
+        <ui:TextBlock Margin="0,16,0,4">Memo</ui:TextBlock>
         <ui:TextBox
             x:Name="txtMemo"
             Margin="0,0,0,24"

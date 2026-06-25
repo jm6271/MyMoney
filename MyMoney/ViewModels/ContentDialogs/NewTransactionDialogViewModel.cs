@@ -1,12 +1,15 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Windows.Data;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
+using MyMoney.Core.Services;
+using MyMoney.ValidationAttributes;
 
 namespace MyMoney.ViewModels.ContentDialogs
 {
-    public partial class NewTransactionDialogViewModel : ObservableObject
+    public partial class NewTransactionDialogViewModel : ObservableValidator
     {
         private readonly IDatabaseManager _databaseManager;
 
@@ -14,12 +17,22 @@ namespace MyMoney.ViewModels.ContentDialogs
         private DateTime _newTransactionDate = DateTime.Today;
 
         [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [Required(ErrorMessage = "Transaction date is required.")]
+        private DateTime? _newTransactionDateInput = DateTime.Today;
+
+        [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [Required(ErrorMessage = "Payee is required.")]
+        [CustomValidation(typeof(NewTransactionDialogViewModel), nameof(ValidatePayee))]
         private string _newTransactionPayee = "";
 
         [ObservableProperty]
         private Category _newTransactionCategory = new();
 
         [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [CustomValidation(typeof(NewTransactionDialogViewModel), nameof(ValidateCategorySelectedIndex))]
         private int _newTransactionCategorySelectedIndex = -1;
 
         [ObservableProperty]
@@ -27,6 +40,15 @@ namespace MyMoney.ViewModels.ContentDialogs
 
         [ObservableProperty]
         private Currency _newTransactionAmount = new(0m);
+
+        [ObservableProperty]
+        [NotifyDataErrorInfo]
+        [Required(ErrorMessage = "Transaction amount is required.")]
+        [CurrencyExpression(
+            AllowNegative = false,
+            RequiredErrorMessage = "Transaction amount is required.",
+            NegativeErrorMessage = "Transaction amount cannot be negative.")]
+        private string _newTransactionAmountStr = new Currency(0m).ToString();
 
         [ObservableProperty]
         private bool _newTransactionIsExpense = true;
@@ -45,6 +67,11 @@ namespace MyMoney.ViewModels.ContentDialogs
         public NewTransactionDialogViewModel(IDatabaseManager databaseManager)
         {
             _databaseManager = databaseManager ?? throw new ArgumentNullException(nameof(databaseManager));
+        }
+
+        public void Validate()
+        {
+            ValidateAllProperties();
         }
 
         public void SetCategoryNames(ObservableCollection<Category> categories)
@@ -68,6 +95,8 @@ namespace MyMoney.ViewModels.ContentDialogs
 
         partial void OnNewTransactionDateChanged(DateTime oldValue, DateTime newValue)
         {
+            NewTransactionDateInput = newValue;
+
             if (oldValue.Month == newValue.Month && oldValue.Year == newValue.Year)
                 return;
 
@@ -81,6 +110,29 @@ namespace MyMoney.ViewModels.ContentDialogs
             }
 
             SetSelectedCategoryByName(selectedCategory);
+        }
+
+        partial void OnNewTransactionDateInputChanged(DateTime? oldValue, DateTime? newValue)
+        {
+            if (newValue is not { } date)
+            {
+                return;
+            }
+
+            NewTransactionDate = date;
+        }
+
+        partial void OnNewTransactionAmountChanged(Currency value)
+        {
+            NewTransactionAmountStr = value.ToString();
+        }
+
+        partial void OnNewTransactionAmountStrChanged(string? oldValue, string newValue)
+        {
+            _newTransactionAmount = CurrencyExpressionParser.TryEvaluate(newValue, out decimal amount, out _)
+                ? new Currency(amount)
+                : new Currency(0m);
+            FormatNewTransactionAmount();
         }
 
         public ObservableCollection<Category> GetBudgetCategoryNames()
@@ -125,6 +177,40 @@ namespace MyMoney.ViewModels.ContentDialogs
             {
                 collection.Add(new Category { Group = group, Name = item });
             }
+        }
+
+        private void FormatNewTransactionAmount()
+        {
+            ValidateProperty(NewTransactionAmountStr, nameof(NewTransactionAmountStr));
+
+            if (GetErrors(nameof(NewTransactionAmountStr)).Cast<object>().Any())
+            {
+                return;
+            }
+
+            NewTransactionAmountStr = NewTransactionAmount.ToString();
+        }
+
+        public static ValidationResult? ValidatePayee(object? value, ValidationContext context)
+        {
+            var payee = value as string;
+
+            if (string.IsNullOrWhiteSpace(payee))
+            {
+                return new ValidationResult("Payee is required.");
+            }
+
+            return ValidationResult.Success;
+        }
+
+        public static ValidationResult? ValidateCategorySelectedIndex(object? value, ValidationContext context)
+        {
+            if (value is not int selectedIndex || selectedIndex < 0)
+            {
+                return new ValidationResult("Category is required.");
+            }
+
+            return ValidationResult.Success;
         }
     }
 }
