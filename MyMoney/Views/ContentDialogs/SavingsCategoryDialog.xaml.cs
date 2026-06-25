@@ -1,6 +1,4 @@
-﻿using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using MyMoney.Abstractions;
 using MyMoney.ViewModels.ContentDialogs;
 using Wpf.Ui.Controls;
@@ -10,7 +8,7 @@ namespace MyMoney.Views.ContentDialogs
     /// <summary>
     /// Interaction logic for SavingsCategoryDialog.xaml
     /// </summary>
-    public partial class SavingsCategoryDialog : Wpf.Ui.Controls.ContentDialog, IContentDialog
+    public partial class SavingsCategoryDialog : ContentDialog, IContentDialog
     {
         public SavingsCategoryDialog()
         {
@@ -33,10 +31,7 @@ namespace MyMoney.Views.ContentDialogs
             TxtBalance.SelectAll();
         }
 
-        private void ContentDialog_Closing(
-            Wpf.Ui.Controls.ContentDialog sender,
-            Wpf.Ui.Controls.ContentDialogClosingEventArgs args
-        )
+        private void ContentDialog_Closing(ContentDialog sender, ContentDialogClosingEventArgs args)
         {
             if (args.Result != ContentDialogResult.Primary)
                 return;
@@ -44,32 +39,15 @@ namespace MyMoney.Views.ContentDialogs
             TxtCategory.Focus();
             TxtCategory.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 
-            // validate the user data, and if it is invalid, prevent the dialog from closing
+            if (DataContext is SavingsCategoryDialogViewModel vm)
+            {
+                vm.Validate();
 
-            // get validation errors for all the required fields
-            var plannedValidationErrors = Validation.GetErrors(TxtPlanned);
-            var balanceValidationErrors = Validation.GetErrors(TxtBalance);
-            var invalidCategory = string.IsNullOrEmpty(TxtCategory.Text);
-
-            // Clear the red border from custom validated controls
-            TxtCategoryBorder.BorderBrush = Brushes.Transparent;
-
-            // validate
-            if (
-                !invalidCategory
-                && plannedValidationErrors is not { Count: > 0 }
-                && balanceValidationErrors is not { Count: > 0 }
-            )
-                return;
-            args.Cancel = true;
-
-            if (invalidCategory)
-                TxtCategoryBorder.BorderBrush = Brushes.Red;
-        }
-
-        private void TxtCategory_LostFocus(object sender, RoutedEventArgs e)
-        {
-            TxtCategoryBorder.BorderBrush = string.IsNullOrEmpty(TxtCategory.Text) ? Brushes.Red : Brushes.Transparent;
+                if (vm.HasErrors)
+                {
+                    args.Cancel = true;
+                }
+            }
         }
     }
 }
