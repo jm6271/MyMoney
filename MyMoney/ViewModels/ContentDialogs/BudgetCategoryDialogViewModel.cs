@@ -17,7 +17,7 @@ namespace MyMoney.ViewModels.ContentDialogs
         [NotifyDataErrorInfo]
         [Required(ErrorMessage = "Budget amount is required.")]
         [CurrencyExpression(AllowNegative = false)]
-        private string _budgetAmountStr = "";
+        private string _budgetAmountStr = new Currency(0m).ToString();
 
         private Currency _budgetedAmount = new Currency(0);
 
