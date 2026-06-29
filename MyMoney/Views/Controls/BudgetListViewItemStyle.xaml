@@ -31,31 +31,36 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <ui:GridViewRowPresenter
+                                x:Name="BudgetItemRowPresenter"
                                 Margin="{TemplateBinding Padding}"
                                 VerticalAlignment="{TemplateBinding Control.VerticalContentAlignment}"
                                 Columns="{TemplateBinding GridView.ColumnCollection}"
                                 Content="{TemplateBinding ContentControl.Content}" />
 
-                            <ProgressBar
+                            <Grid
                                 Grid.Row="1"
-                                Height="4"
-                                Margin="12,0,12,4"
-                                Maximum="100"
-                                Minimum="0">
-                                <ProgressBar.Foreground>
-                                    <MultiBinding Converter="{StaticResource BudgetItemProgressBarBrushConverter}">
-                                        <Binding Path="Amount" />
-                                        <Binding Path="Actual" />
-                                        <Binding Path="(helpers:BudgetItemTypeHelper.ItemType)" RelativeSource="{RelativeSource AncestorType={x:Type ui:ListViewItem}}" />
-                                    </MultiBinding>
-                                </ProgressBar.Foreground>
-                                <ProgressBar.Value>
-                                    <MultiBinding Converter="{StaticResource BudgetItemActualPercentageConverter}">
-                                        <Binding Path="Amount" />
-                                        <Binding Path="Actual" />
-                                    </MultiBinding>
-                                </ProgressBar.Value>
-                            </ProgressBar>
+                                Width="{Binding ActualWidth, ElementName=BudgetItemRowPresenter}"
+                                HorizontalAlignment="Left">
+                                <ProgressBar
+                                    Height="4"
+                                    Margin="12,0,12,4"
+                                    Maximum="100"
+                                    Minimum="0">
+                                    <ProgressBar.Foreground>
+                                        <MultiBinding Converter="{StaticResource BudgetItemProgressBarBrushConverter}">
+                                            <Binding Path="Amount" />
+                                            <Binding Path="Actual" />
+                                            <Binding Path="(helpers:BudgetItemTypeHelper.ItemType)" RelativeSource="{RelativeSource AncestorType={x:Type ui:ListViewItem}}" />
+                                        </MultiBinding>
+                                    </ProgressBar.Foreground>
+                                    <ProgressBar.Value>
+                                        <MultiBinding Converter="{StaticResource BudgetItemActualPercentageConverter}">
+                                            <Binding Path="Amount" />
+                                            <Binding Path="Actual" />
+                                        </MultiBinding>
+                                    </ProgressBar.Value>
+                                </ProgressBar>
+                            </Grid>
 
                             <Rectangle
                                 x:Name="ActiveRectangle"
