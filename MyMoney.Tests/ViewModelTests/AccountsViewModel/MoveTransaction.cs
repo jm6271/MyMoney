@@ -118,7 +118,7 @@ public class MoveTransactionTests
         Assert.IsTrue(_viewModel.SelectedAccountTransactions.Contains(transaction));
         _messageBoxService.Verify(
             service => service.ShowInfoAsync(
-                "Error",
+                "Insufficient Funds",
                 It.Is<string>(message => message.Contains("destination account")),
                 "OK"
             ),
