@@ -7,6 +7,7 @@
     xmlns:converters="clr-namespace:MyMoney.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:dataannotations="clr-namespace:System.ComponentModel.DataAnnotations;assembly=System.ComponentModel.DataAnnotations"
+    xmlns:dd="urn:gong-wpf-dragdrop"
     xmlns:local="clr-namespace:MyMoney.Views.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:models="clr-namespace:MyMoney.Core.Models;assembly=MyMoney.Core"
@@ -106,6 +107,8 @@
                     SelectedIndex="{Binding ViewModel.SelectedAccountIndex}"
                     SelectedItem="{Binding ViewModel.SelectedAccount}"
                     SelectionChanged="AccountsList_SelectionChanged"
+                    dd:DragDrop.DropHandler="{Binding ViewModel.TransactionAccountDropHandler}"
+                    dd:DragDrop.IsDropTarget="True"
                     Tag="{Binding DataContext, RelativeSource={RelativeSource Self}}">
 
                     <ui:ListView.Resources>
@@ -231,6 +234,7 @@
                         ScrollViewer.ScrollChanged="TransactionsList_ScrollChanged"
                         SelectedIndex="{Binding ViewModel.SelectedTransactionIndex}"
                         SelectedItem="{Binding ViewModel.SelectedTransaction}"
+                        dd:DragDrop.IsDragSource="True"
                         Tag="{Binding}"
                         VirtualizingPanel.IsVirtualizing="True"
                         VirtualizingPanel.ScrollUnit="Pixel"
