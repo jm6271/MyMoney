@@ -158,6 +158,39 @@ public class NewAccountTest
     }
 
     [TestMethod]
+    public async Task CreateNewAccount_SortsAccountsAlphabetically()
+    {
+        // Arrange
+        _mockDatabaseService
+            .Setup(service => service.GetCollection<Account>("Accounts"))
+            .Returns([new Account { AccountName = "Savings" }]);
+        SetupMockDialogSuccess(
+            new NewAccountDialogViewModel
+            {
+                AccountName = "checking",
+                StartingBalance = new Currency(100m),
+            }
+        );
+        _viewModel = new(
+            _mockContentDialogService.Object,
+            _mockDatabaseService.Object,
+            _mockMessageBoxService.Object,
+            _mockContentDialogFactory.Object,
+            Mock.Of<IFileDialogService>(),
+            Mock.Of<ITransactionCsvExporter>()
+        );
+
+        // Act
+        await _viewModel.CreateNewAccountCommand.ExecuteAsync(null);
+
+        // Assert
+        CollectionAssert.AreEqual(
+            new[] { "checking", "Savings" },
+            _viewModel.Accounts.Select(account => account.AccountName).ToArray()
+        );
+    }
+
+    [TestMethod]
     public void CreateNewAccount_FirstAccountCreated_EnablesTransactions()
     {
         // Arrange

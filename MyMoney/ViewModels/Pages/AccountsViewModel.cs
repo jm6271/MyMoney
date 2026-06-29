@@ -129,15 +129,29 @@ namespace MyMoney.ViewModels.Pages
         {
             var accounts = _databaseManager.GetCollection<Account>("Accounts");
 
-            // Sort in alphabetical order by account name
-            accounts.Sort((a, b) => string.Compare(a.AccountName, b.AccountName, StringComparison.OrdinalIgnoreCase));
-
             foreach (var account in accounts)
             {
                 Accounts.Add(account);
             }
 
+            SortAccounts();
             TransactionsEnabled = Accounts.Count > 0;
+        }
+
+        private void SortAccounts()
+        {
+            var sortedAccounts = Accounts
+                .OrderBy(account => account.AccountName, StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            for (var index = 0; index < sortedAccounts.Count; index++)
+            {
+                var currentIndex = Accounts.IndexOf(sortedAccounts[index]);
+                if (currentIndex != index)
+                {
+                    Accounts.Move(currentIndex, index);
+                }
+            }
         }
 
         public async Task LoadTransactions()
@@ -272,6 +286,7 @@ namespace MyMoney.ViewModels.Pages
             var newAccount = new Account { AccountName = viewModel.AccountName, Total = viewModel.StartingBalance };
 
             Accounts.Add(newAccount);
+            SortAccounts();
             SaveAccountsToDatabase();
             TransactionsEnabled = true;
         }
@@ -566,6 +581,7 @@ namespace MyMoney.ViewModels.Pages
             if (result == ContentDialogResult.Primary)
             {
                 account.AccountName = viewModel.NewName;
+                SortAccounts();
                 SaveAccountsToDatabase();
             }
         }

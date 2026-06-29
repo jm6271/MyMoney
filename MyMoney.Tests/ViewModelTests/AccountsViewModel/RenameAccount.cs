@@ -107,5 +107,47 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             // Assert
             Assert.AreEqual("Original Name", viewModel.Accounts[0].AccountName);
         }
+
+        [TestMethod]
+        public async Task RenameAccount_SortsAccountsAlphabetically()
+        {
+            // Arrange
+            var viewModel = new MyMoney.ViewModels.Pages.AccountsViewModel(
+                _contentDialogService.Object,
+                _databaseReader.Object,
+                _messageBoxService.Object,
+                _contentDialogFactory.Object,
+                Mock.Of<IFileDialogService>(),
+                Mock.Of<ITransactionCsvExporter>()
+            );
+
+            var account = new Account { AccountName = "Savings" };
+            viewModel.Accounts.Add(new Account { AccountName = "Alpha" });
+            viewModel.Accounts.Add(new Account { AccountName = "Checking" });
+            viewModel.Accounts.Add(account);
+
+            var fake = new Mock<IContentDialog>();
+            fake.SetupAllProperties();
+            fake.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>()))
+                .Callback<CancellationToken>(
+                    (ct) =>
+                    {
+                        var vm = fake.Object.DataContext as RenameAccountViewModel;
+                        vm?.NewName = "banking";
+                    }
+                )
+                .ReturnsAsync(ContentDialogResult.Primary);
+
+            _contentDialogFactory.Setup(x => x.Create<RenameAccountDialog>()).Returns(fake.Object);
+
+            // Act
+            await viewModel.RenameAccountCommand.ExecuteAsync(account);
+
+            // Assert
+            CollectionAssert.AreEqual(
+                new[] { "Alpha", "banking", "Checking" },
+                viewModel.Accounts.Select(item => item.AccountName).ToArray()
+            );
+        }
     }
 }
