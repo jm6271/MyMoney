@@ -4,6 +4,7 @@ using MyMoney.Core.Exports;
 using MyMoney.Core.Models;
 using MyMoney.Core.Services.Accounts;
 using MyMoney.Core.Services.Budgets;
+using MyMoney.Helpers.DropHandlers;
 using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Views.ContentDialogs;
@@ -27,6 +28,8 @@ namespace MyMoney.ViewModels.Pages
         /// Transactions for the currently selected account
         /// </summary>
         public ObservableCollection<Transaction> SelectedAccountTransactions { get; set; } = [];
+
+        public TransactionAccountDropHandler TransactionAccountDropHandler { get; }
 
         // Observable properties
         [ObservableProperty]
@@ -104,6 +107,7 @@ namespace MyMoney.ViewModels.Pages
             _accountValidationService = accountValidationService ?? new AccountValidationService();
             _savingsCategoryTransactionSyncService =
                 savingsCategoryTransactionSyncService ?? new SavingsCategoryTransactionSyncService(databaseManager);
+            TransactionAccountDropHandler = new(this);
 
             LoadAccounts();
         }
@@ -197,14 +201,18 @@ namespace MyMoney.ViewModels.Pages
             _databaseManager.WriteCollection("Accounts", [.. Accounts]);
         }
 
-        private async Task<bool> ValidateTransactionAmount(Currency amount, Account account)
+        private async Task<bool> ValidateTransactionAmount(
+            Currency amount,
+            Account account,
+            string accountDescription = "selected"
+        )
         {
             var result = _accountValidationService.ValidateTransactionAmount(amount, account);
             if (!result.IsValid)
             {
                 await _messageBoxService.ShowInfoAsync(
-                    "Error",
-                    "The amount of this transaction is greater than the balance of the selected account.",
+                    "Insufficient Funds",
+                    $"The amount of this transaction is greater than the balance of the {accountDescription} account.",
                     "OK"
                 );
                 return false;
@@ -351,6 +359,59 @@ namespace MyMoney.ViewModels.Pages
             UpdateSavingsCategory(transaction, TransactionOperation.Add);
 
             SaveAccountsToDatabase();
+        }
+
+        public async Task<bool> MoveTransactionAsync(
+            Transaction transaction,
+            Account destinationAccount
+        )
+        {
+            var sourceAccount = Accounts.FirstOrDefault(account => account.Id == transaction.AccountId);
+            if (
+                sourceAccount == null
+                || !Accounts.Contains(destinationAccount)
+                || sourceAccount.Id == destinationAccount.Id
+            )
+            {
+                return false;
+            }
+
+            if (
+                transaction.Amount.Value > 0m
+                && !await ValidateTransactionAmount(
+                    transaction.Amount,
+                    sourceAccount,
+                    "source"
+                )
+            )
+            {
+                return false;
+            }
+
+            if (
+                transaction.Amount.Value < 0m
+                && !await ValidateTransactionAmount(
+                    new Currency(Math.Abs(transaction.Amount.Value)),
+                    destinationAccount,
+                    "destination"
+                )
+            )
+            {
+                return false;
+            }
+
+            _accountTransactionService.ApplyTransactionChange(sourceAccount, transaction);
+            _accountTransactionService.ApplyTransactionChange(destinationAccount, null, transaction);
+            transaction.AccountId = destinationAccount.Id;
+
+            _databaseManager.Update("Transactions", transaction);
+            SaveAccountsToDatabase();
+
+            SelectedAccountTransactions.Remove(transaction);
+            SelectedTransaction = null;
+            SelectedTransactionIndex = -1;
+
+            return true;
         }
 
         [RelayCommand]
