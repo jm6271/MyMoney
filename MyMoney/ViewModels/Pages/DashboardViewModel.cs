@@ -510,6 +510,9 @@ namespace MyMoney.ViewModels.Pages
 
             List<Account> accounts = _databaseReader.GetCollection<Account>("Accounts");
 
+            // Sort accounts alphabetically by account name
+            accounts.Sort((a, b) => string.Compare(a.AccountName, b.AccountName, StringComparison.OrdinalIgnoreCase));
+
             Accounts = new(accounts);
 
             AddAccountTotalItem();

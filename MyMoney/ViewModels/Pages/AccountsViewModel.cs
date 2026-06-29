@@ -128,6 +128,10 @@ namespace MyMoney.ViewModels.Pages
         private void LoadAccounts()
         {
             var accounts = _databaseManager.GetCollection<Account>("Accounts");
+
+            // Sort in alphabetical order by account name
+            accounts.Sort((a, b) => string.Compare(a.AccountName, b.AccountName, StringComparison.OrdinalIgnoreCase));
+
             foreach (var account in accounts)
             {
                 Accounts.Add(account);
