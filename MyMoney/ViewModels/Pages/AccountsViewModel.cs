@@ -377,6 +377,18 @@ namespace MyMoney.ViewModels.Pages
             }
 
             if (
+                transaction.Amount.Value > 0m
+                && !await ValidateTransactionAmount(
+                    transaction.Amount,
+                    sourceAccount,
+                    "source"
+                )
+            )
+            {
+                return false;
+            }
+
+            if (
                 transaction.Amount.Value < 0m
                 && !await ValidateTransactionAmount(
                     new Currency(Math.Abs(transaction.Amount.Value)),

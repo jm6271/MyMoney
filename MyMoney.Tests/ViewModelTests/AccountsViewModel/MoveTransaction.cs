@@ -132,6 +132,36 @@ public class MoveTransactionTests
     }
 
     [TestMethod]
+    public async Task MoveTransactionAsync_IncomeExceedingSourceBalanceIsRejected()
+    {
+        var source = _viewModel.Accounts.Single(account => account.Id == 1);
+        var destination = _viewModel.Accounts.Single(account => account.Id == 2);
+        source.Total = new Currency(20m);
+        var transaction = AddTransaction(new Currency(50m));
+
+        var result = await _viewModel.MoveTransactionAsync(transaction, destination);
+
+        Assert.IsFalse(result);
+        Assert.AreEqual(20m, source.Total.Value);
+        Assert.AreEqual(20m, destination.Total.Value);
+        Assert.AreEqual(1, transaction.AccountId);
+        Assert.IsTrue(_viewModel.SelectedAccountTransactions.Contains(transaction));
+        _messageBoxService.Verify(
+            service => service.ShowInfoAsync(
+                "Insufficient Funds",
+                It.Is<string>(message => message.Contains("source account")),
+                "OK"
+            ),
+            Times.Once
+        );
+
+        var persistedTransaction = _databaseManager
+            .GetCollection<Transaction>("Transactions")
+            .Single(item => item.Id == transaction.Id);
+        Assert.AreEqual(1, persistedTransaction.AccountId);
+    }
+
+    [TestMethod]
     public async Task MoveTransactionAsync_SameAccountIsRejected()
     {
         var source = _viewModel.Accounts.Single(account => account.Id == 1);
