@@ -63,11 +63,11 @@
       },
       "NCalcSync": {
         "type": "Direct",
-        "requested": "[6.3.0, )",
-        "resolved": "6.3.0",
-        "contentHash": "r02xI0zZB12Cxelz136/CxyMGNfmXWnxQUXohLaTdXxitVZafEKSaQWuabJwBVrRDCu9Cr09gAKWooplZoS5iw==",
+        "requested": "[6.3.2, )",
+        "resolved": "6.3.2",
+        "contentHash": "FhYFjMCQE84fpXtKf4X9Clv8twC0VsPVI/7P5715pzxmv21Yfkimyw8IaA5Uq2tYcSdC8eMVl+8c1EFrx1cumg==",
         "dependencies": {
-          "NCalc.Core": "6.3.0"
+          "NCalc.Core": "6.3.2"
         }
       },
       "WPF-UI": {
@@ -369,26 +369,26 @@
       },
       "NCalc.Core": {
         "type": "Transitive",
-        "resolved": "6.3.0",
-        "contentHash": "DYhNhLVUQk5bNQBVeHoReZqFdR4WU5kptIfjIJHRRNPs7Ph+fOlxVpfwONVG1i0sBlnFQ2mEexCSXcKhfWGI2Q==",
+        "resolved": "6.3.2",
+        "contentHash": "qiafSDXLGQno5E5dnsxDQQcXPjaE4l38XN1nXvmvbS6phgmJQeUf05d5kIsaEv7D5cCj8olf3zp9TI9ihrMYHQ==",
         "dependencies": {
           "ExtendedNumerics.BigDecimal": "3003.0.0.346",
           "Microsoft.Extensions.Logging.Abstractions": "10.0.7",
-          "NCalc.Parser": "6.3.0",
+          "NCalc.Parser": "6.3.2",
           "Parlot": "1.5.7"
         }
       },
       "NCalc.Domain": {
         "type": "Transitive",
-        "resolved": "6.3.0",
-        "contentHash": "MUuFquLKiW4WwuGK4rSZEZYPxD1j6ZX21dxSpQbHfUnR7oIsV71rkhvMOb1mafQgsZrlSa9c8xBbKrlLxmOPfQ=="
+        "resolved": "6.3.2",
+        "contentHash": "XY3ojhgAIQ5fPvz4lcxLuhjZEZVi16IYAWWiA7Q3kD7yQ3M0B6qJmxK8TETOK0ZtJsnHe0ZWvuYg8diO/sPtMw=="
       },
       "NCalc.Parser": {
         "type": "Transitive",
-        "resolved": "6.3.0",
-        "contentHash": "YMbau/slMZuyAJhcyF/hoa2bG7OLjLcboo13BOWOuK//DzuxM4YQtetQO4hODxkrHSdieELVfRV03Vn9bq7Sog==",
+        "resolved": "6.3.2",
+        "contentHash": "O82elGarSsi8h3r2fQQsSNoaLYx+BcZl/GMuNHygDTsbgiLwRJWc+74k8xn4gc2CmFS9UEFjSVx/TuORUe93iw==",
         "dependencies": {
-          "NCalc.Domain": "6.3.0",
+          "NCalc.Domain": "6.3.2",
           "Parlot": "1.5.7"
         }
       },
@@ -468,7 +468,7 @@
           "CommunityToolkit.Mvvm": "[8.4.2, )",
           "CsvHelper": "[33.1.0, )",
           "LiteDB": "[5.0.21, )",
-          "NCalcSync": "[6.3.0, )"
+          "NCalcSync": "[6.3.2, )"
         }
       },
       "CsvHelper": {
