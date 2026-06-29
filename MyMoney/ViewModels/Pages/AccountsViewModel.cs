@@ -211,7 +211,7 @@ namespace MyMoney.ViewModels.Pages
             if (!result.IsValid)
             {
                 await _messageBoxService.ShowInfoAsync(
-                    "Error",
+                    "Insufficient Funds",
                     $"The amount of this transaction is greater than the balance of the {accountDescription} account.",
                     "OK"
                 );
