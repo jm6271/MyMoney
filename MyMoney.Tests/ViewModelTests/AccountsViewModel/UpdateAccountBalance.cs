@@ -71,5 +71,19 @@ namespace MyMoney.Tests.ViewModelTests.AccountsViewModel
             // Assert
             Assert.AreEqual(150m, _viewModel.Accounts[0].Total.Value);
         }
+
+        [TestMethod]
+        public void BalanceStr_WhenClearedAfterNonZeroBalance_RemainsBlankAndHasValidationError()
+        {
+            // Arrange
+            var viewModel = new UpdateAccountBalanceDialogViewModel { Balance = new Currency(100m) };
+
+            // Act
+            viewModel.BalanceStr = "";
+
+            // Assert
+            Assert.AreEqual("", viewModel.BalanceStr);
+            Assert.IsTrue(viewModel.HasErrors);
+        }
     }
 }

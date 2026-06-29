@@ -15,31 +15,36 @@
     Closing="ContentDialog_Closing"
     mc:Ignorable="d">
     <ui:ContentDialog.Resources>
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:CurrencyConverter x:Key="CurrencyConverter" />
+        <converters:FirstValidationErrorConverter x:Key="FirstValidationErrorConverter" />
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:BudgetCategoryDialog}" />
     </ui:ContentDialog.Resources>
     <StackPanel>
         <Label Margin="0,0,0,4">Category</Label>
-        <Border
-            x:Name="TxtCategoryBorder"
-            Margin="0,4,0,8"
-            BorderBrush="Transparent"
-            BorderThickness="1">
-            <ui:TextBox
-                x:Name="TxtCategory"
-                MinWidth="300"
-                GotKeyboardFocus="TxtCategory_GotKeyboardFocus"
-                LostKeyboardFocus="TxtCategory_LostKeyboardFocus"
-                LostMouseCapture="TxtCategory_LostMouseCapture"
-                Text="{Binding BudgetCategory}" />
-        </Border>
+        <ui:TextBox
+            x:Name="TxtCategory"
+            MinWidth="300"
+            Margin="1,4,2,1"
+            GotKeyboardFocus="TxtCategory_GotKeyboardFocus"
+            Text="{Binding BudgetCategory, ValidatesOnNotifyDataErrors=True}" />
+        <TextBlock
+            Margin="1,2,2,8"
+            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+            Text="{Binding ElementName=TxtCategory, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+            Visibility="{Binding ElementName=TxtCategory, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
 
         <Label Margin="0,8,0,4">Amount</Label>
         <ui:TextBox
             x:Name="txtAmount"
-            Margin="1,4,1,0"
+            Margin="1,4,2,1"
             GotKeyboardFocus="txtAmount_GotKeyboardFocus"
             KeyDown="txtAmount_KeyDown"
-            Text="{Binding Path=BudgetAmount, Converter={StaticResource CurrencyConverter}}" />
+            Text="{Binding BudgetAmountStr, ValidatesOnNotifyDataErrors=True}" />
+        <TextBlock
+            Margin="1,2,2,0"
+            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+            Text="{Binding ElementName=txtAmount, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+            Visibility="{Binding ElementName=txtAmount, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
     </StackPanel>
 </ui:ContentDialog>

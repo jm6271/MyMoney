@@ -45,31 +45,15 @@ namespace MyMoney.Views.ContentDialogs
             TxtCategory.Focus();
             TxtCategory.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 
-            var amountValidationErrors = Validation.GetErrors(txtAmount);
+            if (DataContext is BudgetCategoryDialogViewModel vm)
+            {
+                vm.Validate();
 
-            if (!string.IsNullOrWhiteSpace(TxtCategory.Text) && amountValidationErrors is not { Count: > 0 })
-                return;
-            args.Cancel = true;
-
-            ValidateTxtCategory();
-        }
-
-        private void ValidateTxtCategory()
-        {
-            if (string.IsNullOrWhiteSpace(TxtCategory.Text))
-                TxtCategoryBorder.BorderBrush = new SolidColorBrush(Colors.Red);
-            else
-                TxtCategoryBorder.BorderBrush = new SolidColorBrush(Colors.Transparent);
-        }
-
-        private void TxtCategory_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-            ValidateTxtCategory();
-        }
-
-        private void TxtCategory_LostMouseCapture(object sender, MouseEventArgs e)
-        {
-            ValidateTxtCategory();
+                if (vm.HasErrors)
+                {
+                    args.Cancel = true;
+                }
+            }
         }
     }
 }

@@ -186,6 +186,20 @@ public class NewAccountTest
         Assert.IsTrue(_viewModel.TransactionsEnabled);
     }
 
+    [TestMethod]
+    public void StartingBalanceStr_WhenClearedAfterNonZeroBalance_RemainsBlankAndHasValidationError()
+    {
+        // Arrange
+        var viewModel = new NewAccountDialogViewModel { StartingBalance = new Currency(100m) };
+
+        // Act
+        viewModel.StartingBalanceStr = "";
+
+        // Assert
+        Assert.AreEqual("", viewModel.StartingBalanceStr);
+        Assert.IsTrue(viewModel.HasErrors);
+    }
+
     private void SetupMockDialogSuccess(NewAccountDialogViewModel dialogViewModel)
     {
         var fake = new Mock<IContentDialog>();

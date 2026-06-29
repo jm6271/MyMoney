@@ -19,6 +19,63 @@
         "requested": "[5.0.21, )",
         "resolved": "5.0.21",
         "contentHash": "ykJ7ffFl7P9YQKR/PLci6zupiLrsSCNkOTiw6OtzntH7d2kCYp5L1+3a/pksKgTEHcJBoPXFtg7VZSGVBseN9w=="
+      },
+      "NCalcSync": {
+        "type": "Direct",
+        "requested": "[6.3.0, )",
+        "resolved": "6.3.0",
+        "contentHash": "r02xI0zZB12Cxelz136/CxyMGNfmXWnxQUXohLaTdXxitVZafEKSaQWuabJwBVrRDCu9Cr09gAKWooplZoS5iw==",
+        "dependencies": {
+          "NCalc.Core": "6.3.0"
+        }
+      },
+      "ExtendedNumerics.BigDecimal": {
+        "type": "Transitive",
+        "resolved": "3003.0.0.346",
+        "contentHash": "o6qdyacVFNvDKX6T0sDEdhMKppdCiTwpj22kdgNfQlIviLSAiLqv/i4G/gYL4ZzqBYzR/o3t8wDWCX21Tt/i1A=="
+      },
+      "Microsoft.Extensions.DependencyInjection.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.7",
+        "contentHash": "Z6mfFEaFcwCfSboxJwOLfu7/31npCY9q70WUamHW/vRQhDvBKOT4Vf9YkZj5J6hLvJpb0oDEYfHunQZj0xxvKw=="
+      },
+      "Microsoft.Extensions.Logging.Abstractions": {
+        "type": "Transitive",
+        "resolved": "10.0.7",
+        "contentHash": "tIEcQ2gvERrH2KiCjdsVcHGhXt9lIsuDStfOIeZWr7/fP8IXhGiYfx0/80PNI7WPO2IYuFtlZLSlnTS8+/Mchw==",
+        "dependencies": {
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.7"
+        }
+      },
+      "NCalc.Core": {
+        "type": "Transitive",
+        "resolved": "6.3.0",
+        "contentHash": "DYhNhLVUQk5bNQBVeHoReZqFdR4WU5kptIfjIJHRRNPs7Ph+fOlxVpfwONVG1i0sBlnFQ2mEexCSXcKhfWGI2Q==",
+        "dependencies": {
+          "ExtendedNumerics.BigDecimal": "3003.0.0.346",
+          "Microsoft.Extensions.Logging.Abstractions": "10.0.7",
+          "NCalc.Parser": "6.3.0",
+          "Parlot": "1.5.7"
+        }
+      },
+      "NCalc.Domain": {
+        "type": "Transitive",
+        "resolved": "6.3.0",
+        "contentHash": "MUuFquLKiW4WwuGK4rSZEZYPxD1j6ZX21dxSpQbHfUnR7oIsV71rkhvMOb1mafQgsZrlSa9c8xBbKrlLxmOPfQ=="
+      },
+      "NCalc.Parser": {
+        "type": "Transitive",
+        "resolved": "6.3.0",
+        "contentHash": "YMbau/slMZuyAJhcyF/hoa2bG7OLjLcboo13BOWOuK//DzuxM4YQtetQO4hODxkrHSdieELVfRV03Vn9bq7Sog==",
+        "dependencies": {
+          "NCalc.Domain": "6.3.0",
+          "Parlot": "1.5.7"
+        }
+      },
+      "Parlot": {
+        "type": "Transitive",
+        "resolved": "1.5.7",
+        "contentHash": "D0PhSypMx1JJVTQUqB8ebwcJxH4NAvdn1d8eKi9lLoNz8c1+8qHw+/Sq5/6HaJFgOaqy1VJBpvYFCIC4I2uvqQ=="
       }
     }
   }

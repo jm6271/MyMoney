@@ -15,7 +15,8 @@
     Closing="ContentDialog_Closing"
     mc:Ignorable="d">
     <ui:ContentDialog.Resources>
-        <converters:CurrencyConverter x:Key="CurrencyConverter" />
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:FirstValidationErrorConverter x:Key="FirstValidationErrorConverter" />
         <Style BasedOn="{StaticResource {x:Type ui:ContentDialog}}" TargetType="{x:Type local:TransferDialog}" />
     </ui:ContentDialog.Resources>
     <StackPanel>
@@ -27,35 +28,40 @@
         </ui:TextBlock>
 
         <ui:TextBlock Margin="0,0,0,4">Transfer from</ui:TextBlock>
-        <Border
-            x:Name="cmbFromBorder"
-            BorderBrush="Transparent"
-            BorderThickness="1">
-            <ComboBox
-                x:Name="cmbFrom"
-                ItemsSource="{Binding Accounts}"
-                LostFocus="cmbFrom_LostFocus"
-                SelectedItem="{Binding TransferFrom}" />
-        </Border>
+        <ComboBox
+            x:Name="cmbFrom"
+            Margin="1,0,2,0"
+            ItemsSource="{Binding Accounts}"
+            SelectedItem="{Binding TransferFrom, ValidatesOnNotifyDataErrors=True}" />
+        <TextBlock
+            Margin="1,2,2,8"
+            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+            Text="{Binding ElementName=cmbFrom, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+            Visibility="{Binding ElementName=cmbFrom, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
 
         <ui:TextBlock Margin="0,8,0,4">Transfer to</ui:TextBlock>
-        <Border
-            x:Name="cmbToBorder"
-            BorderBrush="Transparent"
-            BorderThickness="1">
-            <ComboBox
-                x:Name="cmbTo"
-                ItemsSource="{Binding Accounts}"
-                LostFocus="cmbTo_LostFocus"
-                SelectedItem="{Binding TransferTo}" />
-        </Border>
+        <ComboBox
+            x:Name="cmbTo"
+            Margin="1,0,2,0"
+            ItemsSource="{Binding Accounts}"
+            SelectedItem="{Binding TransferTo, ValidatesOnNotifyDataErrors=True}" />
+        <TextBlock
+            Margin="1,2,2,8"
+            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+            Text="{Binding ElementName=cmbTo, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+            Visibility="{Binding ElementName=cmbTo, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
 
         <ui:TextBlock Margin="0,8,0,4">Transfer amount</ui:TextBlock>
         <ui:TextBox
             x:Name="txtAmount"
-            Margin="1,0,1,0"
+            Margin="1,0,2,0"
             GotKeyboardFocus="txtAmount_GotFocus"
             KeyDown="txtAmount_KeyDown"
-            Text="{Binding Path=Amount, Converter={StaticResource CurrencyConverter}}" />
+            Text="{Binding AmountStr, ValidatesOnNotifyDataErrors=True}" />
+        <TextBlock
+            Margin="1,2,2,0"
+            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+            Text="{Binding ElementName=txtAmount, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+            Visibility="{Binding ElementName=txtAmount, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
     </StackPanel>
 </ui:ContentDialog>

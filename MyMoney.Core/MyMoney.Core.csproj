@@ -9,5 +9,6 @@
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="CsvHelper" />
         <PackageReference Include="LiteDB" />
+        <PackageReference Include="NCalcSync" />
     </ItemGroup>
 </Project>

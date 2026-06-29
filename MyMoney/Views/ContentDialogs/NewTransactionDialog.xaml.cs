@@ -1,21 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using MyMoney.Abstractions;
-using MyMoney.Core.Models;
 using MyMoney.ViewModels.ContentDialogs;
-using MyMoney.ViewModels.Pages;
 using Wpf.Ui.Controls;
 
 namespace MyMoney.Views.ContentDialogs
@@ -30,33 +15,10 @@ namespace MyMoney.Views.ContentDialogs
             InitializeComponent();
         }
 
-        public new async Task<ContentDialogResult> ShowAsync(CancellationToken cancellationToken = default)
-        {
-            if (DataContext is NewTransactionDialogViewModel viewModel)
-            {
-                txtPayee.Text = viewModel.NewTransactionPayee;
-                cmbCategory.ItemsSource = viewModel.CategoryNames;
-            }
-
-            var result = await base.ShowAsync(cancellationToken);
-
-            if (DataContext is NewTransactionDialogViewModel vm)
-            {
-                vm.NewTransactionPayee = SelectedPayee;
-            }
-
-            return result;
-        }
-
-        private async void ContentDialog_Loaded(object sender, RoutedEventArgs e)
+        private void ContentDialog_Loaded(object sender, RoutedEventArgs e)
         {
             txtAmount.Focus();
             txtAmount.SelectAll();
-        }
-
-        public string SelectedPayee
-        {
-            get { return txtPayee.Text; }
         }
 
         private void TextBox_KeyDown(object sender, KeyEventArgs e)
@@ -87,49 +49,14 @@ namespace MyMoney.Views.ContentDialogs
             txtPayee.Focus();
             txtPayee.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
 
-            // validate the user data, and if it is invalid, prevent the dialog from closing
-
-            // get validation errors for all the required fields
-            var amountValidationErrors = Validation.GetErrors(txtAmount);
-            var dateValidationErrors = Validation.GetErrors(txtDate);
-            var invalidPayee = txtPayee.Text == "";
-            var invalidCategory = cmbCategory.SelectedIndex == -1;
-
-            // Clear the red border from custom validated controls
-            CategoryBorder.BorderBrush = Brushes.Transparent;
-            PayeeBorder.BorderBrush = Brushes.Transparent;
-
-            // validate
-            if (
-                !invalidPayee
-                && !invalidCategory
-                && amountValidationErrors is not { Count: > 0 }
-                && dateValidationErrors is not { Count: > 0 }
-            )
-                return;
-            args.Cancel = true;
-
-            if (invalidCategory)
-                CategoryBorder.BorderBrush = Brushes.Red;
-            if (invalidPayee)
-                PayeeBorder.BorderBrush = Brushes.Red;
-        }
-
-        private void TxtPayee_OnLostFocus(object sender, RoutedEventArgs e)
-        {
-            PayeeBorder.BorderBrush = string.IsNullOrEmpty(txtPayee.Text) ? Brushes.Red : Brushes.Transparent;
-        }
-
-        private void cmbCategory_LostFocus(object sender, RoutedEventArgs e)
-        {
-            // Validate
-            if (cmbCategory.SelectedIndex == -1 && !cmbCategory.IsDropDownOpen)
+            if (DataContext is NewTransactionDialogViewModel vm)
             {
-                CategoryBorder.BorderBrush = Brushes.Red;
-            }
-            else
-            {
-                CategoryBorder.BorderBrush = Brushes.Transparent;
+                vm.Validate();
+
+                if (vm.HasErrors)
+                {
+                    args.Cancel = true;
+                }
             }
         }
     }
