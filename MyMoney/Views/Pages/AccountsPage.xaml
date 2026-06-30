@@ -58,7 +58,7 @@
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition x:Name="Col0" Width="275" />
+            <ColumnDefinition x:Name="Col0" Width="300" />
             <ColumnDefinition x:Name="Col1" Width="*" />
         </Grid.ColumnDefinitions>
 
