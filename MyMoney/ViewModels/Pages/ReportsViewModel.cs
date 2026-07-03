@@ -22,28 +22,28 @@ namespace MyMoney.ViewModels.Pages
         #region Chart Properties
 
         /// <summary>
-        /// Series data for the 12-month income vs expenses chart
+        /// Series data for the income vs expenses chart
         /// </summary>
         [ObservableProperty]
-        private ISeries[] _incomeExpense12MonthSeries = [];
+        private ISeries[] _incomeVsExpensesSeries = [];
 
         /// <summary>
-        /// X-axis configuration for the 12-month chart
+        /// X-axis configuration for the Income vs Expenses chart
         /// </summary>
         [ObservableProperty]
-        private Axis[] _incomeExpense12MonthXAxes = GetDefaultXAxis();
+        private Axis[] _incomeVsExpensesXAxes = GetDefaultXAxis();
 
         /// <summary>
-        /// Y-axis configuration for the 12-month chart
+        /// Y-axis configuration for the Income vs Expenses chart
         /// </summary>
         [ObservableProperty]
-        private Axis[] _incomeExpense12MonthYAxes = GetDefaultYAxis();
+        private Axis[] _incomeVsExpensesYAxes = GetDefaultYAxis();
 
         /// <summary>
         /// Paint configuration for the chart legend
         /// </summary>
         [ObservableProperty]
-        private SolidColorPaint _incomeExpense12MonthLegendPaint = new(DefaultTextColor);
+        private SolidColorPaint _incomeVsExpensesLegendPaint = new(DefaultTextColor);
 
         /// <summary>
         /// Current text color for charts, changes with theme
@@ -74,6 +74,9 @@ namespace MyMoney.ViewModels.Pages
 
         [ObservableProperty]
         private int _netWorthPeriodIndex = 2; // Last 30 days
+
+        [ObservableProperty]
+        private int _incomeVsExpensesPeriodIndex;
         #endregion
 
         #region Constants
@@ -92,6 +95,12 @@ namespace MyMoney.ViewModels.Pages
             Last90Days,
             Last365Days,
             YearToDate,
+        }
+
+        private enum IncomeVsExpensesPeriod
+        {
+            Months,
+            Years,
         }
 
         #endregion
@@ -124,20 +133,25 @@ namespace MyMoney.ViewModels.Pages
             {
                 _ = UpdateNetWorthChart();
             }
+            else if (e.PropertyName == nameof(IncomeVsExpensesPeriodIndex))
+            {
+                _ = UpdateIncomeVsExpensesChart();
+            }
         }
 
         private async Task UpdateCharts()
         {
             UpdateTextColor();
             await UpdateNetWorthChart();
-            await Update12MonthIncomeExpenseChart();
+            await UpdateIncomeVsExpensesChart();
         }
 
-        private async Task Update12MonthIncomeExpenseChart()
+        private async Task UpdateIncomeVsExpensesChart()
         {
-            var (incomeSeries, expenseSeries) = await GetChartData();
+            var period = (IncomeVsExpensesPeriod)IncomeVsExpensesPeriodIndex;
+            var (incomeSeries, expenseSeries) = await GetChartData(period);
             UpdateChartSeries(incomeSeries, expenseSeries);
-            UpdateChartAxes();
+            UpdateChartAxes(period);
             UpdateChartLegend();
         }
 
@@ -196,17 +210,27 @@ namespace MyMoney.ViewModels.Pages
             };
         }
 
-        private async Task<(List<double> income, List<double> expenses)> GetChartData()
+        private async Task<(List<double> income, List<double> expenses)> GetChartData(
+            IncomeVsExpensesPeriod period
+        )
         {
+            if (period == IncomeVsExpensesPeriod.Years)
+            {
+                return (
+                    await IncomeVsExpensesCalculator.GetPastYearsIncome(_databaseManager, 11),
+                    await IncomeVsExpensesCalculator.GetPastYearsExpenses(_databaseManager, 11)
+                );
+            }
+
             return (
-                await IncomeExpense12MonthCalculator.GetPast12MonthsIncome(_databaseManager),
-                await IncomeExpense12MonthCalculator.GetPast12MonthsExpenses(_databaseManager)
+                await IncomeVsExpensesCalculator.GetPastMonthsIncome(_databaseManager, 13),
+                await IncomeVsExpensesCalculator.GetPastMonthsExpenses(_databaseManager, 13)
             );
         }
 
         private void UpdateChartSeries(List<double> incomeSeries, List<double> expenseSeries)
         {
-            IncomeExpense12MonthSeries =
+            IncomeVsExpensesSeries =
             [
                 CreateSeries("Income", incomeSeries, IncomeFillColor),
                 CreateSeries("Expenses", expenseSeries, ExpenseFillColor),
@@ -224,12 +248,20 @@ namespace MyMoney.ViewModels.Pages
             };
         }
 
-        private void UpdateChartAxes()
+        private void UpdateChartAxes(IncomeVsExpensesPeriod period)
         {
             var textPaint = new SolidColorPaint(ChartTextColor);
 
-            IncomeExpense12MonthXAxes = [CreateMonthAxis(textPaint)];
-            IncomeExpense12MonthYAxes = [CreateCurrencyAxis(textPaint)];
+            IncomeVsExpensesXAxes =
+            [
+                CreateIncomeVsExpensesXAxis(
+                    textPaint,
+                    period == IncomeVsExpensesPeriod.Years
+                        ? IncomeVsExpensesCalculator.GetYearNames(11)
+                        : IncomeVsExpensesCalculator.GetMonthNames(13)
+                ),
+            ];
+            IncomeVsExpensesYAxes = [CreateCurrencyAxis(textPaint)];
             NetWorthYAxes = [CreateNetWorthYAxis(textPaint)];
         }
 
@@ -243,11 +275,11 @@ namespace MyMoney.ViewModels.Pages
             };
         }
 
-        private static Axis CreateMonthAxis(SolidColorPaint textPaint)
+        private static Axis CreateIncomeVsExpensesXAxis(SolidColorPaint textPaint, List<string> labels)
         {
             return new Axis
             {
-                Labels = IncomeExpense12MonthCalculator.GetMonthNames(),
+                Labels = labels,
                 LabelsRotation = 0,
                 SeparatorsAtCenter = false,
                 TicksAtCenter = true,
@@ -271,7 +303,7 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateChartLegend()
         {
-            IncomeExpense12MonthLegendPaint = new SolidColorPaint(ChartTextColor);
+            IncomeVsExpensesLegendPaint = new SolidColorPaint(ChartTextColor);
         }
 
         private void UpdateTextColor()
