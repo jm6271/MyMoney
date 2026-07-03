@@ -29,6 +29,15 @@ namespace MyMoney.Core.Reports
             return monthNames;
         }
 
+        /// <summary>
+        /// Get the years from the specified number of years ago through the current year.
+        /// </summary>
+        public static List<string> GetYearNames(int numYears = 11)
+        {
+            var currentYear = DateTime.Now.Year;
+            return Enumerable.Range(currentYear - numYears + 1, numYears).Select(year => year.ToString()).ToList();
+        }
+
         public static async Task<List<double>> GetPastMonthsIncome(IDatabaseManager dbManager, int numMonths = 12)
         {
             List<double> income = [];
@@ -54,6 +63,32 @@ namespace MyMoney.Core.Reports
 
                 var total = GetExpenses(transactions);
                 expenses.Add((double)total);
+            }
+
+            return expenses;
+        }
+
+        public static async Task<List<double>> GetPastYearsIncome(IDatabaseManager dbManager, int numYears = 11)
+        {
+            List<double> income = [];
+
+            for (var i = numYears - 1; i >= 0; i--)
+            {
+                var transactions = await GetYearOfTransactions(dbManager, i);
+                income.Add((double)GetIncome(transactions));
+            }
+
+            return income;
+        }
+
+        public static async Task<List<double>> GetPastYearsExpenses(IDatabaseManager dbManager, int numYears = 11)
+        {
+            List<double> expenses = [];
+
+            for (var i = numYears - 1; i >= 0; i--)
+            {
+                var transactions = await GetYearOfTransactions(dbManager, i);
+                expenses.Add((double)GetExpenses(transactions));
             }
 
             return expenses;
@@ -89,6 +124,16 @@ namespace MyMoney.Core.Reports
             var result = await ReadTransactionsWithingDateRange(dbManager, startDate, endDate);
 
             return result;
+        }
+
+        private static async Task<List<Transaction>> GetYearOfTransactions(IDatabaseManager dbManager, int yearsAgo)
+        {
+            var year = DateTime.Now.Year - yearsAgo;
+            return await ReadTransactionsWithingDateRange(
+                dbManager,
+                new DateTime(year, 1, 1),
+                new DateTime(year, 12, 31)
+            );
         }
 
         private static DateTime GetMonthEndDate(int monthsAgo)
