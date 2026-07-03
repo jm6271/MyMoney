@@ -30,10 +30,10 @@
                 Height="400"
                 Background="Transparent"
                 LegendPosition="Bottom"
-                LegendTextPaint="{Binding ViewModel.IncomeExpense12MonthLegendPaint}"
-                Series="{Binding ViewModel.IncomeExpense12MonthSeries}"
-                XAxes="{Binding ViewModel.IncomeExpense12MonthXAxes}"
-                YAxes="{Binding ViewModel.IncomeExpense12MonthYAxes}" />
+                LegendTextPaint="{Binding ViewModel.IncomeVsExpensesLegendPaint}"
+                Series="{Binding ViewModel.IncomeVsExpensesSeries}"
+                XAxes="{Binding ViewModel.IncomeVsExpensesXAxes}"
+                YAxes="{Binding ViewModel.IncomeVsExpensesYAxes}" />
         </ui:Card>
 
         <ui:Card Grid.Row="1" Margin="0,0,0,24">

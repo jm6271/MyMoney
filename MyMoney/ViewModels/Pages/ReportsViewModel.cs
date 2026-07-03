@@ -22,28 +22,28 @@ namespace MyMoney.ViewModels.Pages
         #region Chart Properties
 
         /// <summary>
-        /// Series data for the 12-month income vs expenses chart
+        /// Series data for the income vs expenses chart
         /// </summary>
         [ObservableProperty]
-        private ISeries[] _incomeExpense12MonthSeries = [];
+        private ISeries[] _incomeVsExpensesSeries = [];
 
         /// <summary>
-        /// X-axis configuration for the 12-month chart
+        /// X-axis configuration for the Income vs Expenses chart
         /// </summary>
         [ObservableProperty]
-        private Axis[] _incomeExpense12MonthXAxes = GetDefaultXAxis();
+        private Axis[] _incomeVsExpensesXAxes = GetDefaultXAxis();
 
         /// <summary>
-        /// Y-axis configuration for the 12-month chart
+        /// Y-axis configuration for the Income vs Expenses chart
         /// </summary>
         [ObservableProperty]
-        private Axis[] _incomeExpense12MonthYAxes = GetDefaultYAxis();
+        private Axis[] _incomeVsExpensesYAxes = GetDefaultYAxis();
 
         /// <summary>
         /// Paint configuration for the chart legend
         /// </summary>
         [ObservableProperty]
-        private SolidColorPaint _incomeExpense12MonthLegendPaint = new(DefaultTextColor);
+        private SolidColorPaint _incomeVsExpensesLegendPaint = new(DefaultTextColor);
 
         /// <summary>
         /// Current text color for charts, changes with theme
@@ -130,10 +130,10 @@ namespace MyMoney.ViewModels.Pages
         {
             UpdateTextColor();
             await UpdateNetWorthChart();
-            await Update12MonthIncomeExpenseChart();
+            await UpdateIncomeVsExpensesChart();
         }
 
-        private async Task Update12MonthIncomeExpenseChart()
+        private async Task UpdateIncomeVsExpensesChart()
         {
             var (incomeSeries, expenseSeries) = await GetChartData();
             UpdateChartSeries(incomeSeries, expenseSeries);
@@ -199,14 +199,14 @@ namespace MyMoney.ViewModels.Pages
         private async Task<(List<double> income, List<double> expenses)> GetChartData()
         {
             return (
-                await IncomeExpense12MonthCalculator.GetPast12MonthsIncome(_databaseManager),
-                await IncomeExpense12MonthCalculator.GetPast12MonthsExpenses(_databaseManager)
+                await IncomeVsExpensesCalculator.GetPastMonthsIncome(_databaseManager, 13),
+                await IncomeVsExpensesCalculator.GetPastMonthsExpenses(_databaseManager, 13)
             );
         }
 
         private void UpdateChartSeries(List<double> incomeSeries, List<double> expenseSeries)
         {
-            IncomeExpense12MonthSeries =
+            IncomeVsExpensesSeries =
             [
                 CreateSeries("Income", incomeSeries, IncomeFillColor),
                 CreateSeries("Expenses", expenseSeries, ExpenseFillColor),
@@ -228,8 +228,8 @@ namespace MyMoney.ViewModels.Pages
         {
             var textPaint = new SolidColorPaint(ChartTextColor);
 
-            IncomeExpense12MonthXAxes = [CreateMonthAxis(textPaint)];
-            IncomeExpense12MonthYAxes = [CreateCurrencyAxis(textPaint)];
+            IncomeVsExpensesXAxes = [CreateMonthAxis(textPaint)];
+            IncomeVsExpensesYAxes = [CreateCurrencyAxis(textPaint)];
             NetWorthYAxes = [CreateNetWorthYAxis(textPaint)];
         }
 
@@ -247,7 +247,7 @@ namespace MyMoney.ViewModels.Pages
         {
             return new Axis
             {
-                Labels = IncomeExpense12MonthCalculator.GetMonthNames(),
+                Labels = IncomeVsExpensesCalculator.GetMonthNames(13),
                 LabelsRotation = 0,
                 SeparatorsAtCenter = false,
                 TicksAtCenter = true,
@@ -271,7 +271,7 @@ namespace MyMoney.ViewModels.Pages
 
         private void UpdateChartLegend()
         {
-            IncomeExpense12MonthLegendPaint = new SolidColorPaint(ChartTextColor);
+            IncomeVsExpensesLegendPaint = new SolidColorPaint(ChartTextColor);
         }
 
         private void UpdateTextColor()
