@@ -22,11 +22,11 @@
       },
       "NCalcSync": {
         "type": "Direct",
-        "requested": "[6.3.2, )",
-        "resolved": "6.3.2",
-        "contentHash": "FhYFjMCQE84fpXtKf4X9Clv8twC0VsPVI/7P5715pzxmv21Yfkimyw8IaA5Uq2tYcSdC8eMVl+8c1EFrx1cumg==",
+        "requested": "[6.4.0, )",
+        "resolved": "6.4.0",
+        "contentHash": "yEsGubcMeNIH5Fk/idmcw2EemmLEeREyqvhOCuIGDGjXw6t7QRxLSK1izvHdhatd9AP2OiOzBK/4KJcZgc6uFA==",
         "dependencies": {
-          "NCalc.Core": "6.3.2"
+          "NCalc.Core": "6.4.0"
         }
       },
       "ExtendedNumerics.BigDecimal": {
@@ -49,26 +49,26 @@
       },
       "NCalc.Core": {
         "type": "Transitive",
-        "resolved": "6.3.2",
-        "contentHash": "qiafSDXLGQno5E5dnsxDQQcXPjaE4l38XN1nXvmvbS6phgmJQeUf05d5kIsaEv7D5cCj8olf3zp9TI9ihrMYHQ==",
+        "resolved": "6.4.0",
+        "contentHash": "8OfiSnOvgzvXzfK5zEmOaNaus5JIq/ExZxlZvp3prwsKKFuO1YIJqYifnwDIpgpdu77td0eb3gk/qc97k765rQ==",
         "dependencies": {
           "ExtendedNumerics.BigDecimal": "3003.0.0.346",
           "Microsoft.Extensions.Logging.Abstractions": "10.0.7",
-          "NCalc.Parser": "6.3.2",
+          "NCalc.Parser": "6.4.0",
           "Parlot": "1.5.7"
         }
       },
       "NCalc.Domain": {
         "type": "Transitive",
-        "resolved": "6.3.2",
-        "contentHash": "XY3ojhgAIQ5fPvz4lcxLuhjZEZVi16IYAWWiA7Q3kD7yQ3M0B6qJmxK8TETOK0ZtJsnHe0ZWvuYg8diO/sPtMw=="
+        "resolved": "6.4.0",
+        "contentHash": "PVr+iWFMGXsMHOrHrpicymJjB1dpO7J6BYpHXWKnwoBiJ2wpJGckVyi3RLbTJAnPch7F9r+h1x55Xp8uJLNjTA=="
       },
       "NCalc.Parser": {
         "type": "Transitive",
-        "resolved": "6.3.2",
-        "contentHash": "O82elGarSsi8h3r2fQQsSNoaLYx+BcZl/GMuNHygDTsbgiLwRJWc+74k8xn4gc2CmFS9UEFjSVx/TuORUe93iw==",
+        "resolved": "6.4.0",
+        "contentHash": "6IFg/9Y0YjdFuEF+Ig791AQiLqPhTutLokzDGqLcaq/RvbPIP+PFBY0W7Qg7etFcUwUV3YDtRke7KlOOEpfDDQ==",
         "dependencies": {
-          "NCalc.Domain": "6.3.2",
+          "NCalc.Domain": "6.4.0",
           "Parlot": "1.5.7"
         }
       },
