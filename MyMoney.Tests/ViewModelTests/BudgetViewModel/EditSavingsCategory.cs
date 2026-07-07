@@ -16,7 +16,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel;
 public class EditSavingsCategoryTests
 {
     private Mock<IContentDialogService> _mockContentDialogService;
-    private Mock<IDatabaseManager> _mockDatabaseReader;
+    private DatabaseManager _databaseManager;
     private Mock<IMessageBoxService> _mockMessageBoxService;
     private Mock<IContentDialogFactory> _mockContentDialogFactory;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
@@ -25,17 +25,13 @@ public class EditSavingsCategoryTests
     public void Setup()
     {
         _mockContentDialogService = new Mock<IContentDialogService>();
-        _mockDatabaseReader = new Mock<IDatabaseManager>();
+        _databaseManager = new DatabaseManager(new MemoryStream());
         _mockMessageBoxService = new Mock<IMessageBoxService>();
         _mockContentDialogFactory = new Mock<IContentDialogFactory>();
 
-        // Setup database reader to return empty collection
-        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
-        _mockDatabaseReader.Setup(x => x.ReadDictionary<string, object>("ReportsCache")).Returns(new Dictionary<string, object>());
-
         _viewModel = new(
             _mockContentDialogService.Object,
-            _mockDatabaseReader.Object,
+            _databaseManager,
             _mockMessageBoxService.Object,
             _mockContentDialogFactory.Object
         );
@@ -146,11 +142,14 @@ public class EditSavingsCategoryTests
 
         // Assert
         Assert.AreEqual(600m, _viewModel.CurrentBudget.BudgetSavingsCategories[0].CurrentBalance.Value);
-        Assert.IsTrue(
-            _viewModel
-                .CurrentBudget.BudgetSavingsCategories[0]
-                .Transactions.Any(t => t.TransactionDetail == "Updated balance" && t.Amount.Value == 100m)
-        ); // Should add transaction for 100m difference
+        var balanceTransaction = _databaseManager.GetCollection<Transaction>("Transactions").Single();
+        Assert.AreEqual(-1, balanceTransaction.AccountId);
+        Assert.AreEqual("Updated balance", balanceTransaction.TransactionDetail);
+        Assert.AreEqual(100m, balanceTransaction.Amount.Value);
+        Assert.Contains(
+            balanceTransaction.Id,
+            _viewModel.CurrentBudget.BudgetSavingsCategories[0].TransactionIds
+        );
     }
 
     [TestMethod]
@@ -173,8 +172,9 @@ public class EditSavingsCategoryTests
             new Currency(100m),
             "Planned This Month"
         );
-        originalCategory.Transactions.Add(plannedTransaction);
-        originalCategory.PlannedTransactionHash = plannedTransaction.TransactionHash;
+        _databaseManager.Insert("Transactions", plannedTransaction);
+        originalCategory.TransactionIds.Add(plannedTransaction.Id);
+        originalCategory.PlannedTransactionId = plannedTransaction.Id;
 
         _viewModel.CurrentBudget.BudgetSavingsCategories.Add(originalCategory);
         _viewModel.SavingsCategoriesSelectedIndex = 0;
@@ -202,9 +202,9 @@ public class EditSavingsCategoryTests
         // Assert
         Assert.AreEqual(200m, _viewModel.CurrentBudget.BudgetSavingsCategories[0].BudgetedAmount.Value);
         Assert.AreEqual(600m, _viewModel.CurrentBudget.BudgetSavingsCategories[0].CurrentBalance.Value); // 500 + 100
-        var updatedPlannedTransaction = _viewModel
-            .CurrentBudget.BudgetSavingsCategories[0]
-            .Transactions.First(t => t.TransactionHash == originalCategory.PlannedTransactionHash);
+        var updatedPlannedTransaction = _databaseManager
+            .GetCollection<Transaction>("Transactions")
+            .Single(t => t.Id == originalCategory.PlannedTransactionId);
         Assert.AreEqual(200m, updatedPlannedTransaction.Amount.Value);
     }
 }

@@ -333,6 +333,21 @@ namespace MyMoney.ViewModels.Pages
                     CurrentBalance = viewModel.CurrentBalance + viewModel.Planned,
                 };
 
+                Transaction startingBalance = new(
+                    CurrentBudget.BudgetDate.AddDays(-1),
+                    "",
+                    new Category() { Group = "Savings", Name = category.CategoryName },
+                    viewModel.CurrentBalance,
+                    "Starting balance"
+                )
+                {
+                    AccountId = -1,
+                    TransactionDetail = "Starting balance",
+                };
+                _databaseManager.Insert("Transactions", startingBalance);
+                category.TransactionIds.Add(startingBalance.Id);
+                category.BalanceTransactionId = startingBalance.Id;
+
                 // Add a transaction that applies the budgeted amount to the savings category
                 Transaction appliedBudgetedAmount = new(
                     CurrentBudget.BudgetDate,
@@ -341,10 +356,12 @@ namespace MyMoney.ViewModels.Pages
                     category.BudgetedAmount,
                     "Planned this month"
                 );
+                appliedBudgetedAmount.AccountId = -1;
                 appliedBudgetedAmount.TransactionDetail = "Planned this month";
 
-                category.Transactions.Add(appliedBudgetedAmount);
-                category.PlannedTransactionHash = appliedBudgetedAmount.TransactionHash;
+                _databaseManager.Insert("Transactions", appliedBudgetedAmount);
+                category.TransactionIds.Add(appliedBudgetedAmount.Id);
+                category.PlannedTransactionId = appliedBudgetedAmount.Id;
 
                 // Add the category to the list of savings categories
                 CurrentBudget.BudgetSavingsCategories.Add(category);
@@ -541,7 +558,14 @@ namespace MyMoney.ViewModels.Pages
                 Category = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].CategoryName,
                 Planned = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].BudgetedAmount,
                 CurrentBalance = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].CurrentBalance,
-                RecentTransactions = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex].Transactions,
+                RecentTransactions = new ObservableCollection<Transaction>(
+                    _databaseManager
+                        .GetCollection<Transaction>("Transactions")
+                        .Where(x =>
+                            CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex]
+                                .TransactionIds.Contains(x.Id)
+                        )
+                ),
             };
             viewModel.SortTransactions();
 
@@ -590,8 +614,10 @@ namespace MyMoney.ViewModels.Pages
                         new(viewModel.CurrentBalance.Value - editedSavingsCategory.CurrentBalance.Value),
                         "Updated balance"
                     );
+                    updatedTransaction.AccountId = -1;
                     updatedTransaction.TransactionDetail = "Updated balance";
-                    editedSavingsCategory.Transactions.Add(updatedTransaction);
+                    _databaseManager.Insert("Transactions", updatedTransaction);
+                    editedSavingsCategory.TransactionIds.Add(updatedTransaction.Id);
 
                     // Update the balance
                     editedSavingsCategory.CurrentBalance = viewModel.CurrentBalance;
@@ -600,23 +626,21 @@ namespace MyMoney.ViewModels.Pages
                 // Update the planned amount if it has changed
                 if (editedSavingsCategory.BudgetedAmount != viewModel.Planned)
                 {
-                    for (int i = 0; i < editedSavingsCategory.Transactions.Count; i++)
+                    var plannedTransaction = _databaseManager
+                        .GetCollection<Transaction>("Transactions")
+                        .FirstOrDefault(x => x.Id == editedSavingsCategory.PlannedTransactionId);
+                    if (plannedTransaction != null)
                     {
-                        if (
-                            editedSavingsCategory.Transactions[i].TransactionHash
-                            == editedSavingsCategory.PlannedTransactionHash
-                        )
-                        {
-                            // Remove the amount of this transaction from the balance
-                            editedSavingsCategory.CurrentBalance -= editedSavingsCategory.BudgetedAmount;
+                        // Remove the amount of this transaction from the balance
+                        editedSavingsCategory.CurrentBalance -= editedSavingsCategory.BudgetedAmount;
 
-                            // Apply the new amount
-                            editedSavingsCategory.CurrentBalance += viewModel.Planned;
-                            editedSavingsCategory.BudgetedAmount = viewModel.Planned;
+                        // Apply the new amount
+                        editedSavingsCategory.CurrentBalance += viewModel.Planned;
+                        editedSavingsCategory.BudgetedAmount = viewModel.Planned;
 
-                            // Modify the transaction
-                            editedSavingsCategory.Transactions[i].Amount = editedSavingsCategory.BudgetedAmount;
-                        }
+                        // Modify the transaction
+                        plannedTransaction.Amount = editedSavingsCategory.BudgetedAmount;
+                        _databaseManager.Update("Transactions", plannedTransaction);
                     }
                 }
 
@@ -654,6 +678,15 @@ namespace MyMoney.ViewModels.Pages
 
             if (result != Wpf.Ui.Controls.MessageBoxResult.Primary)
                 return; // User clicked no
+
+            var categoryToDelete = CurrentBudget.BudgetSavingsCategories[SavingsCategoriesSelectedIndex];
+            var internalTransactionIds = (_databaseManager
+                .GetCollection<Transaction>("Transactions") ?? [])
+                .Where(x => x.AccountId == -1 && categoryToDelete.TransactionIds.Contains(x.Id))
+                .Select(x => x.Id)
+                .ToList();
+            foreach (var transactionId in internalTransactionIds)
+                _databaseManager.Delete<Transaction>("Transactions", transactionId);
 
             CurrentBudget.BudgetSavingsCategories.RemoveAt(SavingsCategoriesSelectedIndex);
 

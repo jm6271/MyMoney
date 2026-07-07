@@ -14,14 +14,7 @@ public partial class Transaction : ObservableObject
         Memo = memo;
         Date = date;
 
-        if (TransactionHash == "")
-        {
-            // Generate a hash for this transaction
-            TransactionHash = Guid.NewGuid().ToString();
-        }
     }
-
-    public string TransactionHash { get; set; } = "";
 
     [ObservableProperty]
     private int _id;

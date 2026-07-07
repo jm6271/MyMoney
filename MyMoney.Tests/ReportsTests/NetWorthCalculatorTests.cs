@@ -51,9 +51,18 @@ public class NetWorthCalculatorTests
         ]);
 
         _databaseManager.WriteCollection("Transactions", [
-            new Transaction(DateTime.Today.AddDays(-1), "Payee1", new Category(), new Currency(200m), "Memo1"),
-            new Transaction(DateTime.Today, "Payee2", new Category(), new Currency(300m), "Memo2"),
-            new Transaction(DateTime.Today.AddDays(-3), "Payee3", new Category(), new Currency(100m), "Memo3"),
+            new Transaction(DateTime.Today.AddDays(-1), "Payee1", new Category(), new Currency(200m), "Memo1")
+            {
+                AccountId = 1,
+            },
+            new Transaction(DateTime.Today, "Payee2", new Category(), new Currency(300m), "Memo2")
+            {
+                AccountId = 1,
+            },
+            new Transaction(DateTime.Today.AddDays(-3), "Payee3", new Category(), new Currency(100m), "Memo3")
+            {
+                AccountId = 2,
+            },
         ]);
 
         // Act
@@ -66,5 +75,44 @@ public class NetWorthCalculatorTests
         Assert.AreEqual(1000m, result[startDate.AddDays(2)]);
         Assert.AreEqual(1200m, result[startDate.AddDays(3)]);
         Assert.AreEqual(1500m, result[startDate.AddDays(4)]);
+    }
+
+    [TestMethod]
+    public async Task GetNetWorthSinceStartDate_ExcludesInternalSavingsTransactions()
+    {
+        // Arrange
+        var startDate = DateTime.Today.AddDays(-1);
+
+        _databaseManager.WriteCollection("Accounts", [
+            new Account
+            {
+                Total = new Currency(1000m),
+                AccountName = "Account 1",
+            },
+        ]);
+
+        _databaseManager.WriteCollection("Transactions", [
+            new Transaction(DateTime.Today, "Payee1", new Category(), new Currency(100m), "Memo1")
+            {
+                AccountId = 1,
+            },
+            new Transaction(
+                DateTime.Today,
+                "",
+                new Category { Group = "Savings", Name = "Emergency Fund" },
+                new Currency(900m),
+                "Planned this month"
+            )
+            {
+                AccountId = -1,
+            },
+        ]);
+
+        // Act
+        var result = await _calculator.GetNetWorthSinceStartDate(startDate);
+
+        // Assert
+        Assert.AreEqual(900m, result[startDate]);
+        Assert.AreEqual(1000m, result[DateTime.Today]);
     }
 }

@@ -288,7 +288,9 @@ namespace MyMoney.Core.Reports
             await databaseReader.QueryAsync<Transaction>("Transactions", async (query) =>
             {
                 var results = query.Where(t =>
-                    t.Category.Name == category.Name && (t.Date.Year == month.Year && t.Date.Month == month.Month)
+                    t.AccountId != -1
+                    && t.Category.Name == category.Name
+                    && (t.Date.Year == month.Year && t.Date.Month == month.Month)
                 ).ToList();
 
                 foreach (var transaction in results)
