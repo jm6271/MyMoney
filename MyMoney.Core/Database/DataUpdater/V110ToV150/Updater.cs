@@ -84,14 +84,15 @@ internal static class Updater
     {
         return new Transaction(
             oldTransaction.Date,
-            oldTransaction.Payee,
+            string.IsNullOrEmpty(oldTransaction.TransactionDetail)
+                ? oldTransaction.Payee
+                : oldTransaction.TransactionDetail,
             oldTransaction.Category,
             oldTransaction.Amount,
             oldTransaction.Memo
         )
         {
             Id = oldTransaction.Id,
-            TransactionDetail = oldTransaction.TransactionDetail,
             Reconciled = oldTransaction.Reconciled,
             AccountId = oldTransaction.AccountId,
         };

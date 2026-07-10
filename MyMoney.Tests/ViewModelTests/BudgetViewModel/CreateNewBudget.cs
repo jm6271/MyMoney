@@ -146,7 +146,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             // Assert PlannedTransactionId matches the planned-this-month transaction
             var plannedTransaction = _databaseManager
                 .GetCollection<MyMoney.Core.Models.Transaction>("Transactions")
-                .First(t => t.TransactionDetail == "Planned This Month");
+                .First(t => t.Payee == "Planned This Month");
             Assert.AreEqual(plannedTransaction.Id, copiedSavings.PlannedTransactionId);
         }
     }

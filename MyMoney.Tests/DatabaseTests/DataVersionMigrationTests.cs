@@ -18,9 +18,11 @@ public class DataVersionMigrationTests
         );
 
         var accountTransaction = CreateLegacyTransaction("account-hash", new Currency(-25m), 1);
+        accountTransaction.Payee = "Grocery Store";
         databaseManager.Insert("Transactions", accountTransaction);
 
         var plannedTransaction = CreateLegacyTransaction("planned-hash", new Currency(50m), -1);
+        plannedTransaction.Payee = "Legacy Planned Payee";
         plannedTransaction.TransactionDetail = "Planned This Month";
         var category = new LegacySavingsCategory
         {
@@ -61,16 +63,23 @@ public class DataVersionMigrationTests
         Assert.Contains(migratedPlannedTransaction.Id, migratedCategory.TransactionIds);
         Assert.AreEqual(migratedPlannedTransaction.Id, migratedCategory.PlannedTransactionId);
         Assert.AreEqual("category-hash", migratedCategory.CategoryHash);
+        Assert.AreEqual("Grocery Store", migratedAccountTransaction.Payee);
+        Assert.AreEqual("Planned This Month", migratedPlannedTransaction.Payee);
 
         var transactionDocument = databaseManager
             .GetCollection<BsonDocument>("Transactions")
             .First(x => x["_id"].AsInt32 == migratedAccountTransaction.Id);
+        var plannedTransactionDocument = databaseManager
+            .GetCollection<BsonDocument>("Transactions")
+            .First(x => x["_id"].AsInt32 == migratedPlannedTransaction.Id);
         var savingsDocument = databaseManager
             .GetCollection<BsonDocument>("Budgets")
             .Single()["BudgetSavingsCategories"]
             .AsArray.Single()
             .AsDocument;
         Assert.IsFalse(transactionDocument.ContainsKey("TransactionHash"));
+        Assert.IsFalse(transactionDocument.ContainsKey("TransactionDetail"));
+        Assert.IsFalse(plannedTransactionDocument.ContainsKey("TransactionDetail"));
         Assert.IsFalse(savingsDocument.ContainsKey("Transactions"));
         Assert.IsFalse(savingsDocument.ContainsKey("PlannedTransactionHash"));
     }

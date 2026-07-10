@@ -32,9 +32,6 @@ public partial class Transaction : ObservableObject
     private string _memo;
 
     [ObservableProperty]
-    private string _transactionDetail = "";
-
-    [ObservableProperty]
     private DateTime _date;
 
     [ObservableProperty]

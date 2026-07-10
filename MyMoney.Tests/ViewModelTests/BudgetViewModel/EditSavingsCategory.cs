@@ -2,6 +2,7 @@ using Moq;
 using MyMoney.Abstractions;
 using MyMoney.Core.Database;
 using MyMoney.Core.Models;
+using MyMoney.Core.Services.Budgets;
 using MyMoney.Services;
 using MyMoney.ViewModels.ContentDialogs;
 using MyMoney.Views.ContentDialogs;
@@ -144,7 +145,7 @@ public class EditSavingsCategoryTests
         Assert.AreEqual(600m, _viewModel.CurrentBudget.BudgetSavingsCategories[0].CurrentBalance.Value);
         var balanceTransaction = _databaseManager.GetCollection<Transaction>("Transactions").Single();
         Assert.AreEqual(-1, balanceTransaction.AccountId);
-        Assert.AreEqual("Updated balance", balanceTransaction.TransactionDetail);
+        Assert.AreEqual("Updated balance", balanceTransaction.Payee);
         Assert.AreEqual(100m, balanceTransaction.Amount.Value);
         Assert.Contains(
             balanceTransaction.Id,
