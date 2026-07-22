@@ -285,7 +285,18 @@
                                     BudgetedAmount="{Binding Budgeted}"
                                     Category="{Binding Category}"
                                     IsExpense="{Binding IsExpense}"
-                                    RemainingAmount="{Binding Remaining}" />
+                                    RemainingAmount="{Binding Remaining}">
+                                    <Controls:BudgetSummaryItem.Style>
+                                        <Style TargetType="Controls:BudgetSummaryItem">
+                                            <Setter Property="ShowProgressBar" Value="True" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Group}" Value="Savings">
+                                                    <Setter Property="ShowProgressBar" Value="False" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Controls:BudgetSummaryItem.Style>
+                                </Controls:BudgetSummaryItem>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
 

@@ -74,7 +74,28 @@ public class IncomeVsExpensesCalculatorTests
         Assert.AreEqual(50, expenses.Sum());
     }
 
-    private static Transaction CreateTransaction(int year, decimal amount, string category)
+    [TestMethod]
+    public async Task GetPastYearsTotals_ExcludesInternalSavingsTransactions()
+    {
+        var currentYear = DateTime.Today.Year;
+        _databaseManager.WriteCollection(
+            "Transactions",
+            [
+                CreateTransaction(currentYear, 200m, "Salary"),
+                CreateTransaction(currentYear, -50m, "Food"),
+                CreateTransaction(currentYear, 1000m, "Emergency Fund", -1),
+                CreateTransaction(currentYear, -500m, "Emergency Fund", -1),
+            ]
+        );
+
+        var income = await IncomeVsExpensesCalculator.GetPastYearsIncome(_databaseManager);
+        var expenses = await IncomeVsExpensesCalculator.GetPastYearsExpenses(_databaseManager);
+
+        Assert.AreEqual(200, income.Sum());
+        Assert.AreEqual(50, expenses.Sum());
+    }
+
+    private static Transaction CreateTransaction(int year, decimal amount, string category, int accountId = 1)
     {
         return new Transaction(
             new DateTime(year, 6, 15),
@@ -82,6 +103,9 @@ public class IncomeVsExpensesCalculatorTests
             new Category { Name = category },
             new Currency(amount),
             ""
-        );
+        )
+        {
+            AccountId = accountId,
+        };
     }
 }

@@ -55,7 +55,7 @@ public class BudgetServicesTests
     }
 
     [TestMethod]
-    public async Task CreateBudget_CopiesPriorBudgetAndPreservesSavingsCarryForwardHashes()
+    public async Task CreateBudget_CopiesPriorBudgetAndStoresSavingsTransactionsById()
     {
         using var databaseManager = new DatabaseManager(new MemoryStream());
         var priorDate = new DateTime(2026, 4, 1);
@@ -90,10 +90,12 @@ public class BudgetServicesTests
         Assert.AreEqual(1, result.Budget.BudgetSavingsCategories.Count);
 
         var savings = result.Budget.BudgetSavingsCategories[0];
+        var transactions = databaseManager.GetCollection<Transaction>("Transactions");
         Assert.AreEqual(300m, savings.CurrentBalance.Value);
-        Assert.AreEqual(2, savings.Transactions.Count);
-        Assert.AreEqual(savings.BalanceTransactionHash, savings.Transactions[0].TransactionHash);
-        Assert.AreEqual(savings.PlannedTransactionHash, savings.Transactions[1].TransactionHash);
+        Assert.AreEqual(2, savings.TransactionIds.Count);
+        Assert.AreEqual(savings.BalanceTransactionId, savings.TransactionIds[0]);
+        Assert.AreEqual(savings.PlannedTransactionId, savings.TransactionIds[1]);
+        Assert.IsTrue(transactions.All(x => x.AccountId == -1));
     }
 
     [TestMethod]
@@ -139,8 +141,9 @@ public class BudgetServicesTests
 
         var futureCategory = (BudgetSavingsCategory)original.Clone();
         futureCategory.CurrentBalance = new Currency(100m);
-        futureCategory.BalanceTransactionHash = balanceTransaction.TransactionHash;
-        futureCategory.Transactions.Add(balanceTransaction);
+        databaseManager.Insert("Transactions", balanceTransaction);
+        futureCategory.BalanceTransactionId = balanceTransaction.Id;
+        futureCategory.TransactionIds.Add(balanceTransaction.Id);
 
         var futureBudget = CreateBudget(new DateTime(2026, 6, 1));
         futureBudget.BudgetSavingsCategories.Add(futureCategory);
@@ -154,8 +157,9 @@ public class BudgetServicesTests
 
         var savedBudget = databaseManager.GetCollection<Budget>("Budgets").Single();
         var savedCategory = savedBudget.BudgetSavingsCategories[0];
+        var savedTransaction = databaseManager.GetCollection<Transaction>("Transactions").Single();
         Assert.AreEqual(125m, savedCategory.CurrentBalance.Value);
-        Assert.AreEqual(125m, savedCategory.Transactions[0].Amount.Value);
+        Assert.AreEqual(125m, savedTransaction.Amount.Value);
     }
 
     [TestMethod]
@@ -175,6 +179,7 @@ public class BudgetServicesTests
             new Currency(10m),
             ""
         );
+        databaseManager.Insert("Transactions", addedTransaction);
         var addResult = service.ApplyTransactionChangeToCurrentBudget(
             addedTransaction,
             TransactionChangeOperation.Add
@@ -188,7 +193,7 @@ public class BudgetServicesTests
             ""
         )
         {
-            TransactionHash = addedTransaction.TransactionHash,
+            Id = addedTransaction.Id,
         };
         var editResult = service.ApplyTransactionChangeToCurrentBudget(
             editedTransaction,
@@ -206,7 +211,7 @@ public class BudgetServicesTests
         Assert.IsTrue(editResult.Changed);
         Assert.IsTrue(deleteResult.Changed);
         Assert.AreEqual(0m, savedCategory.CurrentBalance.Value);
-        Assert.AreEqual(0, savedCategory.Transactions.Count);
+        Assert.AreEqual(0, savedCategory.TransactionIds.Count);
     }
 
     private static Budget CreateBudget(DateTime date)

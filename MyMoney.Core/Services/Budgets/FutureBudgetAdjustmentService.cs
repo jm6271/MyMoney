@@ -36,19 +36,19 @@ public sealed class FutureBudgetAdjustmentService
 
                     if (
                         currentSavingsCategory.CategoryHash == modifiedSavingsCategory.CategoryHash
-                        && currentSavingsCategory.Transactions.Count != 0
+                        && currentSavingsCategory.BalanceTransactionId != 0
                     )
                     {
                         var balanceDifference =
                             modifiedSavingsCategory.CurrentBalance - originalSavingsCategory.CurrentBalance;
 
-                        foreach (
-                            var transaction in from Transaction transaction in currentSavingsCategory.Transactions
-                                               where transaction.TransactionHash == currentSavingsCategory.BalanceTransactionHash
-                                               select transaction
-                        )
+                        var transaction = _databaseManager
+                            .GetCollection<Transaction>("Transactions")
+                            .FirstOrDefault(x => x.Id == currentSavingsCategory.BalanceTransactionId);
+                        if (transaction != null)
                         {
                             transaction.Amount += balanceDifference;
+                            _databaseManager.Update("Transactions", transaction);
                         }
 
                         currentSavingsCategory.CurrentBalance += balanceDifference;

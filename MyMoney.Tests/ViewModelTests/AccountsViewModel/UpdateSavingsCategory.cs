@@ -101,10 +101,10 @@ public class UpdateSavingsCategoryTests
         Assert.HasCount(1, finalBudgetCollection.Budgets);
         await _viewModel.SelectedAccountChanged();
         Assert.HasCount(1, _viewModel.SelectedAccountTransactions);
-        Assert.HasCount(1, finalBudgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions);
+        Assert.HasCount(1, finalBudgetCollection.Budgets[0].BudgetSavingsCategories[0].TransactionIds);
         Assert.AreEqual(
-            _viewModel.SelectedAccountTransactions[0].TransactionHash,
-            finalBudgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions[0].TransactionHash
+            _viewModel.SelectedAccountTransactions[0].Id,
+            finalBudgetCollection.Budgets[0].BudgetSavingsCategories[0].TransactionIds[0]
         );
         Assert.AreEqual(new(400), finalBudgetCollection.Budgets[0].BudgetSavingsCategories[0].CurrentBalance);
     }
@@ -121,10 +121,12 @@ public class UpdateSavingsCategoryTests
             new(-200),
             "Original Memo"
         );
+        originalTransaction.AccountId = 1;
+        _databaseManager.Insert("Transactions", originalTransaction);
         _viewModel.SelectedAccountTransactions.Add(originalTransaction);
 
         var budgetCollection = new BudgetCollection(_databaseManager);
-        budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions.Add(originalTransaction);
+        budgetCollection.Budgets[0].BudgetSavingsCategories[0].TransactionIds.Add(originalTransaction.Id);
         budgetCollection.SaveBudgetCollection();
 
         var fake = new Mock<IContentDialog>();
@@ -159,13 +161,12 @@ public class UpdateSavingsCategoryTests
         Assert.HasCount(1, _viewModel.Accounts);
         Assert.HasCount(1, _viewModel.SelectedAccountTransactions);
         Assert.HasCount(1, budgetCollection.Budgets);
-        Assert.HasCount(1, budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions);
+        Assert.HasCount(1, budgetCollection.Budgets[0].BudgetSavingsCategories[0].TransactionIds);
         Assert.AreEqual(
-            _viewModel.SelectedAccountTransactions[0].TransactionHash,
-            budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions[0].TransactionHash
+            _viewModel.SelectedAccountTransactions[0].Id,
+            budgetCollection.Budgets[0].BudgetSavingsCategories[0].TransactionIds[0]
         );
         Assert.AreEqual(-100m, _viewModel.SelectedAccountTransactions[0].Amount.Value);
-        Assert.AreEqual(-100m, budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions[0].Amount.Value);
         Assert.AreEqual(600m, budgetCollection.Budgets[0].BudgetSavingsCategories[0].CurrentBalance.Value);
     }
 
@@ -186,8 +187,10 @@ public class UpdateSavingsCategoryTests
             new(-100),
             "Original Memo"
         );
+        originalTransaction.AccountId = 1;
+        _databaseManager.Insert("Transactions", originalTransaction);
         _viewModel.SelectedAccountTransactions.Add(originalTransaction);
-        budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions.Add(originalTransaction);
+        budgetCollection.Budgets[0].BudgetSavingsCategories[0].TransactionIds.Add(originalTransaction.Id);
         budgetCollection.SaveBudgetCollection();
 
         var fake = new Mock<IContentDialog>();
@@ -223,14 +226,13 @@ public class UpdateSavingsCategoryTests
         var account = _viewModel.Accounts[0];
         Assert.HasCount(1, _viewModel.SelectedAccountTransactions);
         Assert.HasCount(1, budgetCollection.Budgets);
-        Assert.HasCount(0, budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions);
-        Assert.HasCount(1, budgetCollection.Budgets[0].BudgetSavingsCategories[1].Transactions);
+        Assert.HasCount(0, budgetCollection.Budgets[0].BudgetSavingsCategories[0].TransactionIds);
+        Assert.HasCount(1, budgetCollection.Budgets[0].BudgetSavingsCategories[1].TransactionIds);
         Assert.AreEqual(
-            _viewModel.SelectedAccountTransactions[0].TransactionHash,
-            budgetCollection.Budgets[0].BudgetSavingsCategories[1].Transactions[0].TransactionHash
+            _viewModel.SelectedAccountTransactions[0].Id,
+            budgetCollection.Budgets[0].BudgetSavingsCategories[1].TransactionIds[0]
         );
         Assert.AreEqual(-100m, _viewModel.SelectedAccountTransactions[0].Amount.Value);
-        Assert.AreEqual(-100m, budgetCollection.Budgets[0].BudgetSavingsCategories[1].Transactions[0].Amount.Value);
         Assert.AreEqual(600m, budgetCollection.Budgets[0].BudgetSavingsCategories[0].CurrentBalance.Value);
         Assert.AreEqual(900m, budgetCollection.Budgets[0].BudgetSavingsCategories[1].CurrentBalance.Value);
     }
@@ -248,9 +250,11 @@ public class UpdateSavingsCategoryTests
             new(-200),
             "Memo"
         );
+        transactionToDelete.AccountId = 1;
+        _databaseManager.Insert("Transactions", transactionToDelete);
         _viewModel.SelectedAccountTransactions.Add(transactionToDelete);
         BudgetCollection budgetCollection = new(_databaseManager);
-        budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions.Add(transactionToDelete);
+        budgetCollection.Budgets[0].BudgetSavingsCategories[0].TransactionIds.Add(transactionToDelete.Id);
         budgetCollection.SaveBudgetCollection();
 
         _messageBoxServiceMock
@@ -268,7 +272,7 @@ public class UpdateSavingsCategoryTests
         // Assert
         Assert.HasCount(0, _viewModel.SelectedAccountTransactions);
         Assert.HasCount(1, budgetCollection.Budgets);
-        Assert.HasCount(0, budgetCollection.Budgets[0].BudgetSavingsCategories[0].Transactions);
+        Assert.HasCount(0, budgetCollection.Budgets[0].BudgetSavingsCategories[0].TransactionIds);
         Assert.AreEqual(700m, budgetCollection.Budgets[0].BudgetSavingsCategories[0].CurrentBalance.Value);
     }
 }

@@ -20,7 +20,7 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel;
 public class AddSavingsCategoryTests
 {
     private Mock<IContentDialogService> _mockContentDialogService;
-    private Mock<IDatabaseManager> _mockDatabaseReader;
+    private DatabaseManager _databaseManager;
     private Mock<IMessageBoxService> _mockMessageBoxService;
     private Mock<IContentDialogFactory> _mockContentDialogFactory;
     private MyMoney.ViewModels.Pages.BudgetViewModel _viewModel;
@@ -29,16 +29,13 @@ public class AddSavingsCategoryTests
     public void Setup()
     {
         _mockContentDialogService = new Mock<IContentDialogService>();
-        _mockDatabaseReader = new Mock<IDatabaseManager>();
+        _databaseManager = new DatabaseManager(new MemoryStream());
         _mockMessageBoxService = new Mock<IMessageBoxService>();
         _mockContentDialogFactory = new Mock<IContentDialogFactory>();
 
-        // Setup database reader to return empty collection
-        _mockDatabaseReader.Setup(x => x.GetCollection<Budget>("Budgets")).Returns(new List<Budget>());
-
         _viewModel = new(
             _mockContentDialogService.Object,
-            _mockDatabaseReader.Object,
+            _databaseManager,
             _mockMessageBoxService.Object,
             _mockContentDialogFactory.Object
         );
@@ -48,7 +45,7 @@ public class AddSavingsCategoryTests
     public async Task AddSavingsCategory_WhenDialogCancelled_ShouldNotAddCategory()
     {
         // Arrange
-        _viewModel.CurrentBudget = new Budget();
+        _viewModel.CurrentBudget = new Budget { BudgetDate = DateTime.Today };
         var fakeDialog = new Mock<IContentDialog>();
         fakeDialog.SetupAllProperties();
         fakeDialog.Setup(x => x.ShowAsync(It.IsAny<CancellationToken>())).ReturnsAsync(ContentDialogResult.Secondary);
@@ -66,7 +63,7 @@ public class AddSavingsCategoryTests
     public async Task AddSavingsCategory_WhenDialogConfirmed_ShouldAddNewCategory()
     {
         // Arrange
-        _viewModel.CurrentBudget = new Budget();
+        _viewModel.CurrentBudget = new Budget { BudgetDate = DateTime.Today };
         var fakeDialog = new Mock<IContentDialog>();
         fakeDialog.SetupAllProperties();
         fakeDialog
@@ -77,6 +74,7 @@ public class AddSavingsCategoryTests
                     var vm = fakeDialog.Object.DataContext as SavingsCategoryDialogViewModel;
                     vm!.Category = "Test Savings";
                     vm.Planned = new Currency(200m);
+                    vm.CurrentBalance = new Currency(500m);
                 }
             )
             .ReturnsAsync(ContentDialogResult.Primary);
@@ -90,13 +88,23 @@ public class AddSavingsCategoryTests
         Assert.HasCount(1, _viewModel.CurrentBudget.BudgetSavingsCategories);
         Assert.AreEqual("Test Savings", _viewModel.CurrentBudget.BudgetSavingsCategories[0].CategoryName);
         Assert.AreEqual(200m, _viewModel.CurrentBudget.BudgetSavingsCategories[0].BudgetedAmount.Value);
+        var category = _viewModel.CurrentBudget.BudgetSavingsCategories[0];
+        var transactions = _databaseManager.GetCollection<Transaction>("Transactions");
+        Assert.HasCount(2, transactions);
+        Assert.IsTrue(transactions.All(x => x.AccountId == -1));
+        Assert.Contains(category.BalanceTransactionId, category.TransactionIds);
+        Assert.Contains(category.PlannedTransactionId, category.TransactionIds);
+        Assert.AreEqual(
+            500m,
+            transactions.Single(x => x.Id == category.BalanceTransactionId).Amount.Value
+        );
     }
 
     [TestMethod]
     public async Task AddSavingsCategory_WhenSavingsCategoryAlreadyExists_ShouldShowErrorMessage()
     {
         // Arrange
-        _viewModel.CurrentBudget = new Budget();
+        _viewModel.CurrentBudget = new Budget { BudgetDate = DateTime.Today };
         _viewModel.CurrentBudget.BudgetSavingsCategories.Add(
             new BudgetSavingsCategory { CategoryName = "Existing Savings", BudgetedAmount = new Currency(100m) }
         );

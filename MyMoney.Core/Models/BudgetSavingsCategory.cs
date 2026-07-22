@@ -26,15 +26,15 @@ namespace MyMoney.Core.Models
         private Currency _spent = new(0m);
 
         [ObservableProperty]
-        private string _plannedTransactionHash = string.Empty;
+        private int _plannedTransactionId;
 
         [ObservableProperty]
-        private string _balanceTransactionHash = string.Empty;
+        private int _balanceTransactionId;
 
         [ObservableProperty]
-        private ObservableCollection<Transaction> _transactions = [];
+        private ObservableCollection<int> _transactionIds = [];
 
-        public string CategoryHash { get; private set; } = "";
+        public string CategoryHash { get; internal set; } = "";
 
         public BudgetSavingsCategory()
         {
@@ -53,7 +53,7 @@ namespace MyMoney.Core.Models
                 CurrentBalance = new Currency(this.CurrentBalance.Value),
                 Spent = new Currency(0.0m),
                 BudgetedAmount = new(this.BudgetedAmount.Value),
-                Transactions = [],
+                TransactionIds = [],
                 CategoryHash = this.CategoryHash,
             };
         }

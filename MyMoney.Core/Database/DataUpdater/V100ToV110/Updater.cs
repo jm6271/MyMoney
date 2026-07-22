@@ -18,7 +18,7 @@ namespace MyMoney.DataUpdater.V100ToV110
 
             // Prepare new collections
             List<Core.Models.Account> newAccounts = [];
-            List<Core.Models.Transaction> newTransactions = [];
+            List<V110ToV150.OldModels.Transaction> newTransactions = [];
 
             // Migrate data
             foreach (var oldAccount in oldAccounts)
@@ -32,10 +32,17 @@ namespace MyMoney.DataUpdater.V100ToV110
                 // Migrate Transactions
                 foreach (var oldTransaction in oldAccount.Transactions)
                 {
-                    Core.Models.Transaction newTransaction = new(oldTransaction.Date, oldTransaction.Payee, oldTransaction.Category, oldTransaction.Amount, oldTransaction.Memo);
-                    newTransaction.AccountId = oldAccount.Id; // Link to Account
-                    newTransaction.TransactionHash = oldTransaction.TransactionHash;
-                    newTransaction.TransactionDetail = oldTransaction.TransactionDetail;
+                    V110ToV150.OldModels.Transaction newTransaction = new()
+                    {
+                        Date = oldTransaction.Date,
+                        Payee = oldTransaction.Payee,
+                        Category = oldTransaction.Category,
+                        Amount = oldTransaction.Amount,
+                        Memo = oldTransaction.Memo,
+                        AccountId = oldAccount.Id,
+                        TransactionHash = oldTransaction.TransactionHash,
+                        TransactionDetail = oldTransaction.TransactionDetail,
+                    };
                     newTransactions.Add(newTransaction);
                 }
             }

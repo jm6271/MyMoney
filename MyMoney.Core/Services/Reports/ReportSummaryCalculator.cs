@@ -52,15 +52,21 @@ public sealed class ReportSummaryCalculator
         foreach (var item in report.expenses)
             expense.Value += item.Actual.Value;
 
+        foreach (var item in report.savings)
+            expense.Value += item.Spent.Value;
+
         return income - expense;
     }
 
     public async Task<Currency> GetSpendingTotal(DateTime month)
     {
-        var report = await BudgetReportCalculator.CalculateExpenseReportItems(month, _databaseManager);
+        var report = await BudgetReportCalculator.CalculateBudgetReport(month, _databaseManager);
         Currency totalSpending = new(0m);
-        foreach (var item in report)
+        foreach (var item in report.expenses)
             totalSpending.Value += item.Actual.Value;
+
+        foreach (var item in report.savings)
+            totalSpending.Value += item.Spent.Value;
 
         return totalSpending;
     }

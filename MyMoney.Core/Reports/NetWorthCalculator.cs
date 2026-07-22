@@ -32,7 +32,7 @@ public class NetWorthCalculator
         List<Transaction> allTransactions = [];
         await _dbManager.QueryAsync<Transaction>("Transactions", async query =>
         {
-            allTransactions.AddRange(query.Where(t => t.Date >= startDate)
+            allTransactions.AddRange(query.Where(t => t.AccountId != -1 && t.Date >= startDate)
                 .OrderBy(transaction => transaction.Date)
                 .ToList());
         });

@@ -29,98 +29,82 @@
             <ColumnDefinition Width="{Binding EditColumnWidth}" />
             <ColumnDefinition Width="{Binding RecentTransactionsColumnWidth}" />
         </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
 
-        <ui:TextBlock>Category</ui:TextBlock>
-        <ui:TextBox
-            x:Name="TxtCategory"
-            Grid.Row="1"
-            Margin="1,8,1,0"
-            GotKeyboardFocus="TxtCategory_GotKeyboardFocus"
-            Text="{Binding Category, ValidatesOnNotifyDataErrors=True}" />
-        <TextBlock
-            Grid.Row="2"
-            Margin="1,2,2,0"
-            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
-            Text="{Binding ElementName=TxtCategory, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
-            Visibility="{Binding ElementName=TxtCategory, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
+        <StackPanel>
+            <ui:TextBlock>Category</ui:TextBlock>
+            <ui:TextBox
+                x:Name="TxtCategory"
+                Margin="1,8,1,0"
+                GotKeyboardFocus="TxtCategory_GotKeyboardFocus"
+                Text="{Binding Category, ValidatesOnNotifyDataErrors=True}" />
+            <TextBlock
+                Margin="1,2,2,0"
+                Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                Text="{Binding ElementName=TxtCategory, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+                Visibility="{Binding ElementName=TxtCategory, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-        <ui:TextBlock Grid.Row="3" Margin="0,12,0,0">Planned for this month</ui:TextBlock>
-        <ui:TextBox
-            x:Name="TxtPlanned"
-            Grid.Row="4"
-            Margin="1,8,1,0"
-            GotKeyboardFocus="TxtPlanned_GotKeyboardFocus"
-            Text="{Binding PlannedStr, ValidatesOnNotifyDataErrors=True}" />
-        <TextBlock
-            Grid.Row="5"
-            Margin="1,2,2,0"
-            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
-            Text="{Binding ElementName=TxtPlanned, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
-            Visibility="{Binding ElementName=TxtPlanned, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
+            <ui:TextBlock Grid.Row="3" Margin="0,12,0,0">Planned for this month</ui:TextBlock>
+            <ui:TextBox
+                x:Name="TxtPlanned"
+                Margin="1,8,1,0"
+                GotKeyboardFocus="TxtPlanned_GotKeyboardFocus"
+                Text="{Binding PlannedStr, ValidatesOnNotifyDataErrors=True}" />
+            <TextBlock
+                Margin="1,2,2,0"
+                Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                Text="{Binding ElementName=TxtPlanned, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+                Visibility="{Binding ElementName=TxtPlanned, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-        <ui:TextBlock Grid.Row="6" Margin="0,12,0,0">Current balance</ui:TextBlock>
-        <ui:TextBox
-            x:Name="TxtBalance"
-            Grid.Row="7"
-            Margin="1,8,1,0"
-            GotKeyboardFocus="TxtBalance_GotKeyboardFocus"
-            Text="{Binding CurrentBalanceStr, ValidatesOnNotifyDataErrors=True}" />
-        <TextBlock
-            Grid.Row="8"
-            Margin="1,2,2,0"
-            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
-            Text="{Binding ElementName=TxtBalance, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
-            Visibility="{Binding ElementName=TxtBalance, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
-        <ui:TextBlock
+            <ui:TextBlock Grid.Row="6" Margin="0,12,0,0">Current balance</ui:TextBlock>
+            <ui:TextBox
+                x:Name="TxtBalance"
+                Margin="1,8,1,0"
+                GotKeyboardFocus="TxtBalance_GotKeyboardFocus"
+                Text="{Binding CurrentBalanceStr, ValidatesOnNotifyDataErrors=True}" />
+            <TextBlock
+                Margin="1,2,2,0"
+                Foreground="{DynamicResource SystemFillColorCriticalBrush}"
+                Text="{Binding ElementName=TxtBalance, Path=(Validation.Errors), Converter={StaticResource FirstValidationErrorConverter}}"
+                Visibility="{Binding ElementName=TxtBalance, Path=(Validation.HasError), Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </StackPanel>
+
+        <StackPanel Grid.Column="1">
+            <ui:TextBlock
             Grid.Column="1"
             Margin="24,0,0,0"
             Visibility="{Binding RecentTransactionsVisibility}">
-            Recent activity
-        </ui:TextBlock>
-        <Border
-            Grid.Row="1"
-            Grid.RowSpan="8"
+                Recent activity
+            </ui:TextBlock>
+            <Border
             Grid.Column="1"
             MinWidth="300"
             Margin="24,12,0,0"
             BorderBrush="#828790"
             BorderThickness="1"
             Visibility="{Binding RecentTransactionsVisibility}">
-            <ui:ListView Margin="0,0,0,0" ItemsSource="{Binding RecentTransactions}">
-                <ui:ListView.ItemTemplate>
-                    <DataTemplate DataType="{x:Type models:Transaction}">
-                        <Grid Margin="0,2,0,2">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="1*" />
-                                <ColumnDefinition Width="3*" />
-                                <ColumnDefinition Width="1*" />
-                            </Grid.ColumnDefinitions>
+                <ui:ListView Margin="0,0,0,0" ItemsSource="{Binding RecentTransactions}" MaxHeight="400">
+                    <ui:ListView.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:Transaction}">
+                            <Grid Margin="0,2,0,2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="3*" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
 
-                            <Controls:MonthDayControl
+                                <Controls:MonthDayControl
                                 Margin="8,0,0,0"
                                 HorizontalAlignment="Left"
                                 Day="{Binding Path=Date.Day}"
                                 DayFontSize="16"
                                 Month="{Binding Path=MonthAbbreviated}" />
 
-                            <TextBlock
+                                <TextBlock
                                 Grid.Column="1"
                                 VerticalAlignment="Center"
-                                Text="{Binding TransactionDetail}" />
+                                Text="{Binding Payee}" />
 
-                            <TextBlock
+                                <TextBlock
                                 Grid.Column="2"
                                 Margin="0,0,8,0"
                                 HorizontalAlignment="Right"
@@ -128,20 +112,22 @@
                                 FontSize="16"
                                 FontWeight="SemiBold"
                                 Text="{Binding AmountFormatted}">
-                                <TextBlock.Style>
-                                    <Style TargetType="TextBlock">
-                                        <Style.Triggers>
-                                            <DataTrigger Binding="{Binding AmountFormatted, Converter={StaticResource StartsWithPlusConverter}}" Value="True">
-                                                <Setter Property="Foreground" Value="{DynamicResource AccentTextFillColorTertiaryBrush}" />
-                                            </DataTrigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </TextBlock.Style>
-                            </TextBlock>
-                        </Grid>
-                    </DataTemplate>
-                </ui:ListView.ItemTemplate>
-            </ui:ListView>
-        </Border>
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding AmountFormatted, Converter={StaticResource StartsWithPlusConverter}}" Value="True">
+                                                    <Setter Property="Foreground" Value="{StaticResource PositiveForegroundColorBrush}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Grid>
+                        </DataTemplate>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
+            </Border>
+        </StackPanel>
+
     </Grid>
 </ui:ContentDialog>

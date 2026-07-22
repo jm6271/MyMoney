@@ -95,6 +95,19 @@ namespace MyMoney.Views.Controls
             set { SetValue(IsExpenseProperty, value); }
         }
 
+        public static readonly DependencyProperty ShowProgressBarProperty = DependencyProperty.Register(
+            nameof(ShowProgressBar),
+            typeof(bool),
+            typeof(BudgetSummaryItem),
+            new PropertyMetadata(true)
+        );
+
+        public bool ShowProgressBar
+        {
+            get => (bool)GetValue(ShowProgressBarProperty);
+            set { SetValue(ShowProgressBarProperty, value); }
+        }
+
         public double ActualAmountPercentage
         {
             get

@@ -116,4 +116,60 @@ public class DeleteSavingsCategoryTests
         Assert.AreEqual("C", _viewModel.CurrentBudget.BudgetSavingsCategories[1].CategoryName);
         Assert.AreEqual(2, _viewModel.CurrentBudget.BudgetSavingsCategories[1].Id);
     }
+
+    [TestMethod]
+    public async Task DeleteSavingsCategory_DeletesInternalTransactionsButKeepsAccountTransactions()
+    {
+        using var databaseManager = new DatabaseManager(new MemoryStream());
+        var internalTransaction = new Transaction(
+            DateTime.Today,
+            "",
+            new Category { Group = "Savings", Name = "A" },
+            new Currency(100m),
+            "Starting balance"
+        )
+        {
+            AccountId = -1,
+        };
+        var accountTransaction = new Transaction(
+            DateTime.Today,
+            "",
+            new Category { Group = "Savings", Name = "A" },
+            new Currency(25m),
+            ""
+        )
+        {
+            AccountId = 1,
+        };
+        databaseManager.Insert("Transactions", internalTransaction);
+        databaseManager.Insert("Transactions", accountTransaction);
+
+        var budget = new Budget();
+        budget.BudgetSavingsCategories.Add(
+            new BudgetSavingsCategory
+            {
+                CategoryName = "A",
+                TransactionIds = [internalTransaction.Id, accountTransaction.Id],
+            }
+        );
+        var viewModel = new MyMoney.ViewModels.Pages.BudgetViewModel(
+            _mockContentDialogService.Object,
+            databaseManager,
+            _mockMessageBoxService.Object,
+            _mockContentDialogFactory.Object
+        )
+        {
+            CurrentBudget = budget,
+            SavingsCategoriesSelectedIndex = 0,
+        };
+        _mockMessageBoxService
+            .Setup(x => x.ShowAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(MessageBoxResult.Primary);
+
+        await viewModel.DeleteSavingsCategoryCommand.ExecuteAsync(null);
+
+        var remaining = databaseManager.GetCollection<Transaction>("Transactions");
+        Assert.HasCount(1, remaining);
+        Assert.AreEqual(accountTransaction.Id, remaining[0].Id);
+    }
 }

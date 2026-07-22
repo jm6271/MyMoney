@@ -176,7 +176,9 @@ namespace MyMoney.Core.Reports
 
             await dbReader.QueryAsync<Transaction>("Transactions", async query =>
             {
-                transactions.AddRange(query.Where(t => (t.Date >= startDate && t.Date <= endDate)).ToList());
+                transactions.AddRange(
+                    query.Where(t => t.AccountId != -1 && t.Date >= startDate && t.Date <= endDate).ToList()
+                );
             });
 
             return transactions;

@@ -38,17 +38,22 @@ public sealed class SavingsCategoryTransactionSyncService : ISavingsCategoryTran
                 if (savingsCategory == null)
                     break;
 
-                savingsCategory.Transactions.Add(transaction);
+                if (!savingsCategory.TransactionIds.Contains(transaction.Id))
+                    savingsCategory.TransactionIds.Add(transaction.Id);
                 savingsCategory.CurrentBalance += transaction.Amount;
                 changed = true;
                 break;
 
             case TransactionChangeOperation.Edit when oldTransaction != null:
-                if (transaction.Category.Name == oldTransaction.Category.Name)
-                {
-                    if (transaction.Category.Group != "Savings")
-                        break;
+                var oldIsSavings = oldTransaction.Category.Group == "Savings";
+                var newIsSavings = transaction.Category.Group == "Savings";
+                var sameSavingsCategory =
+                    oldIsSavings
+                    && newIsSavings
+                    && transaction.Category.Name == oldTransaction.Category.Name;
 
+                if (sameSavingsCategory)
+                {
                     var categoryToUpdate = currentBudget.BudgetSavingsCategories.FirstOrDefault(x =>
                         x.CategoryName == transaction.Category.Name
                     );
@@ -56,48 +61,39 @@ public sealed class SavingsCategoryTransactionSyncService : ISavingsCategoryTran
                     if (categoryToUpdate == null)
                         break;
 
-                    var transactionToUpdate = categoryToUpdate.Transactions.FirstOrDefault(x =>
-                        x.TransactionHash == oldTransaction.TransactionHash
-                    );
-                    if (transactionToUpdate == null)
+                    if (!categoryToUpdate.TransactionIds.Contains(oldTransaction.Id))
                         break;
 
                     categoryToUpdate.CurrentBalance -= oldTransaction.Amount;
                     categoryToUpdate.CurrentBalance += transaction.Amount;
 
-                    var index = categoryToUpdate.Transactions.IndexOf(transactionToUpdate);
-                    categoryToUpdate.Transactions[index] = transaction;
                     changed = true;
                 }
                 else
                 {
-                    var originalCategory = currentBudget.BudgetSavingsCategories.FirstOrDefault(x =>
-                        x.CategoryName == oldTransaction.Category.Name
-                    );
-                    if (originalCategory == null)
-                        break;
+                    if (oldIsSavings)
+                    {
+                        var originalCategory = currentBudget.BudgetSavingsCategories.FirstOrDefault(x =>
+                            x.CategoryName == oldTransaction.Category.Name
+                        );
+                        if (originalCategory?.TransactionIds.Remove(oldTransaction.Id) == true)
+                        {
+                            originalCategory.CurrentBalance -= oldTransaction.Amount;
+                            changed = true;
+                        }
+                    }
 
-                    var transactionInOldCategory = originalCategory.Transactions.FirstOrDefault(x =>
-                        x.TransactionHash == oldTransaction.TransactionHash
-                    );
-                    if (transactionInOldCategory == null)
-                        break;
-
-                    originalCategory.Transactions.Remove(transactionInOldCategory);
-                    originalCategory.CurrentBalance -= oldTransaction.Amount;
-                    changed = true;
-
-                    if (transaction.Category.Group == "Savings")
+                    if (newIsSavings)
                     {
                         var newCategory = currentBudget.BudgetSavingsCategories.FirstOrDefault(x =>
                             x.CategoryName == transaction.Category.Name
                         );
-
-                        if (newCategory == null)
-                            break;
-
-                        newCategory.Transactions.Add(transaction);
-                        newCategory.CurrentBalance += transaction.Amount;
+                        if (newCategory != null && !newCategory.TransactionIds.Contains(transaction.Id))
+                        {
+                            newCategory.TransactionIds.Add(transaction.Id);
+                            newCategory.CurrentBalance += transaction.Amount;
+                            changed = true;
+                        }
                     }
                 }
                 break;
@@ -110,13 +106,10 @@ public sealed class SavingsCategoryTransactionSyncService : ISavingsCategoryTran
                 if (containingCategory == null)
                     break;
 
-                var transactionToDelete = containingCategory.Transactions.FirstOrDefault(x =>
-                    x.TransactionHash == transaction.TransactionHash
-                );
-                if (transactionToDelete != null)
+                if (containingCategory.TransactionIds.Contains(transaction.Id))
                 {
                     containingCategory.CurrentBalance -= transaction.Amount;
-                    containingCategory.Transactions.Remove(transactionToDelete);
+                    containingCategory.TransactionIds.Remove(transaction.Id);
                     changed = true;
                 }
                 break;

@@ -93,13 +93,15 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
                 BudgetedAmount = new MyMoney.Core.Models.Currency(200m),
                 CurrentBalance = new MyMoney.Core.Models.Currency(500m),
             };
-            savingsCategory.Transactions.Add(new MyMoney.Core.Models.Transaction(
+            var existingTransaction = new MyMoney.Core.Models.Transaction(
                 priorMonth,
                 "",
                 new MyMoney.Core.Models.Category { Group = "Savings", Name = "Emergency Fund" },
                 new MyMoney.Core.Models.Currency(500m),
                 "Initial deposit"
-            ));
+            );
+            _databaseManager.Insert("Transactions", existingTransaction);
+            savingsCategory.TransactionIds.Add(existingTransaction.Id);
             priorBudget.BudgetSavingsCategories.Add(savingsCategory);
 
             _databaseManager.Insert("Budgets", priorBudget);
@@ -136,14 +138,16 @@ namespace MyMoney.Tests.ViewModelTests.BudgetViewModel
             Assert.AreEqual("Emergency Fund", copiedSavings.CategoryName);
 
             // Assert exactly 2 transactions: balance-carried-forward and planned-this-month
-            Assert.AreEqual(2, copiedSavings.Transactions.Count);
+            Assert.AreEqual(2, copiedSavings.TransactionIds.Count);
 
             // Assert CurrentBalance = prior balance (500) + budgeted amount (200) = 700
             Assert.AreEqual(500m + 200m, copiedSavings.CurrentBalance.Value);
 
-            // Assert PlannedTransactionHash matches the planned-this-month transaction
-            var plannedTransaction = copiedSavings.Transactions.First(t => t.TransactionDetail == "Planned This Month");
-            Assert.AreEqual(plannedTransaction.TransactionHash, copiedSavings.PlannedTransactionHash);
+            // Assert PlannedTransactionId matches the planned-this-month transaction
+            var plannedTransaction = _databaseManager
+                .GetCollection<MyMoney.Core.Models.Transaction>("Transactions")
+                .First(t => t.Payee == "Planned This Month");
+            Assert.AreEqual(plannedTransaction.Id, copiedSavings.PlannedTransactionId);
         }
     }
 }

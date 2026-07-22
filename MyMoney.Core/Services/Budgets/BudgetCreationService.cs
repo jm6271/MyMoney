@@ -37,30 +37,32 @@ public sealed class BudgetCreationService : IBudgetCreationService
 
             Transaction balanceCarriedForward = new(
                 newBudget.BudgetDate.AddDays(-1),
-                "",
+                sourceBudget.BudgetDate.ToString("MMM") + " balance",
                 new Category() { Group = "Savings", Name = item.CategoryName },
                 item.CurrentBalance,
                 "Balance carried forward"
             )
             {
-                TransactionDetail = sourceBudget.BudgetDate.ToString("MMM") + " balance",
+                AccountId = -1,
             };
-            newSavingsCategory.Transactions.Add(balanceCarriedForward);
+            _databaseManager.Insert("Transactions", balanceCarriedForward);
+            newSavingsCategory.TransactionIds.Add(balanceCarriedForward.Id);
 
             Transaction appliedBudgetedAmount = new(
                 newBudget.BudgetDate,
-                "",
+                "Planned This Month",
                 new Category() { Group = "Savings", Name = item.CategoryName },
                 item.BudgetedAmount,
                 "Planned This Month"
             )
             {
-                TransactionDetail = "Planned This Month",
+                AccountId = -1,
             };
 
-            newSavingsCategory.Transactions.Add(appliedBudgetedAmount);
-            newSavingsCategory.PlannedTransactionHash = appliedBudgetedAmount.TransactionHash;
-            newSavingsCategory.BalanceTransactionHash = balanceCarriedForward.TransactionHash;
+            _databaseManager.Insert("Transactions", appliedBudgetedAmount);
+            newSavingsCategory.TransactionIds.Add(appliedBudgetedAmount.Id);
+            newSavingsCategory.PlannedTransactionId = appliedBudgetedAmount.Id;
+            newSavingsCategory.BalanceTransactionId = balanceCarriedForward.Id;
 
             newSavingsCategory.CurrentBalance += newSavingsCategory.BudgetedAmount;
 
